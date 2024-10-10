@@ -10,7 +10,7 @@
 <!-- header.jsp  -->
 <%@ include file="/WEB-INF/view/layout/header.jsp"%>
 
-<p>테스트 main</p>
+<h1>메인 영역</h1>
 
 <!-- footer.jsp  -->
 <%@ include file="/WEB-INF/view/layout/footer.jsp"%>
