@@ -16,8 +16,8 @@
 <div class="login-container">
   <h2>로그인</h2>
   <form action="/user/login" method="post">
-    <input type="text" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Password" required>
+    <input type="text" name="email" placeholder="Email" value="asd@asd.com" required>
+    <input type="password" name="password" placeholder="Password" value="1234" required>
     <button type="submit">로그인</button>
   </form>
   <div class="signup-link">

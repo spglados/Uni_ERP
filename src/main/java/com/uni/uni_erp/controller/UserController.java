@@ -3,6 +3,7 @@ package com.uni.uni_erp.controller;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
 
     private final UserService userService;
+    private final HttpSession session;
 
     @GetMapping("/login")
     public String login() {
@@ -25,7 +27,7 @@ public class UserController {
     @PostMapping("/login")
     public String login(@ModelAttribute UserDTO.JoinDTO dto) {
         User user = userService.login(dto);
-        System.out.println(user.toString());
+        session.setAttribute("userSession", user);
         return "main";
     }
 
