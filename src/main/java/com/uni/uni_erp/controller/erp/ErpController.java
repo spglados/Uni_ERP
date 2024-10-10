@@ -1,4 +1,4 @@
-package com.uni.uni_erp.controller;
+package com.uni.uni_erp.controller.erp;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
