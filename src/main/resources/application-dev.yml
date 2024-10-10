@@ -1,0 +1,37 @@
+server:
+  servlet:
+    encoding:
+      charset: utf-8
+      force: true
+  port: 8080
+
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/view/ # JSP 파일이 위치한 디렉토리 접두사를 설정합니다.
+      suffix: .jsp
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:uni_ERP;MODE=MySQL
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 10 # 한 번에 들고오는 개수 설정
+    defer-datasource-initialization: true
+
+  output:
+    ansi:
+      enabled: always
+
+logging:
+  level:
+    '[com.uni.uni_erp]': DEBUG

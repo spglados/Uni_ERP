@@ -25,8 +25,16 @@ repositories {
 }
 
 dependencies {
+
+    // JSP 사용을 위한 톰캣 Jasper 의존성
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    implementation group: 'org.glassfish.web', name: 'jakarta.servlet.jsp.jstl', version: '3.0.0'
+    providedRuntime 'javax.servlet:javax.servlet-api:4.0.1'
+
+    // Json 데이터를 가공하기 위한 GSON 의존성 추가
+    implementation 'com.google.code.gson:gson:2.10.1'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-mustache'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
