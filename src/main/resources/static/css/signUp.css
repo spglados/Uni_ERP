@@ -1,0 +1,49 @@
+.main-container{
+    display: flex;
+    justify-content: center; /* 가로 방향 중앙 정렬 */
+    align-items: center;     /* 세로 방향 중앙 정렬 */
+}
+.signup-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+.signup-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.signup-container input[type="text"],
+.signup-container input[type="password"],
+.signup-container input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.signup-container button {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.signup-container button:hover {
+    background-color: #218838;
+}
+.signup-container .login-link {
+    text-align: center;
+    margin-top: 15px;
+}
+.signup-container .login-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+.signup-container .login-link a:hover {
+    text-decoration: underline;
+}

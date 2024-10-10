@@ -95,6 +95,11 @@
 	margin: 0;
 }
 
+.none-a{
+	color: white;
+	text-decoration: none;
+}
+
 .nav {
 	list-style: none;
 	padding: 0;

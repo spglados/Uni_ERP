@@ -17,7 +17,7 @@
 
 <header class="header">
     <div class="inner--header">
-        <p class="h--logo">Uni ERP</p>
+        <p class="h--logo"><a href="/main" class="none-a">Uni ERP</a></p>
         <ul class="nav">
             <li class="nav-item"><a href="#">소개</a></li>
             <li class="nav-item"><a href="#">공지사항</a></li>
@@ -26,10 +26,9 @@
             <li class="nav-item"><a href="#">고객지원</a></li>
         </ul>
         <div class="header-icons">
-            <a href="#"><i class="fa-solid fa-sign-in-alt"></i></a>
+            <a href="/user/login" class="none-a"><i class="fa-solid fa-sign-in-alt">로그인</i></a>
             <a href="#"><i class="fa-solid fa-clipboard"></i></a>
         </div>
     </div>
 </header>
 
-<main class="main-container">
