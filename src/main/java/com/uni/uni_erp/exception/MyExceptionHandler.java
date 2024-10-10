@@ -1,6 +1,7 @@
 package com.uni.uni_erp.exception;
 
 import com.uni.uni_erp.exception.errors.*;
+import com.uni.uni_erp.util.ApiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
