@@ -21,7 +21,7 @@
         <ul class="nav">
             <li class="nav-item"><a href="#">소개</a></li>
             <li class="nav-item"><a href="#">공지사항</a></li>
-            <li class="nav-item"><a href="#">ERP</a></li>
+            <li class="nav-item"><a href="/erp/main" target="_blank">ERP</a></li>
             <li class="nav-item"><a href="#">결제</a></li>
             <li class="nav-item"><a href="#">고객지원</a></li>
         </ul>
