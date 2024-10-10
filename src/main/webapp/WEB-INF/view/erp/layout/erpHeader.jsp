@@ -22,32 +22,33 @@
             <li>
                 <a href="javascript:void(0);" class="hr-toggle">인사 관리 ▼</a>
                 <ul class="sub-menu">
-                    <li><a href="/hr/employeeRegister.jsp">직원 등록</a></li>
-                    <li><a href="/hr/employeeList.jsp">직원 목록</a></li>
+                    <li><a href="/erp/hr/employeeRegister">직원 등록</a></li>
+                    <li><a href="/erp/hr/employeeList">직원 목록</a></li>
                 </ul>
             </li>
             <li>
                 <a href="javascript:void(0);" class="inventory-toggle">재고 관리 ▼</a>
                 <ul class="sub-menu">
-                    <li><a href="/inventory/receiving.jsp">입고 관리</a></li>
-                    <li><a href="/inventory/shipping.jsp">출고 관리</a></li>
-                    <li><a href="/inventory/status.jsp">재고 현황</a></li>
-                    <li><a href="/inventory/adjustment.jsp">재고 조정</a></li>
-                    <li><a href="/inventory/suppliers.jsp">공급자 관리</a></li>
+                    <li><a href="/erp/inventory/receiving">입고 관리</a></li>
+                    <li><a href="/erp/inventory/shipping">출고 관리</a></li>
+                    <li><a href="/erp/inventory/status">재고 현황</a></li>
+                    <li><a href="/erp/inventory/adjustment">재고 조정</a></li>
+                    <li><a href="/erp/inventory/suppliers">공급자 관리</a></li>
                 </ul>
             </li>
             <li>
                 <a href="javascript:void(0);" class="sales-toggle">매출 관리 ▼</a>
                 <ul class="sub-menu">
-                    <li><a href="/sales/record.jsp">매출 기록</a></li>
-                    <li><a href="/sales/customers.jsp">고객 관리</a></li>
+                    <li><a href="/erp/sales/record">매출 입력</a></li>
+                    <li><a href="/erp/sales/history">매출 기록</a></li>
+                    <li><a href="/erp/sales/statistics">매출 통계</a></li>
                 </ul>
             </li>
             <li>
                 <a href="javascript:void(0);" class="product-toggle">상품 관리 ▼</a>
                 <ul class="sub-menu">
-                    <li><a href="/product/register.jsp">상품 등록</a></li>
-                    <li><a href="/product/list.jsp">상품 목록</a></li>
+                    <li><a href="/erp/product/register">상품 등록</a></li>
+                    <li><a href="/erp/product/list">상품 목록</a></li>
                 </ul>
             </li>
         </ul>
