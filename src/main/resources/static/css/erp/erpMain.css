@@ -27,7 +27,7 @@
 }
 
 .sidebar-menu li {
-    margin: 20px 0;
+    margin: 15px 0;
 }
 
 .sidebar-menu a {
@@ -39,6 +39,27 @@
 
 .sidebar-menu a:hover {
     color: #007bff;
+}
+
+/* 하위 메뉴 스타일 */
+.sub-menu {
+    list-style-type: none;
+    padding-left: 20px;
+    margin-top: 10px;
+    display: none;  /* 기본적으로 숨김 */
+}
+
+.sub-menu li {
+    margin: 10px 0;
+}
+
+.sub-menu a {
+    font-size: 1em;
+    color: #dcdcdc;
+}
+
+.sub-menu a:hover {
+    color: #00bfff;
 }
 
 /* 메인 컨텐츠 스타일 */
@@ -64,7 +85,6 @@
     flex-wrap: wrap;
 }
 
-/* 모듈 카드 스타일 */
 .module-card {
     background-color: #fff;
     width: 30%;
