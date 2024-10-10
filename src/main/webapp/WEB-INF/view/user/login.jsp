@@ -15,13 +15,13 @@
 
 <div class="login-container">
   <h2>로그인</h2>
-  <form action="/login" method="post">
-    <input type="text" name="username" placeholder="Username" required>
+  <form action="/user/login" method="post">
+    <input type="text" name="email" placeholder="Email" required>
     <input type="password" name="password" placeholder="Password" required>
     <button type="submit">로그인</button>
   </form>
   <div class="signup-link">
-    <p><a href="/user/signUp">회원가입</a></p>
+    <p><a href="/user/join">회원가입</a></p>
   </div>
 </div>
 

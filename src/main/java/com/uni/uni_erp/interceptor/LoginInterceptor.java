@@ -19,7 +19,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             // TODO 결제 로직 추가
 
             log.warn("로그인 정보 없음");
-            response.sendRedirect("/main");
+            response.sendRedirect("/user/login");
             return false;
         }
 
