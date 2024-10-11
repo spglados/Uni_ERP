@@ -11,7 +11,15 @@
 <!-- 메인 컨텐츠 -->
 <div class="content">
 
-  <h1>상품 등록 입니다.</h1>
+  <div class="d-flex justify-content-between">
+  <div class="">
+  <h1>상품 등록</h1>
+  </div>
+  </div>
+  <hr>
+  <div class="">
+    <button class="btn btn-outline-info rounded-pill">등록</button>
+  </div>
 
 </div>
 
