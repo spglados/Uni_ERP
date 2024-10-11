@@ -1,5 +1,6 @@
 package com.uni.uni_erp.controller;
 
+import com.uni.uni_erp.exception.errors.Exception404;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 

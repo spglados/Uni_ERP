@@ -1,5 +1,8 @@
 package com.uni.uni_erp.interceptor;
 
+import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.exception.errors.Exception401;
+import com.uni.uni_erp.exception.errors.Exception404;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +12,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 세션에서 로그인 정보를 확인
-        Object userSession = request.getSession().getAttribute("userSession");
+        User userSession = (User) request.getSession().getAttribute("userSession");
 
         if (request.getRequestURI().startsWith("/erp") && userSession == null) {
 
