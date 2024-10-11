@@ -2,4 +2,5 @@ spring:
   sql:
     init:
       data-locations:
-        - classpath:db/data.sql # default Database SQL, want add
+        - classpath:db/data.sql
+        - classpath:db/notice.sql

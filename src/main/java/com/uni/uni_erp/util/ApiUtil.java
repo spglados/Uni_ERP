@@ -1,4 +1,4 @@
-package com.uni.uni_erp.exception;
+package com.uni.uni_erp.util;
 
 import lombok.Data;
 
