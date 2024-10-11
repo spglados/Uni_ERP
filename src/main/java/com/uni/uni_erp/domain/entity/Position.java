@@ -7,16 +7,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "empolyee_tb")
-public class employee {
+@Table(name = "position_tb")
+public class Position {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(nullable = false)
     private String name;
-    private String birthday;
-    private enum sex;
 
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;  // 각 사용자가 커스텀 직책을 가질 수 있도록 설정
 
 }
