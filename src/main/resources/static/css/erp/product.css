@@ -1,0 +1,38 @@
+.select {
+    width: 200px;
+    background-color: #f0f8ff;
+    border-color: #4caf50;
+}
+
+.custom-col {
+    flex: 0 0 18%; /* 한 줄에 5개의 박스를 유지하기 위한 비율 */
+    max-width: 18%;
+    margin: 15px; /* 박스 간 간격 */
+    height: 150px; /* 박스의 고정된 높이 */
+}
+
+@media (max-width: 768px) {
+    .custom-col {
+        flex: 0 0 45%; /* 태블릿 크기에서는 한 줄에 2개 */
+        max-width: 45%;
+        height: 150px; /* 고정된 높이 유지 */
+    }
+}
+
+@media (max-width: 576px) {
+    .custom-col {
+        flex: 0 0 90%; /* 작은 화면에서는 한 줄에 1개 */
+        max-width: 90%;
+        height: 150px; /* 고정된 높이 유지 */
+    }
+}
+
+.box {
+    height: 100%; /* 부모 요소의 높이를 모두 차지하도록 설정 */
+    border-radius: 10px;
+    background-color: #17a2b8;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
