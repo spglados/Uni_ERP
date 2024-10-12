@@ -34,6 +34,9 @@ dependencies {
     // Json 데이터를 가공하기 위한 GSON 의존성 추가
     implementation 'com.google.code.gson:gson:2.10.1'
 
+    // Google Cloud Vision 의존성 추가
+    implementation 'com.google.cloud:google-cloud-vision:3.46.0'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
