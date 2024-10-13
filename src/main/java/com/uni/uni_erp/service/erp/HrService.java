@@ -1,6 +1,8 @@
 package com.uni.uni_erp.service.erp;
 
 import com.uni.uni_erp.domain.entity.Employee;
+import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.repository.erp.HrRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,5 +21,21 @@ public class HrService {
         return employees;
     }
 
+    // 신규 직원 등록
+    public Employee registerEmployee(EmployeeDTO employeeDTO, User owner) {
+        Employee employee = Employee.builder()
+                .name(employeeDTO.getName())
+                .birthday(employeeDTO.getBirthday())
+                .gender(employeeDTO.getGender())
+                .email(employeeDTO.getEmail())
+                .phone(employeeDTO.getPhone())
+                .accountNumber(employeeDTO.getAccountNumber())
+                .position(employeeDTO.getPosition())
+                .owner(owner) // 사장님 정보 설정
+                .employmentStatus(Employee.EmploymentStatus.ACTIVE) // 기본 상태
+                .build();
+
+        return hrRepository.save(employee); // 저장
+    }
 
 }

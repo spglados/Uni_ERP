@@ -2,13 +2,14 @@ package com.uni.uni_erp.controller.erp;
 
 import com.uni.uni_erp.domain.entity.Employee;
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.service.erp.HrService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,8 +22,15 @@ public class HrController {
     private final HttpSession session;
 
     @GetMapping("/employeeRegister")
-    public String employeeRegisterPage() {
+    public String employeeRegisterPage(Model model) {
+        model.addAttribute("employee", new Employee());
         return "/erp/hr/employeeRegister";
+    }
+
+    @PostMapping("/register")
+    public String registerEmployee(@RequestBody EmployeeDTO employeeDTO, @SessionAttribute("user") User owner) {
+        hrService.registerEmployee(employeeDTO, owner);
+        return "직원이 등록되었습니다.";
     }
 
     @GetMapping("/employeeList")

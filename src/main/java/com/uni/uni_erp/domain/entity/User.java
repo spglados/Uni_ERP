@@ -43,6 +43,11 @@ public class User {
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
 
+    // 역할 필드 추가 (OWNER 또는 EMPLOYEE)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     // Employee와의 관계: 하나의 User는 여러 Employee를 관리할 수 있음
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private List<Employee> employees;
@@ -60,5 +65,10 @@ public class User {
     public enum Membership {
         COMMON,
         PREMIUM
+    }
+
+    public enum Role {
+        OWNER,
+        EMPLOYEE
     }
 }
