@@ -1,0 +1,129 @@
+/* 메인 컨테이너 스타일 */
+.erp-container {
+    display: flex;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+}
+
+/* 사이드바 스타일 */
+.sidebar {
+    width: 250px;
+    background-color: #343a40;
+    padding: 20px;
+    color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+    text-align: center;
+    font-size: 1.8em;
+    margin-bottom: 30px;
+}
+
+.sidebar-menu {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    margin: 15px 0;
+}
+
+.sidebar-menu a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.2em;
+    transition: color 0.3s;
+}
+
+.sidebar-menu a:hover {
+    color: #007bff;
+}
+
+/* 하위 메뉴 스타일 */
+.sub-menu {
+    list-style-type: none;
+    padding-left: 20px;
+    margin-top: 10px;
+    display: none;  /* 기본적으로 숨김 */
+}
+
+.sub-menu li {
+    margin: 10px 0;
+}
+
+.sub-menu a {
+    font-size: 1em;
+    color: #dcdcdc;
+}
+
+.sub-menu a:hover {
+    color: #00bfff;
+}
+
+/* 메인 컨텐츠 스타일 */
+.content {
+    flex: 1;
+    padding: 30px;
+}
+
+.content header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.content header h1 {
+    font-size: 2.5em;
+    color: #333;
+}
+
+/* 메인 컨텐츠 카드 스타일 */
+.erp-content {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.module-card {
+    background-color: #fff;
+    width: 30%;
+    margin: 10px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: box-shadow 0.3s ease;
+}
+
+.module-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.module-card h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.module-card p {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+/* ERP 버튼 스타일 */
+.erp-button {
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.erp-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-3px);
+}

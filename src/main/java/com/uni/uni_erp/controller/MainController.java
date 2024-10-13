@@ -1,5 +1,6 @@
 package com.uni.uni_erp.controller;
 
+import com.uni.uni_erp.exception.errors.Exception404;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -7,8 +8,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MainController {
 
     @GetMapping("/main")
-    public String test() {
+    public String mainPage() {
         return "main";
+    }
+
+    @GetMapping("/introduction")
+    public String introductionPage() {
+        return "/common/introduction";
+    }
+
+    @GetMapping("/support")
+    public String supportPage() {
+        return "common/support";
     }
 
 }

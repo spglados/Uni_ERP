@@ -1,8 +1,8 @@
-package com.uni.uni_erp.controller;
+package com.uni.uni_erp.controller.user;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.UserDTO;
-import com.uni.uni_erp.service.UserService;
+import com.uni.uni_erp.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
