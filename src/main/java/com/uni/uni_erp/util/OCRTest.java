@@ -30,19 +30,17 @@ public class OCRTest {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            // 5. 요청 본문과 헤더를 HttpEntity에 담기
             HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
-            // 6. RestTemplate을 사용하여 API 요청 보내기
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<ApiResponse> response = restTemplate.exchange(API_URL, HttpMethod.POST, entity, ApiResponse.class);
-            List<ApiResponse.Responses.TextAnnotation> list = response.getBody().getResponses().get(0).getTextAnnotations();
+            List<ApiResponse.TextAnnotation> list = response.getBody().getResponses().get(0).getTextAnnotations();
             System.out.println("리스트 길이 : " + list.size());
             for (int i = 1; i < list.size(); i++) {
-                ApiResponse.Responses.TextAnnotation textAnnotation = list.get(i);
+                ApiResponse.TextAnnotation textAnnotation = list.get(i);
                 String description = textAnnotation.getDescription();
                 System.out.println("텍스트 : " + description);
-                List<ApiResponse.Responses.TextAnnotation.BoundingPoly.Vertice> xy = textAnnotation.getBoundingPoly().getVertices();
+                List<ApiResponse.Vertice> xy = textAnnotation.getBoundingPoly().getVertices();
                 StringBuilder sb = new StringBuilder();
                 for (int j = 0; j < xy.size(); j++) {
                     sb.append("(").append(xy.get(j).getX()).append(",").append(xy.get(j).getY()).append(")");
