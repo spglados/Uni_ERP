@@ -1,6 +1,8 @@
 spring:
   sql:
     init:
+      mode: always  # (optional) 스키마 및 데이터 초기화 활성화
       data-locations:
         - classpath:db/data.sql
         - classpath:db/notice.sql
+        - classpath:db/product.sql
