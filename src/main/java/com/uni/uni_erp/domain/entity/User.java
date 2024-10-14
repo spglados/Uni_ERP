@@ -1,10 +1,12 @@
 package com.uni.uni_erp.domain.entity;
 
+import com.uni.uni_erp.domain.entity.erp.product.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "user_tb")
@@ -41,6 +43,9 @@ public class User {
     // created_at 컬럼과 매핑하며, 데이터 저장시 자동으로 현재 시간이 설정됨
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Store> stores;
 
     // 엔티티가 저장되기 전 실행되는 메서드
     @PrePersist

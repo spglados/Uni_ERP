@@ -1,8 +1,8 @@
-package com.uni.uni_erp.service;
+package com.uni.uni_erp.service.user;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.UserDTO;
-import com.uni.uni_erp.repository.UserRepository;
+import com.uni.uni_erp.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
