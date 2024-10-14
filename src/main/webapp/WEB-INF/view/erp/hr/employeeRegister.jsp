@@ -6,7 +6,7 @@
 <div class="content">
     <h1>직원 등록 입니다.</h1>
 
-    <form action="/register" method="post" id="employeeRegisterForm">
+    <form action="/employee-register" method="post" id="employeeRegisterForm">
         <div>
             <label for="name">이름:</label>
             <input type="text" id="name" name="name" required>

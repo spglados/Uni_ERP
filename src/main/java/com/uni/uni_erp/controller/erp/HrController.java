@@ -1,9 +1,8 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
-import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.EmployeeDTO;
-import com.uni.uni_erp.service.erp.HrService;
+import com.uni.uni_erp.service.erp.hr.HrService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -38,7 +37,7 @@ public class HrController {
         Integer storeId = (Integer) session.getAttribute("storeId");
         List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
         model.addAttribute("employees", employees); // 직원 목록을 모델에 추가
-        return "/erp/hr/employeeList"; // 직원 목록 페이지 반환
+        return "erp/hr/employeeList"; // 직원 목록 페이지 반환
     }
 
 }

@@ -1,28 +1,29 @@
-package com.uni.uni_erp.service.erp;
+package com.uni.uni_erp.service.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
-import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.exception.errors.Exception500;
-import com.uni.uni_erp.repository.erp.HrRepository;
+import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class HrService {
 
-    private final HrRepository hrRepository;
+    private final EmployeeRepository hrRepository;
     private final StoreRepository storeRepository;
 
     public List<Employee> getEmployeesByStoreId(Integer storeId) {
         List<Employee> employees = hrRepository.findByStoreId(storeId);
-        System.out.println("Employees found for user ID " + storeId + ": " + employees.size()); // 직원 수 로그 추가
+        System.out.println("Employees found for store ID " + storeId + ": " + employees.size());
+        if (employees.isEmpty()) {
+            System.out.println("No employees found for store ID " + storeId);
+        } // 직원 수 로그 추가
         return employees;
     }
 

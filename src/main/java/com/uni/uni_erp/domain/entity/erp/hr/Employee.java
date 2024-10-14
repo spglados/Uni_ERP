@@ -1,7 +1,6 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
-import com.uni.uni_erp.domain.entity.Position;
-import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.Bank;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import jakarta.persistence.*;
 import lombok.*;
@@ -80,6 +79,10 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<EmpDocument> empDocuments;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bank_id", nullable = false)
+    private Bank bank; // 은행 정보를 참조 필드
 
     @PrePersist
     public void onCreate() {

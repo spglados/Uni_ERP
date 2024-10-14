@@ -40,7 +40,7 @@
                     </td>
                     <td>${employee.email}</td>
                     <td>${employee.phone}</td>
-                    <td>${employee.position.name}</td>
+                    <td>${employee.position}</td>
                     <td>
                         <c:choose>
                             <c:when test="${employee.employmentStatus == 'ACTIVE'}">재직 중</c:when>
