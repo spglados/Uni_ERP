@@ -9,6 +9,8 @@
 
 <!-- header.jsp  -->
 <%@ include file="/WEB-INF/view/layout/header.jsp"%>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
 <link rel="stylesheet" href="/css/signUp.css">
 
 <main class="main-container">
@@ -23,8 +25,24 @@
       <input type="password" name="confirm_password" id="confirm_password" placeholder="비밀번호 확인" required>
       <span id="passwordMessage" class="password-message"></span>
 
-      <input type="email" name="email" placeholder="이메일 주소" required>
-      <input type="tel" name="phone" placeholder="핸드폰 번호" required>
+      <!-- 이메일 인증 -->
+      <div>
+      <input type="email" id="email" name="email" placeholder="이메일 주소" required>
+      <p id="email--verification--status"></p>
+      <button type="button" id="send--email--verification" class="btn btn-primary">이메일 인증하기</button>
+      </div>
+
+      <!-- 휴대폰 문자인증 -->
+      <td>
+      		<p>
+      			<input id="phone" type="tel" name="phone" placeholder="핸드폰 번호" required>
+      			<button type="button" id="phoneChk" class="doubleChk">인증번호 보내기</button><br/>
+
+      			<input id="phone2" type="text" name="phone2" title="인증번호 입력" disabled required/>
+      			<button type="button" id="phoneChk2" class="doubleChk">인증번호 확인</button>
+      			<input type="hidden" id="phoneDoubleChk"/>
+      		</p>
+      	</td>
 
       <!-- 주소 입력 필드 -->
       <input type="text" id="basicAddress" placeholder="기본 주소" readonly>
@@ -125,5 +143,7 @@
   });
 </script>
 
+<script src="/js/user/sendEmail.js"></script>
+<script src="/js/user/sendSMS.js"></script>
 <!-- footer.jsp  -->
 <%@ include file="/WEB-INF/view/layout/footer.jsp"%>

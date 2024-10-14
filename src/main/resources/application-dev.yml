@@ -32,6 +32,28 @@ spring:
     ansi:
       enabled: always
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: dev1email1smtp@gmail.com
+    password: durn wzqw ghqg zetk
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 logging:
   level:
     '[com.uni.uni_erp]': DEBUG
+
+coolsms:
+  api:
+    key: "NCS9GARPFNB2EJXK"
+    secret: "DBM9X06ZF3VXI8AHHPDWQOGVYQPOBZE9"
+    number: "010-6439-5737"
