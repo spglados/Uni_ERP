@@ -1,6 +1,6 @@
 package com.uni.uni_erp.service.erp;
 
-import com.uni.uni_erp.domain.entity.Employee;
+import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.repository.erp.HrRepository;

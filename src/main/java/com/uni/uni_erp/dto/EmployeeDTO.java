@@ -1,6 +1,6 @@
 package com.uni.uni_erp.dto;
 
-import com.uni.uni_erp.domain.entity.Employee;
+import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.Position;
 import com.uni.uni_erp.domain.entity.User;
 import lombok.AllArgsConstructor;

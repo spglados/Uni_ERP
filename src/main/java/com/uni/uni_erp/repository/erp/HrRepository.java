@@ -1,6 +1,6 @@
 package com.uni.uni_erp.repository.erp;
 
-import com.uni.uni_erp.domain.entity.Employee;
+import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,12 +1,11 @@
 package com.uni.uni_erp.controller.erp;
 
-import com.uni.uni_erp.domain.entity.Employee;
+import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.service.erp.HrService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

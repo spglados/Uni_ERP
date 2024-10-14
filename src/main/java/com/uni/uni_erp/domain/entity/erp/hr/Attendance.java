@@ -1,4 +1,4 @@
-package com.uni.uni_erp.domain.entity;
+package com.uni.uni_erp.domain.entity.erp.hr;
 
 import jakarta.persistence.*;
 import lombok.Data;

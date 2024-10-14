@@ -1,5 +1,6 @@
 package com.uni.uni_erp.domain.entity;
 
+import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import jakarta.persistence.*;
 import lombok.*;
