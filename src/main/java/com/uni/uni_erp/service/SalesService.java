@@ -1,20 +1,29 @@
 package com.uni.uni_erp.service;
 
 import com.uni.uni_erp.domain.entity.Sales;
+import com.uni.uni_erp.dto.SalesDTO;
 import com.uni.uni_erp.repository.SalesRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class SalesService {
 
-//    private final SalesRepository salesRepository;
-//
+    private final SalesRepository salesRepository;
+
+    public List<SalesDTO> findAllBySalesDateBetweenOrderBySalesDateDesc(LocalDateTime startDate, LocalDateTime endDate) {
+
+        return salesRepository.findAllBySalesDateBetweenOrderBySalesDateDesc(startDate, endDate);
+    }
+
 //    @Transactional
 //    public void save(Sales sales) {
 //        salesRepository.save(sales);

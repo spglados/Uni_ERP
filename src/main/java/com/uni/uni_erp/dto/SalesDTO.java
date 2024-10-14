@@ -1,44 +1,18 @@
 package com.uni.uni_erp.dto;
 
-import com.uni.uni_erp.domain.entity.Sales;
-import com.uni.uni_erp.domain.entity.User;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
+@Setter
+@Value
 public class SalesDTO {
-//    private Integer id;
-//    private Integer userId;
-//    private String itemName;
-//    private String itemCode;
-//    private String specs;
-//    private Integer quantity;
-//    private BigDecimal unitPrice;
-//    private BigDecimal tax;
-//    private BigDecimal totalPrice;
-//    private String attachmentUri;
-//    private Timestamp salesDate;
-//
-//    public Sales toSalesEntity() {
-//        User user = new User();
-//        user.setId(userId);
-//
-//        return Sales.builder()
-//                .id(id)
-//                .user(user)
-//                .itemName(itemName)
-//                .itemCode(itemCode)
-//                .specs(specs)
-//                .quantity(quantity)
-//                .unitPrice(unitPrice)
-//                .tax(tax)
-//                .totalPrice(totalPrice)
-//                .attachmentUri(attachmentUri)
-//                .salesDate(salesDate)
-//                .build();
-//    }
+    private Integer id;
+    private Integer orderNum;
+    private Integer totalPrice;
+    private LocalDateTime salesDate;
 }

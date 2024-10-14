@@ -14,6 +14,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -22,16 +27,6 @@ public class SalesController {
 
     @PersistenceContext
     private EntityManager entityManager;
-
-    @Transactional
-    public Sales createSales(Sales sales) {
-        // Generate the order number from the sequence
-        sales.generateOrderNum(entityManager);
-
-        // Now save the sales object
-        entityManager.persist(sales);
-        return sales;
-    }
 
     private final SalesService salesService;
 
@@ -90,8 +85,21 @@ public class SalesController {
 
     // 3. 차트 분석/통계 페이지
     @GetMapping("/statistics")
-    public String salesStatistics(Model model, @SessionAttribute("userSession") User user) {
-//        model.addAttribute("salesData", salesService.findByUserId(user.getId()));
+    public String salesStatistics(
+            @RequestParam(value = "startDate", required = false, defaultValue = "#{T(java.time.LocalDateTime).now().minusMonths(1).truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String startDate,
+            @RequestParam(value = "endDate", required = false, defaultValue = "#{T(java.time.LocalDateTime).now().truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String endDate,
+            Model model) {
+        try {
+            List<SalesDTO> salesList = salesService.findAllBySalesDateBetweenOrderBySalesDateDesc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate));
+            model.addAttribute("salesHistory", salesList);
+        } catch (
+                Exception e) {
+            model.addAttribute(ERROR, "판매 기록 조회 실패.");
+            log.error("Error searching sales records by date", e);
+        }
+
         return "erp/sales/statistics";
     }
+
+
 }

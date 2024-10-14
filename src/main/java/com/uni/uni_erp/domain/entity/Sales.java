@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -28,7 +29,7 @@ public class Sales {
     private Integer totalPrice;
 
     @Column(name = "sales_date", nullable = false)
-    private Timestamp salesDate;
+    private LocalDateTime salesDate;
 
     @OneToMany(mappedBy = "sales", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SalesDetail> details;
@@ -36,7 +37,7 @@ public class Sales {
     @PrePersist
     protected void onPrePersist() {
         if (this.salesDate == null) {
-            this.salesDate = Timestamp.from(Instant.now());
+            this.salesDate = LocalDateTime.from(Instant.now());
         }
     }
 
