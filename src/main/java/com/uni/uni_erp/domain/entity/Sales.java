@@ -3,8 +3,9 @@ package com.uni.uni_erp.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "sales_tb")
@@ -18,61 +19,28 @@ public class Sales {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id; // Primary key for sales
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    private User user;
+    @Column(name = "order_num", nullable = false, unique = true)
+    private Integer orderNum; // Unique identifier for the order, will be set using the sequence
 
-    @Column(name = "item_name", nullable = false)
-    private String itemName;
-
-    @Column(name = "item_code", nullable = false)
-    private String itemCode;
-
-    @Column(name = "specs")
-    private String specs;
-
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
-
-    @Column(name = "unit_price", precision = 10, scale = 2, nullable = false)
-    private BigDecimal unitPrice;
-
-    @Column(name = "tax", precision = 10, scale = 2, nullable = false)
-    private BigDecimal tax;
-
-    @Column(name = "total_price", precision = 10, scale = 2, nullable = false)
-    private BigDecimal totalPrice;
-
-    @Column(name = "attachment_uri")
-    private String attachmentUri;
+    @Column(name = "total_price", nullable = false)
+    private Integer totalPrice;
 
     @Column(name = "sales_date", nullable = false)
-    private LocalDate salesDate;
+    private Timestamp salesDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private SaleStatus status;
-
-//    @Column(name = "created_by", nullable = false)
-//    private String createdBy;
+    @OneToMany(mappedBy = "sales", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SalesDetail> details;
 
     @PrePersist
     protected void onPrePersist() {
-        if (this.status == null) {
-            this.status = SaleStatus.CONFIRMED;
-        }
         if (this.salesDate == null) {
-            this.salesDate = LocalDate.now();
+            this.salesDate = Timestamp.from(Instant.now());
         }
     }
 
-
-    public enum SaleStatus {
-        CONFIRMED,
-        REFUNDED,
-        CANCELED
+    public void generateOrderNum(EntityManager entityManager) {
+        this.orderNum = (Integer) entityManager.createNativeQuery("SELECT NEXT VALUE FOR order_num_seq").getSingleResult();
     }
-
 }

@@ -8,9 +8,6 @@ import java.util.List;
 
 public interface SalesRepository extends JpaRepository<Sales, Integer> {
 
-    public List<Sales> findByUser_Id(Integer userId);
-
-
 }
 
 

@@ -13,40 +13,40 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SalesService {
 
-    private final SalesRepository salesRepository;
-
-    @Transactional
-    public void save(Sales sales) {
-        salesRepository.save(sales);
-    }
-
-    @Transactional
-    public void update(Integer id, Sales sales) {
-        Sales updateSales = new Sales().builder()
-                .id(id)
-                .user(sales.getUser())
-                .itemName(sales.getItemName())
-                .itemCode(sales.getItemCode())
-                .specs(sales.getSpecs())
-                .quantity(sales.getQuantity())
-                .unitPrice(sales.getUnitPrice())
-                .tax(sales.getTax())
-                .totalPrice(sales.getTotalPrice())
-                .attachmentUri(sales.getAttachmentUri())
-                .salesDate(sales.getSalesDate())
-                .status(sales.getStatus())
-                .build();
-
-        salesRepository.save(updateSales);
-    }
-
-    public List<Sales> findByUserId(Integer userId) {
-        return salesRepository.findByUser_Id(userId);
-    }
-
-    @Transactional
-    public void delete(Integer id) {
-        salesRepository.deleteById(id);
-    }
+//    private final SalesRepository salesRepository;
+//
+//    @Transactional
+//    public void save(Sales sales) {
+//        salesRepository.save(sales);
+//    }
+//
+//    @Transactional
+//    public void update(Integer id, Sales sales) {
+//        Sales updateSales = new Sales().builder()
+//                .id(id)
+//                .user(sales.getUser())
+//                .itemName(sales.getItemName())
+//                .itemCode(sales.getItemCode())
+//                .specs(sales.getSpecs())
+//                .quantity(sales.getQuantity())
+//                .unitPrice(sales.getUnitPrice())
+//                .tax(sales.getTax())
+//                .totalPrice(sales.getTotalPrice())
+//                .attachmentUri(sales.getAttachmentUri())
+//                .salesDate(sales.getSalesDate())
+//                .status(sales.getStatus())
+//                .build();
+//
+//        salesRepository.save(updateSales);
+//    }
+//
+//    public List<Sales> findByUserId(Integer userId) {
+//        return salesRepository.findByUser_Id(userId);
+//    }
+//
+//    @Transactional
+//    public void delete(Integer id) {
+//        salesRepository.deleteById(id);
+//    }
 
 }

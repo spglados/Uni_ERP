@@ -3,3 +3,4 @@ spring:
     init:
       data-locations:
         - classpath:db/data.sql # default Database SQL, want add
+        - classpath:db/salesData.sql
