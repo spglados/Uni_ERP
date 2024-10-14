@@ -25,6 +25,6 @@ public class Meterial {
 
     private UnitCategory unit;
 
-    private Double sub_amount;
+    private Double subAmount;
 
 }
