@@ -33,7 +33,7 @@
                 <h2>전체</h2>
             </div>
             <div class="d-flex justify-content-between">
-                <input value="검색">
+                <input value="검색" style="margin-right: 10px">
                 <h5>2024-10-13</h5>
             </div>
         </div>
@@ -66,6 +66,94 @@
                     <td>300</td>
                     <td>157</td>
                     <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('김치찌개')">재료 보기</button></td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>된장찌개</td>
+                    <td>메인</td>
+                    <td>₩8,500</td>
+                    <td>40</td>
+                    <td>30</td>
+                    <td>280</td>
+                    <td>145</td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>된장찌개</td>
+                    <td>메인</td>
+                    <td>₩8,500</td>
+                    <td>40</td>
+                    <td>30</td>
+                    <td>280</td>
+                    <td>145</td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>된장찌개</td>
+                    <td>메인</td>
+                    <td>₩8,500</td>
+                    <td>40</td>
+                    <td>30</td>
+                    <td>280</td>
+                    <td>145</td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>된장찌개</td>
+                    <td>메인</td>
+                    <td>₩8,500</td>
+                    <td>40</td>
+                    <td>30</td>
+                    <td>280</td>
+                    <td>145</td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>된장찌개</td>
+                    <td>메인</td>
+                    <td>₩8,500</td>
+                    <td>40</td>
+                    <td>30</td>
+                    <td>280</td>
+                    <td>145</td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>된장찌개</td>
+                    <td>메인</td>
+                    <td>₩8,500</td>
+                    <td>40</td>
+                    <td>30</td>
+                    <td>280</td>
+                    <td>145</td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>된장찌개</td>
+                    <td>메인</td>
+                    <td>₩8,500</td>
+                    <td>40</td>
+                    <td>30</td>
+                    <td>280</td>
+                    <td>145</td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>된장찌개</td>
+                    <td>메인</td>
+                    <td>₩8,500</td>
+                    <td>40</td>
+                    <td>30</td>
+                    <td>280</td>
+                    <td>145</td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
                 </tr>
                 <tr>
                     <td>002</td>

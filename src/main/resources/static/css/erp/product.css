@@ -43,7 +43,7 @@
 }
 
 .table-container {
-    max-height: 600px;
+    max-height: 86%;
     overflow-y: auto;
     position: relative;
 }
