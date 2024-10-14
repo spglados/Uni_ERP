@@ -14,5 +14,4 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
     @EntityGraph(attributePaths = {"id"})
     @Query("SELECT s.id FROM Store s WHERE s.user.id = :userId")
     List<Integer> findStoresWithIdByUserId(@Param("userId") Integer userId);
-
 }
