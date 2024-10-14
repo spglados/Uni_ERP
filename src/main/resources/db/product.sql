@@ -1,5 +1,7 @@
 INSERT INTO store_tb (name, user_id)
-VALUES ('기가 막히는 한정식', 1);
+VALUES
+('기가 막히는 한정식', 1),
+('기가 안막히는 양식', 1);
 
 -- 첫 번째 제품 삽입
 INSERT INTO product_tb (product_code, name, category, price, store_id)
