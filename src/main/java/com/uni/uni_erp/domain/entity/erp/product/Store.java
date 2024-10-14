@@ -21,6 +21,7 @@ public class Store {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne
@@ -29,4 +30,7 @@ public class Store {
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Product> products;
+
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Material> materials;
 }
