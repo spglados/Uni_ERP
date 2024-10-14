@@ -20,19 +20,20 @@ public class HrController {
     private final HrService hrService;
     private final HttpSession session;
 
-    @GetMapping("/employeeRegister")
+    @GetMapping("/employee-register")
     public String employeeRegisterPage(Model model) {
         model.addAttribute("employee", new Employee());
         return "/erp/hr/employeeRegister";
     }
 
-    @PostMapping("/register")
-    public String registerEmployee(@RequestBody EmployeeDTO employeeDTO, @SessionAttribute("user") User owner) {
-        hrService.registerEmployee(employeeDTO, owner);
+    @PostMapping("/employee-register")
+    public String registerEmployee(@RequestBody EmployeeDTO employeeDTO, @RequestParam(name = "storeId") Integer storeId) {
+        hrService.registerEmployee(employeeDTO, storeId);
         return "직원이 등록되었습니다.";
     }
 
-    @GetMapping("/employeeList")
+    // TODO 스토어로 바꾸기
+    @GetMapping("/employee-list")
     public String employeeListPage(HttpSession session, Model model) {
         User loggedInUser = (User) session.getAttribute("userSession"); // 세션에서 사용자 정보 가져오기
         if (loggedInUser != null) {

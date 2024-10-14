@@ -27,8 +27,6 @@ public class UserDTO {
 
         private String address;
 
-        private User.Role role; // 유저 역할 추가
-
         public User toUserEntity() {
             return User.builder()
                     .name(name)
@@ -36,16 +34,9 @@ public class UserDTO {
                     .password(password)
                     .phone(phone)
                     .address(address)
-                    .role(role)
                     .build();
         }
 
     }
-
-    public enum Role {
-        OWNER,   // 사장님
-        EMPLOYEE // 직원
-    }
-
 
 }

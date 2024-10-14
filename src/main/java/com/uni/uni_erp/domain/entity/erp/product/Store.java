@@ -1,6 +1,7 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class Store {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne
@@ -29,4 +31,10 @@ public class Store {
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Product> products;
+
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Employee> employees;
+
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Material> materials;
 }

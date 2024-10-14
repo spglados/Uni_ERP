@@ -48,10 +48,6 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Store> stores;
 
-    // Employee와의 관계: 하나의 User는 여러 Employee를 관리할 수 있음
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-    private List<Employee> employees;
-
     // 엔티티가 저장되기 전 실행되는 메서드
     @PrePersist
     protected void onPrePersist() {
