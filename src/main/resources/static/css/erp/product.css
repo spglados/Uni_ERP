@@ -27,6 +27,11 @@
     }
 }
 
+.modal-dialog {
+    max-width: 50%; /* 원하는 비율로 조정 */
+    width: 50%; /* 혹은 정해진 픽셀 값으로 설정 가능 */
+}
+
 .box {
     height: 100%; /* 부모 요소의 높이를 모두 차지하도록 설정 */
     border-radius: 10px;
@@ -69,15 +74,15 @@ th, td {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 .ingredient-name {
-    width: 100px;
+    width: 22%;
     margin-right: 10px;
 }
 .ingredient-amount {
-    width: 72px;
+    width: 19%;
     margin-right: 10px;
 }
 .ingredient-unit {
-    width: 75px;
+    width: 19%;
     margin-right: 10px;
 }
 .edit-btn, .delete-btn {
@@ -85,6 +90,7 @@ th, td {
 }
 .custom-btn {
     padding: 8px 12px;
+    max-width: 12%;
     border: none;
     color: #ffffff;
     background-color: #6c757d;
@@ -131,4 +137,9 @@ th, td {
 }
 .add-btn:hover {
     background-color: #0056b3;
+}
+
+.custom-col {
+    width: 22%; /* 원하는 비율로 설정 */
+    padding: 10px;
 }
