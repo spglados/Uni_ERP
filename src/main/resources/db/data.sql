@@ -4,7 +4,7 @@ VALUES ('김남철', 'asd@asd.com', '1234', '010-1234-5678', '서울특별시 �
 
 -- 두 번째 샘플 데이터
 INSERT INTO user_tb (name, email, password, phone, address, membership, created_at)
-VALUES ('이영희', 'younghee.lee@example.com', 'securePass!', '010-9876-5432', '부산광역시 해운대구 해운대로 456', 'PREMIUM', NOW());
+VALUES ('이영희', 'younghee.lee@example.com', 'securePass!', '010-9876-5432', '부산광역시 해운대구 해운대로 456', 'PREMIUM',NOW());
 
 -- 세 번째 샘플 데이터
 INSERT INTO user_tb (name, email, password, phone, address, membership, created_at)
