@@ -27,4 +27,6 @@ public class Meterial {
 
     private Double subAmount;
 
+    private UnitCategory subUnit;
+
 }
