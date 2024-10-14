@@ -56,117 +56,19 @@
                 </thead>
                 <tbody>
                 <!-- TODO: 서버에서 상품 데이터를 받아와야 함 -->
+                    <c:forEach var = "product" items="${productList}">
                 <tr>
-                    <td>001</td>
-                    <td>김치찌개</td>
-                    <td>메인</td>
-                    <td>₩9,900</td>
-                    <td>50</td>
-                    <td>35</td>
-                    <td>300</td>
-                    <td>157</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('김치찌개')">재료 보기</button></td>
+                    <td>${product.productCode}</td>
+                    <td>${product.name}</td>
+                    <td>${product.category}</td>
+                    <td>${product.formatToPrice()}원</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients(${product.id})">재료 보기</button></td>
                 </tr>
-                <tr>
-                    <td>002</td>
-                    <td>된장찌개</td>
-                    <td>메인</td>
-                    <td>₩8,500</td>
-                    <td>40</td>
-                    <td>30</td>
-                    <td>280</td>
-                    <td>145</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>된장찌개</td>
-                    <td>메인</td>
-                    <td>₩8,500</td>
-                    <td>40</td>
-                    <td>30</td>
-                    <td>280</td>
-                    <td>145</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>된장찌개</td>
-                    <td>메인</td>
-                    <td>₩8,500</td>
-                    <td>40</td>
-                    <td>30</td>
-                    <td>280</td>
-                    <td>145</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>된장찌개</td>
-                    <td>메인</td>
-                    <td>₩8,500</td>
-                    <td>40</td>
-                    <td>30</td>
-                    <td>280</td>
-                    <td>145</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>된장찌개</td>
-                    <td>메인</td>
-                    <td>₩8,500</td>
-                    <td>40</td>
-                    <td>30</td>
-                    <td>280</td>
-                    <td>145</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>된장찌개</td>
-                    <td>메인</td>
-                    <td>₩8,500</td>
-                    <td>40</td>
-                    <td>30</td>
-                    <td>280</td>
-                    <td>145</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>된장찌개</td>
-                    <td>메인</td>
-                    <td>₩8,500</td>
-                    <td>40</td>
-                    <td>30</td>
-                    <td>280</td>
-                    <td>145</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>된장찌개</td>
-                    <td>메인</td>
-                    <td>₩8,500</td>
-                    <td>40</td>
-                    <td>30</td>
-                    <td>280</td>
-                    <td>145</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>된장찌개</td>
-                    <td>메인</td>
-                    <td>₩8,500</td>
-                    <td>40</td>
-                    <td>30</td>
-                    <td>280</td>
-                    <td>145</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients('된장찌개')">재료 보기</button></td>
-                </tr>
-                <!-- 추가적인 상품 행들 -->
+                    </c:forEach>
                 </tbody>
             </table>
         </div>
@@ -297,48 +199,48 @@
 
     <script>
         // 재료 보기 모달을 열 때 선택된 상품의 재료 정보를 표시하는 함수
-        function showIngredients(productName) {
+        let ingredients = null;
+        function showIngredients(productId, productName) {
             // TODO: 서버에서 선택된 상품의 재료 데이터를 받아와야 함
-            const ingredients = {
-                '김치찌개': [
-                    { name: '김치', amount: '200', unit: 'g' },
-                    { name: '돼지고기', amount: '150', unit: 'g' },
-                    { name: '두부', amount: '100', unit: 'g' },
-                    { name: '고춧가루', amount: '10', unit: 'g' },
-                    { name: '마늘', amount: '5', unit: 'g' }
-                ],
-                '된장찌개': [
-                    { name: '된장', amount: '50', unit: 'g' },
-                    { name: '두부', amount: '100', unit: 'g' },
-                    { name: '애호박', amount: '80', unit: 'g' },
-                    { name: '양파', amount: '50', unit: 'g' },
-                    { name: '버섯', amount: '70', unit: 'g' }
-                ]
-                // 추가적인 상품과 그 재료들
-            };
+
+            fetch('/erp/product/ingredient/' + productId)
+                .then(response => {
+                    if(response.status === 404) {
+                        return alert('재료 정보를 조회할 수 없습니다.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    ingredients = data;
+                    console.log('data', data);
+                    console.log('Ingredients:', ingredients);
+                })
+                .catch(error => {
+                   console.log('error', error);
+                });
+
             const ingredientList = document.getElementById('ingredientList');
             ingredientList.innerHTML = '';
-            if (ingredients[productName]) {
-                ingredients[productName].forEach(function(ingredient, index) {
+                ingredients.forEach(function(ingredient, index) {
+                    console.log('ingredient', ingredient)
                     const li = document.createElement('li');
                     li.innerHTML =
                         '<div class="ingredient-item" id="ingredient-' + index + '">' +
                         '<input type="text" class="ingredient-name form-control d-inline-block" value="' + ingredient.name + '" disabled>' +
                         '<input type="number" class="ingredient-amount form-control d-inline-block" value="' + ingredient.amount + '" disabled>' +
                         '<select class="ingredient-unit form-control d-inline-block" disabled>' +
-                        '<option value="g" ' + (ingredient.unit == 'g' ? 'selected' : '') + '>g</option>' +
-                        '<option value="kg" ' + (ingredient.unit == 'kg' ? 'selected' : '') + '>kg</option>' +
-                        '<option value="ml" ' + (ingredient.unit == 'ml' ? 'selected' : '') + '>ml</option>' +
-                        '<option value="L" ' + (ingredient.unit == 'L' ? 'selected' : '') + '>L</option>' +
-                        '<option value="EA" ' + (ingredient.unit == 'EA' ? 'selected' : '') + '>EA</option>' +
-                        '<option value="box" ' + (ingredient.unit == 'box' ? 'selected' : '') + '>box</option>' +
+                        '<option value="g" ' + (ingredient.unit.toUpperCase() === 'G' ? 'selected' : '') + '>g</option>' +
+                        '<option value="kg" ' + (ingredient.unit.toUpperCase() === 'KG' ? 'selected' : '') + '>kg</option>' +
+                        '<option value="ml" ' + (ingredient.unit.toUpperCase() === 'ML' ? 'selected' : '') + '>ml</option>' +
+                        '<option value="L" ' + (ingredient.unit.toUpperCase() === 'L' ? 'selected' : '') + '>L</option>' +
+                        '<option value="EA" ' + (ingredient.unit.toUpperCase() === 'EA' ? 'selected' : '') + '>EA</option>' +
+                        '<option value="box" ' + (ingredient.unit.toUpperCase() === 'BOX' ? 'selected' : '') + '>box</option>' +
                         '</select>' +
                         '<button class="custom-btn edit-btn" onclick="editIngredient(' + index + ')">수정</button>' +
                         '<button class="custom-btn delete-btn" onclick="deleteIngredient(' + index + ')">삭제</button>' +
                         '</div>';
                     ingredientList.appendChild(li);
                 });
-            }
         }
 
         // 재료 추가 모달을 표시하는 함수

@@ -1,5 +1,6 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
+import com.uni.uni_erp.dto.product.ProductDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,6 +41,15 @@ public class Product {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Ingredient> ingredients;
 
-
+    public ProductDTO toProductDTO() {
+        return ProductDTO.builder()
+                .id(this.id)
+                .productCode(this.productCode)
+                .name(this.name)
+                .category(this.category)
+                .price(this.price)
+                .storeId(this.store.getId())
+                .build();
+    }
 
 }

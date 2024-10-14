@@ -1,13 +1,10 @@
-package com.uni.uni_erp.controller.erp;
+package com.uni.uni_erp.controller;
 
-import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.product.IngredientDTO;
 import com.uni.uni_erp.service.product.ProductService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,24 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/erp/product")
+@RequestMapping("/test")
 @RequiredArgsConstructor
-public class ProductController {
+public class TestController {
 
     private final ProductService productService;
-    private final HttpSession session;
-
-    @GetMapping("/list")
-    public String listPage() {
-        return "erp/product/list";
-    }
-
-    @GetMapping("/register")
-    public String registerPage(Model model) {
-        // session 에서 스토어 아이디를 가져온 다음 해당 가게에 등록되어 있는 상품 리스트를 반환
-        model.addAttribute("productList", productService.getProductByStoreId((int)session.getAttribute("storeId")));
-        return "erp/product/register";
-    }
 
     @GetMapping("/ingredient/{productId}")
     public ResponseEntity<List<IngredientDTO>> getIngredient(@PathVariable Integer productId) {
@@ -40,7 +24,6 @@ public class ProductController {
         if (dto == null) {
             return ResponseEntity.notFound().build();
         }
-        System.out.println(dto.toString());
         return ResponseEntity.ok(dto);
     }
 
