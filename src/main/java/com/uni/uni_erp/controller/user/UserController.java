@@ -40,7 +40,13 @@ public class UserController {
         }
 
         session.setAttribute("userSession", user);
-        return "main";
+        if (user != null) {
+            session.setAttribute("userSession", user);
+            System.out.println("User logged in: " + user.getId());
+        } else {
+            System.out.println("Login failed");
+        }
+        return "main"; // 로그인 후 이동할 페이지
     }
 
     @GetMapping("/join")
@@ -53,5 +59,7 @@ public class UserController {
         userService.save(dto.toUserEntity());
         return "user/login";
     }
+
+    // 변경사항
 
 }
