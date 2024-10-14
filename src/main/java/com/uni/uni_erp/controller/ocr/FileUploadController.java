@@ -14,11 +14,6 @@ public class FileUploadController {
         return "/model/image_upload";
     }
 
-    @PostMapping("/test/upload")
-    public void fileUploadTestPost() {
-
-
-    }
 
 
 }
