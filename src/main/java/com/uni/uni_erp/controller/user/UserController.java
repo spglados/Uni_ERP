@@ -2,6 +2,7 @@ package com.uni.uni_erp.controller.user;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.UserDTO;
+import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +12,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+    private final StoreService storeService;
     private final HttpSession session;
 
     @GetMapping("/login")
@@ -26,7 +30,17 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(@ModelAttribute UserDTO.JoinDTO dto) {
+        // TODO 유효성 검사 추가
         User user = userService.login(dto);
+        List<Integer> storeIdList = storeService.ownedStores(user.getId());
+
+        if(storeIdList != null) {
+            // 맨 처음 가게 아이디 추가
+            session.setAttribute("storeId", storeIdList.get(0));
+        }
+
+        session.setAttribute("userSession", user);
+        return "main";
         if (user != null) {
             session.setAttribute("userSession", user);
             System.out.println("User logged in: " + user.getId());
