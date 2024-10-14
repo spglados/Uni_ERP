@@ -75,7 +75,7 @@ public class Employee {
     @Column(name = "quit_at", updatable = false)
     private Timestamp quitAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private Timestamp updatedAt;
 
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)

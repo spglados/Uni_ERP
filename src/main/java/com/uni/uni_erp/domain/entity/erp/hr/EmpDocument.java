@@ -1,10 +1,8 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
-import jakarta.annotation.ManagedBean;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 @NoArgsConstructor
@@ -28,27 +26,27 @@ public class EmpDocument {
     private Employee employee;
 
     // 근로계약서
-    @Column(nullable = false)
+    @Column(nullable = false, name = "employment_contract")
     private Boolean employmentContract;
 
     // 보건증
-    @Column(nullable = false)
+    @Column(nullable = false, name = "health_certificate")
     private Boolean healthCertificate;
 
     // 보건증 유효기간
-    @Column(nullable = false)
+    @Column(nullable = true, name = "health_certificate_date")
     private Timestamp healthCertificateDate;
 
     // 신분증사본
-    @Column(nullable = false)
+    @Column(nullable = false, name = "identification_copy")
     private Boolean identificationCopy;
 
     // 통장사본
-    @Column(nullable = false)
+    @Column(nullable = false, name = "bank_account_copy")
     private Boolean bankAccountCopy;
 
     // 주민등록등본
-    @Column(nullable = false)
+    @Column(nullable = false, name = "resident_registration")
     private Boolean residentRegistration;
 
     @PrePersist

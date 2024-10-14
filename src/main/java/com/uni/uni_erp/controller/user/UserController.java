@@ -40,7 +40,6 @@ public class UserController {
         }
 
         session.setAttribute("userSession", user);
-        return "main";
         if (user != null) {
             session.setAttribute("userSession", user);
             System.out.println("User logged in: " + user.getId());

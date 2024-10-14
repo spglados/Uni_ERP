@@ -35,14 +35,9 @@ public class HrController {
     // TODO 스토어로 바꾸기
     @GetMapping("/employee-list")
     public String employeeListPage(HttpSession session, Model model) {
-        User loggedInUser = (User) session.getAttribute("userSession"); // 세션에서 사용자 정보 가져오기
-        if (loggedInUser != null) {
-            System.out.println("Logged in user ID: " + loggedInUser.getId()); // 로그 추가
-            List<Employee> employees = hrService.getEmployeesByUserId(loggedInUser.getId());
-            model.addAttribute("employees", employees); // 직원 목록을 모델에 추가
-        } else {
-            System.out.println("No user logged in"); // 로그 추가
-        }
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
+        model.addAttribute("employees", employees); // 직원 목록을 모델에 추가
         return "/erp/hr/employeeList"; // 직원 목록 페이지 반환
     }
 
