@@ -12,6 +12,8 @@
     <meta charset="UTF-8">
     <title>ERP 시스템 대시보드</title>
     <link rel="stylesheet" href="/css/erp/erpMain.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 </head>
 <body>
 <div class="erp-container">
