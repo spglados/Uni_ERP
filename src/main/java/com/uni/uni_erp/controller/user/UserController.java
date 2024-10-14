@@ -27,8 +27,13 @@ public class UserController {
     @PostMapping("/login")
     public String login(@ModelAttribute UserDTO.JoinDTO dto) {
         User user = userService.login(dto);
-        session.setAttribute("userSession", user);
-        return "main";
+        if (user != null) {
+            session.setAttribute("userSession", user);
+            System.out.println("User logged in: " + user.getId());
+        } else {
+            System.out.println("Login failed");
+        }
+        return "main"; // 로그인 후 이동할 페이지
     }
 
     @GetMapping("/join")
