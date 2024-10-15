@@ -62,6 +62,14 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
 
+
+    @Column(nullable = false)  // Not Null 설정
+    private Integer storeEmployeeNumber;  // 각 가게별로 증가하는 직원 번호
+
+    @Column(unique = true, nullable = false)  // 고유한 사원번호, Not Null, 유니크 설정
+    private String uniqueEmployeeNumber;
+
+
     public enum EmploymentStatus {
         ACTIVE, // 재직중
         INACTIVE, // 퇴사

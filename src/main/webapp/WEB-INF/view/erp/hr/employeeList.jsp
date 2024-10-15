@@ -17,6 +17,7 @@
         <table>
             <thead>
             <tr>
+                <th>사원번호</th>
                 <th>이름</th>
                 <th>생년월일</th>
                 <th>성별</th>
@@ -24,11 +25,14 @@
                 <th>연락처</th>
                 <th>직책</th>
                 <th>상태</th>
+                <th>은행</th>
+                <th>게장번호</th>
             </tr>
             </thead>
             <tbody>
             <c:forEach var="employee" items="${employees}">
                 <tr>
+                    <td>${employee.uniqueEmployeeNumber}</td>
                     <td>${employee.name}</td>
                     <td>${employee.birthday}</td>
                     <td>
@@ -48,6 +52,8 @@
                             <c:when test="${employee.employmentStatus == 'ONLEAVE'}">휴직</c:when>
                         </c:choose>
                     </td>
+                    <td>${employee.bank.name}</td>
+                    <td>${employee.accountNumber}</td>
                 </tr>
             </c:forEach>
             </tbody>

@@ -18,6 +18,6 @@ public class Bank {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column (name = "bank_name", nullable = false)
+    @Column (name = "name", nullable = false)
     private String name;
 }

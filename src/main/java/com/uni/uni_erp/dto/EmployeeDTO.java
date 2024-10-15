@@ -23,15 +23,25 @@ public class EmployeeDTO {
     private String email;
     private String phone;
     private String address;
-    private Integer bankId;
+    private Integer bankId; // 은행명
     private String accountNumber;
     private String position;
     private Integer storeId;
+    private Integer storeEmployeeNumber; // 각 가게별로 증가하는 직원 번호 추가
+    private String uniqueEmployeeNumber; // 사원 번호
+
     private Employee.EmploymentStatus employmentStatus;
-    private List<EmpDocument> empDocuments;
+    private EmpDocumentDTO empDocumentDTO; // 문서 정보 DTO
 
     private Timestamp hiredAt;
     private Timestamp updatedAt;
     private Timestamp quitAt;
+
+    public EmpDocumentDTO getEmpDocumentDTO() {
+        if (empDocumentDTO == null) {
+            empDocumentDTO = new EmpDocumentDTO(); // 기본값으로 초기화
+        }
+        return empDocumentDTO;
+    }
 
 }

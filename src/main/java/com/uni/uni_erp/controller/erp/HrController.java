@@ -1,6 +1,7 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
+import com.uni.uni_erp.dto.BankDTO;
 import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.service.erp.hr.HrService;
 import jakarta.servlet.http.HttpSession;
@@ -21,14 +22,19 @@ public class HrController {
 
     @GetMapping("/employee-register")
     public String employeeRegisterPage(Model model) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        List<BankDTO> bankList = hrService.getAllBankDTOs();
+        model.addAttribute("bankList", bankList);
         model.addAttribute("employee", new Employee());
+        model.addAttribute("storeId", storeId); // storeId를 모델에 추가
         return "/erp/hr/employeeRegister";
     }
 
     @PostMapping("/employee-register")
-    public String registerEmployee(@RequestBody EmployeeDTO employeeDTO, @RequestParam(name = "storeId") Integer storeId) {
+    public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam(name = "storeId") Integer storeId) {
+        System.out.println("storeId: " + storeId);
         hrService.registerEmployee(employeeDTO, storeId);
-        return "직원이 등록되었습니다.";
+        return "redirect:/erp/hr/employee-list";
     }
 
     // TODO 스토어로 바꾸기
