@@ -2,6 +2,7 @@ package com.uni.uni_erp.service.user;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.UserDTO;
+import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
@@ -36,6 +37,11 @@ public class UserService {
 
     public User login(UserDTO.JoinDTO dto) {
         return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
+    }
+
+    public User findById(int id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new Exception404("회원정보를 찾을 수 없습니다"));;
+        return user;
     }
 
 

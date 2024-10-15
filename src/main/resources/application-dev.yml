@@ -57,3 +57,7 @@ coolsms:
     key: "NCS9GARPFNB2EJXK"
     secret: "DBM9X06ZF3VXI8AHHPDWQOGVYQPOBZE9"
     number: "010-6439-5737"
+
+payment:
+  clientKey: test_ck_E92LAa5PVbPWkE0RkGbW87YmpXyJ
+  secretKey: test_sk_Gv6LjeKD8aYzbQYeg2yk8wYxAdXy
