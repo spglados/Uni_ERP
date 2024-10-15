@@ -10,4 +10,8 @@ public class DateFormatter {
         return sdf.format(timestamp);
     }
 
+    public static String toTimeHourAndMinute(Timestamp timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        return sdf.format(timestamp);
+    }
 }
