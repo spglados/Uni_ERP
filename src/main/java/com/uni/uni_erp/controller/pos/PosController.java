@@ -28,6 +28,6 @@ public class PosController {
     @PostMapping("/payment")
     public String posPayment() {
 
-        return "pos/posMain";
+        return "redirect:/pos/main";
     }
 }

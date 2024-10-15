@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PosService {
 
-    private final PosRepository posRepository;
-    private final StroreRepository stroreRepository;
-
-    public List<SalesDetail> get
+//    private final PosRepository posRepository;
+//    private final StroreRepository stroreRepository;
+//
+//    public List<SalesDetail> get
 
 }

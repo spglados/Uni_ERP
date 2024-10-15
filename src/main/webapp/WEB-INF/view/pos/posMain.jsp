@@ -4,6 +4,7 @@
     <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* 기존 CSS 그대로 유지 */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -77,7 +78,6 @@
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-
         .order-section {
             flex: 1;
             background-color: #fff;
@@ -104,24 +104,6 @@
             cursor: pointer;
             width: 100%;
             border-radius: 5px;
-        }
-
-        /* 옵션 버튼 */
-        .order-options {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .option-button {
-            background-color: #ddd;
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-        }
-        .option-button.active {
-            background-color: #4a90e2;
-            color: white;
         }
 
         /* 반응형 디자인 */
@@ -181,50 +163,52 @@
         </div>
     </div>
 
-
     <div class="order-section">
-            <form action="${pageContext.request.contextPath}/pos/payment" method="post">
+        <form action="${pageContext.request.contextPath}/pos/payment" method="post">
             <h3>결제 목록</h3>
             <button type="button" id="clear-order">전체삭제</button>
             <div class="order-summary" id="orderList">
-                <!-- 주문 항목들이 여기에 추가됨 -->
                 <p class="total">총 결제금액: 0원</p>
             </div>
-            <button type="submit" class="payment-button" >결제 버튼(총 금액: 0원)</button>
+            <button type="submit" class="payment-button">결제 버튼(총 금액: 0원)</button>
         </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    let totalAmount = 0;
+    $(document).ready(function() {
+        let totalAmount = 0;
 
-    // 메뉴 항목 추가
-    $('.add-to-order').on('click', function() {
-        const item = $(this).data('item');  // 메뉴 이름
-        const price = parseInt($(this).data('price'));  // 가격
+        // 메뉴 항목 추가
+        $('.add-to-order').on('click', function() {
+            const item = $(this).data('item');  // 메뉴 이름
+            const price = parseInt($(this).data('price'));  // 가격
 
-        // 주문 항목이 이미 있는지 확인
-        const existingOrder = $('#orderList').find('p[data-item="' + item + '"]');
-        if (existingOrder.length > 0) {
-            // 기존 항목의 수량을 증가시킴
-            const quantity = parseInt(existingOrder.data('quantity')) + 1;
-            existingOrder.data('quantity', quantity);
-            existingOrder.text(item + ' ×' + quantity + ' - ' + (price * quantity).toLocaleString() + '원');
-        } else {
-            // 새 항목 추가
-            $('#orderList').append('<p data-item="' + item + '" data-quantity="1">' + item + ' ×1 - ' + price.toLocaleString() + '원</p>');
-        }
+            // 주문 항목이 이미 있는지 확인
+            const existingOrder = $('#orderList').find('p[data-item="' + item + '"]');
+            if (existingOrder.length > 0) {
+                // 기존 항목의 수량을 증가시킴
+                const quantity = parseInt(existingOrder.data('quantity')) + 1;
+                existingOrder.data('quantity', quantity);
+                existingOrder.text(item + ' ×' + quantity + ' - ' + (price * quantity).toLocaleString() + '원');
+            } else {
+                // 새 항목 추가
+                $('#orderList').append('<p data-item="' + item + '" data-quantity="1">' + item + ' ×1 - ' + price.toLocaleString() + '원</p>');
+            }
 
-        // 총합 계산
-        totalAmount += price;
-        $('.total').text('총 결제금액: ' + totalAmount.toLocaleString() + '원');
-        $('.payment-button').text('결제 버튼(총 금액: ' + totalAmount.toLocaleString() + '원)');
-    });
+            // 총합 계산
+            totalAmount += price;
+            $('.total').text('총 결제금액: ' + totalAmount.toLocaleString() + '원');
+            $('.payment-button').text('결제 버튼(총 금액: ' + totalAmount.toLocaleString() + '원)');
+        });
 
-    // 전체 주문 삭제
-    $('#clear-order').on('click', function() {
-        $('#orderList').html('<p class="total">총 결제금액: 0원</p>');
-        totalAmount = 0;
-        $('.payment-button').text('결제 버튼(총 금액: 0원)');
+        // 전체 주문 삭제
+        $('#clear-order').on('click', function() {
+            $('#orderList').html('<p class="total">총 결제금액: 0원</p>');
+            totalAmount = 0;
+            $('.payment-button').text('결제 버튼(총 금액: 0원)');
+        });
     });
 </script>
 </body>

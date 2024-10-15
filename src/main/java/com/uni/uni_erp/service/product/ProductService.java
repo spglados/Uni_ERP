@@ -4,7 +4,7 @@ import com.uni.uni_erp.domain.entity.erp.product.Ingredient;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.product.IngredientDTO;
 import com.uni.uni_erp.dto.product.ProductDTO;
-import com.uni.uni_erp.repository.erp.product.IngredientRepository;
+import com.uni.uni_erp.repository.erp.product.IngredientsRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final IngredientRepository ingredientRepository;
+    private final IngredientsRepository ingredientsRepository;
 
     /**
      * 상품 아이디로 설정되어있는 재료 리스트 Select
@@ -25,7 +25,7 @@ public class ProductService {
      * @return 각 상품에서 필요한 재료 List
      */
     public List<IngredientDTO> getIngredientByProductId(Integer productId) {
-        List<Ingredient> ingredients = ingredientRepository.findByProductId(productId);
+        List<Ingredient> ingredients = ingredientsRepository.findByProductId(productId);
         List<IngredientDTO> dtos = new ArrayList<>();
         for (Ingredient ingredient : ingredients) {
             dtos.add(ingredient.toIngredientDTO());
