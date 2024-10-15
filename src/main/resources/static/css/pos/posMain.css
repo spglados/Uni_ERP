@@ -1,0 +1,114 @@
+/* 기본 레이아웃 스타일 */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f8f8f8;
+}
+
+.kiosk-status {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.nav button {
+    background-color: #fff;
+    border: none;
+    font-size: 18px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+.nav .active {
+    background-color: #007bff;
+    color: white;
+}
+
+.menu-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+.menu-categories {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.menu-categories button {
+    width: 150px;
+    height: 50px;
+    margin: 10px;
+    background-color: #e0e0e0;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.menu-options {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.menu-options button {
+    width: 100px;
+    height: 40px;
+    margin: 5px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.order-info {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
+    border-left: 1px solid #ddd;
+    padding: 20px;
+}
+
+.order-list {
+    margin-bottom: 20px;
+}
+
+.order-list p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.total-amount {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.pay-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 5px;
+}
