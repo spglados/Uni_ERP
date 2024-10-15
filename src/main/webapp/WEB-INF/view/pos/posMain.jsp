@@ -3,7 +3,10 @@
 <head>
     <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>카페 선불형 주문 시스템</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+    <title>UNI-POS</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -64,23 +67,20 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
+            width: 100%;
+            height: 130px;
         }
-        .menu-item.hot button {
-            background-color: #4a90e2;
-            color: white;
+        .menu-item button:active {
+            transform: scale(0.95);
+            background-color: #3a78d8; /* 클릭 시 색상 변경 */
+            transition: transform 0.1s ease;
         }
-        .menu-item.green button {
-            background-color: #6abf69;
-            color: white;
+
+        .menu-item button:hover {
+            background-color: #629fe9; /* 호버 시 색상 변경 */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .menu-item.yellow button {
-            background-color: #f8c471;
-            color: white;
-        }
-        .menu-item.red button {
-            background-color: #e74c3c;
-            color: white;
-        }
+
 
         .order-section {
             flex: 1;
@@ -157,62 +157,79 @@
                 font-size: 16px;
             }
         }
+
     </style>
 </head>
 <body>
 <div class="header">
-    <h1>카페-선불형</h1>
-    <div class="tabs">
-        <button class="tab-button active">주문 홈</button>
-        <button class="tab-button">현황</button>
-    </div>
+    <img src="../images/logo/logoPos.png" alt="포스로고" style="height: 100px; width: 125px;">
+    <h1>UNI-POS SYSTEM(가상)</h1>
 </div>
 
 <div class="container">
     <div class="menu-section">
-        <h2>즐겨찾는 메뉴</h2>
+        <h2>주문 목록</h2>
         <div class="menu-grid">
-            <div class="menu-item hot">
-                <button>HOT 아메리카노<br>4,000원</button>
+            <div class="menu-item">
+                <button class="add-to-order" data-item="HOT 아메리카노" data-price="4000">HOT 아메리카노<br>4,000원</button>
             </div>
             <div class="menu-item">
-                <button>ICE 아메리카노<br>4,500원</button>
-            </div>
-            <div class="menu-item green">
-                <button>카야 토스트<br>5,000원</button>
+                <button class="add-to-order" data-item="ICE 아메리카노" data-price="4500">ICE 아메리카노<br>4,500원</button>
             </div>
             <div class="menu-item">
-                <button>바닐라라떼<br>5,000원</button>
+                <button class="add-to-order" data-item="카야 토스트" data-price="5000">카야 토스트<br>5,000원</button>
             </div>
             <div class="menu-item">
-                <button>헤이즐넛라떼<br>5,000원</button>
-            </div>
-            <div class="menu-item">
-                <button>초코라떼<br>5,500원</button>
-            </div>
-            <div class="menu-item yellow">
-                <button>카모마일티<br>5,000원</button>
-            </div>
-            <div class="menu-item red">
-                <button>커피 믹스<br>6,000원</button>
+                <button class="add-to-order" data-item="바닐라라떼" data-price="5000">바닐라라떼<br>5,000원</button>
             </div>
         </div>
     </div>
 
+
     <div class="order-section">
-        <h3>포장</h3>
-        <div class="order-options">
-            <button class="option-button active">포장</button>
-            <button class="option-button">매장</button>
-        </div>
-        <div class="order-summary">
-            <p>카페라떼 ×1</p>
-            <p>다크초콜릿 ×2</p>
-            <p>사과청 ×2</p>
-            <p class="total">총합계: 29,000원</p>
-        </div>
-        <button class="payment-button">결제 (29,000원)</button>
+            <form action="${pageContext.request.contextPath}/pos/payment" method="post">
+            <h3>결제 목록</h3>
+            <button type="button" id="clear-order">전체삭제</button>
+            <div class="order-summary" id="orderList">
+                <!-- 주문 항목들이 여기에 추가됨 -->
+                <p class="total">총 결제금액: 0원</p>
+            </div>
+            <button type="submit" class="payment-button" >결제 버튼(총 금액: 0원)</button>
+        </form>
     </div>
 </div>
+<script>
+    let totalAmount = 0;
+
+    // 메뉴 항목 추가
+    $('.add-to-order').on('click', function() {
+        const item = $(this).data('item');  // 메뉴 이름
+        const price = parseInt($(this).data('price'));  // 가격
+
+        // 주문 항목이 이미 있는지 확인
+        const existingOrder = $('#orderList').find('p[data-item="' + item + '"]');
+        if (existingOrder.length > 0) {
+            // 기존 항목의 수량을 증가시킴
+            const quantity = parseInt(existingOrder.data('quantity')) + 1;
+            existingOrder.data('quantity', quantity);
+            existingOrder.text(item + ' ×' + quantity + ' - ' + (price * quantity).toLocaleString() + '원');
+        } else {
+            // 새 항목 추가
+            $('#orderList').append('<p data-item="' + item + '" data-quantity="1">' + item + ' ×1 - ' + price.toLocaleString() + '원</p>');
+        }
+
+        // 총합 계산
+        totalAmount += price;
+        $('.total').text('총 결제금액: ' + totalAmount.toLocaleString() + '원');
+        $('.payment-button').text('결제 버튼(총 금액: ' + totalAmount.toLocaleString() + '원)');
+    });
+
+    // 전체 주문 삭제
+    $('#clear-order').on('click', function() {
+        $('#orderList').html('<p class="total">총 결제금액: 0원</p>');
+        totalAmount = 0;
+        $('.payment-button').text('결제 버튼(총 금액: 0원)');
+    });
+</script>
 </body>
 </html>
