@@ -3,9 +3,15 @@ package com.uni.uni_erp.domain.entity.erp.product;
 import com.uni.uni_erp.dto.product.IngredientDTO;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "ingredient_tb")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Ingredient {
 
     @Id
