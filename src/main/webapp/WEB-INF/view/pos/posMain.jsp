@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
     <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* 기존 CSS 그대로 유지 */
@@ -140,7 +141,7 @@
 </head>
 <body>
 <div class="header">
-    <img src="../images/logo/logoPos.png" alt="포스로고" style="height: 100px; width: 125px;">
+    <img src="/images/logo/logoPos.png" alt="포스로고" style="height: 100px; width: 125px;">
     <h1>UNI-POS SYSTEM(가상)</h1>
 </div>
 
@@ -148,25 +149,25 @@
     <div class="menu-section">
         <h2>주문 목록</h2>
         <div class="menu-grid">
-            <div class="menu-item">
-                <button class="add-to-order" data-item="HOT 아메리카노" data-price="4000">HOT 아메리카노<br>4,000원</button>
-            </div>
-            <div class="menu-item">
-                <button class="add-to-order" data-item="ICE 아메리카노" data-price="4500">ICE 아메리카노<br>4,500원</button>
-            </div>
-            <div class="menu-item">
-                <button class="add-to-order" data-item="카야 토스트" data-price="5000">카야 토스트<br>5,000원</button>
-            </div>
-            <div class="menu-item">
-                <button class="add-to-order" data-item="바닐라라떼" data-price="5000">바닐라라떼<br>5,000원</button>
-            </div>
+            <!-- Product 리스트를 반복하여 동적으로 버튼 생성 -->
+            <c:forEach var="product" items="${productList}">
+                <div class="menu-item">
+                    <button class="add-to-order" data-item="${product.name}" data-price="${product.price}" data-store-id="${storeId}">
+                            ${product.name}<br>
+                        <script>
+                            // JavaScript로 가격에 천 단위 구분 기호 추가
+                            document.write(new Intl.NumberFormat().format(${product.price}) + '원');
+                        </script>
+                    </button>
+                </div>
+            </c:forEach>
         </div>
     </div>
 
     <div class="order-section">
-        <form action="${pageContext.request.contextPath}/pos/payment" method="post">
+        <form id="product-submit">
             <h3>결제 목록</h3>
-            <button type="button" id="clear-order">전체삭제</button>
+            <button type="button">전체삭제</button>
             <div class="order-summary" id="orderList">
                 <p class="total">총 결제금액: 0원</p>
             </div>
@@ -175,41 +176,5 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        let totalAmount = 0;
-
-        // 메뉴 항목 추가
-        $('.add-to-order').on('click', function() {
-            const item = $(this).data('item');  // 메뉴 이름
-            const price = parseInt($(this).data('price'));  // 가격
-
-            // 주문 항목이 이미 있는지 확인
-            const existingOrder = $('#orderList').find('p[data-item="' + item + '"]');
-            if (existingOrder.length > 0) {
-                // 기존 항목의 수량을 증가시킴
-                const quantity = parseInt(existingOrder.data('quantity')) + 1;
-                existingOrder.data('quantity', quantity);
-                existingOrder.text(item + ' ×' + quantity + ' - ' + (price * quantity).toLocaleString() + '원');
-            } else {
-                // 새 항목 추가
-                $('#orderList').append('<p data-item="' + item + '" data-quantity="1">' + item + ' ×1 - ' + price.toLocaleString() + '원</p>');
-            }
-
-            // 총합 계산
-            totalAmount += price;
-            $('.total').text('총 결제금액: ' + totalAmount.toLocaleString() + '원');
-            $('.payment-button').text('결제 버튼(총 금액: ' + totalAmount.toLocaleString() + '원)');
-        });
-
-        // 전체 주문 삭제
-        $('#clear-order').on('click', function() {
-            $('#orderList').html('<p class="total">총 결제금액: 0원</p>');
-            totalAmount = 0;
-            $('.payment-button').text('결제 버튼(총 금액: 0원)');
-        });
-    });
-</script>
 </body>
 </html>

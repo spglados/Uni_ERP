@@ -129,26 +129,6 @@ public class ProductService {
     }
 
 
-    /**
-     * 상품 아이디로 설정되어있는 재료 리스트 Select
-     * @param productId
-     * @return 각 상품에서 필요한 재료 List
-     */
-    public List<IngredientDTO> getIngredientByProductId(Integer productId) {
-        List<Ingredient> ingredients = ingredientRepository.findByProductId(productId);
-        List<IngredientDTO> dtos = new ArrayList<>();
-        for (Ingredient ingredient : ingredients) {
-            dtos.add(ingredient.toIngredientDTO());
-        }
-        return dtos;
-    }
 
-    public List<ProductDTO> getProductByStoreId(Integer storeId) {
-        List<ProductDTO> productList = new ArrayList<>();
-        for (Product product : productRepository.findProductByStoreId(storeId)) {
-            productList.add(product.toProductDTO());
-        }
-        return productList;
-    }
 
 }
