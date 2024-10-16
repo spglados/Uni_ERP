@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
@@ -22,4 +23,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     // 가게별로 가장 큰 사원 번호 조회
     @Query("SELECT COALESCE(MAX(e.storeEmployeeNumber), 0) FROM Employee e WHERE e.store.id = :storeId")
     Integer findMaxStoreEmployeeNumberByStoreId(@Param("storeId") Integer storeId);
+
+    Optional<Employee> findByUniqueEmployeeNumber(String uniqueEmployeeNumber); // 유니크 직원 번호로 조회 // 직원 ID로 조회
 }

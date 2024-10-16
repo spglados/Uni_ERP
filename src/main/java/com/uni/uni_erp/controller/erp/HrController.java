@@ -6,6 +6,8 @@ import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.service.erp.hr.HrService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,8 @@ public class HrController {
 
     private final HrService hrService;
     private final HttpSession session;
+
+
 
     @GetMapping("/employee-register")
     public String employeeRegisterPage(Model model) {
@@ -45,5 +49,6 @@ public class HrController {
         model.addAttribute("employees", employees); // 직원 목록을 모델에 추가
         return "erp/hr/employeeList"; // 직원 목록 페이지 반환
     }
+
 
 }

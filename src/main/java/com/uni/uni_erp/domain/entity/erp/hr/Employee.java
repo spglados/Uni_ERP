@@ -62,6 +62,9 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
 
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // EmpDocument와의 관계
+    private List<EmpDocument> empDocuments; // 리스트로 수정
+
 
     @Column(nullable = false)  // Not Null 설정
     private Integer storeEmployeeNumber;  // 각 가게별로 증가하는 직원 번호
@@ -76,7 +79,7 @@ public class Employee {
         ONLEAVE // 휴직
     }
 
-    @Column(name = "hired_at", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
 
     @Column(name = "quit_at", updatable = false)
@@ -85,8 +88,8 @@ public class Employee {
     @Column(name = "updated_at", nullable = false)
     private Timestamp updatedAt;
 
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
-    private List<EmpDocument> empDocuments;
+    @Column(name = "hired_at", nullable = true)
+    private Timestamp hiredAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_id", nullable = false)
@@ -104,4 +107,6 @@ public class Employee {
     public void onUpdate() {
         this.updatedAt = Timestamp.from(Instant.now());
     }
+
+
 }

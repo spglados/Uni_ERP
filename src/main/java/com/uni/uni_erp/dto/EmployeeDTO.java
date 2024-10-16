@@ -44,4 +44,33 @@ public class EmployeeDTO {
         return empDocumentDTO;
     }
 
+
+    // EmployeeDTO로 변환하는 생성자
+    public EmployeeDTO(Employee employee) {
+        this.id = employee.getId();
+        this.name = employee.getName();
+        this.birthday = employee.getBirthday();
+        this.email = employee.getEmail();
+        this.phone = employee.getPhone();
+        this.address = employee.getAddress();
+        this.bankId = employee.getBank() != null ? employee.getBank().getId() : null; // 은행 ID
+        this.accountNumber = employee.getAccountNumber();
+        this.position = employee.getPosition();
+        this.storeId = employee.getStore() != null ? employee.getStore().getId() : null; // 상점 ID
+        this.storeEmployeeNumber = employee.getStoreEmployeeNumber();
+        this.uniqueEmployeeNumber = employee.getUniqueEmployeeNumber();
+        this.employmentStatus = employee.getEmploymentStatus();
+        this.hiredAt = employee.getHiredAt();
+        this.updatedAt = employee.getUpdatedAt();
+        this.quitAt = employee.getQuitAt();
+
+        // EmpDocumentDTO로 변환 (문서 정보가 없을 경우 빈 객체로 초기화)
+        if (employee.getEmpDocuments() != null && !employee.getEmpDocuments().isEmpty()) {
+            this.empDocumentDTO = new EmpDocumentDTO(employee.getEmpDocuments().get(0)); // 첫 번째 문서만 가져오기
+        } else {
+            this.empDocumentDTO = new EmpDocumentDTO(); // 빈 객체로 초기화
+        }
+    }
+
+
 }

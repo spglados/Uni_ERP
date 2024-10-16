@@ -109,4 +109,31 @@ public class HrService {
                 .collect(Collectors.toList());
     }
 
+    private EmployeeDTO convertToDTO(Employee employee) {
+        return EmployeeDTO.builder()
+                .uniqueEmployeeNumber(employee.getUniqueEmployeeNumber())
+                .name(employee.getName())
+                .birthday(employee.getBirthday())
+                .gender(employee.getGender())
+                .email(employee.getEmail())
+                .phone(employee.getPhone())
+                .accountNumber(employee.getAccountNumber())
+                .address(employee.getAddress())
+                .position(employee.getPosition())
+                .employmentStatus(employee.getEmploymentStatus())
+                .bankId(employee.getBank() != null ? employee.getBank().getId() : null) // 은행 정보 추가
+                .build();
+    }
+
+    // uniqueEmployeeNumber로(사원번호) 직원 정보를 조회
+    public EmployeeDTO findByUniqueNumber(String uniqueEmployeeNumber) {
+        Employee employee = hrRepository.findByUniqueEmployeeNumber(uniqueEmployeeNumber)
+                .orElse(null);
+        if (employee == null) {
+            // 로깅 예제
+            System.out.println("직원 ID " + uniqueEmployeeNumber + "을(를) 찾을 수 없습니다.");
+        }
+        return employee != null ? convertToDTO(employee) : null;
+    }
+
 }

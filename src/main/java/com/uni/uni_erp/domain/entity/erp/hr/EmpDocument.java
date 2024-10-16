@@ -24,7 +24,7 @@ public class EmpDocument {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 또는 다른 전략을 사용할 수 있습니다.
     private Integer id; // 고유 식별자 필드
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "emp_id", nullable = false)
     private Employee employee;
 
