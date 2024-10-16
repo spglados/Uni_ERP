@@ -1,5 +1,6 @@
 package com.uni.uni_erp.repository.erp.hr;
 
+import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +26,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Integer findMaxStoreEmployeeNumberByStoreId(@Param("storeId") Integer storeId);
 
     Optional<Employee> findByUniqueEmployeeNumber(String uniqueEmployeeNumber); // 유니크 직원 번호로 조회 // 직원 ID로 조회
+
+    // 특정 직원의 문서 정보를 가져오는 메서드
+    @Query("SELECT d FROM EmpDocument d WHERE d.employee.id = :employeeId")
+    List<EmpDocument> findByEmployeeId(@Param("employeeId") Integer employeeId);
+
 }

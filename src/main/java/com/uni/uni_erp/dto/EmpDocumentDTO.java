@@ -4,6 +4,7 @@ import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,6 +13,7 @@ import java.sql.Timestamp;
 public class EmpDocumentDTO {
 
     private Integer employeeId; // 직원 ID
+    private List<Boolean> documents;
     private Boolean employmentContract; // 근로계약서 제출 여부
     private Boolean healthCertificate; // 보건증 제출 여부
     private Timestamp healthCertificateDate; // 보건증 유효기간

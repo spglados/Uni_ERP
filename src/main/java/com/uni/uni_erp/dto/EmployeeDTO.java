@@ -1,6 +1,5 @@
 package com.uni.uni_erp.dto;
 
-import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 @NoArgsConstructor
 @Data

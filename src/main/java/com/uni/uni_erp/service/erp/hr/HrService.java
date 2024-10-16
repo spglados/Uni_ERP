@@ -5,17 +5,20 @@ import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.BankDTO;
+import com.uni.uni_erp.dto.EmpDocumentDTO;
 import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.repository.bank.BankReposigory;
 import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -135,5 +138,11 @@ public class HrService {
         }
         return employee != null ? convertToDTO(employee) : null;
     }
+
+    public List<EmpDocument> getEmpDocumentsByEmployeeId(Integer employeeId) {
+        return hrRepository.findByEmployeeId(employeeId);
+    }
+
+
 
 }

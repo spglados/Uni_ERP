@@ -18,7 +18,8 @@
                 </thead>
                 <tbody>
                 <c:forEach var="employee" items="${employees}">
-                    <tr class="employee-row" data-id="${employee.uniqueEmployeeNumber}"
+                    <tr class="employee-row"
+                        data-id="${employee.uniqueEmployeeNumber}"
                         data-name="${employee.name}"
                         data-birthday="${employee.birthday}"
                         data-gender="${employee.gender}"
@@ -26,7 +27,9 @@
                         data-phone="${employee.phone}"
                         data-status="${employee.employmentStatus}"
                         data-bank="${employee.bank != null ? employee.bank.name : '정보 없음'}"
-                        data-account="${employee.accountNumber}">
+                        data-account="${employee.accountNumber}"
+                        data-documents='${not empty empDocument[employee.id]} ? empDocument[employee.id] : "{}"'> <!-- JSON 형식으로 설정 -->
+                        <!-- 문서 정보 추가 -->
                         <td>${employee.uniqueEmployeeNumber}</td>
                         <td>${employee.name}</td>
                         <td>${employee.position}</td>
@@ -55,13 +58,9 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        console.log("DOMContentLoaded 이벤트 발생"); // 로그 추가
         document.querySelector('.left-panel table tbody').addEventListener('click', function (event) {
-            console.log("테이블 바디 클릭됨"); // 로그 추가
             const row = event.target.closest('.employee-row');
             if (row) {
-                console.log("행 선택됨:", row); // 로그 추가
-                // 데이터 속성에서 상세 정보 가져오기
                 const uniqueId = row.dataset.id;
                 const name = row.dataset.name;
                 const birthday = row.dataset.birthday;
@@ -69,30 +68,42 @@
                 const email = row.dataset.email;
                 const phone = row.dataset.phone;
                 const status = row.dataset.status === 'ACTIVE' ? '재직' :
-                               row.dataset.status === 'INACTIVE' ? '퇴사' : row.dataset.status === 'ONLEAVE' ? '휴직' : '정보 없음';
+                    row.dataset.status === 'INACTIVE' ? '퇴사' : row.dataset.status === 'ONLEAVE' ? '휴직' : '정보 없음';
                 const bank = row.dataset.bank;
                 const account = row.dataset.account;
 
+                // 문서 정보 추가
+                let documents = {};
+                try {
+                    documents = JSON.parse(row.dataset.documents || '{}'); // JSON.parse를 안전하게 사용
+                } catch (error) {
+                    console.error("JSON 파싱 오류:", error);
+                }
+
                 // 직원 상세 정보를 표시
                 const detailsDiv = document.getElementById('employee-details');
-                console.log("Employee details div:", detailsDiv); // 이 로그를 추가하여 요소가 존재하는지 확인
                 detailsDiv.innerHTML =
                     '<h2>' + name + '의 상세 정보</h2>' +
                     '<p>사원번호: ' + uniqueId + '</p>' +
-                    '<p>생년월일: ' + name + '</p>' +
+                    '<p>생년월일: ' + birthday + '</p>' +
                     '<p>성별: ' + gender + '</p>' +
                     '<p>이메일: ' + email + '</p>' +
                     '<p>연락처: ' + phone + '</p>' +
                     '<p>상태: ' + status + '</p>' +
                     '<p>은행: ' + bank + '</p>' +
-                    '<p>계좌번호: ' + account + '</p>';
-
-                console.log("상세 정보 표시됨: ", {uniqueId, name, birthday, gender, email, phone, status, bank, account}); // 로그 추가
+                    '<p>계좌번호: ' + account + '</p>' +
+                    '<h3>문서 제출 여부</h3>' +
+                    '<ul>' +
+                    '<li>근로계약서: ' + (documents.employmentContract ? '제출됨' : '미제출') + '</li>' +
+                    '<li>보건증: ' + (documents.healthCertificate ? '제출됨' : '미제출') + '</li>' +
+                    '<li>신분증 사본: ' + (documents.identificationCopy ? '제출됨' : '미제출') + '</li>' +
+                    '<li>통장 사본: ' + (documents.bankAccountCopy ? '제출됨' : '미제출') + '</li>' +
+                    '<li>주민등록등본: ' + (documents.residentRegistration ? '제출됨' : '미제출') + '</li>' +
+                    '</ul>';
             }
         });
     });
 </script>
-
 
 <style>
     .container {
