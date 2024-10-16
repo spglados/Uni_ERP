@@ -23,14 +23,24 @@ public class InventoryController {
         return "/erp/inventory/status";
     }
 
-    @GetMapping("/adjustment")
-    public String adjustmentPage() {
-        return "/erp/inventory/adjustment";
+    @GetMapping("/situation")
+    public String situationPage() {
+        return "/erp/inventory/situation";
     }
 
-    @GetMapping("/suppliers")
-    public String suppliersPage() {
-        return "/erp/inventory/suppliers";
+    @GetMapping("/day-adjustment")
+    public String dayAdjustmentPage() {
+        return "/erp/inventory/day-adjustment";
+    }
+
+    @GetMapping("/month-adjustment")
+    public String monthAdjustmentPage() {
+        return "/erp/inventory/month-adjustment";
+    }
+
+    @GetMapping("/dispose")
+    public String disposePage() {
+        return "/erp/inventory/dispose";
     }
 
 }

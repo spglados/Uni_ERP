@@ -7,39 +7,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.sql.Timestamp;
 
 @Entity
-@Table(name = "material_tb")
+@Table(name = "material_adjustment_tb")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Material {
+public class MaterialAdjustment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String name;
+    private Double theoreticalAmount;
 
-    private String category;
-
-    private Double amount;
+    private Double actualAmount;
 
     @Enumerated(EnumType.STRING)
     private UnitCategory unit;
 
-    private Double subAmount;
-
-    @Enumerated(EnumType.STRING)
-    private UnitCategory subUnit;
+    private Timestamp createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", nullable = false)
-    private Store store;
-
-    @OneToMany(mappedBy = "material", fetch = FetchType.LAZY)
-    private List<MaterialOrder> orders;
+    private Material material;
 
 }

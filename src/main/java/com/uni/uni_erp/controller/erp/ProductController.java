@@ -2,8 +2,10 @@ package com.uni.uni_erp.controller.erp;
 
 import com.google.gson.Gson;
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.erp.product.Material;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.product.IngredientDTO;
+import com.uni.uni_erp.dto.product.MaterialDTO;
 import com.uni.uni_erp.dto.product.ProductDTO;
 import com.uni.uni_erp.exception.errors.Exception401;
 import com.uni.uni_erp.service.product.ProductService;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.List;
@@ -39,8 +42,16 @@ public class ProductController {
         if (storeId == null) {
             throw new Exception401("관리하고 있는 가게가 없습니다.");
         }
+
+        List<MaterialDTO> materialDTOList = productService.getMaterialList(storeId);
+        List<String> materialList = new ArrayList<>();
+        for (MaterialDTO materialDTO : materialDTOList) {
+            materialList.add(materialDTO.getName());
+        }
+
         model.addAttribute("productList", productService.getProductByStoreId(storeId));
-        model.addAttribute("materialList", gson.toJson(productService.getMaterialList(storeId)));
+        model.addAttribute("materialDTOList", gson.toJson(materialDTOList));
+        model.addAttribute("materialList", gson.toJson(materialList));
         return "erp/product/register";
     }
 
