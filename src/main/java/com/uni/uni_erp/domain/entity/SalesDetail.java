@@ -36,6 +36,9 @@ public class SalesDetail {
     @Column(name = "status", nullable = false)
     private SaleStatus status;
 
+    @Column(name = "order_num", insertable = false, updatable = false)
+    private Integer orderNum;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_num", referencedColumnName = "order_num", nullable = false)
     private Sales sales;

@@ -1,27 +1,36 @@
 package com.uni.uni_erp.service;
 
-import com.uni.uni_erp.domain.entity.Sales;
-import com.uni.uni_erp.dto.SalesDTO;
-import com.uni.uni_erp.repository.SalesRepository;
-import jakarta.transaction.Transactional;
+import com.uni.uni_erp.domain.entity.SalesDetail;
+import com.uni.uni_erp.dto.sales.SalesDTO;
+import com.uni.uni_erp.dto.sales.SalesDetailDTO;
+import com.uni.uni_erp.repository.sales.SalesDetailRepository;
+import com.uni.uni_erp.repository.sales.SalesRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SalesService {
 
     private final SalesRepository salesRepository;
+    private final SalesDetailRepository salesDetailRepository;
 
-    public List<SalesDTO> findAllBySalesDateBetweenOrderBySalesDateDesc(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<SalesDTO> findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate) {
 
-        return salesRepository.findAllBySalesDateBetweenOrderBySalesDateDesc(startDate, endDate);
+        return salesRepository.findAllBySalesDateBetweenOrderBySalesDateAsc(startDate, endDate);
+    }
+
+    public List<SalesDetailDTO> findAllByOrderNumIn(List<SalesDTO> salesDTO) {
+
+        List<Integer> orderNums = salesDTO.stream()
+                .map(SalesDTO::getOrderNum)
+                .collect(Collectors.toList());
+
+        return salesDetailRepository.findAllByOrderNumIn(orderNums);
     }
 
 //    @Transactional
