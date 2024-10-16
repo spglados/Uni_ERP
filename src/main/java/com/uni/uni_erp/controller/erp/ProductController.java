@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/erp/product")
 @RequiredArgsConstructor
@@ -50,7 +52,7 @@ public class ProductController {
 
         return ResponseEntity.ok().build();
     }
-
+  
     @GetMapping("/ingredient/{productId}")
     public ResponseEntity<List<IngredientDTO>> getIngredient(@PathVariable Integer productId) {
         List<IngredientDTO> dto = productService.getIngredientByProductId(productId);
