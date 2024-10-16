@@ -2,11 +2,10 @@ package com.uni.uni_erp.domain.entity.erp.product;
 
 import com.uni.uni_erp.dto.product.ProductDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Product {
 
     @Id
@@ -22,8 +22,7 @@ public class Product {
     private Integer id;
 
     // UserId + StoreId + pk 형식 유지
-    @Column(nullable = false)
-    private Integer productCode;
+    private Long productCode;
 
     @Column(nullable = false)
     private String name;
@@ -34,12 +33,17 @@ public class Product {
     @Column(nullable = false)
     private Integer price;
 
+    @Lob
+    private Blob image;
+
+    private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Ingredient> ingredients;
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ingredient> ingredients = new ArrayList<>();
 
     public ProductDTO toProductDTO() {
         return ProductDTO.builder()
@@ -49,6 +53,8 @@ public class Product {
                 .category(this.category)
                 .price(this.price)
                 .storeId(this.store.getId())
+                .image(null)
+                .description(this.description)
                 .build();
     }
 
