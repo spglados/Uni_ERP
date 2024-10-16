@@ -1,6 +1,8 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
+import com.uni.uni_erp.util.Str.EnumCommonUtil;
 import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,7 +16,7 @@ import java.sql.Timestamp;
 @Builder
 @Entity
 @Table(name = "hr_schedule_tb")
-public class Schedule extends DateFormatter {
+public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,5 +43,18 @@ public class Schedule extends DateFormatter {
     public enum ScheduleType {
         PLAN, // 계획
         EXECUTE // 실행
+    }
+
+    public ScheduleDTO.ResponseDTO toResponseDTO() {
+        return ScheduleDTO.ResponseDTO.builder()
+                .id(String.valueOf(id))
+                .title(employee.getName())
+                .startTime(DateFormatter.toIsoFormat(startTime))
+                .endTime(DateFormatter.toIsoFormat(endTime))
+                .extendedProps(ScheduleDTO.CustomProperty.builder()
+                        .empId(employee.getId())
+                        .type(EnumCommonUtil.getStringFromEnum(scheduleType))
+                        .build())
+                .build();
     }
 }

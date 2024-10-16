@@ -22,4 +22,9 @@ public class EnumCommonUtil {
         }
         return Enum.valueOf(enumClass, value.toUpperCase());
     }
+
+    // Enum 벨류를 문자열로 변환하는 메서드
+    public static String getStringFromEnum(Enum<?> enumValue) {
+        return enumValue.name();
+    }
 }
