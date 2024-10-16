@@ -1,8 +1,10 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.google.gson.Gson;
+import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.product.IngredientDTO;
+import com.uni.uni_erp.dto.product.ProductDTO;
 import com.uni.uni_erp.exception.errors.Exception401;
 import com.uni.uni_erp.service.product.ProductService;
 import jakarta.servlet.http.HttpSession;
@@ -38,6 +40,15 @@ public class ProductController {
         model.addAttribute("productList", productService.getProductByStoreId(storeId));
         model.addAttribute("materialList", gson.toJson(productService.getMaterialList(storeId)));
         return "erp/product/register";
+    }
+
+    @PostMapping("/product")
+    public ResponseEntity<ProductDTO> saveProduct(@ModelAttribute ProductDTO productDTO) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        User user = (User) session.getAttribute("userSession");
+        productService.saveProduct(productDTO, storeId, user.getId());
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/ingredient/{productId}")

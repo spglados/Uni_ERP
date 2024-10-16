@@ -18,19 +18,46 @@
         <!-- 등록 버튼 (모달 창을 통해 상품 등록) -->
         <button class="btn btn-outline-info rounded-pill" data-toggle="modal" data-target="#registerModal" style="margin-right: 20px;">등록</button>
         <!-- 카테고리 선택 필터 -->
-        <select class="form-control select" style="margin-right: 30px;">
-            <option value="">전체</option>
-            <option value="">메인</option>
-            <option value="">사이드</option>
-            <option value="">주류</option>
+        <select id="categoryFilter" class="form-control select" style="margin-right: 30px;">
+            <option value="전체">전체</option>
+            <option value="메인">메인</option>
+            <option value="사이드">사이드</option>
+            <option value="음료">음료</option>
+            <option value="주류">주류</option>
         </select>
+
+        <script>
+            $(document).ready(function() {
+                // 카테고리 선택 시 이벤트 처리
+                $('#categoryFilter').change(function() {
+                    var selectedCategory = $(this).val(); // 선택된 카테고리 값
+                    $('#categoryTitle').text(selectedCategory); // <h2> 태그에 선택된 카테고리명 동적으로 변경
+
+                    // 전체 선택 시 모든 상품을 보이게 하고, 그렇지 않으면 필터링
+                    if (selectedCategory === '전체') {
+                        $('#productList tr').show(); // 모든 상품을 보이게 함
+                    } else {
+                        $('#productList tr').each(function() {
+                            var productCategory = $(this).find('td:nth-child(3)').text().trim(); // 상품의 카테고리 값 추출
+                            if (productCategory === selectedCategory) {
+                                $(this).show(); // 선택된 카테고리와 일치하는 상품만 보이게 함
+                            } else {
+                                $(this).hide(); // 일치하지 않는 상품은 숨김
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+
+
     </div>
 
     <!-- 상품 목록 테이블 -->
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
         <div class="d-flex justify-content-between">
             <div>
-                <h2>전체</h2>
+                <h2 id="categoryTitle">전체</h2>
             </div>
             <div class="d-flex justify-content-between">
                 <input value="검색" style="margin-right: 10px">
@@ -54,8 +81,7 @@
                     <th>재료</th>
                 </tr>
                 </thead>
-                <tbody>
-                <!-- TODO: 서버에서 상품 데이터를 받아와야 함 -->
+                <tbody id="productList">
                     <c:forEach var = "product" items="${productList}">
                 <tr>
                     <td>${product.productCode}</td>
@@ -66,7 +92,7 @@
                     <td>0</td>
                     <td>0</td>
                     <td>0</td>
-                    <td><button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal" onclick="showIngredients(${product.id})">재료 보기</button></td>
+                    <td><button class="btn btn-sm btn-info" data-toggle="modal" id="modal-btn-${product.id}" data-target="#ingredientModal" onclick="showIngredients(${product.id})">재료 보기</button></td>
                 </tr>
                     </c:forEach>
                 </tbody>
@@ -86,18 +112,14 @@
                 </div>
                 <div class="modal-body">
                     <!-- 상품 등록 폼 -->
-                    <form id="registerForm">
-                        <div class="form-group">
-                            <label for="productCode">상품 코드</label>
-                            <input type="text" class="form-control" id="productCode" required>
-                        </div>
+                    <form id="registerForm" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="productName">상품명</label>
-                            <input type="text" class="form-control" id="productName" required>
+                            <input type="text" class="form-control" id="productName" name="name" required value="고추장찌개">
                         </div>
                         <div class="form-group">
                             <label for="category">카테고리</label>
-                            <select class="form-control" id="category">
+                            <select class="form-control" id="category" name="category">
                                 <option>메인</option>
                                 <option>사이드</option>
                                 <option>주류</option>
@@ -105,23 +127,25 @@
                         </div>
                         <div class="form-group">
                             <label for="price">가격</label>
-                            <input type="text" class="form-control" id="price" required>
+                            <input type="number" class="form-control" id="price" name="price" required value="8900">
                         </div>
+
+                        <!-- 이미지 업로드 -->
                         <div class="form-group">
-                            <label for="dailySales">일일 판매량</label>
-                            <input type="number" class="form-control" id="dailySales">
+                            <label for="image">상품 이미지</label>
+                            <input type="file" class="form-control" id="image" accept="image/*" onchange="previewImage(event)">
                         </div>
+
+                        <!-- 이미지 미리보기 -->
                         <div class="form-group">
-                            <label for="avgDailySales">평균 일일 판매량</label>
-                            <input type="number" class="form-control" id="avgDailySales">
+                            <label>미리보기</label>
+                            <img id="imagePreview" style="max-width: 100%; height: auto;" />
                         </div>
+
+                        <!-- 추가 정보 (예: 설명, 재고, 유통기한 등) -->
                         <div class="form-group">
-                            <label for="lastMonthSales">전월 판매량</label>
-                            <input type="number" class="form-control" id="lastMonthSales">
-                        </div>
-                        <div class="form-group">
-                            <label for="currentMonthSales">금월 판매량</label>
-                            <input type="number" class="form-control" id="currentMonthSales">
+                            <label for="description">상품 설명</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
@@ -277,11 +301,34 @@
 
         // 추가 재료 등록
         function registerIngredient(index, productId) {
+            const ingredientList = document.getElementById('ingredientList');
             const ingredientItem = document.getElementById('ingredient-' + index);
             // 해당 input 필드에서 값을 가져오기
             const name = ingredientItem.querySelector('input[name="name"]').value;
             const amount = ingredientItem.querySelector('input[name="amount"]').value;
             const unit = ingredientItem.querySelector('select[name="unit"]').value;
+
+            // 이미 등록된 자재가 있는지 확인하는 로직
+            let isDuplicate = false;
+            $('#ingredientList .ingredient-item').each(function() {
+                const existingName = $(this).find('input[name="name"]').val();
+                // 현재 등록 중인 자재를 제외하고 중복을 검사
+                if (existingName === name && $(this).attr('id') !== 'ingredient-' + index) {
+                    isDuplicate = true;  // 중복된 자재가 발견되면 플래그 설정
+                }
+            });
+            if (isDuplicate === true) {
+                alert('이미 등록되어 있습니다.');
+                isDuplicate = false;
+                return;
+            }
+
+
+            // materialList에 있는지 확인하는 로직
+            if (!materialList.includes(name)) {
+                alert('해당 자재는 목록에 없습니다.\n\t 자재를 먼저 등록해주세요 !');
+                return;
+            }
 
             if (!name || name.trim() === '') {
                 alert('재료명을 기입해주세요.');
@@ -335,7 +382,7 @@
 
                                 // 약간의 지연을 두고 모달을 다시 열기 위해 모달 여는 버튼을 클릭
                                 setTimeout(function() {
-                                    document.querySelector('button[data-target="#ingredientModal"]').click();
+                                    document.querySelector('#modal-btn-' + productId).click();
                                 }, 100);  // 300ms 지연 후 모달 여는 버튼 클릭
 
                                 // 이벤트 리스너 제거 (다음 모달 닫기 시 중복 방지)
@@ -491,6 +538,50 @@
         // "추가" 버튼 클릭 시 다른 페이지로 이동하는 함수
         function goToAddMaterialPage() {
             window.location.href = '/erp/inventory/status'; // 추가 페이지로 이동
+        }
+
+        // 이미지 미리보기 기능
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const output = document.getElementById('imagePreview');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // 상품 등록 함수
+        function registerProduct() {
+            const form = $('#registerForm')[0];
+            if (form.checkValidity()) {
+                const formData = new FormData(form);
+
+                // Blob 이미지 데이터를 FormData에 추가
+                const imageFile = $('#image')[0].files[0];
+
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
+
+                // 여기서 서버로 formData를 전송하는 로직을 구현
+                fetch('/erp/product/product', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        alert("상품이 등록되었습니다!");
+                        location.reload();
+                    } else {
+                        alert("상품 등록에 실패했습니다.");
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert("상품 등록 중 오류가 발생했습니다.");
+                });
+            } else {
+                // 유효성 검사가 실패한 경우 경고창을 띄우고, 유효성 검사를 강제로 실행
+                form.reportValidity();
+            }
         }
     </script>
 

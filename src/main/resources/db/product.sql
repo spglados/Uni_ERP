@@ -4,9 +4,9 @@ VALUES
 ('기가 안막히는 양식', 1);
 
 -- 첫 번째 제품 삽입
-INSERT INTO product_tb (product_code, name, category, price, store_id)
-VALUES (111, '김치찌개', '메인', 9900, 1),
-(112, '된장찌개', '메인', 8500, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (1, 111, '김치찌개', '메인', 9900, 1),
+(2, 112, '된장찌개', '메인', 8500, 1);
 
 INSERT INTO ingredient_tb (name, amount, unit, product_id)
 -- 김치찌개
