@@ -151,14 +151,9 @@ public class SalesController {
                                 entry.getValue().stream().mapToInt(SalesDetailDTO::getQuantity).sum(), // quantity
                                 entry.getValue().get(0).getUnitPrice() // unitPrice
                         );
-
-
-
                         return dto;
                     })
                     .collect(Collectors.toList());
-
-            System.err.println(mergedList);
 
             return mergedList;
         } catch (Exception e) {
