@@ -1,0 +1,176 @@
+.select {
+    width: 200px;
+    background-color: #f0f8ff;
+    border-color: #4caf50;
+}
+
+.custom-col {
+    flex: 0 0 18%; /* 한 줄에 5개의 박스를 유지하기 위한 비율 */
+    max-width: 18%;
+    margin: 15px; /* 박스 간 간격 */
+    height: 150px; /* 박스의 고정된 높이 */
+}
+
+@media (max-width: 768px) {
+    .custom-col {
+        flex: 0 0 45%; /* 태블릿 크기에서는 한 줄에 2개 */
+        max-width: 45%;
+        height: 150px; /* 고정된 높이 유지 */
+    }
+}
+
+@media (max-width: 576px) {
+    .custom-col {
+        flex: 0 0 90%; /* 작은 화면에서는 한 줄에 1개 */
+        max-width: 90%;
+        height: 150px; /* 고정된 높이 유지 */
+    }
+}
+
+.modal-dialog {
+    max-width: 50%; /* 원하는 비율로 조정 */
+    width: 50%; /* 혹은 정해진 픽셀 값으로 설정 가능 */
+}
+
+.box {
+    height: 100%; /* 부모 요소의 높이를 모두 차지하도록 설정 */
+    border-radius: 10px;
+    background-color: #17a2b8;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-container {
+    max-height: 86%;
+    overflow-y: auto;
+    position: relative;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+thead th {
+    position: sticky;
+    top: 0;
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    z-index: 1;
+}
+th, td {
+    width: 160px;
+    text-align: center;
+}
+
+.ingredient-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.ingredient-name {
+    width: 22%;
+    margin-right: 10px;
+}
+.ingredient-amount {
+    width: 19%;
+    margin-right: 10px;
+}
+.ingredient-unit {
+    width: 19%;
+    margin-right: 10px;
+}
+.edit-btn, .delete-btn {
+    margin-right: 10px;
+}
+.custom-btn {
+    padding: 8px 12px;
+    max-width: 12%;
+    border: none;
+    color: #ffffff;
+    background-color: #6c757d;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.custom-btn:hover {
+    background-color: #5a6268;
+}
+.custom-btn-warning {
+    background-color: #ffc107;
+}
+.custom-btn-warning:hover {
+    background-color: #e0a800;
+}
+.custom-btn-success {
+    background-color: #28a745;
+}
+.custom-btn-success:hover {
+    background-color: #218838;
+}
+.close-btn {
+    padding: 8px 12px;
+    border: none;
+    color: #ffffff;
+    background-color: #6c757d;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.close-btn:hover {
+    background-color: #5a6268;
+}
+.add-btn {
+    margin-top: 15px;
+    padding: 8px 12px;
+    border: none;
+    color: #ffffff;
+    background-color: #007bff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.add-btn:hover {
+    background-color: #0056b3;
+}
+
+.custom-col {
+    width: 22%; /* 원하는 비율로 설정 */
+    padding: 10px;
+}
+
+/* 부모 요소에 상대적 위치 지정 */
+.ingredient-item {
+    position: relative;
+}
+
+/* 드롭다운 스타일 */
+.dropdown-menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: calc(100% - 460px);
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    position: absolute;
+    top: 104%;
+    left: 0;
+    background-color: white;
+    z-index: 1000;
+    display: none;
+}
+
+.dropdown-menu li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+    background-color: #f1f1f1;
+}

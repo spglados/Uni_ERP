@@ -34,10 +34,12 @@
                 <a href="javascript:void(0);" class="inventory-toggle">재고 관리 ▼</a>
                 <ul class="sub-menu">
                     <li><a href="/erp/inventory/receiving">입고 관리</a></li>
-                    <li><a href="/erp/inventory/shipping">출고 관리</a></li>
-                    <li><a href="/erp/inventory/status">재고 현황</a></li>
-                    <li><a href="/erp/inventory/adjustment">재고 조정</a></li>
-                    <li><a href="/erp/inventory/suppliers">공급자 관리</a></li>
+                    <li><a href="/erp/inventory/register">재고 등록</a></li>
+                    <li><a href="/erp/inventory/situation">재고 현황</a></li>
+                    <li><a href="/erp/inventory/status">재고 상태</a></li>
+                    <li><a href="/erp/inventory/day-adjustment">일 재고 현황</a></li>
+                    <li><a href="/erp/inventory/month-adjustment">월 재고 현황</a></li>
+                    <li><a href="/erp/inventory/dispose">폐기 관리</a></li>
                 </ul>
             </li>
             <li>

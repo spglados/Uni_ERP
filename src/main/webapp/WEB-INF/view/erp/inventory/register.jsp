@@ -59,26 +59,21 @@
                 </tr>
                 </thead>
                 <tbody>
-                <c:forEach var="material" items="${materialStatusList}">
+                <c:forEach var="material" items="${materialList}">
                     <tr>
                         <td>${material.materialCode}</td>
                         <td>${material.name}</td>
                         <td>${material.category}</td>
-                        <td>${material.unit}</td>
-                        <td>${material.lastEnterDate != null ? material.lastEnterDate : '없음'}</td>
+                        <td>${material.formatToPrice()}원</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
                         <td>
-                            <span style="color: ${material.imminent ? 'red' : 'black'};">
-                                ${material.expirationDate != null ? material.expirationDate : '없음'}
-                            </span>
+                            <button class="btn btn-sm btn-info" data-toggle="modal" id="modal-btn-${material.id}"
+                                    data-target="#ingredientModal" onclick="showIngredients(${material.id})">재료 보기
+                            </button>
                         </td>
-                        <td>${material.stockCycle > 0 ? material.stockCycle : '-'}일</td>
-                        <td>${material.alarmCycle}&nbsp;${material.alarmUnit}</td>
-                        <td>상품내역</td>
-<%--                        <td>--%>
-<%--                            <button class="btn btn-sm btn-info" data-toggle="modal" id="modal-btn-${material.id}"--%>
-<%--                                    data-target="#ingredientModal" onclick="showIngredients(${material.id})">재료 보기--%>
-<%--                            </button>--%>
-<%--                        </td>--%>
                     </tr>
                 </c:forEach>
                 </tbody>
