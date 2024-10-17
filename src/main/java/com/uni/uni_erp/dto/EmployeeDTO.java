@@ -1,11 +1,15 @@
 package com.uni.uni_erp.dto;
 
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
+import com.uni.uni_erp.domain.entity.Position;
+import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.erp.product.Store;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.lang.model.type.IntersectionType;
 import java.sql.Timestamp;
 
 @NoArgsConstructor
@@ -69,6 +73,5 @@ public class EmployeeDTO {
             this.empDocumentDTO = new EmpDocumentDTO(); // 빈 객체로 초기화
         }
     }
-
 
 }

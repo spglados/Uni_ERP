@@ -107,6 +107,4 @@ public class Employee {
     public void onUpdate() {
         this.updatedAt = Timestamp.from(Instant.now());
     }
-
-
 }

@@ -7,3 +7,4 @@ spring:
         - classpath:db/notice.sql
         - classpath:db/product.sql
         - classpath:db/hr.sql
+        - classpath:db/salesData.sql
