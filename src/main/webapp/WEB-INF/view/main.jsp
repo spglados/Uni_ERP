@@ -10,7 +10,12 @@
 <!-- header.jsp  -->
 <%@ include file="/WEB-INF/view/layout/header.jsp"%>
 
-<p>테스트 main</p>
+
+<main class="main-container">
+
+<h1>메인 영역</h1>
+
+</main>
 
 <!-- footer.jsp  -->
 <%@ include file="/WEB-INF/view/layout/footer.jsp"%>

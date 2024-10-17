@@ -1,0 +1,112 @@
+/* 메인 컨테이너 스타일 */
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7f8fa;
+}
+
+/* 회원가입 폼 컨테이너 */
+.signup-container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    transition: box-shadow 0.3s ease;
+}
+
+.signup-container:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* 제목 스타일 */
+.signup-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+    font-size: 24px;
+}
+
+/* 입력 필드 스타일 */
+.signup-container input[type="text"],
+.signup-container input[type="password"],
+.signup-container input[type="email"],
+.signup-container input[type="tel"] {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.signup-container input[type="text"]:focus,
+.signup-container input[type="password"]:focus,
+.signup-container input[type="email"]:focus,
+.signup-container input[type="tel"]:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+/* 비밀번호 확인 메시지 스타일 */
+.password-message {
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+/* 회원가입 버튼 스타일 */
+.signup-container button {
+    width: 100%;
+    padding: 14px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease;
+}
+
+.signup-container button:hover {
+    background-color: #218838;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+/* 주소 검색 버튼 스타일 */
+.signup-container input[type="button"] {
+    width: auto;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.signup-container input[type="button"]:hover {
+    background-color: #0056b3;
+}
+
+/* 로그인 링크 스타일 */
+.signup-container .login-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-container .login-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.signup-container .login-link a:hover {
+    text-decoration: underline;
+}
