@@ -45,8 +45,9 @@
             <li>
                 <a href="javascript:void(0);" class="sales-toggle">매출 관리 ▼</a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/sales/record">매출 기록</a></li>
-                    <li><a href="/erp/sales/customers">고객 관리</a></li>
+                    <li><a href="/erp/sales/record">매출 입력</a></li>
+                    <li><a href="/erp/sales/history">매출 기록</a></li>
+                    <li><a href="/erp/sales/statistics">매출 통계</a></li>
                 </ul>
             </li>
             <li>

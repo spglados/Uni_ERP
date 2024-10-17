@@ -14,8 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/erp/product")
@@ -59,7 +60,7 @@ public class ProductController {
 
         return ResponseEntity.ok().build();
     }
-  
+
     @GetMapping("/ingredient/{productId}")
     public ResponseEntity<List<IngredientDTO>> getIngredient(@PathVariable Integer productId) {
         List<IngredientDTO> dto = productService.getIngredientByProductId(productId);
