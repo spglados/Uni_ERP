@@ -26,8 +26,9 @@
             <li>
                 <a href="javascript:void(0);" class="hr-toggle">인사 관리 ▼</a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/hr/employeeRegister">직원 등록</a></li>
-                    <li><a href="/erp/hr/employeeList">직원 목록</a></li>
+                    <li><a href="/erp/hr/employee-register">직원 등록</a></li>
+                    <li><a href="/erp/hr/employee-list">직원 목록</a></li>
+                    <li><a href="/erp/hr/schedule">근무 일정</a></li>
                 </ul>
             </li>
             <li>
