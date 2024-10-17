@@ -58,5 +58,11 @@
                     <li><a href="/erp/product/list">상품 목록</a></li>
                 </ul>
             </li>
+            <li>
+                <a href="javascript:void(0);" class="product-toggle">가상 POS ▼</a>
+                <ul class="sub-menu">
+                    <li><a href="/erp/pos/main" target='_blank'>POS 실행</a></li>
+                </ul>
+            </li>
         </ul>
     </nav>
