@@ -9,6 +9,7 @@ import com.uni.uni_erp.dto.BankDTO;
 import com.uni.uni_erp.dto.EmpDocumentDTO;
 import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
+import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.service.erp.hr.HrService;
 import com.uni.uni_erp.service.erp.hr.ScheduleService;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
@@ -90,7 +91,7 @@ public class HrController {
      * @return
      */
     @GetMapping("/schedule")
-    public String schedulePage(@RequestParam(name = "type", required = false) String type, Model model) throws JsonProcessingException {
+    public String schedulePage(@RequestParam(name = "type", required = false) String type, Model model, HttpSession session) {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         // 문자열로 받은 type을 enum 타입으로 변환
@@ -99,10 +100,17 @@ public class HrController {
         // 일정 조회
         List<ScheduleDTO.ResponseDTO> schedules = scheduleService.findByStoreIdAndType(storeId, scheduleType);
 
-        // 모든 근무자 조회
-        hrService.getEmployeesByStoreId(storeId);
-        String schedulesJson = new ObjectMapper().writeValueAsString(schedules);
+        // TODO DTO로 변경해야함 모든 근무자 조회
+        List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
+
+        String schedulesJson = null;
+        try {
+            schedulesJson = new ObjectMapper().writeValueAsString(schedules);
+        } catch (JsonProcessingException e) {
+            throw new Exception500("알 수 없는 오류 발생.");
+        }
         model.addAttribute("schedules", schedulesJson);
+        model.addAttribute("employees", employees);
 
         return "/erp/hr/schedule";
     }
@@ -113,7 +121,7 @@ public class HrController {
      * @return
      */
     @PostMapping("/schedule")
-    public ResponseEntity<?> scheduleCreateProc(@RequestBody ScheduleDTO.CreateDTO reqDTO) {
+    public ResponseEntity<?> scheduleCreateProc(@RequestBody ScheduleDTO.CreateDTO reqDTO, HttpSession session) {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         // 일정 생성
@@ -121,6 +129,12 @@ public class HrController {
 
         // 응답 데이터 추가
         Map<String, Object> response = new HashMap<>();
+//        String scheduleJson = null;
+//        try {
+//            scheduleJson = new ObjectMapper().writeValueAsString(schedule);
+//        } catch (JsonProcessingException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//        }
         if (schedule != null) {
             response.put("schedule", schedule);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

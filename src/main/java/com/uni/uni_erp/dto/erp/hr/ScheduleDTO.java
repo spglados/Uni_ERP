@@ -17,16 +17,16 @@ public class ScheduleDTO {
     @Data
     public static class CreateDTO {
         private Integer empId;
-        private Timestamp startTime;
-        private Timestamp endTime;
+        private String startTime;
+        private String endTime;
         private String type;
 
         public Schedule toEntity(Store store, Employee emp) {
             return Schedule.builder()
                     .store(store)
                     .employee(emp)
-                    .startTime(startTime)
-                    .endTime(endTime)
+                    .startTime(Timestamp.valueOf(startTime.replace("T", " ")))
+                    .endTime(Timestamp.valueOf(endTime.replace("T", " ")))
                     .scheduleType(EnumCommonUtil.getEnumFromString(Schedule.ScheduleType.class, type))
                     .build();
         }

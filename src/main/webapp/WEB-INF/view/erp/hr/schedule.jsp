@@ -10,8 +10,12 @@
         <span class="close" id="closeAddEventButton">&times;</span>
         <h2>일정 추가</h2>
         <form id="addEventForm">
-            <label for="eventTitle">근무자 이름 :</label>
-            <input type="text" id="eventTitle" name="eventTitle" required><br><br>
+            <label for="employeeSelect">근무자 선택 :</label>
+            <select id="employeeSelect" name="employeeSelect" required>
+                <c:forEach var="employee" items="${employees}">
+                    <option value="${employee.id}">${employee.name}</option>
+                </c:forEach>
+            </select><br>
 
             <label for="eventStart">날짜:</label>
             <input type="date" id="eventStart" name="eventStart" required>
@@ -35,12 +39,13 @@
 <%-- 일정 데이터 초기화 --%>
 <script type="application/javascript">
     const scheduleList = JSON.parse('${schedules}');
+    const employeeList = JSON.parse('${employees}');
 </script>
 <%-- 캘린더 초기 랜더링 --%>
 <script type="module">
-    import { initializeCalendar } from '/js/erp/hr/calendarModule.js';
+    import {initializeCalendar} from '/js/erp/hr/calendarModule.js';
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
         initializeCalendar(calendarEl, scheduleList);
     });
