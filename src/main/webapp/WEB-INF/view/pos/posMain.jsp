@@ -12,6 +12,7 @@
             padding: 0;
             background-color: #f8f9fa;
         }
+
         .header {
             background-color: #fff;
             padding: 20px;
@@ -159,6 +160,19 @@
                 </div>
             </c:forEach>
         </div>
+
+        <div class="pagination">
+            <c:if test="${productList.hasPrevious()}">
+                <a href="/erp/pos/main?page=${currentPage - 1}&size=${pageSize}">&laquo; 이전</a>
+            </c:if>
+            <c:forEach begin="1" end="${notices.totalPages}" var="i">
+                <a href="/erp/pos/main?page=${i - 1}&size=${pageSize}" class="${i == currentPage ? 'active' : ''}">${i}</a>
+            </c:forEach>
+            <c:if test="${notices.hasNext()}">
+                <a href="/erp/pos/main?page=${currentPage}&size=${pageSize}">다음 &raquo;</a>
+            </c:if>
+        </div>
+
     </div>
 
     <div class="order-section">

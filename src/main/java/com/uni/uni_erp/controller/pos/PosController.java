@@ -5,6 +5,7 @@ import com.uni.uni_erp.service.pos.PosService;
 import com.uni.uni_erp.service.product.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,13 +29,19 @@ public class PosController {
      * @return
      */
     @GetMapping("/main")
-    public String showPosMainPage(Model model, HttpSession session) {
+    public String showPosMainPage(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "12") int size,
+                                  Model model,
+                                  HttpSession session) {
 
         Integer storeId = (Integer) session.getAttribute("storeId");
-        List<Product> productList = posService.getProductsByStoreId(storeId);
 
-        model.addAttribute("productList", productList);
-        model.addAttribute("storeId", storeId);
+        Page<Product> productList = posService.getProductsByStoreId(storeId, page, size);
+        model.addAttribute("productList", productList.getContent());
+        model.addAttribute("currentPage", page + 1);
+        model.addAttribute("totalPages", productList.getTotalPages());
+        model.addAttribute("pageSize", size);
+
         return "pos/posMain";  // posMain.css 화면 반환
     }
 
