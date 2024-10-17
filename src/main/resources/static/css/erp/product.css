@@ -143,3 +143,34 @@ th, td {
     width: 22%; /* 원하는 비율로 설정 */
     padding: 10px;
 }
+
+/* 부모 요소에 상대적 위치 지정 */
+.ingredient-item {
+    position: relative;
+}
+
+/* 드롭다운 스타일 */
+.dropdown-menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: calc(100% - 460px);
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    position: absolute;
+    top: 104%;
+    left: 0;
+    background-color: white;
+    z-index: 1000;
+    display: none;
+}
+
+.dropdown-menu li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+    background-color: #f1f1f1;
+}
