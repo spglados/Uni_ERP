@@ -62,8 +62,8 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // EmpDocument와의 관계
-    private List<EmpDocument> empDocuments; // 리스트로 수정
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // EmpDocument와의 관계
+    private EmpDocument empDocument;
 
 
     @Column(nullable = false)  // Not Null 설정

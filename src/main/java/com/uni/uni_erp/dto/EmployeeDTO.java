@@ -63,8 +63,8 @@ public class EmployeeDTO {
         this.quitAt = employee.getQuitAt();
 
         // EmpDocumentDTO로 변환 (문서 정보가 없을 경우 빈 객체로 초기화)
-        if (employee.getEmpDocuments() != null && !employee.getEmpDocuments().isEmpty()) {
-            this.empDocumentDTO = new EmpDocumentDTO(employee.getEmpDocuments().get(0)); // 첫 번째 문서만 가져오기
+        if (employee.getEmpDocument() != null) {
+            this.empDocumentDTO = new EmpDocumentDTO(employee.getEmpDocument()); // EmpDocument 객체로 처리
         } else {
             this.empDocumentDTO = new EmpDocumentDTO(); // 빈 객체로 초기화
         }
