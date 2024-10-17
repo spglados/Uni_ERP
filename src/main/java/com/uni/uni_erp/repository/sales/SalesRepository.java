@@ -12,6 +12,8 @@ public interface SalesRepository extends JpaRepository<Sales, Integer> {
 
     List<SalesDTO> findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate);
 
+    List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId);
+
 }
 
 

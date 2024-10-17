@@ -14,12 +14,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 public class Sales {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id; // Primary key for sales
+
+    @Column(name = "store_id", nullable = false)
+    private Integer storeId;
 
     @Column(name = "order_num", nullable = false, unique = true)
     private Integer orderNum; // Unique identifier for the order, will be set using the sequence
@@ -30,9 +32,6 @@ public class Sales {
     @Column(name = "sales_date", nullable = false)
     private LocalDateTime salesDate;
 
-    @OneToMany(mappedBy = "sales", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SalesDetail> details;
-
     @PrePersist
     protected void onPrePersist() {
         if (this.salesDate == null) {
@@ -41,6 +40,7 @@ public class Sales {
     }
 
     public void generateOrderNum(EntityManager entityManager) {
-        this.orderNum = (Integer) entityManager.createNativeQuery("SELECT NEXT VALUE FOR order_num_seq").getSingleResult();
+        Integer sequenceValue = (Integer) entityManager.createNativeQuery("SELECT NEXT VALUE FOR order_num_seq").getSingleResult();
+        this.orderNum = Integer.parseInt(String.format("%d%07d", storeId, sequenceValue));
     }
 }

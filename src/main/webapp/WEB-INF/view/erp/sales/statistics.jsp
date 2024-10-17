@@ -9,6 +9,13 @@
         <input type="datetime-local" id="startDate" name="startDate" value="" min="2022-01-01T00:00" max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(new java.util.Date()) %>">
         <label for="endDate">종료일:</label>
         <input type="datetime-local" id="endDate" name="endDate" value="" min="2022-01-01T00:00" max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(new java.util.Date()) %>">
+        <label for="storeId">가게:</label>
+        <select id="storeId" name="storeId">
+            <option value="">전체</option>
+            <c:forEach var="storeId" items="${storeIdList}">
+                <option value="${storeId}">${storeId}</option>
+            </c:forEach>
+        </select>
         <button id="confirm-button" class="btn btn-primary">확인</button>
     </div>
 

@@ -20,19 +20,20 @@ public class SalesService {
     private final SalesDetailRepository salesDetailRepository;
 
     public List<SalesDTO> findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate) {
-
         return salesRepository.findAllBySalesDateBetweenOrderBySalesDateAsc(startDate, endDate);
     }
 
-    public List<SalesDetailDTO> findAllByOrderNumIn(List<SalesDTO> salesDTO) {
+    public List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
+        return salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+    }
 
+    public List<SalesDetailDTO> findAllByOrderNumIn(List<SalesDTO> salesDTO) {
         List<Integer> orderNums = salesDTO.stream()
                 .map(SalesDTO::getOrderNum)
-                .collect(Collectors.toList());
+                .toList();
 
         return salesDetailRepository.findAllByOrderNumIn(orderNums);
     }
-
 //    @Transactional
 //    public void save(Sales sales) {
 //        salesRepository.save(sales);

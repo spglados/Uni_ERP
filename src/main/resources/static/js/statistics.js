@@ -82,7 +82,7 @@ function updateCharts(chartType) {
     data: {
       labels: salesDates,
       datasets: [{
-        label: 'Total Price',
+        label: '총 매출',
         data: salesPrices,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
@@ -119,7 +119,7 @@ function updateCharts(chartType) {
     data: {
       labels: itemName,
       datasets: [{
-        label: 'Item Count',
+        label: '품목별 판매량',
         data: itemCountValues,
         backgroundColor: [
                   'rgba(255, 99, 132, 0.2)',
@@ -139,7 +139,7 @@ function updateCharts(chartType) {
       plugins: {
         title: {
           display: true,
-          text: '품목당 판매 수 차트'
+          text: '품목 별 매출 비율'
         }
       },
       scales: {
@@ -295,14 +295,21 @@ function updateSalesChart(chartType) {
 function submitDates() {
   var startDate = document.getElementById('startDate').value;
   var endDate = document.getElementById('endDate').value;
+  var storeId = document.getElementById('storeId').value;
+
+  var data = {
+    startDate: startDate,
+    endDate: endDate
+  };
+
+  if (storeId !== '') {
+    data.storeId = storeId;
+  }
 
   jQuery.ajax({
     type: "GET",
     url: "/erp/sales/data",
-    data: {
-      startDate: startDate,
-      endDate: endDate
-    },
+    data: data,
     success: function(data) {
       salesHistory = data;
     }
@@ -311,10 +318,7 @@ function submitDates() {
   jQuery.ajax({
     type: "GET",
     url: "/erp/sales/itemCount",
-    data: {
-      startDate: startDate,
-      endDate: endDate
-    },
+    data: data,
     success: function(data) {
       itemCountHistory = data;
     }
@@ -323,15 +327,11 @@ function submitDates() {
   jQuery.ajax({
     type: "GET",
     url: "/erp/sales/itemProfit",
-    data: {
-      startDate: startDate,
-      endDate: endDate
-    },
+    data: data,
     success: function(data) {
       itemProfitHistory = data;
       updateCharts('hourly');
     }
-
   });
 }
 

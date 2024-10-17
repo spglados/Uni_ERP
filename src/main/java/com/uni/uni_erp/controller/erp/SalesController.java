@@ -4,8 +4,10 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.service.SalesService;
+import com.uni.uni_erp.service.user.StoreService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,7 @@ public class SalesController {
     private EntityManager entityManager;
 
     private final SalesService salesService;
+    private final StoreService storeService;
 
     private static final String SUCCESS = "success";
     private static final String ERROR = "error";
@@ -84,82 +87,12 @@ public class SalesController {
 
     // 3. 차트 분석/통계 페이지
     @GetMapping("/statistics")
-    public String salesStatistics() {
+    public String salesStatistics(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userSession");
+        List<Integer> storeIdList = storeService.ownedStores(user.getId());
 
+        model.addAttribute("storeIdList", storeIdList);
         return "erp/sales/statistics";
-    }
-
-    @GetMapping("/data")
-    @ResponseBody
-    public List<SalesDTO> getSalesData(@RequestParam(value = "startDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().minusMonths(1).truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String startDate,
-                                       @RequestParam(value = "endDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String endDate) {
-        try {
-            List<SalesDTO> salesList = salesService.findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate));
-            return salesList;
-        } catch (Exception e) {
-            log.error("Error searching sales records by date", e);
-            return Collections.emptyList();
-        }
-    }
-
-    @GetMapping("/itemCount")
-    @ResponseBody
-    public List<SalesDetailDTO> getItemCount(@RequestParam(value = "startDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().minusMonths(1).truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String startDate,
-                                             @RequestParam(value = "endDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String endDate) {
-        try {
-            List<SalesDTO> salesList = salesService.findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate));
-            List<SalesDetailDTO> salesDetailList = salesService.findAllByOrderNumIn(salesList);
-
-            List<SalesDetailDTO> mergedList = salesDetailList.stream()
-                    .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode))
-                    .entrySet().stream()
-                    .map(entry -> {
-                        SalesDetailDTO dto = new SalesDetailDTO(
-                                null, // id
-                                entry.getKey(), // itemCode
-                                null, // itemName
-                                entry.getValue().stream().mapToInt(SalesDetailDTO::getQuantity).sum(), // quantity
-                                entry.getValue().get(0).getUnitPrice() // unitPrice
-                        );
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
-
-            return mergedList;
-        } catch (Exception e) {
-            log.error("Error searching sales records by date", e);
-            return Collections.emptyList();
-        }
-    }
-
-    @GetMapping("/itemProfit")
-    @ResponseBody
-    public List<SalesDetailDTO> getItemProfit(@RequestParam(value = "startDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().minusMonths(1).truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String startDate,
-                                              @RequestParam(value = "endDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String endDate) {
-        try {
-            List<SalesDTO> salesList = salesService.findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate));
-            List<SalesDetailDTO> salesDetailList = salesService.findAllByOrderNumIn(salesList);
-
-            List<SalesDetailDTO> mergedList = salesDetailList.stream()
-                    .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode))
-                    .entrySet().stream()
-                    .map(entry -> {
-                        SalesDetailDTO dto = new SalesDetailDTO(
-                                null, // id
-                                entry.getKey(), // itemCode
-                                entry.getValue().get(0).getItemName(), // itemName
-                                entry.getValue().stream().mapToInt(SalesDetailDTO::getQuantity).sum(), // quantity
-                                entry.getValue().get(0).getUnitPrice() // unitPrice
-                        );
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
-
-            return mergedList;
-        } catch (Exception e) {
-            log.error("Error searching sales records by date", e);
-            return Collections.emptyList();
-        }
     }
 
 }
