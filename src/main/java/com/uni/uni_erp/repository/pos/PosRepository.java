@@ -11,5 +11,4 @@ public interface PosRepository extends JpaRepository<Product, Integer> {
      List<Product> findByStoreId(Integer storeId);
 
 
-
 }

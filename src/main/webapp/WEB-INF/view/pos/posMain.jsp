@@ -152,12 +152,9 @@
             <!-- Product 리스트를 반복하여 동적으로 버튼 생성 -->
             <c:forEach var="product" items="${productList}">
                 <div class="menu-item">
-                    <button class="add-to-order" data-item="${product.name}" data-price="${product.price}" data-store-id="${storeId}">
+                    <button class="add-to-order" data-item="${product.name}" data-price="${product.price}" data-id="${product.id}">
                             ${product.name}<br>
-                        <script>
-                            // JavaScript로 가격에 천 단위 구분 기호 추가
-                            document.write(new Intl.NumberFormat().format(${product.price}) + '원');
-                        </script>
+                        <span class="product-price">${product.price}원</span>
                     </button>
                 </div>
             </c:forEach>
@@ -167,14 +164,111 @@
     <div class="order-section">
         <form id="product-submit">
             <h3>결제 목록</h3>
-            <button type="button">전체삭제</button>
+            <button type="button" id="clear-order">전체삭제</button>
             <div class="order-summary" id="orderList">
-                <p class="total">총 결제금액: 0원</p>
             </div>
             <button type="submit" class="payment-button">결제 버튼(총 금액: 0원)</button>
         </form>
     </div>
 </div>
+
+<script>
+    let orderList = [];
+    let totalAmount = 0;
+
+    function updateOrderSummary() {
+        const orderSummary = document.getElementById('orderList');
+        const paymentButton = document.querySelector('.payment-button');  // 함수가 호출될 때마다 요소를 다시 찾기
+        orderSummary.innerHTML = '';  // 기존 내용을 지움
+
+        // 주문 목록을 화면에 추가
+        orderList.forEach(function(item) {
+            const orderItem = document.createElement('p');
+            orderItem.textContent = item.name + ' - ' + item.price.toLocaleString() + '원 x ' + item.quantity;
+            orderSummary.appendChild(orderItem);
+        });
+
+
+        // 결제 버튼의 텍스트 업데이트
+        if (paymentButton) {
+            paymentButton.textContent = '결제 버튼(총 금액: ' + totalAmount.toLocaleString() + '원)';
+        } else {
+            console.error('paymentButton이 존재하지 않습니다.');
+        }
+
+        console.log(totalAmount);
+        console.log(orderList);
+    }
+
+
+    document.querySelectorAll('.add-to-order').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const itemName = this.getAttribute('data-item');
+            const itemId = this.getAttribute('data-id');
+            const itemPrice = parseInt(this.getAttribute('data-price'));
+
+            // 이미 주문 목록에 있는 항목인지 확인
+            const existingItem = orderList.find(function(item) {
+                return item.name === itemName;
+            });
+
+            if (existingItem) {
+                // 이미 있는 항목이면 수량과 총 금액 증가
+                existingItem.quantity += 1;
+            } else {
+                // 새로운 항목이면 목록에 추가
+                orderList.push({ name: itemName, price: itemPrice, quantity: 1, productId: itemId});
+            }
+
+            totalAmount += itemPrice;  // 총 금액 업데이트
+            updateOrderSummary();
+        });
+    });
+
+    document.getElementById('clear-order').addEventListener('click', function() {
+        orderList = [];
+        totalAmount = 0;
+        updateOrderSummary();
+    });
+
+    document.getElementById('product-submit').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        if (orderList.length === 0) {
+            alert('주문 항목이 없습니다.');
+            return;
+        }
+
+        const orderData = {
+            items: orderList,
+            totalAmount: totalAmount
+        };
+        console.log(orderList);
+        console.log(totalAmount);
+
+        fetch('/erp/pos/payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orderData)
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    alert('총 ' + totalAmount.toLocaleString() + '원이 결제되었습니다.');
+                    orderList = [];
+                    totalAmount = 0;
+                    updateOrderSummary();
+                    window.location.href = "/erp/pos/main"
+                } else {
+                    alert('결제에 실패했습니다. 다시 시도해주세요.');
+                }
+            })
+            .catch(function(error) {
+                alert('오류가 발생했습니다. 다시 시도해주세요.');
+            });
+    });
+</script>
 
 </body>
 </html>

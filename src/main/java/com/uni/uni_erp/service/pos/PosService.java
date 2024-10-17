@@ -1,10 +1,7 @@
 package com.uni.uni_erp.service.pos;
 
 import com.uni.uni_erp.domain.entity.erp.product.Product;
-import com.uni.uni_erp.repository.erp.product.ProductRepository;
 import com.uni.uni_erp.repository.pos.PosRepository;
-import com.uni.uni_erp.service.product.ProductService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +18,7 @@ public class PosService {
     }
 
     public List<Product> getProductsByStoreId(Integer storeId) {
+        
         return posRepository.findByStoreId(storeId);
     }
 
