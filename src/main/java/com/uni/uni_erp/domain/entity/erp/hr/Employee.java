@@ -1,7 +1,6 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
-import com.uni.uni_erp.domain.entity.Position;
-import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.Bank;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import jakarta.persistence.*;
 import lombok.*;
@@ -63,13 +62,24 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
 
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // EmpDocument와의 관계
+    private List<EmpDocument> empDocuments; // 리스트로 수정
+
+
+    @Column(nullable = false)  // Not Null 설정
+    private Integer storeEmployeeNumber;  // 각 가게별로 증가하는 직원 번호
+
+    @Column(unique = true, nullable = false)  // 고유한 사원번호, Not Null, 유니크 설정
+    private String uniqueEmployeeNumber;
+
+
     public enum EmploymentStatus {
         ACTIVE, // 재직중
         INACTIVE, // 퇴사
         ONLEAVE // 휴직
     }
 
-    @Column(name = "hired_at", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
 
     @Column(name = "quit_at", updatable = false)
@@ -78,8 +88,12 @@ public class Employee {
     @Column(name = "updated_at", nullable = false)
     private Timestamp updatedAt;
 
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
-    private List<EmpDocument> empDocuments;
+    @Column(name = "hired_at", nullable = true)
+    private Timestamp hiredAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bank_id", nullable = false)
+    private Bank bank; // 은행 정보를 참조 필드
 
     @PrePersist
     public void onCreate() {
@@ -93,4 +107,6 @@ public class Employee {
     public void onUpdate() {
         this.updatedAt = Timestamp.from(Instant.now());
     }
+
+
 }
