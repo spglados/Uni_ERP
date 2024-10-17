@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -23,9 +25,10 @@ public class Material {
 
     private String name;
 
-    private String category;
+    // 유저 + 가게 + 아이디
+    private Long materialCode;
 
-    private Double amount;
+    private String category;
 
     @Enumerated(EnumType.STRING)
     private UnitCategory unit;
@@ -35,11 +38,28 @@ public class Material {
     @Enumerated(EnumType.STRING)
     private UnitCategory subUnit;
 
+    private LocalDate enterDate;
+
+    private Double alarmCycle;
+
+    @Enumerated(EnumType.STRING)
+    private UnitCategory alarmUnit;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @OneToMany(mappedBy = "material", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "material", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MaterialOrder> orders;
+
+    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MaterialStatus> statusHistory;
+
+    @PrePersist
+    protected void onCreate() {
+        if (enterDate == null) {
+            enterDate = LocalDate.now();
+        }
+    }
 
 }

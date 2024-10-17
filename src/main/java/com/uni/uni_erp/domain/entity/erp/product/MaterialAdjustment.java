@@ -6,8 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "material_adjustment_tb")
@@ -25,10 +26,11 @@ public class MaterialAdjustment {
 
     private Double actualAmount;
 
-    @Enumerated(EnumType.STRING)
-    private UnitCategory unit;
+    @Column(nullable = false)
+    @CreatedDate
+    private LocalDate statusDate;  // 실자재 상태가 기록된 날짜
 
-    private Timestamp createdAt;
+    private Double loss;  // 이론 재고와 실제 재고의 차이
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Material material;

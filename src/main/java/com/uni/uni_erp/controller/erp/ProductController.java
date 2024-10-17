@@ -2,11 +2,9 @@ package com.uni.uni_erp.controller.erp;
 
 import com.google.gson.Gson;
 import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.domain.entity.erp.product.Material;
-import com.uni.uni_erp.domain.entity.erp.product.Product;
-import com.uni.uni_erp.dto.product.IngredientDTO;
-import com.uni.uni_erp.dto.product.MaterialDTO;
-import com.uni.uni_erp.dto.product.ProductDTO;
+import com.uni.uni_erp.dto.erp.product.IngredientDTO;
+import com.uni.uni_erp.dto.erp.material.MaterialDTO;
+import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import com.uni.uni_erp.exception.errors.Exception401;
 import com.uni.uni_erp.service.product.ProductService;
 import jakarta.servlet.http.HttpSession;
@@ -17,8 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import java.util.List;
 
 @Controller
@@ -84,7 +80,6 @@ public class ProductController {
 
     @PutMapping("/ingredient")
     public ResponseEntity<IngredientDTO> updateIngredient(@RequestBody IngredientDTO dto) {
-        System.out.println(dto.toString());
         if (dto == null) {
             return ResponseEntity.notFound().build();
         }
