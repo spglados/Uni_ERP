@@ -41,8 +41,8 @@ public class ScheduleDTO {
 
         private String id; // Schedule.id
         private String title; // Employee.name
-        private String startTime; // Schedule.startTime
-        private String endTime; // Schedule.endTime
+        private String start; // Schedule.startTime
+        private String end; // Schedule.endTime
         private CustomProperty extendedProps; // 커스텀 속성
         private boolean allDay;
 

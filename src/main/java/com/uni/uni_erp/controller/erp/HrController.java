@@ -1,5 +1,7 @@
 package com.uni.uni_erp.controller.erp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.EmployeeDTO;
@@ -56,14 +58,19 @@ public class HrController {
      * @return
      */
     @GetMapping("/schedule")
-    public String schedulePage(@RequestParam(name = "type", required = false) String type, Model model) {
+    public String schedulePage(@RequestParam(name = "type", required = false) String type, Model model) throws JsonProcessingException {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         // 문자열로 받은 type을 enum 타입으로 변환
         Schedule.ScheduleType scheduleType = EnumCommonUtil.getEnumFromString(Schedule.ScheduleType.class, type);
+
+        // 일정 조회
         List<ScheduleDTO.ResponseDTO> schedules = scheduleService.findByStoreIdAndType(storeId, scheduleType);
 
-        model.addAttribute("schedules", schedules);
+        // 모든 근무자 조회
+        hrService.getEmployeesByStoreId(storeId);
+        String schedulesJson = new ObjectMapper().writeValueAsString(schedules);
+        model.addAttribute("schedules", schedulesJson);
 
         return "/erp/hr/schedule";
     }

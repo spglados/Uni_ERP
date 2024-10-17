@@ -27,14 +27,19 @@ export function submitAddEvent(calendar) {
     const startDate = document.getElementById('eventStart').value;
     const startTime = document.getElementById('eventStartTime').value;
     const endTime = document.getElementById('eventEndTime').value;
-
+    const isNextDay = document.getElementById('isNextDay').checked;
+    console.log('isNextDay', isNextDay);
     if (!isValidTime(startTime) || !isValidTime(endTime)) {
         alert('시간은 10분 단위로 입력해야 합니다.');
         return;
     }
 
+    let endDate = new Date(startDate);
+    if (isNextDay) {
+        endDate = new Date(endDate.getTime() + 24 * 60 * 60 * 1000);
+    }
     const start = startDate + 'T' + startTime;
-    const end = startDate + 'T' + endTime;
+    const end =  endDate.toISOString().split('T')[0] + 'T' + endTime;
 
     if (!validateEventDates(start, end)) {
         alert('날짜를 확인해주세요');
@@ -58,7 +63,7 @@ export function submitAddEvent(calendar) {
 function validateEventDates(start, end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    return startDate.toDateString() === endDate.toDateString() && startDate <= endDate;
+    return  startDate < endDate;
 }
 
 // 시간 유효성 검사
@@ -101,12 +106,3 @@ function setupElements() {
     const endTimeInput = document.getElementById('eventEndTime');
     addTimeOptions(endTimeInput);
 }
-
-// document.addEventListener('DOMContentLoaded', function () {
-//     setupEventListeners();
-//
-//     const startTimeInput = document.getElementById('eventStartTime');
-//     addTimeOptions(startTimeInput);
-//     const endTimeInput = document.getElementById('eventEndTime');
-//     addTimeOptions(endTimeInput);
-// });

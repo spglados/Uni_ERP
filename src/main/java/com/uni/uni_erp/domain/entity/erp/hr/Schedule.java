@@ -30,15 +30,19 @@ public class Schedule {
     @JoinColumn(name = "emp_id", nullable = false)
     private Employee employee;
 
-    @Column(name = "start_time", updatable = false)
+    @Column(name = "start_time", nullable = true)
     private Timestamp startTime;
 
-    @Column(name = "end_time", updatable = false)
+    @Column(name = "end_time", nullable = true)
     private Timestamp endTime;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id", nullable = true)
+    private Schedule planSchedule;
 
     public enum ScheduleType {
         PLAN, // 계획
@@ -49,8 +53,8 @@ public class Schedule {
         return ScheduleDTO.ResponseDTO.builder()
                 .id(String.valueOf(id))
                 .title(employee.getName())
-                .startTime(DateFormatter.toIsoFormat(startTime))
-                .endTime(DateFormatter.toIsoFormat(endTime))
+                .start(DateFormatter.toIsoFormat(startTime))
+                .end(DateFormatter.toIsoFormat(endTime))
                 .extendedProps(ScheduleDTO.CustomProperty.builder()
                         .empId(employee.getId())
                         .type(EnumCommonUtil.getStringFromEnum(scheduleType))

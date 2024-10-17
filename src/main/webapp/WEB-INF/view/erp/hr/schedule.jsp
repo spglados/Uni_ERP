@@ -18,7 +18,13 @@
             <label for="eventStartTime">시작 시간:</label>
             <select id="eventStartTime" name="eventStartTime" required></select><br><br>
 
-            <label for="eventEndTime">종료 시간:</label>
+            <div class="d-flex justify-content-between">
+                <label for="eventEndTime">종료 시간:</label>
+                <div>
+                    <label for="isNextDay">다음 날 종료</label>
+                    <input type="checkbox" id="isNextDay" name="isNextDay">
+                </div>
+            </div>
             <select id="eventEndTime" name="eventEndTime" required></select><br><br>
 
             <button type="submit">추가</button>
@@ -28,8 +34,7 @@
 
 <%-- 일정 데이터 초기화 --%>
 <script type="application/javascript">
-    const schedules = "${schedules}";
-    console.log(schedules);
+    const scheduleList = JSON.parse('${schedules}');
 </script>
 <%-- 캘린더 초기 랜더링 --%>
 <script type="module">
@@ -37,7 +42,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
-        initializeCalendar(calendarEl);
+        initializeCalendar(calendarEl, scheduleList);
     });
 
 </script>
