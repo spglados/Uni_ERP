@@ -1,6 +1,6 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
-import com.uni.uni_erp.dto.product.IngredientDTO;
+import com.uni.uni_erp.dto.erp.product.IngredientDTO;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,6 +27,10 @@ public class Ingredient {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UnitCategory unit;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "material_id", nullable = false)
+    private Material material;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)

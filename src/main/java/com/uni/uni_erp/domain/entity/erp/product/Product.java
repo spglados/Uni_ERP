@@ -1,6 +1,6 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
-import com.uni.uni_erp.dto.product.ProductDTO;
+import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import jakarta.persistence.*;
         import lombok.*;
 

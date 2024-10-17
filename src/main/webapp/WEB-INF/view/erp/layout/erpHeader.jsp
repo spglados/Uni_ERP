@@ -26,25 +26,29 @@
             <li>
                 <a href="javascript:void(0);" class="hr-toggle">인사 관리 ▼</a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/hr/employeeRegister">직원 등록</a></li>
-                    <li><a href="/erp/hr/employeeList">직원 목록</a></li>
+                    <li><a href="/erp/hr/employee-register">직원 등록</a></li>
+                    <li><a href="/erp/hr/employee-list">직원 목록</a></li>
+                    <li><a href="/erp/hr/schedule">근무 일정</a></li>
                 </ul>
             </li>
             <li>
                 <a href="javascript:void(0);" class="inventory-toggle">재고 관리 ▼</a>
                 <ul class="sub-menu">
                     <li><a href="/erp/inventory/receiving">입고 관리</a></li>
-                    <li><a href="/erp/inventory/shipping">출고 관리</a></li>
-                    <li><a href="/erp/inventory/status">재고 현황</a></li>
-                    <li><a href="/erp/inventory/adjustment">재고 조정</a></li>
-                    <li><a href="/erp/inventory/suppliers">공급자 관리</a></li>
+                    <li><a href="/erp/inventory/register">재고 등록</a></li>
+                    <li><a href="/erp/inventory/situation">재고 현황</a></li>
+                    <li><a href="/erp/inventory/status">재고 상태</a></li>
+                    <li><a href="/erp/inventory/day-adjustment">일 재고 현황</a></li>
+                    <li><a href="/erp/inventory/month-adjustment">월 재고 현황</a></li>
+                    <li><a href="/erp/inventory/dispose">폐기 관리</a></li>
                 </ul>
             </li>
             <li>
                 <a href="javascript:void(0);" class="sales-toggle">매출 관리 ▼</a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/sales/record">매출 기록</a></li>
-                    <li><a href="/erp/sales/customers">고객 관리</a></li>
+                    <li><a href="/erp/sales/record">매출 입력</a></li>
+                    <li><a href="/erp/sales/history">매출 기록</a></li>
+                    <li><a href="/erp/sales/statistics">매출 통계</a></li>
                 </ul>
             </li>
             <li>
