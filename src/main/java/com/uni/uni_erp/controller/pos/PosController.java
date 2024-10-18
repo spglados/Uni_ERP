@@ -29,16 +29,16 @@ public class PosController {
      * @return
      */
     @GetMapping("/main")
-    public String showPosMainPage(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "12") int size,
+    public String showPosMainPage(@RequestParam(defaultValue = "0", name = "page") int page,
+                                  @RequestParam(defaultValue = "12", name = "size") int size,
                                   Model model,
                                   HttpSession session) {
 
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         Page<Product> productList = posService.getProductsByStoreId(storeId, page, size);
-        model.addAttribute("productList", productList.getContent());
-        model.addAttribute("currentPage", page + 1);
+        model.addAttribute("productList", productList);
+        model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productList.getTotalPages());
         model.addAttribute("pageSize", size);
 

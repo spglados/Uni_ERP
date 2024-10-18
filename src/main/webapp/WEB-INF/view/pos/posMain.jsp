@@ -138,6 +138,33 @@
             }
         }
 
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pagination a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #007bff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+
+        .pagination a.active {
+            font-weight: bold;
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        .pagination a:hover {
+            background-color: #f2f2f2;
+        }
+
     </style>
 </head>
 <body>
@@ -151,7 +178,7 @@
         <h2>주문 목록</h2>
         <div class="menu-grid">
             <!-- Product 리스트를 반복하여 동적으로 버튼 생성 -->
-            <c:forEach var="product" items="${productList}">
+            <c:forEach var="product" items="${productList.content}">
                 <div class="menu-item">
                     <button class="add-to-order" data-item="${product.name}" data-price="${product.price}" data-id="${product.id}">
                             ${product.name}<br>
@@ -163,13 +190,13 @@
 
         <div class="pagination">
             <c:if test="${productList.hasPrevious()}">
-                <a href="/erp/pos/main?page=${currentPage - 1}&size=${pageSize}">&laquo; 이전</a>
+                <a href="/erp/pos/main?page=${currentPage - 1}&size=${pageSize}">&laquo;</a>
             </c:if>
-            <c:forEach begin="1" end="${notices.totalPages}" var="i">
+            <c:forEach begin="1" end="${productList.totalPages}" var="i">
                 <a href="/erp/pos/main?page=${i - 1}&size=${pageSize}" class="${i == currentPage ? 'active' : ''}">${i}</a>
             </c:forEach>
-            <c:if test="${notices.hasNext()}">
-                <a href="/erp/pos/main?page=${currentPage}&size=${pageSize}">다음 &raquo;</a>
+            <c:if test="${productList.hasNext()}">
+                <a href="/erp/pos/main?page=${currentPage}&size=${pageSize}">&raquo;</a>
             </c:if>
         </div>
 

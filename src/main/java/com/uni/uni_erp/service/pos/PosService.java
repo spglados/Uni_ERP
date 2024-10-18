@@ -22,7 +22,7 @@ public class PosService {
     }
 
     public Page<Product> getProductsByStoreId(Integer storeId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("Id"));
+        Pageable pageable = PageRequest.of(page, size);
         return posRepository.findByStoreId(storeId, pageable);
     }
 
