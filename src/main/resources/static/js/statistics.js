@@ -1,62 +1,45 @@
 window.onload = function() {
-  const startDateInput = document.getElementById('startDate');
-  const endDateInput = document.getElementById('endDate');
   const currentDate = new Date();
-  const oneMonthAgo = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-  if (startDateInput && endDateInput) {
-    startDateInput.value = oneMonthAgo.toISOString().slice(0, 16);
-    endDateInput.value = currentDate.toISOString().slice(0, 16);
-  }
-
+  const formattedDate = formatDate(currentDate) + " 일 통계입니다";
+  document.getElementById("currentDate").innerHTML = formattedDate;
 };
 
-var salesHistory = [];
-var itemCountHistory = [];
-var itemProfitHistory = [];
-var chart = null;
-var itemCountChart = null;
-var itemProfitChart = null;
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
-function updateCharts(chartType) {
+let salesHistory = [];
+let itemCountHistory = [];
+let itemProfitHistory = [];
+let chart = null;
+let itemCountChart = null;
+let itemProfitChart = null;
+
+function updateCharts() {
   const ctx1 = document.getElementById('sales-chart').getContext('2d');
   const ctx2 = document.getElementById('item-count-chart').getContext('2d');
   const ctx3 = document.getElementById('item-profit-chart').getContext('2d');
 
-  console.log('salesHistory:', salesHistory);
-  console.log('itemCountHistory:', itemCountHistory);
-  console.log('itemProfitHistory:', itemProfitHistory);
-
-  const salesDates = [];
   const salesPrices = [];
   const itemName = itemProfitHistory.map(item => item.itemName);
   const itemCountValues = itemProfitHistory.map(item => item.quantity);
   const itemProfitValues = itemProfitHistory.map(item => item.quantity * item.unitPrice);
+  const hours = Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+
+  console.log(salesHistory);
+  console.log(itemName);
+  console.log(itemCountValues);
+  console.log(itemProfitValues);
 
   salesHistory.forEach(function(sale) {
-    var date = new Date(sale.salesDate);
-    var formattedDate;
-
-    switch (chartType) {
-      case 'hourly':
-        formattedDate = date.toLocaleTimeString(); // Get the hour only
-        break;
-      case 'daily':
-        formattedDate = date.toLocaleDateString(); // Get the day only
-        break;
-      case 'monthly':
-        formattedDate = date.toLocaleString('default', { month: 'long', year: 'numeric' }); // Get the month and year
-        break;
-      case 'yearly':
-        formattedDate = date.getFullYear(); // Get the year only
-        break;
-    }
-
-    const existingIndex1 = salesDates.findIndex(date => date === formattedDate);
+    const existingIndex1 = salesPrices.findIndex(date => date === sale.salesDate);
     if (existingIndex1 !== -1) {
       salesPrices[existingIndex1] += sale.totalPrice;
     } else {
-      salesDates.push(formattedDate);
+      salesPrices.push(sale.salesDate);
       salesPrices.push(sale.totalPrice);
     }
 
@@ -74,16 +57,20 @@ function updateCharts(chartType) {
     }
   });
 
+
   if (chart) {
     chart.destroy();
   }
   chart = new Chart(ctx1, {
     type: 'line',
     data: {
-      labels: salesDates,
+      labels: hours,
       datasets: [{
         label: '총 매출',
-        data: salesPrices,
+        data: hours.map(hour => {
+          const sales = salesHistory.filter(s => new Date(s.salesDate).getHours() === parseInt(hour.split(':')[0]));
+          return sales.reduce((acc, sale) => acc + sale.totalPrice, 0);
+        }),
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 1
@@ -100,6 +87,13 @@ function updateCharts(chartType) {
       scales: {
         x: { // x 축 설정
           type: 'category', // 기본 설정
+          ticks: {
+            autoSkip: false, // display all ticks
+            maxRotation: 0, // prevent rotation of tick labels
+            font: {
+              size: 10 // adjust font size to fit all labels
+            }
+          }
         },
         y: { // y 축 설정
           beginAtZero: false, // y축 값이 0부터 시작하게 설정
@@ -191,150 +185,28 @@ function updateCharts(chartType) {
   });
 }
 
-$.ajax({
-  type: "GET",
-  url: "/erp/sales/data",
-  success: function(data) {
-    salesHistory = data;
-    updateCharts('hourly');
-  }
-});
-
-$.ajax({
-  type: "GET",
-  url: "/erp/sales/itemCount",
-  success: function(data) {
-    itemCountHistory = data;
-    updateCharts('hourly');
-  }
-});
-
-$.ajax({
-  type: "GET",
-  url: "/erp/sales/itemProfit",
-  success: function(data) {
-    itemProfitHistory = data;
-    updateCharts('hourly');
-  }
-});
-
-function updateSalesChart(chartType) {
-  const ctx1 = document.getElementById('sales-chart').getContext('2d');
-
-  console.log('salesHistory:', salesHistory);
-
-  const salesDates = [];
-  const salesPrices = [];
-
-  salesHistory.forEach(function(sale) {
-    var date = new Date(sale.salesDate);
-    var formattedDate;
-
-    switch (chartType) {
-      case 'hourly':
-        formattedDate = date.toLocaleTimeString(); // Get the hour only
-        break;
-      case 'daily':
-        formattedDate = date.toLocaleDateString(); // Get the day only
-        break;
-      case 'monthly':
-        formattedDate = date.toLocaleString('default', { month: 'long', year: 'numeric' }); // Get the month and year
-        break;
-      case 'yearly':
-        formattedDate = date.getFullYear(); // Get the year only
-        break;
-    }
-
-    const existingIndex = salesDates.findIndex(date => date === formattedDate);
-    if (existingIndex !== -1) {
-      salesPrices[existingIndex] += sale.totalPrice;
-    } else {
-      salesDates.push(formattedDate);
-      salesPrices.push(sale.totalPrice);
-    }
-  });
-
-  if (chart) {
-    chart.destroy();
-  }
-  chart = new Chart(ctx1, {
-    type: 'line',
-    data: {
-      labels: salesDates,
-      datasets: [{
-        label: 'Sales',
-        data: salesPrices,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: false,
-      plugins: {
-        title: {
-          display: true,
-          text: '매출 차트'
-        }
-      },
-      scales: {
-        x: { // x 축 설정
-          type: 'category', // 기본 설정
-        },
-        y: { // y 축 설정
-          beginAtZero: false, // y축 값이 0부터 시작하게 설정
-          ticks: {
-            stepSize: 10000 // y축 값의 간격 설정
-          }
-        }
-      }
-    }
-  });
-}
-
-function submitDates() {
-  var startDate = document.getElementById('startDate').value;
-  var endDate = document.getElementById('endDate').value;
-  var storeId = document.getElementById('storeId').value;
-
-  var data = {
-    startDate: startDate,
-    endDate: endDate
-  };
-
-  if (storeId !== '') {
-    data.storeId = storeId;
-  }
-
-  jQuery.ajax({
+$.when(
+  $.ajax({
     type: "GET",
     url: "/erp/sales/data",
-    data: data,
     success: function(data) {
       salesHistory = data;
     }
-  });
-
-  jQuery.ajax({
+  }),
+  $.ajax({
     type: "GET",
     url: "/erp/sales/itemCount",
-    data: data,
     success: function(data) {
       itemCountHistory = data;
     }
-  });
-
-  jQuery.ajax({
+  }),
+  $.ajax({
     type: "GET",
     url: "/erp/sales/itemProfit",
-    data: data,
     success: function(data) {
       itemProfitHistory = data;
-      updateCharts('hourly');
     }
-  });
-}
-
-$(document).ready(function() {
-  $('#confirm-button').on('click', submitDates);
+  })
+).then(function() {
+  updateCharts();
 });

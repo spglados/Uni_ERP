@@ -87,11 +87,8 @@ public class SalesController {
 
     // 3. 차트 분석/통계 페이지
     @GetMapping("/statistics")
-    public String salesStatistics(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userSession");
-        List<Integer> storeIdList = storeService.ownedStores(user.getId());
+    public String salesStatistics() {
 
-        model.addAttribute("storeIdList", storeIdList);
         return "erp/sales/statistics";
     }
 

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
+@ToString
 public class SalesDTO {
     private Integer id;
     private Integer orderNum;

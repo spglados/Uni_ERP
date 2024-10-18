@@ -1,6 +1,5 @@
 package com.uni.uni_erp.service;
 
-import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.repository.sales.SalesDetailRepository;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +16,6 @@ public class SalesService {
 
     private final SalesRepository salesRepository;
     private final SalesDetailRepository salesDetailRepository;
-
-    public List<SalesDTO> findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate) {
-        return salesRepository.findAllBySalesDateBetweenOrderBySalesDateAsc(startDate, endDate);
-    }
 
     public List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
         return salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);

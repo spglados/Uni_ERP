@@ -1,21 +1,23 @@
 package com.uni.uni_erp.controller.erp;
 
-import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.service.SalesService;
-import com.uni.uni_erp.service.user.StoreService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,18 +32,20 @@ public class SalesRestController {
     private EntityManager entityManager;
 
     private final SalesService salesService;
-    private final StoreService storeService;
 
     @GetMapping("/data")
-    public List<SalesDTO> getSalesData(@RequestParam(value = "startDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().minusMonths(1).truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String startDate,
-                                       @RequestParam(value = "endDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String endDate,
-                                       @RequestParam(value = "storeId", required = false) Integer storeId) {
+    public List<SalesDTO> getSalesData(HttpSession session) {
         try {
-            if (storeId != null) {
-                return salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate), storeId);
-            } else {
-                return salesService.findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate));
-            }
+            LocalDate today = LocalDate.now();
+            LocalDateTime startDate = today.atStartOfDay();
+            LocalDateTime endDate = today.atTime(LocalTime.MAX);
+            Integer storeId = (Integer) session.getAttribute("storeId");
+            System.err.println(storeId);
+            System.err.println(startDate);
+            System.err.println(endDate);
+            System.err.println(salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId));
+            return salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+
         } catch (Exception e) {
             log.error("Error searching sales records by date", e);
             return Collections.emptyList();
@@ -49,16 +53,14 @@ public class SalesRestController {
     }
 
     @GetMapping("/itemCount")
-    public List<SalesDetailDTO> getItemCount(@RequestParam(value = "startDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().minusMonths(1).truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String startDate,
-                                             @RequestParam(value = "endDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String endDate,
-                                             @RequestParam(value = "storeId", required = false) Integer storeId) {
+    public List<SalesDetailDTO> getItemCount(HttpSession session) {
         try {
+            LocalDate today = LocalDate.now();
+            LocalDateTime startDate = today.atStartOfDay();
+            LocalDateTime endDate = today.atTime(LocalTime.MAX);
+            Integer storeId = (Integer) session.getAttribute("storeId");
             List<SalesDTO> salesList;
-            if (storeId != null) {
-                salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate), storeId);
-            } else {
-                salesList = salesService.findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate));
-            }
+            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
             List<SalesDetailDTO> salesDetailList = salesService.findAllByOrderNumIn(salesList);
             return salesDetailList.stream()
                     .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode))
@@ -80,16 +82,14 @@ public class SalesRestController {
     }
 
     @GetMapping("/itemProfit")
-    public List<SalesDetailDTO> getItemProfit(@RequestParam(value = "startDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().minusMonths(1).truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String startDate,
-                                              @RequestParam(value = "endDate", required = true, defaultValue = "#{T(java.time.LocalDateTime).now().truncatedTo(T(java.time.temporal.ChronoUnit).MINUTES).toString()}") String endDate,
-                                              @RequestParam(value = "storeId", required = false) Integer storeId) {
+    public List<SalesDetailDTO> getItemProfit(HttpSession session) {
         try {
+            LocalDate today = LocalDate.now();
+            LocalDateTime startDate = today.atStartOfDay();
+            LocalDateTime endDate = today.atTime(LocalTime.MAX);
+            Integer storeId = (Integer) session.getAttribute("storeId");
             List<SalesDTO> salesList;
-            if (storeId != null) {
-                salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate), storeId);
-            } else {
-                salesList = salesService.findAllBySalesDateBetweenOrderBySalesDateAsc(LocalDateTime.parse(startDate), LocalDateTime.parse(endDate));
-            }
+            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
             List<SalesDetailDTO> salesDetailList = salesService.findAllByOrderNumIn(salesList);
             return salesDetailList.stream()
                     .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode))
