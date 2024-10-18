@@ -22,6 +22,7 @@ public class EmployeeDTO {
     private String phone;
     private String address;
     private Integer bankId; // 은행명
+    private String bankName;
     private String accountNumber;
     private String position;
     private Integer storeId;
@@ -35,12 +36,21 @@ public class EmployeeDTO {
     private Timestamp updatedAt;
     private Timestamp quitAt;
 
+    private boolean employmentContract;
+    private boolean healthCertificate;
+    private String healthCertificateDate; //보건 갱신날짜
+    private boolean identificationCopy;
+    private boolean bankAccountCopy;
+    private boolean residentRegistration;
+
+    //등록시 기본 값 초기화
     public EmpDocumentDTO getEmpDocumentDTO() {
         if (empDocumentDTO == null) {
             empDocumentDTO = new EmpDocumentDTO(); // 기본값으로 초기화
         }
         return empDocumentDTO;
     }
+
 
 
     // EmployeeDTO로 변환하는 생성자
@@ -51,7 +61,11 @@ public class EmployeeDTO {
         this.email = employee.getEmail();
         this.phone = employee.getPhone();
         this.address = employee.getAddress();
-        this.bankId = employee.getBank() != null ? employee.getBank().getId() : null; // 은행 ID
+        // 은행 ID와 은행 이름 설정
+        if (employee.getBank() != null) {
+            this.bankId = employee.getBank().getId();
+            this.bankName = employee.getBank().getName(); // 은행 이름 설정
+        }
         this.accountNumber = employee.getAccountNumber();
         this.position = employee.getPosition();
         this.storeId = employee.getStore() != null ? employee.getStore().getId() : null; // 상점 ID
@@ -61,6 +75,7 @@ public class EmployeeDTO {
         this.hiredAt = employee.getHiredAt();
         this.updatedAt = employee.getUpdatedAt();
         this.quitAt = employee.getQuitAt();
+        //this.healthCertificateDate = employee.toEmployeeDTO().getHealthCertificateDate();
 
         // EmpDocumentDTO로 변환 (문서 정보가 없을 경우 빈 객체로 초기화)
         if (employee.getEmpDocument() != null) {

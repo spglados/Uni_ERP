@@ -1,12 +1,10 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.dto.BankDTO;
 import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.service.erp.hr.HrService;
-import com.uni.uni_erp.util.date.GsonUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -46,15 +44,9 @@ public class HrController {
     @GetMapping("/employee-list")
     public String employeeListPage(HttpSession session, Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        // 스토어에 해당하는 직원 목록과 문서 정보를 동시에 가져옴
-        List<Employee> employees = hrService.getEmployeesByStoreIdWithDocuments(storeId);
-        JsonArray temp = new JsonArray();
-        for (Employee employee : employees) {
-            temp.addAll(GsonUtil.toJsonArray(employee.getEmpDocument()));
-        }
-        model.addAttribute("employeesJson", temp);
-        model.addAttribute("employees", employees); // 직원 목록을 모델에 추가
-
+        List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreIdWithDocuments(storeId);
+        model.addAttribute("employees", employeeDTOList); // 직원 목록을 모델에 추가
+        model.addAttribute("employeesJson", Gson.toJson(employeeDTOList));
         return "erp/hr/employeeList"; // 직원 목록 페이지 반환
     }
 

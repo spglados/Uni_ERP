@@ -6,6 +6,7 @@ import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.BankDTO;
 import com.uni.uni_erp.dto.EmployeeDTO;
+import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.repository.bank.BankReposigory;
 import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -140,8 +142,18 @@ public class HrService {
         return hrRepository.findByEmployeeId(employeeId);
     }
 
-    public List<Employee> getEmployeesByStoreIdWithDocuments(Integer storeId) {
-        return empDocumentRepository.findByStoreIdWithDocuments(storeId);
+    public List<EmployeeDTO> getEmployeesByStoreIdWithDocuments(Integer storeId) {
+        List<Employee> employees = empDocumentRepository.findByStoreIdWithDocuments(storeId);
+
+        if(employees.isEmpty()) {
+            throw new Exception404("등록된 직원이 없습니다.");
+        }
+
+        List<EmployeeDTO> empDocumentDTOS = new ArrayList<>();
+        for (Employee employee : employees) {
+            empDocumentDTOS.add(employee.toEmployeeDTO());
+        }
+        return empDocumentDTOS;
     }
 
 }

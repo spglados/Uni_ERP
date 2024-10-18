@@ -26,8 +26,9 @@
         data-email="${employee.email}"
         data-phone="${employee.phone}"
         data-status="${employee.employmentStatus}"
-        data-bank="${employee.bank != null ? employee.bank.name : '정보 없음'}"
-        data-account="${employee.accountNumber}">
+        data-bank="${employee.bankName != null ? employee.bankName : '정보 없음'}"
+        data-account="${employee.accountNumber}"
+        data-healthcertificatedate="${employee.healthCertificateDate}">
         <td>${employee.uniqueEmployeeNumber}</td>
         <td>${employee.name}</td>
         <td>${employee.position}</td>
@@ -70,22 +71,23 @@
                     row.dataset.status === 'INACTIVE' ? '퇴사' : row.dataset.status === 'ONLEAVE' ? '휴직' : '정보 없음';
                 const bank = row.dataset.bank;
                 const account = row.dataset.account;
-
+                const emplcont = temp.employmentContract;
 
                 // 문서 정보 추가
                 let documents = {};
 
                 // 현재 선택한 row의 employee_id를 uniqueId로 사용하여 temp에서 해당 employee의 문서 정보 찾기
-                const employeeDocument = temp.find(emp => emp.employee_id === uniqueId);
+                const employeeDocument = temp.find(emp => emp.uniqueEmployeeNumber === uniqueId);
                 console.log('employeeDocument', employeeDocument);
 
                 if (employeeDocument) {
                     documents = {
-                        employmentContract: employeeDocument.employment_contract,
-                        healthCertificate: employeeDocument.health_certificate,
-                        identificationCopy: employeeDocument.identification_copy,
-                        bankAccountCopy: employeeDocument.bank_account_copy,
-                        residentRegistration: employeeDocument.resident_registration
+                        employmentContract: employeeDocument.employmentContract,
+                        healthCertificate: employeeDocument.healthCertificate,
+                        healthCertificateDate: employeeDocument.healthCertificateDate,
+                        identificationCopy: employeeDocument.identificationCopy,
+                        bankAccountCopy: employeeDocument.bankAccountCopy,
+                        residentRegistration: employeeDocument.residentRegistration
                     };
                 } else {
                     console.error("해당 employee_id에 맞는 문서 정보를 찾을 수 없습니다.");
@@ -107,10 +109,11 @@
                     '<ul>' +
                     '<li>근로계약서: ' + (documents.employmentContract ? '제출됨' : '미제출') + '</li>' +
                     '<li>보건증: ' + (documents.healthCertificate ? '제출됨' : '미제출') + '</li>' +
+                    '<li>보건증: ' + (documents.healthCertificateDate + '</li>' +
                     '<li>신분증 사본: ' + (documents.identificationCopy ? '제출됨' : '미제출') + '</li>' +
                     '<li>통장 사본: ' + (documents.bankAccountCopy ? '제출됨' : '미제출') + '</li>' +
                     '<li>주민등록등본: ' + (documents.residentRegistration ? '제출됨' : '미제출') + '</li>' +
-                    '</ul>';
+                    '</ul>');
             }
         });
     });
