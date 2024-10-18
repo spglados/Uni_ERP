@@ -1,4 +1,4 @@
-package com.uni.uni_erp.dto.product;
+package com.uni.uni_erp.dto.erp.product;
 
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import lombok.*;

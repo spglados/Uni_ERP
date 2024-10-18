@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "material_order_tb")
@@ -30,16 +33,33 @@ public class MaterialOrder {
     @Enumerated(EnumType.STRING)
     private UnitCategory unit;
 
-    private Double subAmount;
-
-    @Enumerated(EnumType.STRING)
-    private UnitCategory subUnit;
-
     private String supplier;
 
-    private Timestamp receiptDate;
+    @CreatedDate
+    private LocalDateTime receiptDate;
+
+    @Column(nullable = false)
+    private LocalDate expirationDate;
+
+    private Boolean isUse;
 
     @ManyToOne
     @JoinColumn(name = "material_id", nullable = false)
     private Material material;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id", nullable = false)
+    private MaterialStatus status;
+
+    @PrePersist
+    protected void onCreate() {
+        if (receiptDate == null) {
+            receiptDate = LocalDateTime.now();
+        }
+
+        if(isUse == null) {
+            isUse = Boolean.TRUE;
+        }
+
+    }
 }

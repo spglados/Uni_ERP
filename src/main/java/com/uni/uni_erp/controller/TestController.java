@@ -1,6 +1,6 @@
 package com.uni.uni_erp.controller;
 
-import com.uni.uni_erp.dto.product.IngredientDTO;
+import com.uni.uni_erp.dto.erp.product.IngredientDTO;
 import com.uni.uni_erp.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
