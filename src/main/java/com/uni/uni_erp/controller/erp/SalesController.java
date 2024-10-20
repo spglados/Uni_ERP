@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +57,8 @@ public class SalesController {
     // 2. 조회 + 관리/수정 페이지
     @GetMapping("/history")
     public String salesHistory(Model model, @SessionAttribute("userSession") User user) {
-//        model.addAttribute("salesHistory", salesService.findByUserId(user.getId()));
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        model.addAttribute("currentYear", currentYear);
 
         return "erp/sales/history";
     }

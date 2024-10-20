@@ -136,12 +136,12 @@ function updateCharts() {
           text: '품목 별 매출 비율'
         }
       },
+      indexAxis: 'y',
       scales: {
         x: { // x 축 설정
-          type: 'category', // 기본 설정
+          beginAtZero: false, // 0부터 시작 설정
         },
         y: { // y 축 설정
-          beginAtZero: true, // y축 값이 0부터 시작하게 설정
           ticks: {
             stepSize: 10 // y축 값의 간격 설정
           }
