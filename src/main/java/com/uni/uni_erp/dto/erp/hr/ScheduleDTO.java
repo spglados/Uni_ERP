@@ -3,7 +3,6 @@ package com.uni.uni_erp.dto.erp.hr;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.util.Str.EnumCommonUtil;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +26,6 @@ public class ScheduleDTO {
                     .employee(emp)
                     .startTime(Timestamp.valueOf(startTime.replace("T", " ")))
                     .endTime(Timestamp.valueOf(endTime.replace("T", " ")))
-                    .scheduleType(EnumCommonUtil.getEnumFromString(Schedule.ScheduleType.class, type))
                     .build();
         }
     }
@@ -55,7 +53,8 @@ public class ScheduleDTO {
     @Builder
     public static class CustomProperty {
         private Integer empId; // Employee.id
-        private String type; // Schedule.
+        private String status; // Schedule.Status
+        private Integer minutes;
     }
 
 

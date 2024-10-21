@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -38,16 +39,23 @@ public class Schedule {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ScheduleType scheduleType;
+    @Builder.Default
+    private Status status = Status.NOT_EXECUTED;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id", nullable = true)
-    private Schedule planSchedule;
+    @RequiredArgsConstructor
+    @Getter
+    public enum Status {
+        NOT_EXECUTED("이행되지 않음"),
+        LATE("지각"),
+        LEFT_EARLY("조퇴"),
+        ATTENDED("출근");
 
-    public enum ScheduleType {
-        PLAN, // 계획
-        EXECUTE // 실행
+        private final String description;
     }
+
+    // 지각이나 조퇴시 얼마나 차이나는지 저장
+    @Column(nullable = true)
+    private Integer minutes;
 
     public ScheduleDTO.ResponseDTO toResponseDTO() {
         return ScheduleDTO.ResponseDTO.builder()
@@ -57,7 +65,8 @@ public class Schedule {
                 .end(DateFormatter.toIsoFormat(endTime))
                 .extendedProps(ScheduleDTO.CustomProperty.builder()
                         .empId(employee.getId())
-                        .type(EnumCommonUtil.getStringFromEnum(scheduleType))
+                        .status(EnumCommonUtil.getStringFromEnum(status))
+                        .minutes(minutes == null ? 0 : minutes)
                         .build())
                 .build();
     }

@@ -63,7 +63,6 @@ export function submitAddEvent(calendar) {
     }
 
     if (title && startDate && start && end) {
-        // TODO 비동기로 일정 등록 요청해야함
         createSchedule(title, empId, start, end, calendar);
         closeAddEventModal();
     } else {

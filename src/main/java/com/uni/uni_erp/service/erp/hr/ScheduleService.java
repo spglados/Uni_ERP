@@ -30,9 +30,11 @@ public class ScheduleService {
      * 일정 조회
      * @param storeId 세션에 담긴 상점 id
      * @param type 계획, 완료, null (전부 조회)
+     *             전부 조회시 시간 비교 로직추가
      * @return DTO 형태로 List 반환
      */
-    public List<ScheduleDTO.ResponseDTO> findByStoreIdAndType(Integer storeId, Schedule.ScheduleType type) {
+    public List<ScheduleDTO.ResponseDTO> findByStoreIdAndType(Integer storeId, Schedule.Status type) {
+        // TODO TYPE에 따라 로직 변경 필요
         List<Schedule> scheduleEntities = scheduleRepository.findByStoreIdAndType(storeId, type);
         if (scheduleEntities == null || scheduleEntities.isEmpty()) {
             return new ArrayList<>();
