@@ -156,4 +156,5 @@
         return true; // 모든 검증 통과 시 폼 제출
     }
 </script>
+
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

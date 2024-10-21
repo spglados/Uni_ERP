@@ -29,6 +29,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     // 특정 직원의 문서 정보를 가져오는 메서드
     @Query("SELECT d FROM EmpDocument d WHERE d.employee.id = :employeeId")
-    List<EmpDocument> findByEmployeeId(@Param("employeeId") Integer employeeId);
+    EmpDocument findByEmployeeId(@Param("employeeId") Integer employeeId);
 
 }

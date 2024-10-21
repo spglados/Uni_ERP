@@ -2,6 +2,8 @@ package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.Bank;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.dto.EmployeeDTO;
+import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -62,8 +64,8 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // EmpDocument와의 관계
-    private List<EmpDocument> empDocuments; // 리스트로 수정
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // EmpDocument와의 관계
+    private EmpDocument empDocument;
 
 
     @Column(nullable = false)  // Not Null 설정
@@ -107,4 +109,35 @@ public class Employee {
     public void onUpdate() {
         this.updatedAt = Timestamp.from(Instant.now());
     }
+
+
+    public EmployeeDTO toEmployeeDTO() {
+        return EmployeeDTO.builder()
+                .id(this.id)
+                .storeId(this.store.getId())
+                .storeEmployeeNumber(storeEmployeeNumber)
+                .name(this.name)
+                .birthday(this.birthday)
+                .gender(this.gender)
+                .email(this.email)
+                .phone(this.phone)
+                .address(this.address)
+                .accountNumber(this.accountNumber)
+                .position(this.position)
+                .bankId(this.bank.getId())
+                .bankName(this.bank.getName())
+                .uniqueEmployeeNumber(this.uniqueEmployeeNumber)
+                .employmentStatus(this.employmentStatus)
+                .hiredAt(Timestamp.from(Instant.now()))
+                .employmentContract(this.empDocument.getEmploymentContract())
+                .healthCertificate(this.empDocument.getHealthCertificate())
+                .healthCertificateDate(this.empDocument != null && this.empDocument.getHealthCertificateDate() != null
+                        ? DateFormatter.toDate(this.empDocument.getHealthCertificateDate())
+                        : "보건증 갱신일을 입력해주세요") // 보건증 갱신일이 null일 경우 메시지 설정
+                .residentRegistration(this.empDocument.getResidentRegistration())
+                .bankAccountCopy(this.empDocument.getBankAccountCopy())
+                .identificationCopy(this.empDocument.getIdentificationCopy())
+                .build();
+    }
+
 }
