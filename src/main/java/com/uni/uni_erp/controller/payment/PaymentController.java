@@ -90,6 +90,44 @@ public class PaymentController {
         }
     }
 
+
+
+    /*@PostMapping("/refund")
+    public String cancelPayment(@RequestParam(value = "orderId", required = false) String orderId, Model model,
+                                @RequestParam(value = "paymentKey", required = false) String paymentKey,
+                                @RequestParam(value = "cancelReason", required = false) String cancelReason,
+                                @RequestParam(value = "payPk", required = false) Integer payPk) {
+
+        // 관리자 로그인 상태 체크
+        //Admin admin = (Admin) session.getAttribute("admin");
+        //int adminId = admin.getId();
+
+        orderId = "2a8d00e4-2f78-4c1e-8ecc-8a6065cf6628";
+
+        if (paymentKey != null && cancelReason != null) {
+
+            if (orderId == null || orderId.isEmpty()) {
+                model.addAttribute("message", "Order ID is required to cancel the payment.");
+                return "redirect:/payment/fail";
+            }
+
+            try {
+                // 결제 취소 실행
+                String response = paymentService.cancelPayment(paymentKey, cancelReason, adminId, payPk);
+                return "payment/cancel_success";
+            } catch (Exception e) {
+                model.addAttribute("message", e.getMessage());
+                return "redirect:/payment/fail";
+            }
+
+        } else {
+            model.addAttribute("message", "필수 파라미터가 누락되었습니다.");
+            return "redirect:/payment/fail";
+        }
+
+    }*/
+
+
     
 }
 
