@@ -2,14 +2,16 @@ package com.uni.uni_erp.service.erp.hr;
 
 import com.uni.uni_erp.domain.entity.Bank;
 import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
+import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.dto.EmployeeDTO;
+import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.repository.bank.BankReposigory;
 import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
+import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
 import jakarta.transaction.Transactional;
@@ -28,6 +30,8 @@ public class HrService {
     private final StoreRepository storeRepository;
     private final BankReposigory  bankRepository;
     private final EmpDocumentRepository empDocumentRepository;
+    private final EmployeeRepository employeeRepository;
+    private final EmpPositionRepository empPositionRepository;
 
     public List<Employee> getEmployeesByStoreId(Integer storeId) {
         List<Employee> employees = hrRepository.findByStoreId(storeId);
@@ -57,6 +61,27 @@ public class HrService {
             // 유니크한 사원 번호 생성
             String uniqueEmployeeNumber = storeId + "-" + newStoreEmployeeNumber;
 
+            // 직책 처리 로직
+            EmpPosition empPosition;
+
+            if (employeeDTO.getEmpPosition() == null) {
+                // EmpPositionRepository를 통해 모든 직책 조회
+                List<EmpPosition> positions = empPositionRepository.findAll(); // 직책 리스트 가져오기
+
+                // 직책 목록 출력
+                System.out.println("직책 목록:");
+                for (EmpPosition position : positions) {
+                    System.out.println(position.getId() + ". " + position.getName());
+                }
+
+                // 사용자가 선택한 직책으로 설정하는 로직 필요 (예: 첫 번째 직책을 선택)
+                // 예시: empPosition = positions.get(0);
+                empPosition = positions.isEmpty() ? null : positions.get(0); // 직책이 없으면 null로 설정
+            } else {
+                empPosition = empPositionRepository.findById(employeeDTO.getEmpPosition().getId())
+                        .orElseThrow(() -> new Exception500("유효하지 않은 직책 ID"));
+            }
+
             employee = Employee.builder()
                     .name(employeeDTO.getName())
                     .birthday(employeeDTO.getBirthday())
@@ -65,7 +90,7 @@ public class HrService {
                     .phone(employeeDTO.getPhone())
                     .accountNumber(employeeDTO.getAccountNumber())
                     .address(employeeDTO.getAddress())
-                    .position(employeeDTO.getPosition())
+                    .empPosition(empPosition) // 직책 설정
                     .store(store)
                     .bank(bank)
                     .storeEmployeeNumber(newStoreEmployeeNumber) // 새로운 사원번호 설정
@@ -121,7 +146,7 @@ public class HrService {
                 .phone(employee.getPhone())
                 .accountNumber(employee.getAccountNumber())
                 .address(employee.getAddress())
-                .position(employee.getPosition())
+                .empPosition(employee.getEmpPosition()) // 직책 이름으로 변경
                 .employmentStatus(employee.getEmploymentStatus())
                 .bankId(employee.getBank() != null ? employee.getBank().getId() : null) // 은행 정보 추가
                 .build();

@@ -2,14 +2,13 @@ package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.Bank;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.dto.EmployeeDTO;
+import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
 import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -52,9 +51,14 @@ public class Employee {
     private String accountNumber;
     // 사용자 정의 직책
 
-    @Column(nullable = true)
-    private String position;
+   // @Column(nullable = true)
+    //private String position;
     // 외래 키 설정: Employee는 하나의 Store에 속함
+   // 사용자 정의 직책 (EmpPosition 추가)
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "emp_position_id") // EmpPosition의 ID를 참조
+   private EmpPosition empPosition;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
@@ -123,7 +127,6 @@ public class Employee {
                 .phone(this.phone)
                 .address(this.address)
                 .accountNumber(this.accountNumber)
-                .position(this.position)
                 .bankId(this.bank.getId())
                 .bankName(this.bank.getName())
                 .uniqueEmployeeNumber(this.uniqueEmployeeNumber)

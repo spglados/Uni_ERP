@@ -1,6 +1,7 @@
 package com.uni.uni_erp.repository.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
+import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,18 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT d FROM EmpDocument d WHERE d.employee.id = :employeeId")
     EmpDocument findByEmployeeId(@Param("employeeId") Integer employeeId);
 
+    // 특정 상점에서 직책에 해당하는 모든 직원 조회
+    @Query("SELECT e FROM Employee e WHERE e.empPosition.store.id = :storeId AND e.empPosition.id = :positionId")
+    List<Employee> findByStoreIdAndPositionId(@Param("storeId") Integer storeId, @Param("positionId") Integer positionId);
+
+    // 모든 직원의 직책을 함께 가져오는 쿼리
+    @Query("SELECT e FROM Employee e JOIN FETCH e.empPosition")
+    List<Employee> findAllWithPositions();
+
+
+
+
+
 }
+
+

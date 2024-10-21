@@ -1,5 +1,6 @@
-package com.uni.uni_erp.dto;
+package com.uni.uni_erp.dto.erp.hr;
 
+import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class EmployeeDTO {
     private Integer bankId; // 은행명
     private String bankName;
     private String accountNumber;
-    private String position;
+    private EmpPosition empPosition;
     private Integer storeId;
     private Integer storeEmployeeNumber; // 각 가게별로 증가하는 직원 번호 추가
     private String uniqueEmployeeNumber; // 사원 번호
@@ -67,7 +68,7 @@ public class EmployeeDTO {
             this.bankName = employee.getBank().getName(); // 은행 이름 설정
         }
         this.accountNumber = employee.getAccountNumber();
-        this.position = employee.getPosition();
+        this.empPosition = employee.getEmpPosition();
         this.storeId = employee.getStore() != null ? employee.getStore().getId() : null; // 상점 ID
         this.storeEmployeeNumber = employee.getStoreEmployeeNumber();
         this.uniqueEmployeeNumber = employee.getUniqueEmployeeNumber();

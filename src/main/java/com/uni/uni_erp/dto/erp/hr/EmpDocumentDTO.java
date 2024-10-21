@@ -1,4 +1,4 @@
-package com.uni.uni_erp.dto;
+package com.uni.uni_erp.dto.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
 import lombok.*;

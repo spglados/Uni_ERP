@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.sql.Timestamp;
 
 @NoArgsConstructor
 @Data
@@ -24,13 +23,13 @@ public class Attendance {
     private Employee employee;
 
     @Column(nullable = false)
-    private LocalDate date; // 날짜 (연월일)
+    private Timestamp date; // 날짜 (연월일)
 
     @Column(nullable = true)
-    private LocalTime checkIn; // 출근 시간
+    private Timestamp checkIn; // 출근 시간
 
     @Column(nullable = true)
-    private LocalTime checkOut; // 퇴근 시간
+    private Timestamp checkOut; // 퇴근 시간
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
