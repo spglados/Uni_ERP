@@ -15,7 +15,8 @@ public class UserDTO {
     }
 
     @Data
-    public class JoinDTO {
+    @NoArgsConstructor
+    public static class JoinDTO {
 
         private String name;
 

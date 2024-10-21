@@ -59,6 +59,10 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<PaymentHistory> paymentHistories;
 
+    // 추가된 결제일 컬럼
+    @Column(name = "payment_date")
+    private String paymentDate;
+
 
     // 엔티티가 저장되기 전 실행되는 메서드
     @PrePersist

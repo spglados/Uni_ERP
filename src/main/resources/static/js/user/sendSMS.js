@@ -35,11 +35,13 @@
           document.querySelector(".successPhoneChk").style.color = "green";
           document.getElementById("phoneDoubleChk").value = "true";
           document.getElementById("phone2").disabled = true;
+          isPhoneValid = true;
         } else {
           document.querySelector(".successPhoneChk").textContent = "인증번호가 일치하지 않습니다. 확인해주시기 바랍니다.";
           document.querySelector(".successPhoneChk").style.color = "red";
           document.getElementById("phoneDoubleChk").value = "false";
-          document.getElementById("phoneChk2").focus();
+          document.getElementById("").focus();
+          isPhoneValid = false
         }
       })
       .catch(error => console.error('Error:', error));

@@ -3,12 +3,13 @@ package com.uni.uni_erp.domain.entity.payment;
 import com.uni.uni_erp.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 
 @Entity
-@Table(name = "payment_history_tb")
+@Table(name = "c")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,6 +34,8 @@ public class PaymentHistory {
     private String status; // 결제 상태 (예: 성공, 실패)
     private String transactionId; // 거래 ID
     private String paymentMethod; // 결제 방법
+
+    @CreationTimestamp
     private String createdAt; // 생성 시간
 
     private Integer historyStatus;

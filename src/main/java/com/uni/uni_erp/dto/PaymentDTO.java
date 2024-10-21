@@ -2,6 +2,7 @@ package com.uni.uni_erp.dto;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.payment.Payment;
+import com.uni.uni_erp.domain.entity.payment.Refund;
 import com.uni.uni_erp.domain.entity.payment.UserPay;
 import lombok.*;
 
@@ -47,6 +48,9 @@ public class PaymentDTO {
         private Integer nowPayAmount;
         private Integer nextPayAmount;
 
+        //결제한 날짜
+        private String date;
+
         // 에러 메시지
         private Integer billingErrorCode;
         private Integer payErrorCode;
@@ -70,6 +74,7 @@ public class PaymentDTO {
                     .nowPayAmount(nowPayAmount)
                     .nextPayAmount(nextPayAmount)
                     .nextPay(nextPay)
+                    .date(date)
                     .build();
         }
 
@@ -78,6 +83,19 @@ public class PaymentDTO {
                     .nextPayDate(nextPay)
 //                    .firstPayAmount()
 //                    .secondPayAmount()
+                    .build();
+        }
+
+        // Refund 객체 변환
+        public Refund toRefund() {
+            return Refund.builder()
+                    .lastTransactionKey(lastTransactionKey)
+                    .paymentKey(paymentKey)
+                    .cancelReason(cancelReason)
+                    .requestedAt(requestedAt)
+                    .approvedAt(approvedAt)
+                    .cancelAmount(cancelAmount)
+                    .adminId(adminId)
                     .build();
         }
     }

@@ -1,6 +1,6 @@
 -- 첫 번째 샘플 데이터
 INSERT INTO user_tb (name, email, password, phone, address, membership, created_at)
-VALUES ('김남철', 'asd@asd.com', '1234', '010-1234-5678', '서울특별시 강남구 테헤란로 123', 'COMMON', NOW());
+VALUES ('김남철', 'asd@asd.com', '1234', '01012345678', '서울특별시 강남구 테헤란로 123', 'COMMON', NOW());
 
 -- 두 번째 샘플 데이터
 INSERT INTO user_tb (name, email, password, phone, address, membership, created_at)
