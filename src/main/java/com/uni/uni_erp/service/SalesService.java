@@ -3,12 +3,16 @@ package com.uni.uni_erp.service;
 import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.dto.sales.SalesSummaryDTO;
+import com.uni.uni_erp.dto.sales.SalesTargetDTO;
 import com.uni.uni_erp.repository.sales.SalesDetailRepository;
 import com.uni.uni_erp.repository.sales.SalesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,38 +50,30 @@ public class SalesService {
                 })
                 .toList();
     }
-//    @Transactional
-//    public void save(Sales sales) {
-//        salesRepository.save(sales);
-//    }
-//
-//    @Transactional
-//    public void update(Integer id, Sales sales) {
-//        Sales updateSales = new Sales().builder()
-//                .id(id)
-//                .user(sales.getUser())
-//                .itemName(sales.getItemName())
-//                .itemCode(sales.getItemCode())
-//                .specs(sales.getSpecs())
-//                .quantity(sales.getQuantity())
-//                .unitPrice(sales.getUnitPrice())
-//                .tax(sales.getTax())
-//                .totalPrice(sales.getTotalPrice())
-//                .attachmentUri(sales.getAttachmentUri())
-//                .salesDate(sales.getSalesDate())
-//                .status(sales.getStatus())
-//                .build();
-//
-//        salesRepository.save(updateSales);
-//    }
-//
-//    public List<Sales> findByUserId(Integer userId) {
-//        return salesRepository.findByUser_Id(userId);
-//    }
-//
-//    @Transactional
-//    public void delete(Integer id) {
-//        salesRepository.deleteById(id);
-//    }
+
+    public List<SalesTargetDTO> getSalesTargetByHour(Integer storeId, LocalDate date) {
+        List<SalesTargetDTO> sales = new ArrayList<>();
+
+        List<SalesTargetDTO> salesTargetsForHour = new ArrayList<>();
+        for (int hour = 0; hour < 24; hour++) {
+            LocalDateTime startDate = LocalDateTime.of(date, LocalTime.of(hour, 0));
+            LocalDateTime endDate = LocalDateTime.of(date, LocalTime.of(hour + 1, 0).minusNanos(1));
+
+            SalesDetailDTO salesDetailDTO = (SalesDetailDTO) salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+
+            System.err.println(salesDetailDTO);
+            System.err.println(salesDetailDTO);
+            System.err.println(salesDetailDTO);
+
+            SalesTargetDTO dto = new SalesTargetDTO().builder().hour(hour).salesCount(salesDetailDTO.getQuantity())..build();
+
+            salesTargetsForHour.add(salesDetailDTO.toSalesTargetDTO());
+
+
+            sales.add(salesTargetsForHour);
+        }
+
+        return sales;
+    }
 
 }

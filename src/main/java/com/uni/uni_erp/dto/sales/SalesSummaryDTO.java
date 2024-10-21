@@ -12,5 +12,4 @@ public class SalesSummaryDTO {
     private int totalQuantity;
     private double unitPrice; // Original unit price
 
-    // Getters and Setters (if needed)
 }

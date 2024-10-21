@@ -3,14 +3,14 @@ package com.uni.uni_erp.controller.erp;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.user.StoreService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 
 @Slf4j
@@ -19,11 +19,7 @@ import java.util.Calendar;
 @RequestMapping("/erp/sales")
 public class SalesController {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final SalesService salesService;
-    private final StoreService storeService;
 
     private static final String SUCCESS = "success";
     private static final String ERROR = "error";
@@ -43,7 +39,13 @@ public class SalesController {
     }
 
     @GetMapping("/statistics")
-    public String salesStatistics() {
+    public String salesStatistics(Model model, HttpSession session) {
+
+        session.getAttribute("storeId");
+
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+
 
         return "erp/sales/statistics";
     }
