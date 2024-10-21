@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class UniErpApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(UniErpApplication.class, args);
     }
 

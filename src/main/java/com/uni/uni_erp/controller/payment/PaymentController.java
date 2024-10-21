@@ -1,6 +1,9 @@
 package com.uni.uni_erp.controller.payment;
 
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.payment.Payment;
+import com.uni.uni_erp.domain.entity.payment.Refund;
+import com.uni.uni_erp.dto.PaymentListDTO;
 import com.uni.uni_erp.exception.errors.Exception400;
 import com.uni.uni_erp.service.payment.PaymentService;
 import com.uni.uni_erp.service.user.UserService;
@@ -22,9 +25,7 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequestMapping("/payment")
@@ -88,6 +89,27 @@ public class PaymentController {
             e.printStackTrace();
             return "redirect:/payment/fail";
         }
+    }
+
+
+    @GetMapping("/refund")
+    public String refundPage(Model model) {
+        int userPk = 1;
+        List<Payment> payments = paymentService.findByUserId(userPk);
+        System.out.println(payments);
+        model.addAttribute("payments", payments); // "payments"라는 키로 List<Payment> 추가
+        return "/payment/refund";
+    }
+
+    @PostMapping("/refund")
+    public String cancelPayment(@RequestBody Map<String, Object> requestBody) throws Exception {
+        String paymentKey = (String) requestBody.get("paymentKey");
+        String cancelReason = (String) requestBody.get("cancelReason");
+        String payPk = (String) requestBody.get("payPk");
+
+        paymentService.cancelPayment(paymentKey, cancelReason, payPk);
+
+        return "redirect:/main";
     }
 
     

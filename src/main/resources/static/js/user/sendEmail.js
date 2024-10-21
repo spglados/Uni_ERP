@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     alert('이메일 인증 성공!');
                     // TODO 인증 완료시 boolean 변수 처리
                     isEmailChecked = true;
+                    isEmailValid =true;
                 } else {
                     statusElement.innerText = "인증 실패. 다시 시도해주세요.";
                     sendEmailBtn.disabled = false;

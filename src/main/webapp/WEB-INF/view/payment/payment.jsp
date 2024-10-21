@@ -16,21 +16,35 @@
 
     <button id="card_button" onclick="Pay()">정기결제</button>
     <div class="form-group">
-      <label for="desiredDay">다음 결제일:</label>
-      <input type="number" id="desiredDay" name="desiredDay" min="1" max="31" placeholder="1-31" required>
+      <label for="desiredDate">다음 결제일:</label>
+      <input type="date" id="desiredDate" name="desiredDate" required>
     </div>
   </section>
 
 </main>
 
 <script>
+    window.onload = function() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+
+        const formattedDate = `${yyyy}-${mm}-${dd}`;
+
+        const dateInput = document.getElementById("desiredDate");
+        dateInput.value = formattedDate; // 날짜 설정
+        dateInput.min = formattedDate; // 최소 날짜를 오늘로 설정 (선택 사항)
+    };
+
     // 정기결제
     function Pay() {
         const clientKey = "test_ck_E92LAa5PVbPWkE0RkGbW87YmpXyJ"; // 서버에서 전달받은 클라이언트 키
         const tossPayments = TossPayments(clientKey);
         const customerKey = Math.random().toString(36).substring(2, 12); // 고객 고유키를 서버로부터 받아옵니다.
 
-        const desiredDay = document.getElementById("desiredDay").value; // 사용자가 입력한 원하는 날짜
+        const desiredDate = document.getElementById("desiredDate").value; // 사용자가 입력한 날짜
+        const desiredDay = new Date(desiredDate).getDate(); // 날짜에서 일 추출
         console.log("desiredDay", desiredDay);
 
         tossPayments.requestBillingAuth("카드", {

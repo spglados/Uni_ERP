@@ -18,6 +18,7 @@
         <input type="hidden" name="desiredPayDate" id="desiredPayDate" value="" />
         <a href="#" onclick="submitForm()">메인으로 이동</a>
     </form>
+    <a href="http://localhost:8080/main">진짜메인으로 이동</a>
 
     <script>
         function submitForm() {
