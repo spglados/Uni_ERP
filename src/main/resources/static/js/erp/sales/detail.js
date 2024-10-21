@@ -9,7 +9,6 @@ function updateData(year, month) {
         },
         success: function(data) {
             // Update the data in the HTML
-            console.log(data);
             const thisMonthData = data.thisMonth;
             const lastMonthData = data.lastMonth;
             const thisYearData = data.thisYear;

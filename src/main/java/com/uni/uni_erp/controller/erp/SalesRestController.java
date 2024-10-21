@@ -177,10 +177,6 @@ public class SalesRestController {
             result.put("lastMonth", salesService.groupSalesDetails(lastMonthDetails));
             result.put("lastYear", salesService.groupSalesDetails(lastYearDetails));
 
-            System.err.println(result);
-            System.err.println(result);
-            System.err.println(result);
-
             return result;
         } catch (Exception e) {
             log.error("Error fetching sales details", e);
