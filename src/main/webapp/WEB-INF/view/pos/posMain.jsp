@@ -140,7 +140,7 @@
             }
         }
 
-        .clear-order-button{
+        .{
             font-family: 'yg-jalnan', sans-serif;
             font-weight: 100;
         }

@@ -46,3 +46,7 @@
 .login-container .signup-link a:hover {
     text-decoration: underline;
 }
+
+button{
+    font-family: 'yg-jalnan', sans-serif;
+}
