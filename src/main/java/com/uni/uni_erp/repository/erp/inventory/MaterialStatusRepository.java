@@ -11,4 +11,6 @@ public interface MaterialStatusRepository extends JpaRepository<MaterialStatus, 
     @Query("SELECT ms FROM MaterialStatus ms JOIN FETCH ms.material m JOIN FETCH m.store s WHERE s.id = :storeId AND ms.statusDate = (SELECT MAX(ms2.statusDate) FROM MaterialStatus ms2 WHERE ms2.material.id = ms.material.id) ORDER BY ms.statusDate DESC")
     List<MaterialStatus> findByStoreId(Integer storeId);
 
+    @Query("SELECT ms FROM MaterialStatus ms WHERE ms.material.id = :materialId AND ms.statusDate = (SELECT MAX(ms2.statusDate) FROM MaterialStatus ms2 WHERE ms2.material.id = :materialId)")
+    MaterialStatus findByMaterialId(Integer materialId);
 }

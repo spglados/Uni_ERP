@@ -37,7 +37,7 @@ public class MaterialAdjustment {
     @JoinColumn(name = "material_id", nullable = false)
     private Material material;
 
-    @OneToMany(mappedBy = "status", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "adjustment", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<MaterialOrder> orders;
 
     @PrePersist

@@ -1,13 +1,8 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
-import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.util.Str.UnitCategory;
-import com.uni.uni_erp.util.date.PriceFormatter;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
@@ -18,6 +13,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class MaterialOrder {
 
     @Id
@@ -51,8 +47,8 @@ public class MaterialOrder {
     private Material material;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id", nullable = false)
-    private MaterialAdjustment status;
+    @JoinColumn(name = "adjustment_id", nullable = false)
+    private MaterialAdjustment adjustment;
 
     @PrePersist
     protected void onCreate() {
@@ -67,21 +63,4 @@ public class MaterialOrder {
 
     }
 
-    public MaterialDTO.MaterialOrderDTO toMaterialOrderDTO() {
-        return MaterialDTO.MaterialOrderDTO.builder()
-                .id(this.id)
-                .name(this.name)
-                .price(PriceFormatter.formatToPrice(this.price))
-                .amount(this.amount)
-                .unit(this.unit.toString())
-                .supplier(this.supplier)
-                .receiptDate(this.receiptDate)
-                .expirationDate(this.expirationDate)
-                .enterDate(this.enterDate)
-                .isUse(this.isUse)
-                .materialId(this.material.getId())
-                .statusId(this.status.getId())
-                .build();
-
-    }
 }

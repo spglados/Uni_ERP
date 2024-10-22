@@ -10,8 +10,12 @@ import java.util.List;
 
 public interface MaterialRepository extends JpaRepository<Material, Integer> {
 
+
     @Query("SELECT new com.uni.uni_erp.dto.erp.material.MaterialDTO(m.name, m.unit) FROM Material m WHERE m.store.id = :storeId")
     public List<MaterialDTO> findNameByStoreId(@Param("storeId") Integer storeId);
+
+    @Query("SELECT new com.uni.uni_erp.dto.erp.material.MaterialDTO(m.id, m.name, m.unit, m.subUnit) FROM Material m WHERE m.store.id = :storeId")
+    public List<MaterialDTO> findDTOByStoreId(@Param("storeId") Integer storeId);
 
     public List<Material> findAllByStoreId(Integer storeId);
 

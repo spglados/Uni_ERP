@@ -1,5 +1,6 @@
 package com.uni.uni_erp.controller.erp;
 
+import com.google.gson.Gson;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.service.invertory.InventoryService;
 import jakarta.servlet.http.HttpSession;
@@ -7,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -17,11 +20,21 @@ import java.util.List;
 public class InventoryController {
 
     private final InventoryService inventoryService;
+    private final Gson gson;
 
     @GetMapping("/receiving")
     public String receivingPage(Model model, HttpSession session) {
         List<MaterialDTO.MaterialOrderDTO> materialOrderDTOList = inventoryService.getMaterialOrder(session);
+        List<MaterialDTO> materialDTOList = inventoryService.getMaterialListForOrder(session);
+        model.addAttribute("materialDTOList", materialDTOList);
+        model.addAttribute("materialDTOListJson", gson.toJson(materialDTOList));
         model.addAttribute("materialOrderList", materialOrderDTOList);
+        return "/erp/inventory/receiving";
+    }
+
+    @PostMapping("/receiving")
+    public String saveReceiving(HttpSession session, @ModelAttribute MaterialDTO.MaterialOrderDTO materialOrderDTO) {
+        inventoryService.saveMaterialOrder(session, materialOrderDTO);
         return "/erp/inventory/receiving";
     }
 

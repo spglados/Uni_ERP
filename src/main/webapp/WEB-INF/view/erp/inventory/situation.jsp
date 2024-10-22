@@ -66,19 +66,19 @@
             <table class="table table-bordered table-striped" id="materialList">
                 <thead class="thead-dark">
                 <tr>
+                    <th>자재코드</th>
                     <th>자재명</th>
                     <th>분류</th>
                     <th>이론 재고</th>
                     <th>실 재고</th>
                     <th>재고 손실</th>
-                    <th>임박 유통기한</th>
-                    <th>마지막 입고</th>
                     <th>사용 상품</th>
                 </tr>
                 </thead>
                 <tbody>
                 <c:forEach var="material" items="${materialStatusList}">
                     <tr>
+                        <td>${material.materialCode}</td>
                         <td>${material.name}</td>
                         <td>${material.category}</td>
                         <td>${material.theoreticalAmount}&nbsp;${material.unit}</td>
@@ -94,9 +94,25 @@
                             </c:choose>
                             &nbsp;${material.unit}
                         </td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
+                                                <td>
+                            <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#ingredientModal"
+                                    onclick="showProducts('${material.materialCode}')">상품 내역
+                            </button>
+                            <!-- 숨겨진 상품 목록 -->
+                            <div id="product-id-${material.materialCode}" style="display: none;">
+                                <ul class="list-group">
+                                    <c:forEach var="product" items="${material.useProduct}">
+                                        <li class="list-group-item list-group-item-action d-flex align-items-center">
+                                            <a href="/erp/product/registration/${product.value}"
+                                               class="text-decoration-none text-dark w-100 d-flex align-items-center">
+                                                <i class="fas fa-box mr-2"></i> <!-- Font Awesome 아이콘 -->
+                                                <span>${product.value}</span>
+                                            </a>
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+                            </div>
+                        </td>
                     </tr>
                 </c:forEach>
                 </tbody>

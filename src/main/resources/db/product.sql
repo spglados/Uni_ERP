@@ -23,29 +23,29 @@ VALUES (8, 118, '떡갈비', '메인', 15000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
 VALUES (9, 119, '비빔밥', '메인', 12000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (10, 120, '육회', '메인', 11000, 1);
+VALUES (10, 1110, '육회', '메인', 11000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (11, 121, '홍어삼합', '메인', 35000, 1);
+VALUES (11, 1111, '홍어삼합', '메인', 35000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (12, 122, '짬뽕', '메인', 8000, 1);
+VALUES (12, 1112, '짬뽕', '메인', 8000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (13, 123, '짜장면', '메인', 8000, 1);
+VALUES (13, 1113, '짜장면', '메인', 8000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (14, 124, '스파게티', '메인', 11000, 1);
+VALUES (14, 1114, '스파게티', '메인', 11000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (15, 125, '피자', '메인', 22000, 1);
+VALUES (15, 1115, '피자', '메인', 22000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (16, 126, '치킨', '메인', 19000, 1);
+VALUES (16, 1116, '치킨', '메인', 19000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (17, 127, '햄버거', '메인', 5500, 1);
+VALUES (17, 1117, '햄버거', '메인', 5500, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (18, 128, '마라탕', '메인', 12000, 1);
+VALUES (18, 1118, '마라탕', '메인', 12000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (19, 129, '볶음밥', '메인', 9000, 1);
+VALUES (19, 1119, '볶음밥', '메인', 9000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (20, 130, '해물탕', '메인', 25000, 1);
+VALUES (20, 1120, '해물탕', '메인', 25000, 1);
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (21, 131, '보쌈', '메인', 22000, 1);
+VALUES (21, 1121, '보쌈', '메인', 22000, 1);
 
 
 
@@ -79,18 +79,18 @@ VALUES
 
 INSERT INTO material_adjustment_tb (amount, sub_amount, previous_loss_amount, status_date, material_id)
 VALUES
-(1.0, 0, 0, '2024-10-01', 1),
-(1.5, 0, 0, '2024-10-01', 2),
-(1.5, 0, 0, '2024-10-01', 3),
-(1.0, 500.0, 0, '2024-10-01', 4),
-(0.2, 200, 0, '2024-10-01', 5),
-(0.2, 200, 0, '2024-10-01', 6),
-(0.3, 300, 0, '2024-10-01', 7),
-(2, 400.0, 0, '2024-10-01', 8),
-(3, 900.0, 0, '2024-10-01', 9),
-(0.5, 500, 0, '2024-10-1', 10);
+(1.0, 0, 0, '2024-10-22', 1),
+(1.5, 0, 0, '2024-10-22', 2),
+(1.5, 0, 0, '2024-10-22', 3),
+(1.0, 500.0, 0, '2024-10-22', 4),
+(0.2, 200, 0, '2024-10-22', 5),
+(0.2, 200, 0, '2024-10-22', 6),
+(0.3, 300, 0, '2024-10-22', 7),
+(2, 400.0, 0, '2024-10-22', 8),
+(3, 900.0, 0, '2024-10-22', 9),
+(0.5, 500, 0, '2024-10-22', 10);
 
-INSERT INTO material_order_tb (name, price, amount, unit, supplier, receipt_date, expiration_date, material_id, status_id, is_use, enter_date)
+INSERT INTO material_order_tb (name, price, amount, unit, supplier, receipt_date, expiration_date, material_id, adjustment_id, is_use, enter_date)
 VALUES
 ('천일염', 1000, 1.0, 'KG', '최이제', '2024-10-12', '2024-12-01', 1, 1, 'true', '2024-10-21'),
 ('총각 김치', 5000, 0.5, 'KG', '최이제', '2024-10-13', '2024-10-18', 2, 2, 'true', '2024-10-19'),

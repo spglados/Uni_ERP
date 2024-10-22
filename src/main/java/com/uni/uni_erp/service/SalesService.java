@@ -65,7 +65,7 @@ public class SalesService {
 //                .totalPrice(sales.getTotalPrice())
 //                .attachmentUri(sales.getAttachmentUri())
 //                .salesDate(sales.getSalesDate())
-//                .status(sales.getStatus())
+//                .status(sales.getAdjustment())
 //                .build();
 //
 //        salesRepository.save(updateSales);
