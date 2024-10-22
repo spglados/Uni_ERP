@@ -18,6 +18,8 @@ public interface SalesRepository extends JpaRepository<Sales, Integer> {
                                                                          @Param("endDate") LocalDateTime endDate,
                                                                          @Param("storeId") Integer storeId);
 
+    @Query(value = "SELECT MAX(s.orderNum) FROM Sales s")
+    Integer findLatestOrderNum();
 }
 
 
