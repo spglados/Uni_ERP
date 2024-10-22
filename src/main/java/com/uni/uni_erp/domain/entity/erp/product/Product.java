@@ -2,9 +2,9 @@ package com.uni.uni_erp.domain.entity.erp.product;
 
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import jakarta.persistence.*;
-import lombok.*;
+        import lombok.*;
 
-import java.sql.Blob;
+        import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
