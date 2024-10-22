@@ -26,7 +26,7 @@ function openEventModal(mode, event) {
         document.getElementById('isNextDay').checked = false;
     }
     // 일정 수정 모달일시
-    else if  (mode === 'edit') {
+    else if (mode === 'edit') {
         // 스케줄 아이디 지정
         document.getElementById("scheduleId").value = event.id;
 
@@ -50,14 +50,10 @@ function openEventModal(mode, event) {
         employeeSelect.disabled = true; // 변경 불가
 
         // 시간 설정
-        const startDate = event.start.toISOString().substring(0, 10); // YYYY-MM-DD
+        const startDate = event.start.toLocaleDateString('en-CA').substring(0, 10); // YYYY-MM-DD
         const startTime = event.start.toTimeString().substring(0, 5); // HH:MM
-        console.log('startDate', startDate);
-        console.log('startTime', startTime);
-        const endDate = event.end.toISOString().substring(0, 10);
+        const endDate = event.end.toLocaleDateString('en-CA').substring(0, 10);
         const endTime = event.end.toTimeString().substring(0, 5);
-        console.log('endDate', endDate);
-        console.log('endTime', endTime);
 
         document.getElementById('eventDate').value = startDate;
         document.getElementById('eventStartTime').value = startTime;
@@ -109,7 +105,7 @@ function submitEvent(calendar) {
         endDate = new Date(endDate.getTime() + 24 * 60 * 60 * 1000);
     }
     const start = startDate + 'T' + startTime + ":00";
-    const end = endDate.toISOString().split('T')[0] + 'T' + endTime + ":00";
+    const end = endDate.toLocaleDateString('en-CA').split('T')[0] + 'T' + endTime + ":00";
 
     if (!validateEventDates(start, end)) {
         showToast('날짜를 확인해주세요');
@@ -180,7 +176,7 @@ function createSchedule(empId, start, end, calendar) {
  * @param end 종료 시간
  * @param calendar 캘린더 동기화를 위해 받아옴
  */
-function updateSchedule(id, start, end, calendar) {
+function updateSchedule(id, start, end, calendar, info) {
     fetch("/erp/hr/schedule", {
         method: "PUT",
         headers: {
@@ -212,6 +208,8 @@ function updateSchedule(id, start, end, calendar) {
             // 오류 발생 시 처리
             console.error('오류:', error.message);
             showToast(error.message);
+            // 콜백 메서드의 경우 해당 이동 무효화
+            if (info) info.revert();
         });
 }
 
