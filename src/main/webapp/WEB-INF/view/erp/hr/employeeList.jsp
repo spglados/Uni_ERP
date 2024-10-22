@@ -31,7 +31,8 @@
         data-healthcertificatedate="${employee.healthCertificateDate}">
         <td>${employee.uniqueEmployeeNumber}</td>
         <td>${employee.name}</td>
-        <td>${employee.empPosition != null ? employee.empPosition.name : '정보 없음'}</td> <!-- 직책 수정 -->
+        <td>${employee.empPosition.name != null ? employee.empPosition.name : '정보 없음'}</td> <!-- 직책 수정 -->
+
         <td>
             <c:choose>
                 <c:when test="${employee.employmentStatus == 'ACTIVE'}">재직</c:when>

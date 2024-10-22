@@ -32,7 +32,7 @@ public class HrController {
     private final HrService hrService;
     private final ScheduleService scheduleService;
     private final HttpSession session;
-    private final Gson Gson;
+    private final Gson gson;
 
 
     @GetMapping("/employee-register")
@@ -58,7 +58,7 @@ public class HrController {
         Integer storeId = (Integer) session.getAttribute("storeId");
         List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreIdWithDocuments(storeId);
         model.addAttribute("employees", employeeDTOList); // 직원 목록을 모델에 추가
-        model.addAttribute("employeesJson", Gson.toJson(employeeDTOList));
+        model.addAttribute("employeesJson", gson.toJson(employeeDTOList));
         return "erp/hr/employeeList"; // 직원 목록 페이지 반환
     }
 
