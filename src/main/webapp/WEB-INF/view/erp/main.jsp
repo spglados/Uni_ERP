@@ -28,7 +28,7 @@
             <div class="module-card">
                 <h2>매출 관리</h2>
                 <p>매출 현황과 판매 데이터를 확인하세요.</p>
-                <a href="#" class="erp-button sales-toggle">매출 관리 세부 메뉴 보기</a>
+                <a href="#" class="erp-button sales-toggle"><매출></매출> 관리 세부 메뉴 보기</a>
             </div>
             <div class="module-card">
                 <h2>상품 관리</h2>
@@ -39,4 +39,7 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/js/statistics.js"></script>
 <%@include file="/WEB-INF/view/erp/layout/erpFooter.jsp"%>

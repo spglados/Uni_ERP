@@ -9,7 +9,7 @@
 /* 사이드바 스타일 */
 .sidebar {
     width: 250px;
-    background-color: #343a40;
+    background-color: #F5F5DC;
     padding: 20px;
     color: #fff;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -32,7 +32,7 @@
 
 .sidebar-menu a {
     text-decoration: none;
-    color: #fff;
+    color: black;
     font-size: 1.2em;
     transition: color 0.3s;
 }
@@ -55,7 +55,7 @@
 
 .sub-menu a {
     font-size: 1em;
-    color: #dcdcdc;
+    color: black;
 }
 
 .sub-menu a:hover {
