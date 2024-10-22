@@ -8,6 +8,47 @@ INSERT INTO product_tb (id, product_code, name, category, price, store_id)
 VALUES (1, 111, '김치찌개', '메인', 9900, 1),
 (2, 112, '된장찌개', '메인', 8500, 1);
 
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (3, 113, '순두부찌개', '메인', 9000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (4, 114, '해물파전', '메인', 12000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (5, 115, '돼지국밥', '메인', 7000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (6, 116, '순대국밥', '메인', 7000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (7, 117, '신선로', '메인', 30000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (8, 118, '떡갈비', '메인', 15000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (9, 119, '비빔밥', '메인', 12000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (10, 120, '육회', '메인', 11000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (11, 121, '홍어삼합', '메인', 35000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (12, 122, '짬뽕', '메인', 8000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (13, 123, '짜장면', '메인', 8000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (14, 124, '스파게티', '메인', 11000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (15, 125, '피자', '메인', 22000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (16, 126, '치킨', '메인', 19000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (17, 127, '햄버거', '메인', 5500, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (18, 128, '마라탕', '메인', 12000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (19, 129, '볶음밥', '메인', 9000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (20, 130, '해물탕', '메인', 25000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (21, 131, '보쌈', '메인', 22000, 1);
+
+
+
 INSERT INTO material_tb (name, material_code, category, unit, sub_amount, sub_unit, enter_date, store_id, alarm_cycle, alarm_unit)
 VALUES
 ('소금', 111, '상온품', 'KG', 0, 'G', '2024-10-01', 1, 100, 'G'),
@@ -36,7 +77,7 @@ VALUES
 ('양파', 50, 'G', 2, 9),
 ('버섯', 70, 'G', 2, 10);
 
-INSERT INTO material_status_tb (amount, sub_amount, previous_loss_amount, status_date, material_id)
+INSERT INTO material_adjustment_tb (amount, sub_amount, previous_loss_amount, status_date, material_id)
 VALUES
 (1.0, 0, 0, '2024-10-01', 1),
 (1.5, 0, 0, '2024-10-01', 2),
@@ -49,32 +90,42 @@ VALUES
 (3, 900.0, 0, '2024-10-01', 9),
 (0.5, 500, 0, '2024-10-1', 10);
 
-INSERT INTO material_order_tb (name, price, amount, unit, supplier, receipt_date, expiration_date, material_id, status_id, is_use)
+INSERT INTO material_order_tb (name, price, amount, unit, supplier, receipt_date, expiration_date, material_id, status_id, is_use, enter_date)
 VALUES
-('천일염', 1000, 1.0, 'KG', '최이제', '2024-10-12 09:00:00', '2024-12-01', 1, 1, 'true'),
-('총각 김치', 5000, 0.5, 'KG', '최이제', '2024-10-13 10:00:00', '2024-10-18', 2, 2, 'true'),
-('처녀 김치', 5000, 0.5, 'KG', '최이제', '2024-10-14 10:00:00', '2024-11-02', 2, 2, 'true'),
-('아저씨 김치', 5000, 0.5, 'KG', '최이제', '2024-10-15 10:00:00', '2024-11-03', 2, 2, 'true'),
-('개쩌는 돼지고기', 15000, 1.5, 'KG', '장건우', '2024-10-14 11:00:00', '2024-11-05', 3, 3, 'true'),
-('딱딱 두부', 2000, 1.0, 'EA', '장건우', '2024-10-14 12:00:00', '2024-11-01', 4, 4, 'true'),
-('그냥 두부', 2000, 1.0, 'EA', '이건우', '2024-10-14 13:00:00', '2024-11-06', 4, 4, 'true'),
-('매운 고춧가루', 3000, 0.1, 'KG', '이건우', '2024-10-15 13:00:00', '2025-01-01', 5, 5, 'true'),
-('개매운 고춧가루', 3000, 0.1, 'KG', '강경훈', '2024-10-15 14:00:00', '2025-11-01', 5, 5, 'true'),
-('평양 마늘', 1000, 200.0, 'G', '김남철', '2024-10-16 14:00:00', '2024-12-15', 6, 6, 'true'),
-('이제 된장', 4000, 0.3, 'KG', '방민석', '2024-10-17 15:00:00', '2024-12-20', 7, 7, 'true'),
-('흠애호박', 1500, 2.0, 'EA', '서치원', '2024-10-18 16:00:00', '2024-11-25', 8, 8, 'true'),
-('키키 양파', 1200, 2.0, 'EA', '방민석', '2024-10-19 17:00:00', '2024-12-15', 9, 9, 'true'),
-('덜덜 버섯', 2500, 0.5, 'KG', '서치원', '2024-10-20 18:00:00', '2024-11-10', 10, 10, 'true');
+('천일염', 1000, 1.0, 'KG', '최이제', '2024-10-12', '2024-12-01', 1, 1, 'true', '2024-10-21'),
+('총각 김치', 5000, 0.5, 'KG', '최이제', '2024-10-13', '2024-10-18', 2, 2, 'true', '2024-10-19'),
+('처녀 김치', 5000, 0.5, 'KG', '최이제', '2024-10-14', '2024-11-02', 2, 2, 'true', '2024-10-21'),
+('아저씨 김치', 5000, 0.5, 'KG', '최이제', '2024-10-15', '2024-11-03', 2, 2, 'true', '2024-10-20'),
+('개쩌는 돼지고기', 15000, 1.5, 'KG', '장건우', '2024-10-14', '2024-11-05', 3, 3, 'true', '2024-10-21'),
+('딱딱 두부', 2000, 1.0, 'EA', '장건우', '2024-10-14', '2024-11-01', 4, 4, 'true', '2024-10-21'),
+('그냥 두부', 2000, 1.0, 'EA', '이건우', '2024-10-14', '2024-11-06', 4, 4, 'true', '2024-10-02'),
+('매운 고춧가루', 3000, 0.1, 'KG', '이건우', '2024-10-15', '2025-01-01', 5, 5, 'true', '2024-10-21'),
+('개매운 고춧가루', 3000, 0.1, 'KG', '강경훈', '2024-10-15', '2025-11-01', 5, 5, 'true', '2024-10-21'),
+('평양 마늘', 1000, 200.0, 'G', '김남철', '2024-10-16', '2024-12-15', 6, 6, 'true', '2024-10-21'),
+('이제 된장', 4000, 0.3, 'KG', '방민석', '2024-10-17', '2024-12-20', 7, 7, 'true', '2024-10-21'),
+('흠애호박', 1500, 2.0, 'EA', '서치원', '2024-10-18', '2024-11-25', 8, 8, 'true', '2024-10-21'),
+('키키 양파', 1200, 2.0, 'EA', '방민석', '2024-10-19', '2024-12-15', 9, 9, 'true', '2024-10-21'),
+('덜덜 버섯', 2500, 0.5, 'KG', '서치원', '2024-10-20', '2024-11-10', 10, 10, 'true', '2024-10-21');
 
-INSERT INTO material_adjustment_tb (theoretical_amount, actual_amount, status_date, loss, material_id)
+INSERT INTO material_status_tb (theoretical_amount, actual_amount, status_date, loss, material_id)
 VALUES
-(1.0, 0.95, '2024-10-12', -0.05, 1),
-(1.5, 1.49, '2024-10-13', -0.01, 2),
-(1.5, 1.45, '2024-10-14', -0.05, 3),
-(2.0, 1.43, '2024-10-14', -0.57, 4),
-(0.2, 0.19, '2024-10-15', -0.01, 5),
-(200.0, 195.0, '2024-10-16', -5.0, 6),
-(0.3, 0.29, '2024-10-17', -0.01, 7),
-(2.0, 1.95, '2024-10-18', -0.05, 8),
-(2.0, 1.9, '2024-10-19', -0.1, 9),
-(0.5, 0.48, '2024-10-20', -0.02, 10);
+(1.0, 0.95, '2024-10-21', -0.05, 1),
+(1.5, 1.49, '2024-10-21', -0.01, 2),
+(1.5, 1.45, '2024-10-21', -0.05, 3),
+(2.0, 1.43, '2024-10-21', -0.57, 4),
+(0.2, 0.19, '2024-10-21', -0.01, 5),
+(200.0, 195.0, '2024-10-21', -5.0, 6),
+(0.3, 0.29, '2024-10-21', -0.01, 7),
+(2.0, 1.95, '2024-10-21', -0.05, 8),
+(2.0, 1.9, '2024-10-21', -0.1, 9),
+(0.5, 0.48, '2024-10-21', -0.02, 10),
+(1.0, 0.95, '2024-10-22', -0.05, 1),
+(1.5, 1.49, '2024-10-22', -0.01, 2),
+(1.5, 1.45, '2024-10-22', -0.05, 3),
+(2.0, 1.43, '2024-10-22', -0.57, 4),
+(0.2, 0.19, '2024-10-22', -0.01, 5),
+(200.0, 195.0, '2024-10-22', -5.0, 6),
+(0.3, 0.29, '2024-10-22', -0.01, 7),
+(2.0, 1.95, '2024-10-22', -0.05, 8),
+(2.0, 1.9, '2024-10-22', -0.1, 9),
+(0.5, 0.48, '2024-10-22', -0.02, 10);

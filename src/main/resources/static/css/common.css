@@ -1,3 +1,17 @@
+body {
+	font-family: 'yg-jalnan', sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: #f8f9fa;
+}
+
+@font-face {
+	font-family: 'yg-jalnan';
+	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
 /* 공통 스타일 */
 .main-container {
 	width: 100%;
@@ -7,15 +21,15 @@
 	min-height: calc(100vh - 6rem); /* 헤더와 푸터를 제외한 높이 가득 차도록 설정 */
 	display: flex;
 	flex-direction: column;
-	background-color: #d3d3d3;
+	background-color: #f0f0f0;
 }
 
 .footer {
 	width: 100%;
 	max-width: 1200px; /* 페이지를 일반 모니터 크기로 고정 */
 	margin: 0 auto;
-	background-color: #161616; /* 어두운 배경색 */
-	color: #d3d3d3; /* 밝은 그레이 텍스트 색상 */
+	background-color: #CCCCCC; /* 어두운 배경색 */
+	color: #636363; /* 밝은 그레이 텍스트 색상 */
 	padding: 2rem 0;
 	text-align: center;
 	border-top: 1px solid #333;
@@ -71,8 +85,8 @@
 	width: 100%;
 	max-width: 1200px; /* 페이지를 일반 모니터 크기로 고정 */
 	margin: 0 auto;
-	background-color: #161616; /* 어두운 배경색 */
-	color: #d3d3d3; /* 밝은 그레이 텍스트 색상 */
+	background-color: #F5F5DC;
+	color: #d3d3d3;
 	padding: 1rem 0;
 	text-align: center;
 	border-bottom: 1px solid #333;
@@ -96,7 +110,7 @@
 }
 
 .none-a{
-	color: white;
+	color: #0284FF;
 	text-decoration: none;
 }
 
@@ -113,9 +127,11 @@
 }
 
 .nav-item a {
-	color: #d3d3d3;
+	color: #0284FF;
 	text-decoration: none;
 	transition: color 0.3s;
+	font-size: 25px;
+	font-weight: bold;
 }
 
 .nav-item a:hover {

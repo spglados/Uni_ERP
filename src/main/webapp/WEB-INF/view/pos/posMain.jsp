@@ -4,14 +4,24 @@
     <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         /* 기존 CSS 그대로 유지 */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'yg-jalnan', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f8f9fa;
         }
+
+        @font-face {
+            font-family: 'yg-jalnan';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+
         .header {
             background-color: #fff;
             padding: 20px;
@@ -92,11 +102,16 @@
             margin-bottom: 20px;
             border-radius: 5px;
         }
+        .add-to-order{
+            font-family: 'yg-jalnan', sans-serif;
+        }
         .total {
             font-size: 18px;
             font-weight: bold;
         }
         .payment-button {
+            font-family: 'yg-jalnan', sans-serif;
+            font-weight: 300;
             background-color: #4a90e2;
             color: white;
             padding: 15px;
@@ -105,6 +120,30 @@
             cursor: pointer;
             width: 100%;
             border-radius: 5px;
+        }
+
+        .payment-button:hover {
+            animation: colorChange 1s infinite; /* 호버 시 애니메이션 추가 */
+        }
+
+        @keyframes colorChange {
+            0% {
+                color: white;
+                font-size: 18px;
+            }
+            50% {
+                color: orange; /* 중간색으로 변경 */
+                font-size: 19px;
+            }
+            100% {
+                color: white; /* 다시 원래 색으로 돌아옴 */
+                font-size: 18px;
+            }
+        }
+
+        .{
+            font-family: 'yg-jalnan', sans-serif;
+            font-weight: 100;
         }
 
         /* 반응형 디자인 */
@@ -137,20 +176,56 @@
             }
         }
 
+        /* 결제 목록 글자 정렬 */
+        .order-section form h3{
+            text-align: center;
+        }
+
+        .menu-section h1{
+            text-align: center;
+        }
+
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .pagination a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #007bff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+
+        .pagination a.active {
+            font-weight: bold;
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        .pagination a:hover {
+            background-color: #f2f2f2;
+        }
+
     </style>
 </head>
 <body>
 <div class="header">
-    <img src="/images/logo/logoPos.png" alt="포스로고" style="height: 100px; width: 125px;">
-    <h1>UNI-POS SYSTEM(가상)</h1>
+    <img src="/images/logo/logoPos.png" class="animate__animated animate__fadeIn" alt="포스로고" style="height: 100px; width: 125px;">
+    <h1 class="animate__animated animate__fadeIn">UNI-POS SYSTEM ( 가상 )</h1>
 </div>
 
 <div class="container">
     <div class="menu-section">
-        <h2>주문 목록</h2>
+        <h1>주문 목록</h1>
         <div class="menu-grid">
             <!-- Product 리스트를 반복하여 동적으로 버튼 생성 -->
-            <c:forEach var="product" items="${productList}">
+            <c:forEach var="product" items="${productList.content}">
                 <div class="menu-item">
                     <button class="add-to-order" data-item="${product.name}" data-price="${product.price}" data-id="${product.id}">
                             ${product.name}<br>
@@ -159,13 +234,28 @@
                 </div>
             </c:forEach>
         </div>
+        <br>
+
+        <div class="pagination">
+            <c:if test="${productList.hasPrevious()}">
+                <a href="/erp/pos/main?page=${currentPage - 1}&size=${pageSize}">&laquo;</a>
+            </c:if>
+            <c:forEach begin="1" end="${productList.totalPages}" var="i">
+                <a href="/erp/pos/main?page=${i - 1}&size=${pageSize}" class="${i == currentPage ? 'active' : ''}">${i}</a>
+            </c:forEach>
+            <c:if test="${productList.hasNext()}">
+                <a href="/erp/pos/main?page=${currentPage}&size=${pageSize}">&raquo;</a>
+            </c:if>
+        </div>
+
     </div>
 
     <div class="order-section">
         <form id="product-submit">
             <h3>결제 목록</h3>
-            <button type="button" id="clear-order">전체삭제</button>
+            <button type="button" id="clear-order" class="clear-order-button">전체삭제</button>
             <div class="order-summary" id="orderList">
+                목록에 아무것도 들어있지 않습니다.
             </div>
             <button type="submit" class="payment-button">결제 버튼(총 금액: 0원)</button>
         </form>
@@ -175,6 +265,27 @@
 <script>
     let orderList = [];
     let totalAmount = 0;
+
+    // add-to-order 버튼들을 저장할 변수
+    const addToOrderButtons = document.querySelectorAll('.add-to-order');
+
+    // add-to-order 버튼 비활성화 함수
+    function disableAddToOrderButtons() {
+        addToOrderButtons.forEach(function(button) {
+            button.disabled = true;
+            button.style.cursor = 'not-allowed';
+            button.style.opacity = '0.6';
+        });
+    }
+
+    // add-to-order 버튼 활성화 함수
+    function enableAddToOrderButtons() {
+        addToOrderButtons.forEach(function(button) {
+            button.disabled = false;
+            button.style.cursor = 'pointer';
+            button.style.opacity = '1';
+        });
+    }
 
     function updateOrderSummary() {
         const orderSummary = document.getElementById('orderList');
@@ -188,7 +299,6 @@
             orderSummary.appendChild(orderItem);
         });
 
-
         // 결제 버튼의 텍스트 업데이트
         if (paymentButton) {
             paymentButton.textContent = '결제 버튼(총 금액: ' + totalAmount.toLocaleString() + '원)';
@@ -200,9 +310,14 @@
         console.log(orderList);
     }
 
-
-    document.querySelectorAll('.add-to-order').forEach(function(button) {
+    // add-to-order 버튼 클릭 이벤트 리스너
+    addToOrderButtons.forEach(function(button) {
         button.addEventListener('click', function() {
+            // clear-order 함수가 실행 중일 때는 작동하지 않도록 방지
+            if (button.disabled) {
+                return;
+            }
+
             const itemName = this.getAttribute('data-item');
             const itemId = this.getAttribute('data-id');
             const itemPrice = parseInt(this.getAttribute('data-price'));
@@ -225,12 +340,32 @@
         });
     });
 
+    // clear-order 버튼 클릭 이벤트 리스너
     document.getElementById('clear-order').addEventListener('click', function() {
-        orderList = [];
-        totalAmount = 0;
-        updateOrderSummary();
+        const orderSummary = document.getElementById('orderList');
+
+        // add-to-order 버튼 비활성화
+        disableAddToOrderButtons();
+
+        // 애니메이션 클래스를 추가
+        orderSummary.classList.add('animate__animated', 'animate__zoomOutRight');
+
+        // 애니메이션 종료 후 텍스트 삭제 및 버튼 활성화
+        orderSummary.addEventListener('animationend', function() {
+            orderSummary.innerHTML = ''; // 텍스트 삭제
+            orderList = [];
+            totalAmount = 0;
+
+            // 애니메이션 후 클래스 제거 및 업데이트
+            orderSummary.classList.remove('animate__animated', 'animate__zoomOutRight');
+            updateOrderSummary();
+
+            // add-to-order 버튼 활성화
+            enableAddToOrderButtons();
+        }, { once: true }); // 한 번만 실행하도록 설정
     });
 
+    // product-submit 폼 제출 이벤트 리스너
     document.getElementById('product-submit').addEventListener('submit', function(event) {
         event.preventDefault();
 
