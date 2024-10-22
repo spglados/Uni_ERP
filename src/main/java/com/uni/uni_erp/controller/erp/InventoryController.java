@@ -1,11 +1,6 @@
 package com.uni.uni_erp.controller.erp;
 
-import com.uni.uni_erp.domain.entity.erp.product.Material;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
-import com.uni.uni_erp.repository.erp.inventory.MaterialAdjustmentRepository;
-import com.uni.uni_erp.repository.erp.inventory.MaterialOrderRepository;
-import com.uni.uni_erp.repository.erp.inventory.MaterialRepository;
-import com.uni.uni_erp.repository.erp.inventory.MaterialStatusRepository;
 import com.uni.uni_erp.service.invertory.InventoryService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -24,24 +19,28 @@ public class InventoryController {
     private final InventoryService inventoryService;
 
     @GetMapping("/receiving")
-    public String receivingPage() {
+    public String receivingPage(Model model, HttpSession session) {
+        List<MaterialDTO.MaterialOrderDTO> materialOrderDTOList = inventoryService.getMaterialOrder(session);
+        model.addAttribute("materialOrderList", materialOrderDTOList);
         return "/erp/inventory/receiving";
     }
 
-    @GetMapping("/shipping")
-    public String shippingPage() {
-        return "/erp/inventory/shipping";
+    @GetMapping("/registration")
+    public String registerPage() {
+        return "/erp/inventory/register";
     }
 
     @GetMapping("/status")
     public String statusPage(Model model, HttpSession session) {
-        List<MaterialDTO.MaterialManagementDTO> materialStatusDTOList = inventoryService.getMaterialManagementList(session);
-        model.addAttribute("materialStatusList", materialStatusDTOList);
+        List<MaterialDTO.MaterialManagementDTO> materialManagementDTOList = inventoryService.getMaterialManagementList(session);
+        model.addAttribute("materialManagementList", materialManagementDTOList);
         return "/erp/inventory/status";
     }
 
     @GetMapping("/situation")
-    public String situationPage() {
+    public String situationPage(Model model, HttpSession session) {
+        List<MaterialDTO.MaterialStatusDTO> materialStatusDTOList = inventoryService.getMaterialStatus(session);
+        model.addAttribute("materialStatusList", materialStatusDTOList);
         return "/erp/inventory/situation";
     }
 
@@ -55,7 +54,7 @@ public class InventoryController {
         return "/erp/inventory/month-adjustment";
     }
 
-    @GetMapping("/dispose")
+    @GetMapping("/disposal")
     public String disposePage() {
         return "/erp/inventory/dispose";
     }

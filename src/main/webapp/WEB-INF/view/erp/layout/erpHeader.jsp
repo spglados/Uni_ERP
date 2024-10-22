@@ -14,6 +14,9 @@
     <meta charset="UTF-8">
     <title>UNI-ERP</title>
     <link rel="stylesheet" href="/css/erp/erpMain.css">
+    <!-- 수정된 Font Awesome 링크 (integrity 속성 제거) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -36,12 +39,12 @@
                 <a href="javascript:void(0);" class="inventory-toggle">재고 관리 ▼</a>
                 <ul class="sub-menu">
                     <li><a href="/erp/inventory/receiving">입고 관리</a></li>
-                    <li><a href="/erp/inventory/register">재고 등록</a></li>
+                    <li><a href="/erp/inventory/registration">재고 등록</a></li>
                     <li><a href="/erp/inventory/situation">재고 현황</a></li>
-                    <li><a href="/erp/inventory/status">재고 상태</a></li>
+                    <li><a href="/erp/inventory/status">재고 관리</a></li>
                     <li><a href="/erp/inventory/day-adjustment">일 재고 현황</a></li>
                     <li><a href="/erp/inventory/month-adjustment">월 재고 현황</a></li>
-                    <li><a href="/erp/inventory/dispose">폐기 관리</a></li>
+                    <li><a href="/erp/inventory/disposal">폐기 관리</a></li>
                 </ul>
             </li>
             <li>
@@ -55,7 +58,7 @@
             <li>
                 <a href="javascript:void(0);" class="product-toggle">상품 관리 ▼</a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/product/register">상품 등록</a></li>
+                    <li><a href="/erp/product/registration">상품 등록</a></li>
                     <li><a href="/erp/product/list">상품 목록</a></li>
                 </ul>
             </li>

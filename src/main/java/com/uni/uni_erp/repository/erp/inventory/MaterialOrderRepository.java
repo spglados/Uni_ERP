@@ -9,6 +9,8 @@ import java.util.List;
 public interface MaterialOrderRepository extends JpaRepository<MaterialOrder, Integer> {
 
     @Query("SELECT o FROM MaterialOrder o WHERE o.material.id IN :materialId")
-    public List<MaterialOrder> findByMaterialId(List<Integer> materialId);
+    List<MaterialOrder> findByMaterialId(List<Integer> materialId);
 
+    @Query("SELECT mo FROM MaterialOrder mo JOIN FETCH mo.material m JOIN FETCH m.store s WHERE s.id = :storeId ORDER BY mo.enterDate DESC")
+    List<MaterialOrder> findByStoreId(Integer storeId);
 }
