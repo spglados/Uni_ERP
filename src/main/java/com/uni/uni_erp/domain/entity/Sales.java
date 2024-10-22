@@ -19,6 +19,10 @@ import java.util.List;
 @Builder
 public class Sales {
 
+    @Transient
+    @PersistenceContext
+    EntityManager entityManager;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id; // Primary key for sales
@@ -27,7 +31,8 @@ public class Sales {
     private Integer storeId;
 
     @Column(name = "order_num", nullable = false, unique = true)
-    private Integer orderNum; // Unique identifier for the order, will be set using the sequence
+    private Integer orderNum;
+
 
     @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
@@ -36,14 +41,10 @@ public class Sales {
     private LocalDateTime salesDate;
 
     @PrePersist
-    protected void onPrePersist() {
-        if (this.salesDate == null) {
-            this.salesDate = LocalDateTime.from(Instant.now());
+    protected void generateOrderNum() {
+        if (orderNum == null) {
+            orderNum = (Integer) entityManager.createNativeQuery("SELECT NEXT VALUE FOR order_num_seq").getSingleResult();
         }
     }
 
-    public void generateOrderNum(EntityManager entityManager) {
-        Integer sequenceValue = (Integer) entityManager.createNativeQuery("SELECT NEXT VALUE FOR order_num_seq").getSingleResult();
-        this.orderNum = Integer.parseInt(String.format("%d%07d", storeId, sequenceValue));
-    }
 }

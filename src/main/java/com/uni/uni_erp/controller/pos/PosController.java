@@ -1,10 +1,20 @@
 package com.uni.uni_erp.controller.pos;
 
+import com.uni.uni_erp.domain.entity.Sales;
+import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
+import com.uni.uni_erp.repository.sales.SalesDetailRepository;
+import com.uni.uni_erp.repository.sales.SalesRepository;
 import com.uni.uni_erp.service.pos.PosService;
 import com.uni.uni_erp.service.product.ProductService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +22,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +34,11 @@ import java.util.Map;
 public class PosController {
 
     private final PosService posService;
+    private final SalesRepository salesRepository;
+    private final SalesDetailRepository salesDetailRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * 포스 메인 페이지 요청
@@ -51,12 +68,52 @@ public class PosController {
      * @return
      */
     @PostMapping("/payment")
-    public ResponseEntity<?> posPayment(Model model, HttpSession session) {
+    public ResponseEntity<?> posPayment(HttpServletRequest request, Model model, HttpSession session) {
+        String requestBody = null;
+        double totalAmount;
+        JSONArray items;
+        try {
+            requestBody = new String(request.getInputStream().readAllBytes());
+            JSONObject jsonObject = null;
+            jsonObject = new JSONObject(requestBody);
+            items = jsonObject.getJSONArray("items");
+            totalAmount = jsonObject.getDouble("totalAmount");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
+        // Create a new Sales entity
+        Sales sales = Sales.builder()
+                .storeId((Integer) session.getAttribute("storeId")) // Replace with the actual store ID
+                .orderNum(salesRepository.findLatestOrderNum() + 1)
+                .totalPrice((int) totalAmount)
+                .salesDate(LocalDateTime.now().withNano(0))
+                .build();
 
-        // storeId 값을 모델에 추가하여 리다이렉트 시 전달
-        Map<String, Object> response = new HashMap<>();
-        // TODO 로직 실패시는 다른 return
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        // Save the Sales entity
+        salesRepository.save(sales);
+
+        // Create SalesDetail entities
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject item = null;
+            SalesDetail salesDetail;
+            try {
+                item = items.getJSONObject(i);
+                salesDetail = SalesDetail.builder()
+                        .itemCode(item.getString("productId"))
+                        .itemName(item.getString("name"))
+                        .quantity(item.getInt("quantity"))
+                        .unitPrice(item.getInt("price"))
+                        .sales(sales)
+                        .build();
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Save the SalesDetail entity
+            salesDetailRepository.save(salesDetail);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body("Sales inserted successfully!");
     }
 }
