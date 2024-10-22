@@ -36,7 +36,7 @@ public class SalesController {
     @GetMapping("/history")
     public String salesHistory(Model model, @SessionAttribute("userSession") User user) {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        int currentMonth = Calendar.getInstance().get(Calendar.MONTH);
+        int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
         model.addAttribute("currentYear", currentYear);
         model.addAttribute("currentMonth", currentMonth);
         return "erp/sales/history";

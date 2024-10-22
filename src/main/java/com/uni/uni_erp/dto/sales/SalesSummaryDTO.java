@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 public class SalesSummaryDTO {
     private String itemName;
-    private int totalQuantity;
-    private double unitPrice; // Original unit price
+    private Integer totalQuantity;
+    private Integer unitPrice; // Original unit price
 
 }

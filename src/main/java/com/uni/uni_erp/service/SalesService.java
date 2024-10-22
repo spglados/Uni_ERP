@@ -26,6 +26,10 @@ public class SalesService {
         return salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
     }
 
+    public List<Integer> findAllSalesNumByDateBetweenAndStoreId(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
+        return salesRepository.findAllSalesNumByDateBetweenAndStoreId(startDate, endDate, storeId);
+    }
+
     public List<SalesDetailDTO> findAllByOrderNumIn(List<SalesDTO> salesDTO) {
         List<Integer> orderNums = salesDTO.stream()
                 .map(SalesDTO::getOrderNum)
@@ -33,6 +37,11 @@ public class SalesService {
 
         return salesDetailRepository.findAllByOrderNumIn(orderNums);
     }
+
+    public List<SalesDetailDTO> findByOrderNum(List<Integer> orderNum) {
+        return salesDetailRepository.findAllByOrderNumIn(orderNum);
+    }
+
 
     public List<SalesSummaryDTO> groupSalesDetails(List<SalesDetailDTO> salesDetailList) {
         return salesDetailList.stream()
