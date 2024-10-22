@@ -17,17 +17,18 @@
 </div>
 
 <!-- 일정 추가 모달 -->
-<div class="modal fade" id="addEventModal" tabindex="-1" role="dialog" aria-labelledby="addEventModalLabel" aria-hidden="true">
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addEventModalLabel">일정 추가</h5>
+                <h5 class="modal-title" id="eventModalLabel">일정 추가</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addEventForm">
+                <form id="eventForm">
+                    <input type="hidden" name="scheduleId" id="scheduleId">
                     <div class="form-group">
                         <label for="employeeSelect">근무자 선택 :</label>
                         <select id="employeeSelect" name="employeeSelect" required class="form-control">
@@ -37,8 +38,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="eventStart">날짜:</label>
-                        <input type="date" id="eventStart" name="eventStart" required class="form-control">
+                        <label for="eventDate">날짜:</label>
+                        <input type="date" id="eventDate" name="eventDate" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="eventStartTime">시작 시간:</label>
@@ -55,7 +56,7 @@
                         </div>
                         <select id="eventEndTime" name="eventEndTime" required class="form-control"></select>
                     </div>
-                    <button type="submit" class="btn btn-primary">추가</button>
+                    <button type="submit" id="eventSubmitBtn" class="btn btn-primary">추가</button>
                 </form>
             </div>
         </div>
@@ -73,71 +74,25 @@
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@4.4.2/main.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap@4.4.2/main.min.js'></script>
 
-<%--&lt;%&ndash; scheduleModal.js 포함 &ndash;%&gt;--%>
-<%--<script src="/js/erp/hr/scheduleModal.js"></script>--%>
+<%-- scheduleModal.js 포함 --%>
+<script src="/js/erp/hr/scheduleModal.js"></script>
 
-<%--&lt;%&ndash; calendarModule.js 포함 &ndash;%&gt;--%>
-<%--<script src="/js/erp/hr/calendarModule.js"></script>--%>
+<%-- calendarModule.js 포함 --%>
+<script src="/js/erp/hr/calendarModule.js"></script>
 
-<%--&lt;%&ndash; 일정 데이터 초기화 &ndash;%&gt;--%>
-<%--<script type="application/javascript">--%>
-<%--    const scheduleList = JSON.parse('${schedules}');--%>
-<%--</script>--%>
+<%-- 일정 데이터 초기화 --%>
+<script type="application/javascript">
+    const scheduleList = JSON.parse('${schedules}');
+</script>
 
-<%--&lt;%&ndash; 캘린더 초기 랜더링 &ndash;%&gt;--%>
-<%--<script>--%>
-<%--    document.addEventListener('DOMContentLoaded', function () {--%>
-<%--        const calendarEl = document.getElementById('calendar');--%>
-<%--        initializeCalendar(calendarEl, scheduleList);--%>
-<%--    });--%>
-<%--</script>--%>
-<%--<!-- Toast 및 로딩 스피너를 위한 JavaScript 추가 -->--%>
-<%--<script src="/js/toastHelper.js"></script>--%>
-
+<%-- 캘린더 초기 랜더링 --%>
 <script>
-    // jQuery가 로드된 후에 실행되도록 대기
-    function onJQueryReady(callback) {
-        if (window.jQuery && jQuery.fn.modal) {
-            console.log("jQuery와 Bootstrap 모달이 준비되었습니다.");
-            callback();
-        } else {
-            setTimeout(function() { onJQueryReady(callback); }, 100);
-        }
-    }
-
-    onJQueryReady(function() {
-        // FullCalendar 및 커스텀 스크립트 로드
-        console.log("커스텀 스크립트 로드 시작");
-        const scripts = [
-            '/js/erp/hr/scheduleModal.js',
-            '/js/erp/hr/calendarModule.js',
-            '/js/toastHelper.js'
-        ];
-
-        function loadScripts(scripts, index) {
-            if (index < scripts.length) {
-                const script = document.createElement('script');
-                script.src = scripts[index];
-                script.onload = function() {
-                    console.log(scripts[index] + " 로드 완료");
-                    loadScripts(scripts, index + 1);
-                };
-                document.body.appendChild(script);
-            } else {
-                // 모든 스크립트가 로드된 후 초기화
-                if (typeof initializeCalendar === 'function') {
-                    const scheduleList = JSON.parse('${schedules}');
-                    const calendarEl = document.getElementById('calendar');
-                    console.log("캘린더 초기화 시작");
-                    initializeCalendar(calendarEl, scheduleList);
-                    console.log("캘린더 초기화 완료");
-                } else {
-                    console.error('initializeCalendar 함수가 정의되지 않았습니다.');
-                }
-            }
-        }
-
-        loadScripts(scripts, 0);
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        initializeCalendar(calendarEl, scheduleList);
     });
 </script>
+<!-- Toast 및 로딩 스피너를 위한 JavaScript 추가 -->
+<script src="/js/toastHelper.js"></script>
+
 <%@include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

@@ -138,4 +138,26 @@ public class HrController {
         }
     }
 
+    /**
+     * 근무 일정 수정
+     * @param reqDTO
+     * @return
+     */
+    @PutMapping("/schedule")
+    public ResponseEntity<?> scheduleUpdateProc(@RequestBody ScheduleDTO.UpdateDTO reqDTO, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+
+        // 일정 생성
+        ScheduleDTO.ResponseDTO schedule = scheduleService.update(reqDTO, storeId);
+
+        // 응답 데이터 추가
+        Map<String, Object> response = new HashMap<>();
+        if (schedule != null) {
+            response.put("schedule", schedule);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
 }

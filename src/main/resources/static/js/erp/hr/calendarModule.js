@@ -28,12 +28,15 @@ function initializeCalendar(element, schedules) {
             addEventButton: {
                 text: '일정 추가',
                 click: function () {
-                    openAddEventModal();
+                    openEventModal('add');
                 }
             }
         },
         dateClick: function (info) {
             calendar.changeView('timeGridDay', info.dateStr);
+        },
+        eventClick: function (info){
+            openEventModal('edit', info.event);
         },
         locale: 'ko',
         events: schedules
@@ -41,9 +44,9 @@ function initializeCalendar(element, schedules) {
     calendar.render();
 
     // 모달 폼의 일정 추가 버튼 이벤트 리스너 등록
-    document.getElementById('addEventForm').addEventListener('submit', function (e) {
+    document.getElementById('eventForm').addEventListener('submit', function (e) {
         e.preventDefault();
-        submitAddEvent(calendar);
+        submitEvent(calendar);
     });
 
     // 전역 객체로 접근할 수 있도록 설정 (필요 시)

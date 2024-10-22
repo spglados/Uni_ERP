@@ -1,9 +1,6 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
-import com.uni.uni_erp.util.Str.EnumCommonUtil;
-import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -57,17 +54,4 @@ public class Schedule {
     @Column(nullable = true)
     private Integer minutes;
 
-    public ScheduleDTO.ResponseDTO toResponseDTO() {
-        return ScheduleDTO.ResponseDTO.builder()
-                .id(String.valueOf(id))
-                .title(employee.getName())
-                .start(DateFormatter.toIsoFormat(startTime))
-                .end(DateFormatter.toIsoFormat(endTime))
-                .extendedProps(ScheduleDTO.CustomProperty.builder()
-                        .empId(employee.getId())
-                        .status(EnumCommonUtil.getStringFromEnum(status))
-                        .minutes(minutes == null ? 0 : minutes)
-                        .build())
-                .build();
-    }
 }
