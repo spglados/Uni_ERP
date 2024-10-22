@@ -198,29 +198,14 @@ function updateCharts() {
   });
 }
 
-$.when(
-  $.ajax({
-    type: "GET",
-    url: "/erp/sales/data",
-    success: function(data) {
-      salesHistory = data;
-    }
-  }),
-  $.ajax({
-    type: "GET",
-    url: "/erp/sales/itemCount",
-    success: function(data) {
-      itemCountHistory = data;
-    }
-  }),
-  $.ajax({
-    type: "GET",
-    url: "/erp/sales/itemProfit",
-    success: function(data) {
-      itemProfitHistory = data;
-    }
-  })
-).then(function() {
+Promise.all([
+  fetch("/erp/sales/data").then(response => response.json()),
+  fetch("/erp/sales/itemCount").then(response => response.json()),
+  fetch("/erp/sales/itemProfit").then(response => response.json())
+]).then(([salesData, itemCountData, itemProfitData]) => {
+  salesHistory = salesData;
+  itemCountHistory = itemCountData;
+  itemProfitHistory = itemProfitData;
   updateCharts();
 });
 
