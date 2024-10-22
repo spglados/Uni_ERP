@@ -1,8 +1,6 @@
 // 재료 보기 모달을 열 때 선택된 상품의 재료 정보를 표시하는 함수
 let ingredients = null;
 function showIngredients(productId, productName) {
-    // TODO: 서버에서 선택된 상품의 재료 데이터를 받아와야 함
-
     fetch('/erp/product/ingredient/' + productId)
         .then(response => {
             if(response.status === 404) {
@@ -448,14 +446,14 @@ function registerProduct() {
             body: formData
         }).then(response => {
             if (response.ok) {
-                alert("상품이 등록되었습니다!");
+                alert("상품이 등록되었습니다! \n\n\t 재료를 등록해야 재고가 관리됩니다 !");
                 location.reload();
             } else {
                 alert("상품 등록에 실패했습니다.");
             }
         }).catch(error => {
             console.error('Error:', error);
-            alert("상품 등록 중 오류가 발생했습니다.");
+            alert("상품 등록 중 오류가 발생했습니다." + error);
         });
     } else {
         // 유효성 검사가 실패한 경우 경고창을 띄우고, 유효성 검사를 강제로 실행
@@ -477,17 +475,22 @@ document.addEventListener('DOMContentLoaded', function() {
         filterProducts();
     });
 
-    // 검색 버튼 클릭 시 필터링
-    searchButton.addEventListener('click', function() {
-        filterProducts();
-    });
-
     // 엔터 키 입력 시 필터링
     searchInput.addEventListener('keyup', function(event) {
         if (event.key === 'Enter') {
             filterProducts();
         }
     });
+
+    searchInput.addEventListener('input', function() {
+        filterProducts();
+    });
+
+    // 서버에서 보낸 productName이 존재하면 검색창에 삽입하고 검색 수행
+    if (window.productName && window.productName.trim() !== '') {
+        searchInput.value = window.productName;
+        filterProducts();
+    }
 
     // 상품 필터링 함수 (카테고리와 검색어 모두 적용)
     function filterProducts() {
