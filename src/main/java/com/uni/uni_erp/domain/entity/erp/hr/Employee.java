@@ -114,33 +114,4 @@ public class Employee {
         this.updatedAt = Timestamp.from(Instant.now());
     }
 
-
-    public EmployeeDTO toEmployeeDTO() {
-        return EmployeeDTO.builder()
-                .id(this.id)
-                .storeId(this.store.getId())
-                .storeEmployeeNumber(storeEmployeeNumber)
-                .name(this.name)
-                .birthday(this.birthday)
-                .gender(this.gender)
-                .email(this.email)
-                .phone(this.phone)
-                .address(this.address)
-                .accountNumber(this.accountNumber)
-                .bankId(this.bank.getId())
-                .bankName(this.bank.getName())
-                .uniqueEmployeeNumber(this.uniqueEmployeeNumber)
-                .employmentStatus(this.employmentStatus)
-                .hiredAt(Timestamp.from(Instant.now()))
-                .employmentContract(this.empDocument.getEmploymentContract())
-                .healthCertificate(this.empDocument.getHealthCertificate())
-                .healthCertificateDate(this.empDocument != null && this.empDocument.getHealthCertificateDate() != null
-                        ? DateFormatter.toDate(this.empDocument.getHealthCertificateDate())
-                        : "보건증 갱신일을 입력해주세요") // 보건증 갱신일이 null일 경우 메시지 설정
-                .residentRegistration(this.empDocument.getResidentRegistration())
-                .bankAccountCopy(this.empDocument.getBankAccountCopy())
-                .identificationCopy(this.empDocument.getIdentificationCopy())
-                .build();
-    }
-
 }

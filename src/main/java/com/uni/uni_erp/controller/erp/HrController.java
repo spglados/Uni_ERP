@@ -2,7 +2,6 @@ package com.uni.uni_erp.controller.erp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.BankDTO;
@@ -32,8 +31,6 @@ public class HrController {
     private final HrService hrService;
     private final ScheduleService scheduleService;
     private final HttpSession session;
-    private final Gson gson;
-
 
     @GetMapping("/employee-register")
     public String employeeRegisterPage(Model model) {
@@ -47,29 +44,39 @@ public class HrController {
 
     @PostMapping("/employee-register")
     public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam(name = "storeId") Integer storeId) {
-        System.out.println("storeId: " + storeId);
         hrService.registerEmployee(employeeDTO, storeId);
         return "redirect:/erp/hr/employee-list";
     }
 
-    // TODO 스토어로 바꾸기
     @GetMapping("/employee-list")
     public String employeeListPage(HttpSession session, Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreIdWithDocuments(storeId);
+        List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreId(storeId); // EmployeeDTO로 변경
+
+        // 직원 목록의 내용 확인
+        for (EmployeeDTO dto : employeeDTOList) {
+            System.out.println("EmployeeDTO: " + dto); // 각 DTO 출력
+        }
+
         model.addAttribute("employees", employeeDTOList); // 직원 목록을 모델에 추가
-        model.addAttribute("employeesJson", gson.toJson(employeeDTOList));
+
+        // DTO 리스트를 JSON으로 변환
+        String employeesJson;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            employeesJson = objectMapper.writeValueAsString(employeeDTOList);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace(); // 예외의 상세 정보 출력
+            throw new RuntimeException("직원 목록을 JSON으로 변환하는 중 오류 발생: " + e.getMessage(), e);
+        }
+
+        model.addAttribute("employeesJson", employeesJson); // JSON 데이터를 모델에 추가
+
         return "erp/hr/employeeList"; // 직원 목록 페이지 반환
     }
 
-    /**
-     * 근무 일정 관리 페이지 호출
-     * @param type
-     * @param model
-     * @return
-     */
     @GetMapping("/schedule")
-    public String schedulePage(@RequestParam(name = "type", required = false) String type, Model model, HttpSession session) {
+    public String schedulePage(@RequestParam(name = "type", required = false) String type, Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         // 문자열로 받은 type을 enum 타입으로 변환
@@ -78,10 +85,10 @@ public class HrController {
         // 일정 조회
         List<ScheduleDTO.ResponseDTO> schedules = scheduleService.findByStoreIdAndType(storeId, scheduleType);
 
-        // TODO DTO로 변경해야함 모든 근무자 조회
-        List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
+        // 직원 목록을 EmployeeDTO로 가져오기
+        List<EmployeeDTO> employees = hrService.getEmployeesByStoreId(storeId);
 
-        String schedulesJson = null;
+        String schedulesJson;
         try {
             schedulesJson = new ObjectMapper().writeValueAsString(schedules);
         } catch (JsonProcessingException e) {
@@ -93,13 +100,8 @@ public class HrController {
         return "/erp/hr/schedule";
     }
 
-    /**
-     * 근무 일정 등록
-     * @param reqDTO
-     * @return
-     */
     @PostMapping("/schedule")
-    public ResponseEntity<?> scheduleCreateProc(@RequestBody ScheduleDTO.CreateDTO reqDTO, HttpSession session) {
+    public ResponseEntity<?> scheduleCreateProc(@RequestBody ScheduleDTO.CreateDTO reqDTO) {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         // 일정 생성
@@ -107,12 +109,6 @@ public class HrController {
 
         // 응답 데이터 추가
         Map<String, Object> response = new HashMap<>();
-//        String scheduleJson = null;
-//        try {
-//            scheduleJson = new ObjectMapper().writeValueAsString(schedule);
-//        } catch (JsonProcessingException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
         if (schedule != null) {
             response.put("schedule", schedule);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

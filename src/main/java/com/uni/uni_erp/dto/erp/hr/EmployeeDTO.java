@@ -1,11 +1,11 @@
 package com.uni.uni_erp.dto.erp.hr;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
 import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 @Builder
+@ToString
 public class EmployeeDTO {
     private Integer id;
     private String name;
@@ -22,15 +23,17 @@ public class EmployeeDTO {
     private String email;
     private String phone;
     private String address;
-    private Integer bankId; // 은행명
-    private String bankName;
+    private Integer bankId; // 은행 ID
+    private String bankName; // 은행명
     private String accountNumber;
+    @JsonIgnore
     private EmpPosition empPosition;
     private Integer storeId;
     private Integer storeEmployeeNumber; // 각 가게별로 증가하는 직원 번호 추가
-    private String uniqueEmployeeNumber; // 사원 번호
+    private String uniqueEmployeeNumber; // 유니크 사원 번호
 
     private Employee.EmploymentStatus employmentStatus;
+    @JsonIgnore
     private EmpDocumentDTO empDocumentDTO; // 문서 정보 DTO
 
     private Timestamp hiredAt;
@@ -39,22 +42,20 @@ public class EmployeeDTO {
 
     private boolean employmentContract;
     private boolean healthCertificate;
-    private String healthCertificateDate; //보건 갱신날짜
+    private String healthCertificateDate; // 보건 갱신 날짜
     private boolean identificationCopy;
     private boolean bankAccountCopy;
     private boolean residentRegistration;
 
-    //등록시 기본 값 초기화
-    public EmpDocumentDTO getEmpDocumentDTO() {
-        if (empDocumentDTO == null) {
-            empDocumentDTO = new EmpDocumentDTO(); // 기본값으로 초기화
-        }
-        return empDocumentDTO;
-    }
+//    // 등록 시 기본 값 초기화
+//    public EmpDocumentDTO getEmpDocumentDTO() {
+//        if (empDocumentDTO == null) {
+//            empDocumentDTO = new EmpDocumentDTO(); // 기본값으로 초기화
+//        }
+//        return empDocumentDTO;
+//    }
 
-
-
-    // EmployeeDTO로 변환하는 생성자
+    // Employee 엔티티를 DTO로 변환하는 생성자
     public EmployeeDTO(Employee employee) {
         this.id = employee.getId();
         this.name = employee.getName();
@@ -62,28 +63,36 @@ public class EmployeeDTO {
         this.email = employee.getEmail();
         this.phone = employee.getPhone();
         this.address = employee.getAddress();
-        // 은행 ID와 은행 이름 설정
+        this.gender = employee.getGender(); // Employee의 gender 값을 직접 가져오는지 확인
         if (employee.getBank() != null) {
             this.bankId = employee.getBank().getId();
-            this.bankName = employee.getBank().getName(); // 은행 이름 설정
+            this.bankName = employee.getBank().getName();
         }
         this.accountNumber = employee.getAccountNumber();
         this.empPosition = employee.getEmpPosition();
-        this.storeId = employee.getStore() != null ? employee.getStore().getId() : null; // 상점 ID
+        this.storeId = employee.getStore() != null ? employee.getStore().getId() : null;
         this.storeEmployeeNumber = employee.getStoreEmployeeNumber();
         this.uniqueEmployeeNumber = employee.getUniqueEmployeeNumber();
         this.employmentStatus = employee.getEmploymentStatus();
         this.hiredAt = employee.getHiredAt();
         this.updatedAt = employee.getUpdatedAt();
         this.quitAt = employee.getQuitAt();
-        //this.healthCertificateDate = employee.toEmployeeDTO().getHealthCertificateDate();
 
-        // EmpDocumentDTO로 변환 (문서 정보가 없을 경우 빈 객체로 초기화)
+        // EmpDocumentDTO 설정
         if (employee.getEmpDocument() != null) {
-            this.empDocumentDTO = new EmpDocumentDTO(employee.getEmpDocument()); // EmpDocument 객체로 처리
-        } else {
-            this.empDocumentDTO = new EmpDocumentDTO(); // 빈 객체로 초기화
+            this.empDocumentDTO = new EmpDocumentDTO(employee.getEmpDocument());
+            this.employmentContract = this.empDocumentDTO.getEmploymentContract();
+            this.healthCertificate = this.empDocumentDTO.getHealthCertificate();
+            this.healthCertificateDate = this.empDocumentDTO.getHealthCertificateDate();
+            this.identificationCopy = this.empDocumentDTO.getIdentificationCopy();
+            this.bankAccountCopy = this.empDocumentDTO.getBankAccountCopy();
+            this.residentRegistration = this.empDocumentDTO.getResidentRegistration();
         }
+    }
+
+    // EmpDocumentDTO를 설정하는 메서드
+    public void setEmpDocumentDTO(EmpDocumentDTO empDocumentDTO) {
+        this.empDocumentDTO = empDocumentDTO;
     }
 
 

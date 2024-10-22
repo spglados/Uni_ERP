@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -65,14 +66,4 @@ public class EmpDocument {
         residentRegistration = residentRegistration != null ? residentRegistration : false;
     }
 
-    public JsonObject toJson() {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("employee_id", employee.getUniqueEmployeeNumber());
-        jsonObject.addProperty("employment_contract", employmentContract);
-        jsonObject.addProperty("health_certificate", healthCertificate);
-        jsonObject.addProperty("resident_registration", residentRegistration);
-        jsonObject.addProperty("identification_copy", identificationCopy);
-        jsonObject.addProperty("bank_account_copy", bankAccountCopy);
-        return jsonObject;
-    }
 }

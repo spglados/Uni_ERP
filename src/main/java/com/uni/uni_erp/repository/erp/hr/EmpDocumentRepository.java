@@ -2,6 +2,8 @@ package com.uni.uni_erp.repository.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
+import com.uni.uni_erp.dto.erp.hr.EmpDocumentDTO;
+import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +23,5 @@ public interface EmpDocumentRepository extends JpaRepository<EmpDocument, Intege
 
     @Query("SELECT e FROM Employee e JOIN FETCH e.empDocument ed WHERE e.store.id = :storeId")
     List<Employee> findByStoreIdWithDocuments(@Param("storeId") Integer storeId);
+
 }

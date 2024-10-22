@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 
 <div class="container">
@@ -17,33 +18,31 @@
                 </tr>
                 </thead>
                 <tbody>
-<c:forEach var="employee" items="${employees}">
-    <tr class="employee-row"
-        data-id="${employee.uniqueEmployeeNumber}"
-        data-name="${employee.name}"
-        data-birthday="${employee.birthday}"
-        data-gender="${employee.gender}"
-        data-email="${employee.email}"
-        data-phone="${employee.phone}"
-        data-status="${employee.employmentStatus}"
-        data-bank="${employee.bankName != null ? employee.bankName : '정보 없음'}"
-        data-account="${employee.accountNumber}"
-        data-healthcertificatedate="${employee.healthCertificateDate}">
-        <td>${employee.uniqueEmployeeNumber}</td>
-        <td>${employee.name}</td>
-        <td>${employee.empPosition.name != null ? employee.empPosition.name : '정보 없음'}</td> <!-- 직책 수정 -->
-
-        <td>
-            <c:choose>
-                <c:when test="${employee.employmentStatus == 'ACTIVE'}">재직</c:when>
-                <c:when test="${employee.employmentStatus == 'INACTIVE'}">퇴사</c:when>
-                <c:when test="${employee.employmentStatus == 'ONLEAVE'}">휴직</c:when>
-            </c:choose>
-        </td>
-        <td>${employee.phone}</td>
-    </tr>
-</c:forEach>
-
+                <c:forEach var="employee" items="${employees}">
+                    <tr class="employee-row"
+                        data-id="${employee.uniqueEmployeeNumber}"
+                        data-name="${employee.name}"
+                        data-birthday="${employee.birthday}"
+                        data-gender="${employee.gender}"
+                        data-email="${employee.email}"
+                        data-phone="${employee.phone}"
+                        data-status="${employee.employmentStatus}"
+                        data-bank="${employee.bankName != null ? employee.bankName : '정보 없음'}"
+                        data-account="${employee.accountNumber}"
+                        data-healthcertificatedate="${employee.healthCertificateDate}">
+                        <td>${employee.uniqueEmployeeNumber}</td>
+                        <td>${employee.name}</td>
+                        <td>${employee.empPosition.name != null ? employee.empPosition.name : '정보 없음'}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${employee.employmentStatus == 'ACTIVE'}">재직</c:when>
+                                <c:when test="${employee.employmentStatus == 'INACTIVE'}">퇴사</c:when>
+                                <c:when test="${employee.employmentStatus == 'ONLEAVE'}">휴직</c:when>
+                            </c:choose>
+                        </td>
+                        <td>${employee.phone}</td>
+                    </tr>
+                </c:forEach>
                 </tbody>
             </table>
         </c:if>
@@ -56,8 +55,21 @@
         <p>상세 정보를 클릭하여 확인하세요.</p>
     </div>
 </div>
+
 <script>
-    const temp = ${employeesJson != null ? employeesJson : '비었지롱~'};
+    const employeesJson = '${fn:escapeXml(employeesJson)}'; // JSON 문자열을 올바르게 설정
+    console.log(employeesJson); // JSON 문자열 출력 확인
+
+    // JSON 문자열 유효성 검사
+    let employeesData = [];
+    if (employeesJson && employeesJson !== 'null' && employeesJson !== '') {
+        try {
+            employeesData = JSON.parse(employeesJson); // JSON 문자열을 객체로 파싱
+        } catch (error) {
+            console.error("JSON 파싱 오류:", error);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('.left-panel table tbody').addEventListener('click', function (event) {
             const row = event.target.closest('.employee-row');
@@ -72,13 +84,12 @@
                     row.dataset.status === 'INACTIVE' ? '퇴사' : row.dataset.status === 'ONLEAVE' ? '휴직' : '정보 없음';
                 const bank = row.dataset.bank;
                 const account = row.dataset.account;
-                const emplcont = temp.employmentContract;
 
                 // 문서 정보 추가
                 let documents = {};
 
-                // 현재 선택한 row의 employee_id를 uniqueId로 사용하여 temp에서 해당 employee의 문서 정보 찾기
-                const employeeDocument = temp.find(emp => emp.uniqueEmployeeNumber === uniqueId);
+                // 현재 선택한 row의 employee_id를 uniqueId로 사용하여 employeesData에서 해당 employee의 문서 정보 찾기
+                const employeeDocument = employeesData.find(emp => emp.uniqueEmployeeNumber === uniqueId);
                 console.log('employeeDocument', employeeDocument);
 
                 if (employeeDocument) {
@@ -110,11 +121,11 @@
                     '<ul>' +
                     '<li>근로계약서: ' + (documents.employmentContract ? '제출됨' : '미제출') + '</li>' +
                     '<li>보건증: ' + (documents.healthCertificate ? '제출됨' : '미제출') + '</li>' +
-                    '<li>보건증: ' + (documents.healthCertificateDate + '</li>' +
+                    '<li>보건증 발급일: ' + (documents.healthCertificateDate ? documents.healthCertificateDate : '정보 없음') + '</li>' +
                     '<li>신분증 사본: ' + (documents.identificationCopy ? '제출됨' : '미제출') + '</li>' +
                     '<li>통장 사본: ' + (documents.bankAccountCopy ? '제출됨' : '미제출') + '</li>' +
                     '<li>주민등록등본: ' + (documents.residentRegistration ? '제출됨' : '미제출') + '</li>' +
-                    '</ul>');
+                    '</ul>';
             }
         });
     });
