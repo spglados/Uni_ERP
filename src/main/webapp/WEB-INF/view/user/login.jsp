@@ -13,8 +13,10 @@
 
 <main class="main-container">
 
-<div class="login-container">
-  <h2>로그인</h2>
+<div class="login-container" id="login-container">
+    <img src="/images/logo/logo_clear.png" alt="로고">
+       <h6>로그인 후 이용 해 주세요</h6>
+    <h2>로그인</h2>
   <form action="/user/login" method="post">
     <input type="text" name="email" placeholder="Email" value="asd@asd.com" required>
     <input type="password" name="password" placeholder="Password" value="1234" required>
@@ -26,6 +28,12 @@
 </div>
 
 </main>
+
+<script>
+  document.getElementById("login-container").addEventListener("mouseover", function() {
+    this.style.animation = 'none'; // 애니메이션 중지
+  });
+</script>
 
 <!-- footer.jsp  -->
 <%@ include file="/WEB-INF/view/layout/footer.jsp"%>
