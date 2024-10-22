@@ -145,5 +145,4 @@ public class SalesService {
         return roundedDifference.doubleValue();
     }
 
-
 }
