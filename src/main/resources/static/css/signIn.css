@@ -3,17 +3,53 @@
     justify-content: center; /* 가로 방향 중앙 정렬 */
     align-items: center;     /* 세로 방향 중앙 정렬 */
 }
+
 .login-container {
+    display: inline-block;
     background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 300px;
+    animation: pulse 1s ease-in-out infinite;
+    justify-content: center;
 }
+
+.login-container:hover {
+    animation: none;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.login-container img {
+    margin-bottom: 20px;
+    justify-content: center;
+    height: 75px;
+    width: 100px;
+}
+
 .login-container h2 {
     text-align: center;
     margin-bottom: 20px;
 }
+
+.login-container h6 {
+    color: red;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 100;
+}
+
 .login-container input[type="text"],
 .login-container input[type="password"] {
     width: 100%;
