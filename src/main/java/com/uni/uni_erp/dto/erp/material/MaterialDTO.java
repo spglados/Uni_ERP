@@ -1,10 +1,7 @@
 package com.uni.uni_erp.dto.erp.material;
 
 import com.uni.uni_erp.util.Str.UnitCategory;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -49,4 +46,69 @@ public class MaterialDTO {
         private Map<Integer, String> useProduct;
 
     }
+
+    /**
+     * MaterialOrder를 위한 Data Transfer Object
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MaterialOrderDTO {
+
+        private int id;
+
+        private String name;
+
+        private String price;
+
+        private double amount;
+
+        private String unit;
+
+        private String supplier;
+
+        private LocalDate receiptDate;
+
+        private LocalDate expirationDate;
+
+        private LocalDate enterDate;
+
+        private Boolean isUse;
+
+        private Integer materialId;
+
+        private Integer statusId;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MaterialStatusDTO {
+
+        private int id;
+
+        private String name;
+
+        private String category;
+
+        private double theoreticalAmount;
+
+        private double actualAmount;
+
+        private String unit;
+
+        private double loss;
+
+        private LocalDate expirationDate;
+
+        private LocalDate receiptDate;
+
+        private Map<Integer, String> useProduct;
+
+    }
+
 }
