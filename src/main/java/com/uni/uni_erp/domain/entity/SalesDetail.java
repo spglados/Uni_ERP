@@ -25,9 +25,6 @@ public class SalesDetail {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "specs")
-    private String specs;
-
     @Column(name = "unit_price", nullable = false)
     private Integer unitPrice;
 

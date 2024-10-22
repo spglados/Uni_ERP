@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -53,7 +52,7 @@ public class Material {
     private List<MaterialOrder> orders;
 
     @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MaterialStatus> statusHistory;
+    private List<MaterialAdjustment> statusHistory;
 
     @PrePersist
     protected void onCreate() {

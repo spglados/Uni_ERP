@@ -36,7 +36,6 @@
             </div>
             <div class="d-flex justify-content-between">
                 <input id="searchInput" placeholder="상품명 검색" style="margin-right: 10px">
-                <button id="searchButton">검색</button>
                 <h5>2024-10-13</h5>
             </div>
         </div>
@@ -162,6 +161,13 @@
         const materialList = ${materialList != null ? materialList : '[]'};
         const materialDTOList = ${materialDTOList != null ? materialDTOList : '[]'};
     </script>
+
+    <c:if test="${not empty productName}">
+    <script>
+        window.productName = '<c:out value="${productName}" />';
+    </script>
+    </c:if>
+
     <script src="/js/erp/product/register.js"></script>
 
 <%@include file="/WEB-INF/view/erp/layout/erpFooter.jsp"%>
