@@ -28,8 +28,8 @@ body {
 	width: 100%;
 	max-width: 1200px; /* 페이지를 일반 모니터 크기로 고정 */
 	margin: 0 auto;
-	background-color: #161616; /* 어두운 배경색 */
-	color: #d3d3d3; /* 밝은 그레이 텍스트 색상 */
+	background-color: #CCCCCC; /* 어두운 배경색 */
+	color: #636363; /* 밝은 그레이 텍스트 색상 */
 	padding: 2rem 0;
 	text-align: center;
 	border-top: 1px solid #333;

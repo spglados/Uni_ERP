@@ -32,8 +32,9 @@
             <li class="nav-item"><a href="/support">고객지원</a></li>
         </ul>
         <div class="header-icons">
-            <a href="/user/login" class="none-a"><i class="fa-solid fa-sign-in-alt">로그인</i></a>
-            <a href="#"><i class="fa-solid fa-clipboard"></i></a>
+            <a href="/user/login" class="none-a"><i class="fa-solid fa-sign-in-alt">로그인&nbsp;&nbsp;</i></a>
+            <i>/</i>
+            <a href="/user/join" class="none-a"><i class="fa-solid fa-sign-in-alt">&nbsp;&nbsp;회원가입</i></a>
         </div>
     </div>
 </header>
