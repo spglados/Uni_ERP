@@ -130,12 +130,6 @@ public class HrController {
 
         // 응답 데이터 추가
         Map<String, Object> response = new HashMap<>();
-//        String scheduleJson = null;
-//        try {
-//            scheduleJson = new ObjectMapper().writeValueAsString(schedule);
-//        } catch (JsonProcessingException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
         if (schedule != null) {
             response.put("schedule", schedule);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

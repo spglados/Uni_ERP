@@ -1,14 +1,16 @@
-import {Calendar} from 'https://cdn.skypack.dev/@fullcalendar/core@6.1.15'
-import interactionPlugin from 'https://cdn.skypack.dev/@fullcalendar/interaction@6.1.15'
-import dayGridPlugin from 'https://cdn.skypack.dev/@fullcalendar/daygrid@6.1.15'
-import timeGridPlugin from 'https://cdn.skypack.dev/@fullcalendar/timegrid@6.1.15'
-import bootstrapPlugin from 'https://cdn.skypack.dev/@fullcalendar/bootstrap@6.1.15'
-import {openAddEventModal, submitAddEvent} from './scheduleModal.js';
-
-export function initializeCalendar(element, schedules) {
-    const calendar = new Calendar(element, {
-        plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, bootstrapPlugin],
-        headerToolbar: {
+/**
+ * FullCalendar 4.4.2를 초기화하는 함수
+ * @param {HTMLElement} element - FullCalendar가 렌더링될 DOM 요소
+ * @param {Array} schedules - 초기 이벤트 목록
+ */
+function initializeCalendar(element, schedules) {
+    if (typeof FullCalendar === 'undefined') {
+        console.error('FullCalendar 라이브러리가 로드되지 않았습니다.');
+        return;
+    }
+    const calendar = new FullCalendar.Calendar(element, {
+        plugins: ['interaction', 'dayGrid', 'timeGrid', 'bootstrap'],
+        header: {
             left: 'prevYear,prev,next,nextYear today addEventButton',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
@@ -21,7 +23,6 @@ export function initializeCalendar(element, schedules) {
         },
         editable: true,
         selectable: true,
-        dayMaxEventRows: 5,
         themeSystem: 'bootstrap',
         customButtons: {
             addEventButton: {
@@ -34,9 +35,9 @@ export function initializeCalendar(element, schedules) {
         dateClick: function (info) {
             calendar.changeView('timeGridDay', info.dateStr);
         },
+        locale: 'ko',
         events: schedules
     })
-    calendar.setOption('locale', 'ko');
     calendar.render();
 
     // 모달 폼의 일정 추가 버튼 이벤트 리스너 등록
@@ -44,4 +45,9 @@ export function initializeCalendar(element, schedules) {
         e.preventDefault();
         submitAddEvent(calendar);
     });
+
+    // 전역 객체로 접근할 수 있도록 설정 (필요 시)
+    window.calendar = calendar;
 }
+// 전역 객체로 함수 노출
+window.initializeCalendar = initializeCalendar;
