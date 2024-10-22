@@ -1,6 +1,8 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.dto.sales.SalesComparisonDTO;
+import com.uni.uni_erp.dto.sales.SalesTargetDTO;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.user.StoreService;
 import jakarta.servlet.http.HttpSession;
@@ -10,8 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,9 +47,17 @@ public class SalesController {
 
         session.getAttribute("storeId");
 
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate lastYear = LocalDate.now().minusYears(1);
 
-        LocalDateTime localDateTime = LocalDateTime.now();
+        List<SalesTargetDTO> todaySalesTargets = salesService.getSalesTargetByHour(1, today);
+        List<SalesTargetDTO> yesterdaySalesTargets = salesService.getSalesTargetByHour(1, yesterday);
+        List<SalesTargetDTO> lastYearSalesTargets = salesService.getSalesTargetByHour(1, lastYear);
 
+        List<SalesComparisonDTO> salesComparison = salesService.getSalesComparison(todaySalesTargets, yesterdaySalesTargets, lastYearSalesTargets);
+
+        model.addAttribute("salesComparison", salesComparison);
 
         return "erp/sales/statistics";
     }

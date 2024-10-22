@@ -3,37 +3,46 @@
 <link rel="stylesheet" href="/css/statistics.css">
 
 <div class="content">
-    <h1 id="currentDate"></h1>
+    <h1 id="currentDate"> </h1>
 
-    <table id="table">
-    <th>
+    <div class="table-responsive">
+        <table class="table table-bordered">
         <tr>
-            <th>상품명</th>
-            <th>매출(월)</th>
-            <th>전월동기매출</th>
-            <th>성장율(%)</th>
-            <th>매출(연누계)</th>
-            <th>전년동기매출</th>
-            <th>성장율(%)</th>
-            <th>매출이익(₩)</th>
+            <th>시간</th>
+            <th>전일목표금액</th>
+            <th>전일매출</th>
+            <th>전일객수</th>
+            <th>금일목표금액</th>
+            <th>금일매출</th>
+            <th>금일객수</th>
+            <th>전일대비</th>
+            <th>전년도 대비</th>
             <th>비고</th>
-        </tr>
-    </th>
-    <tb id="tableBody">
-        <c:forEach var="item" items="${items}">
-            <tr>
-                <td>${item.name}</td>
-                <td>${item.sales}</td>
-                <td>${item.itemSales}</td>
-                <td>${item.profitRate}</td>
-                <td>${item.sales}</td>
-                <td>${item.itemSales}</td>
-                <td>${item.profitRate}</td>
-                <td>${item.sales}</td>
-                <td>${item.problems}</td>
             </tr>
-        </c:forEach>
-    </tb>
+        <tb>
+            <c:forEach var="item" items="${salesComparison}">
+                <tr>
+                    <td>${item.hour}</td>
+                    <td>${item.lastDayTargetProfit}</td>
+                    <td>${item.lastDayTotalSales}</td>
+                    <td>${item.lastDaySalesCount}</td>
+                    <td>${item.todayTargetProfit}</td>
+                    <td>${item.todayTotalSales}</td>
+                    <td>${item.todaySalesCount}</td>
+                    <td>
+                        ${item.salesComparedToLastDay}
+                        <span class="percentage">(${item.percentageComparedToLastDay != null ? item.percentageComparedToLastDay : 'N/A'}%)</span>
+                    </td>
+                    <td>
+                        ${item.salesComparedToLastYear}
+                        <span class="percentage">(${item.percentageComparedToLastYear != null ? item.percentageComparedToLastYear : 'N/A'}%)</span>
+                    </td>
+                    <td></td>
+                </tr>
+            </c:forEach>
+        </tb>
+    </table>
+</div>
 
     <div class="chart-grid">
         <div class="chart-row">
