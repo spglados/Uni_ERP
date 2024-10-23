@@ -28,6 +28,7 @@ public class EmployeeDTO {
     private String accountNumber;
     @JsonIgnore
     private EmpPosition empPosition;
+    private String empPositionName; // 직책 이름 추가
     private Integer storeId;
     private Integer storeEmployeeNumber; // 각 가게별로 증가하는 직원 번호 추가
     private String uniqueEmployeeNumber; // 유니크 사원 번호
@@ -47,14 +48,6 @@ public class EmployeeDTO {
     private boolean bankAccountCopy;
     private boolean residentRegistration;
 
-//    // 등록 시 기본 값 초기화
-//    public EmpDocumentDTO getEmpDocumentDTO() {
-//        if (empDocumentDTO == null) {
-//            empDocumentDTO = new EmpDocumentDTO(); // 기본값으로 초기화
-//        }
-//        return empDocumentDTO;
-//    }
-
     // Employee 엔티티를 DTO로 변환하는 생성자
     public EmployeeDTO(Employee employee) {
         this.id = employee.getId();
@@ -68,6 +61,7 @@ public class EmployeeDTO {
             this.bankId = employee.getBank().getId();
             this.bankName = employee.getBank().getName();
         }
+        this.empPositionName = employee.getEmpPosition() != null ? employee.getEmpPosition().getName() : null; // 직책 이름 추가
         this.accountNumber = employee.getAccountNumber();
         this.empPosition = employee.getEmpPosition();
         this.storeId = employee.getStore() != null ? employee.getStore().getId() : null;

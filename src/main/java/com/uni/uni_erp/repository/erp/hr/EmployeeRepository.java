@@ -50,6 +50,17 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT e FROM Employee e WHERE e.empPosition.store.id = :storeId AND e.empPosition.id = :positionId")
     List<Employee> findByStoreIdAndPositionId(@Param("storeId") Integer storeId, @Param("positionId") Integer positionId); // Employee 반환
 
+    // 이메일로 직원 존재 여부 체크
+    boolean existsByEmail(String email);
+
+    // 전화번호로 직원 존재 여부 체크
+    boolean existsByPhone(String phone);
+
+    // 이메일 찾기
+    Optional<Employee> findByEmail(String email);
+    // 전화번호 찾기
+    Optional<Employee> findByPhone(String phone);
+
 
 }
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.BankDTO;
+import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
 import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
 import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
 import com.uni.uni_erp.exception.errors.Exception500;
@@ -36,16 +37,42 @@ public class HrController {
     public String employeeRegisterPage(Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
         List<BankDTO> bankList = hrService.getAllBankDTOs();
+        List<EmpPositionDTO> positionsList = hrService.getPositionsByStoreId(storeId); // 직책 목록 추가 // 직책 목록 추가
         model.addAttribute("bankList", bankList);
+        model.addAttribute("positionsList", positionsList); // 모델에 직책 추가
         model.addAttribute("employee", new Employee());
         model.addAttribute("storeId", storeId); // storeId를 모델에 추가
         return "/erp/hr/employeeRegister";
     }
 
-    @PostMapping("/employee-register")
-    public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam(name = "storeId") Integer storeId) {
-        hrService.registerEmployee(employeeDTO, storeId);
-        return "redirect:/erp/hr/employee-list";
+    @PostMapping("/registerEmployee")
+    public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam Integer storeId, Model model) {
+        try {
+            hrService.registerEmployee(employeeDTO, storeId);
+            return "redirect:/erp/hr/employee-list"; // 등록 성공 시 직원 리스트로 리다이렉트
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("employeeDTO", employeeDTO); // 입력한 데이터 유지
+            return "forward:/erp/hr/employee-register"; // 등록 폼으로 돌아감
+        }
+    }
+
+    // 중복 이메일 검사
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
+        Map<String, Object> response = new HashMap<>();
+        boolean isDuplicated = hrService.isEmailDuplicated(email);
+        response.put("isDuplicated", isDuplicated);
+        return ResponseEntity.ok(response);
+    }
+
+    // 중복 전화번호 검사
+    @GetMapping("/check-phone")
+    public ResponseEntity<Map<String, Object>> checkPhone(@RequestParam String phone) {
+        Map<String, Object> response = new HashMap<>();
+        boolean isDuplicated = hrService.isPhoneDuplicated(phone);
+        response.put("isDuplicated", isDuplicated);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/employee-list")

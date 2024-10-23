@@ -2,15 +2,18 @@ package com.uni.uni_erp.service.erp.hr;
 
 import com.uni.uni_erp.domain.entity.Bank;
 import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
+import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.BankDTO;
 import com.uni.uni_erp.dto.erp.hr.EmpDocumentDTO;
+import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
 import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.repository.bank.BankRepository;
 import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
+import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
 import jakarta.transaction.Transactional;
@@ -29,6 +32,7 @@ public class HrService {
     private final StoreRepository storeRepository;
     private final BankRepository bankRepository;
     private final EmpDocumentRepository empDocumentRepository;
+    private final EmpPositionRepository empPositionRepository;
 
     // 스토어 ID로 직원 목록 조회
     public List<EmployeeDTO> getEmployeesByStoreId(Integer storeId) {
@@ -42,12 +46,20 @@ public class HrService {
                 .orElseThrow(() -> new Exception404("직원 정보를 찾을 수 없습니다."));
     }
 
+    public List<EmpPositionDTO> getPositionsByStoreId(Integer storeId) {
+        List<EmpPosition> positions = empPositionRepository.findByStoreId(storeId);
+        return positions.stream()
+                .map(EmpPositionDTO::new) // EmpPosition을 EmpPositionDTO로 변환
+                .collect(Collectors.toList());
+    }
+
     // 신규 직원 등록
     @Transactional
     public Employee registerEmployee(EmployeeDTO employeeDTO, Integer storeId) {
         Store store = getStoreById(storeId);
         Bank bank = getBankById(employeeDTO.getBankId());
         Integer newStoreEmployeeNumber = getNewStoreEmployeeNumber(storeId);
+
 
         Employee employee = buildEmployee(employeeDTO, store, bank, newStoreEmployeeNumber);
         employee = employeeRepository.save(employee);
@@ -56,6 +68,16 @@ public class HrService {
         empDocumentRepository.save(empDocument);
 
         return employee;
+    }
+
+    // 중복 이메일 검사
+    public boolean isEmailDuplicated(String email) {
+        return employeeRepository.existsByEmail(email);
+    }
+
+    // 중복 전화번호 검사
+    public boolean isPhoneDuplicated(String phone) {
+        return employeeRepository.existsByPhone(phone);
     }
 
     // 모든 직원과 은행 정보 조회
