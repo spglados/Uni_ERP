@@ -191,7 +191,7 @@
             .then(response => {
                 if(response.ok) {
                     alert('성공적으로 저장되었습니다 !');
-                    window.onload;
+                    window.location.reload();
                 }
             })
             .catch(error => {

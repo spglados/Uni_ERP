@@ -1,11 +1,9 @@
 package com.uni.uni_erp.dto.erp.material;
 
-import com.uni.uni_erp.domain.entity.erp.product.Material;
-import com.uni.uni_erp.domain.entity.erp.product.MaterialAdjustment;
 import com.uni.uni_erp.domain.entity.erp.product.MaterialOrder;
 import com.uni.uni_erp.domain.entity.erp.product.MaterialStatus;
 import com.uni.uni_erp.util.Str.UnitCategory;
-import com.uni.uni_erp.util.date.PriceFormatter;
+import com.uni.uni_erp.util.date.NumberFormatter;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -99,7 +97,7 @@ public class MaterialDTO {
         public MaterialOrderDTO(MaterialOrder materialOrder) {
             this.id = materialOrder.getId();
             this.name = materialOrder.getName();
-            this.price = PriceFormatter.formatToPrice(materialOrder.getPrice());
+            this.price = NumberFormatter.formatToPrice(materialOrder.getPrice());
             this.amount = materialOrder.getAmount();
             this.unit = materialOrder.getUnit().toString();
             this.supplier = materialOrder.getSupplier();

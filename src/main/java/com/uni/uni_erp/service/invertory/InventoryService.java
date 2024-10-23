@@ -9,6 +9,7 @@ import com.uni.uni_erp.repository.erp.inventory.MaterialOrderRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialAdjustmentRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
+import com.uni.uni_erp.util.date.NumberFormatter;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -255,7 +256,7 @@ public class InventoryService {
         MaterialStatus status = materialStatusRepository.findByMaterialId(materialOrderDTO.getMaterialId());
         status.setTheoreticalAmount(status.getTheoreticalAmount() + materialOrderDTO.getAmount());
         status.setActualAmount(status.getActualAmount() + materialOrderDTO.getAmount());
-        status.setLoss(status.getTheoreticalAmount() - status.getActualAmount());
+        status.setLoss(Double.valueOf(NumberFormatter.formatToDouble(status.getActualAmount() - status.getTheoreticalAmount())));
 
         return materialOrderRepository.save(materialOrder);
     }
