@@ -8,3 +8,8 @@ spring:
         - classpath:db/product.sql
         - classpath:db/hr.sql
         - classpath:db/salesData.sql
+        - classpath:db/salesData2.sql
+        - classpath:db/salesData3.sql
+        - classpath:db/salesData4.sql
+        - classpath:db/salesData5.sql
+        - classpath:db/salesData6.sql
