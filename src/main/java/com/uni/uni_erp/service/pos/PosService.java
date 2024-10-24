@@ -21,9 +21,14 @@ public class PosService {
         this.posRepository = posRepository;
     }
 
-    public Page<Product> getProductsByStoreId(Integer storeId, int page, int size) {
+//    public Page<Product> getProductsByStoreId(Integer storeId, int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        return posRepository.findByStoreId(storeId, pageable);
+//    }
+
+    public Page<Product> getProductsByStoreIdAndCategory(Integer storeId, String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return posRepository.findByStoreId(storeId, pageable);
+        return posRepository.findByStoreIdAndCategory(storeId, category, pageable);
     }
 
 

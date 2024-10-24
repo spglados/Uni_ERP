@@ -3,10 +3,89 @@ VALUES
 ('기가 막히는 한정식', 1),
 ('기가 안막히는 양식', 1);
 
--- 첫 번째 제품 삽입
-INSERT INTO product_tb (id, product_code, name, category, price, store_id)
-VALUES (1, 111, '김치찌개', '메인', 9900, 1),
-(2, 112, '된장찌개', '메인', 8500, 1);
+-- 메인
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)VALUES (1, 111, '김치찌개', '메인', 9900, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (2, 112, '된장찌개', '메인', 8500, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (3, 113, '순두부찌개', '메인', 9000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (4, 114, '해물파전', '메인', 12000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (5, 115, '돼지국밥', '메인', 7000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (6, 116, '순대국밥', '메인', 7000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (7, 117, '신선로', '메인', 30000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (8, 118, '떡갈비', '메인', 15000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (9, 119, '비빔밥', '메인', 12000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (10, 120, '육회', '메인', 11000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (11, 121, '홍어삼합', '메인', 35000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (12, 122, '짬뽕', '메인', 8000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (13, 123, '짜장면', '메인', 8000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (14, 124, '스파게티', '메인', 11000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (15, 125, '피자', '메인', 22000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (16, 126, '치킨', '메인', 19000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (17, 127, '햄버거', '메인', 5500, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (18, 128, '마라탕', '메인', 12000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (19, 129, '볶음밥', '메인', 9000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (20, 130, '해물탕', '메인', 25000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (21, 131, '보쌈', '메인', 22000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (22, 132, '모둠회', '메인', 50000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (23, 133, '김피탕', '메인', 22000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (24, 134, '탕수육', '메인', 22000, 2);
+
+-- 사이드 메뉴
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (25, 135, '감자튀김', '사이드', 2000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (26, 136, '치즈스틱', '사이드', 1500, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (27, 137, '가라아게', '사이드', 2500, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (28, 138, '치즈볼', '사이드', 1500, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (29, 139, '미니핫도그', '사이드', 3000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (30, 140, '새우튀김', '사이드', 3500, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (31, 141, '소떡소떡', '사이드', 2500, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (32, 142, '감자칩', '사이드', 3000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (33, 143, '츄러스', '사이드', 1800, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (34, 144, '애플파이', '사이드', 1800, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (35, 145, '콘샐러드', '사이드', 1200, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (36, 146, '코울슬로', '사이드', 1200, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (37, 147, '떡볶이', '사이드', 4000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (38, 148, '모둠튀김', '사이드', 5000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (39, 149, '샐러드', '사이드', 4000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (40, 150, '만두튀김', '사이드', 5000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (41, 151, '치킨너겟', '사이드', 2000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (42, 152, '츄러스', '사이드', 1600, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (43, 153, '물냉면', '사이드', 4000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (44, 154, '비빔냉면', '사이드', 4000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (45, 155, '아이스크림', '사이드', 1500, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (46, 156, '타코야끼', '사이드', 3000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (47, 157, '김치', '사이드', 1500, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (48, 158, '단무지', '사이드', 1500, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (49, 159, '피클', '사이드', 1500, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (50, 160, '어니언링', '사이드', 3500, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (51, 161, '백김치', '사이드', 2000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (52, 162, '파김치', '사이드', 2000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (53, 163, '갓김치', '사이드', 3000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (54, 164, '굴김치', '사이드', 3000, 1);
+
+-- 음료
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (55, 165, '콜라', '음료', 1000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (56, 166, '사이다', '음료', 1000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (57, 167, '환타', '음료', 1000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (58, 168, '메론소다', '음료', 1000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (59, 169, '제로콜라', '음료', 1000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (60, 170, '콜라', '음료', 1000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (61, 171, '사이다', '음료', 1000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (62, 172, '환타', '음료', 1000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (63, 173, '닥터페퍼', '음료', 1000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (64, 174, '제로콜라', '음료', 1000, 2);
+
+-- 주류
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (65, 175, '소주', '주류', 4000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (66, 176, '맥주', '주류', 4000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (67, 177, '막걸리', '주류', 5000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (68, 178, '소주', '주류', 4000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (69, 179, '맥주', '주류', 4000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (70, 180, '와인', '주류', 20000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (71, 181, '위스키', '주류', 50000, 2);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (72, 182, '하이볼', '주류', 7500, 2);
+
+
+
+
 
 INSERT INTO product_tb (id, product_code, name, category, price, store_id)
 VALUES (3, 113, '순두부찌개', '메인', 9000, 1);

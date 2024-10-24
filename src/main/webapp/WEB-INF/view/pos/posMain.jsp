@@ -238,16 +238,12 @@
 
         <div class="pagination">
             <c:if test="${productList.hasPrevious()}">
-                <a href="/erp/pos/main?page=${currentPage - 1}&size=${pageSize}">&laquo;</a>
+                <a href="/erp/pos/main?category=${category}&page=${currentPage - 1}&size=${pageSize}">&laquo;</a>
             </c:if>
-            <c:forEach begin="1" end="${productList.totalPages}" var="i">
-                <a href="/erp/pos/main?page=${i - 1}&size=${pageSize}" class="${i == currentPage ? 'active' : ''}">${i}</a>
-            </c:forEach>
             <c:if test="${productList.hasNext()}">
-                <a href="/erp/pos/main?page=${currentPage}&size=${pageSize}">&raquo;</a>
+                <a href="/erp/pos/main?category=${category}&page=${currentPage + 1}&size=${pageSize}">&raquo;</a>
             </c:if>
         </div>
-
     </div>
 
     <div class="order-section">

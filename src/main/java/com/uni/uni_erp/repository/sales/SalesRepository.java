@@ -1,6 +1,7 @@
 package com.uni.uni_erp.repository.sales;
 
 import com.uni.uni_erp.domain.entity.Sales;
+import com.uni.uni_erp.dto.AttendanceDTO;
 import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesQuantityDTO;
@@ -33,6 +34,14 @@ public interface SalesRepository extends JpaRepository<Sales, Integer> {
 
     @Query(value = "SELECT MAX(s.orderNum) FROM Sales s")
     Integer findLatestOrderNum();
+
+    @Query("SELECT SUM(a.totalPrice) FROM Sales a WHERE a.salesDate BETWEEN :startDate AND :endDate AND a.storeId = :storeId")
+    Integer findSalesByDateAndStoreId(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("storeId") Integer storeId
+    );
+
 }
 
 

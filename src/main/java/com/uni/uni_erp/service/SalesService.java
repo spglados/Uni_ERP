@@ -1,6 +1,11 @@
 package com.uni.uni_erp.service;
 
+import com.uni.uni_erp.domain.entity.Sales;
+import com.uni.uni_erp.domain.entity.SalesDetail;
+import com.uni.uni_erp.dto.AttendanceDTO;
+import com.uni.uni_erp.dto.CostPerEmployeeDTO;
 import com.uni.uni_erp.dto.sales.*;
+import com.uni.uni_erp.repository.erp.hr.AttendanceRepository;
 import com.uni.uni_erp.repository.sales.SalesDetailRepository;
 import com.uni.uni_erp.repository.sales.SalesRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,11 +13,15 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +30,7 @@ public class SalesService {
 
     private final SalesRepository salesRepository;
     private final SalesDetailRepository salesDetailRepository;
+    private final AttendanceRepository attendanceRepository;
 
     public List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
         return salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
@@ -152,6 +162,82 @@ public class SalesService {
 
     public List<Integer> findAllSalesNumByDateBetweenAndStoreId(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
         return salesRepository.findAllSalesNumByDateBetweenAndStoreId(startDate, endDate, storeId);
+    }
+
+    public void saveSales(Sales sales) {
+        salesRepository.save(sales);
+    }
+
+    public void saveSalesDetail(SalesDetail salesDetail) {
+        salesDetailRepository.save(salesDetail);
+    }
+
+    public Integer findLatestOrderNum() {
+        return salesRepository.findLatestOrderNum();
+    }
+
+    public List<CostPerEmployeeDTO> calculateEmployeeSales(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
+        // Split the time range into 10-minute intervals
+        List<LocalDateTime> timeIntervals = splitIntoIntervals(startDate, endDate, 10);
+        System.err.println("timeIntervals: " + timeIntervals);
+
+        // Create a map to store total sales and order counts per employee
+        Map<Integer, CostPerEmployeeDTO> employeeSalesMap = new HashMap<>();
+        System.err.println("employeeSalesMap: " + employeeSalesMap);
+
+        // Loop through each 10-minute interval
+        for (int i = 0; i < timeIntervals.size() - 1; i++) {
+            LocalDateTime intervalStart = timeIntervals.get(i);
+            LocalDateTime intervalEnd = timeIntervals.get(i + 1);
+            Timestamp startTimestamp = Timestamp.valueOf(intervalStart.atZone(ZoneId.systemDefault()).toLocalDateTime());
+            Timestamp endTimestamp = Timestamp.valueOf(intervalEnd.atZone(ZoneId.systemDefault()).toLocalDateTime());
+
+            // Fetch employees working in this 10-minute interval
+            List<Integer> currentWorkingEmployees = attendanceRepository.findAttendanceByDateAndStoreId(startTimestamp, endTimestamp, storeId);
+            System.err.println("currentWorkingEmployees: " + currentWorkingEmployees);
+
+            // Calculate sales for this 10-minute interval
+            Integer salesForInterval = salesRepository.findSalesByDateAndStoreId(intervalStart, intervalEnd, storeId);
+            System.err.println("salesForInterval: " + salesForInterval);
+
+            if (salesForInterval != null && !currentWorkingEmployees.isEmpty()) {
+                // Divide sales among employees who were working during this interval
+                Integer salesPerEmployee = salesForInterval / currentWorkingEmployees.size();
+                System.err.println("salesPerEmployee: " + salesPerEmployee);
+
+                for (Integer employee : currentWorkingEmployees) {
+                    // Update or create CostPerEmployeeDTO for each working employee
+                    employeeSalesMap.computeIfAbsent(employee, id ->
+                            CostPerEmployeeDTO.builder()
+                                    .id(id)
+                                    .costPer(0)
+                                    .totalOrders(0)
+                                    .build()
+                    );
+
+                    // Update the DTO with new sales and order counts
+                    CostPerEmployeeDTO dto = employeeSalesMap.get(employee);
+                    dto.setCostPer(dto.getCostPer() + salesPerEmployee);
+                    dto.setTotalOrders(dto.getTotalOrders() + 1);
+                    System.err.println("dto : " + dto.toString());
+                }
+            }
+        }
+
+        // Convert the map values to a list of CostPerEmployeeDTO objects
+        return new ArrayList<>(employeeSalesMap.values());
+    }
+
+    // Helper method to split time range into intervals
+    private List<LocalDateTime> splitIntoIntervals(LocalDateTime startDate, LocalDateTime endDate, int intervalMinutes) {
+        List<LocalDateTime> intervals = new ArrayList<>();
+        LocalDateTime current = startDate;
+        while (current.isBefore(endDate)) {
+            intervals.add(current);
+            current = current.plusMinutes(intervalMinutes);
+        }
+        intervals.add(endDate); // Include the end time
+        return intervals;
     }
 
 }

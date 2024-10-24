@@ -1,10 +1,12 @@
 package com.uni.uni_erp.controller.pos;
 
+import com.uni.uni_erp.controller.erp.SalesController;
 import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.repository.sales.SalesDetailRepository;
 import com.uni.uni_erp.repository.sales.SalesRepository;
+import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.pos.PosService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -30,8 +32,7 @@ import java.time.LocalDateTime;
 public class PosController {
 
     private final PosService posService;
-    private final SalesRepository salesRepository;
-    private final SalesDetailRepository salesDetailRepository;
+    private final SalesService salesService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -42,21 +43,23 @@ public class PosController {
      * @return
      */
     @GetMapping("/main")
-    public String showPosMainPage(@RequestParam(defaultValue = "0", name = "page") int page,
+    public String showPosMainPage(@RequestParam(defaultValue = "1", name = "page") int page,
                                   @RequestParam(defaultValue = "12", name = "size") int size,
+                                  @RequestParam(required = false) String category,
                                   Model model,
                                   HttpSession session) {
 
         Integer storeId = (Integer) session.getAttribute("storeId");
-
-        Page<Product> productList = posService.getProductsByStoreId(storeId, page, size);
-        model.addAttribute("productList", productList);
+        Page<Product> productListByCategory = posService.getProductsByStoreIdAndCategory(storeId, category, page - 1, size);
+        model.addAttribute("productList", productListByCategory);
+        model.addAttribute("totalPages", productListByCategory.getTotalPages());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", productList.getTotalPages());
         model.addAttribute("pageSize", size);
+        model.addAttribute("category", category);
 
         return "pos/posMain";  // posMain.css 화면 반환
     }
+
 
     /**
      * 가상 포스 결제 요청
@@ -65,7 +68,7 @@ public class PosController {
      */
     @PostMapping("/payment")
     @Transactional(rollbackOn = Exception.class)
-    public ResponseEntity<?> posPayment(HttpServletRequest request, Model model, HttpSession session) {
+    public ResponseEntity<?> posPayment(HttpServletRequest request, HttpSession session) {
         String requestBody = null;
         double totalAmount;
         JSONArray items;
@@ -82,13 +85,13 @@ public class PosController {
         // Create a new Sales entity
         Sales sales = Sales.builder()
                 .storeId((Integer) session.getAttribute("storeId")) // Replace with the actual store ID
-                .orderNum(salesRepository.findLatestOrderNum() + 1)
+                .orderNum(salesService.findLatestOrderNum() + 1)
                 .totalPrice((int) totalAmount)
                 .salesDate(LocalDateTime.now().withNano(0))
                 .build();
 
         // Save the Sales entity
-        salesRepository.save(sales);
+        salesService.saveSales(sales);
 
         // Create SalesDetail entities
         for (int i = 0; i < items.length(); i++) {
@@ -108,7 +111,7 @@ public class PosController {
             }
 
             // Save the SalesDetail entity
-            salesDetailRepository.save(salesDetail);
+            salesService.saveSalesDetail(salesDetail);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body("Sales inserted successfully!");
