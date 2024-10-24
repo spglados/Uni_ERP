@@ -1,11 +1,90 @@
-body {
-	font-family: 'yg-jalnan', sans-serif;
-	width: 100%;
+body, html {
+	height: 100%;
 	margin: 0;
-	padding: 0;
-	background-color: #f8f9fa;
+	font-family: 'Arial', sans-serif;
+	color: #ffffff;
 }
 
+.video-container {
+	position: relative;
+	height: 100vh;
+	width: 100%;
+	overflow: hidden;
+}
+
+#bgVideo {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	min-width: 100%;
+	min-height: 100%;
+	width: auto;
+	height: auto;
+	z-index: -1;
+	transform: translate(-50%, -50%);
+	background-size: cover;
+}
+
+.overlay-content {
+	opacity: 0;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -60%);
+	transition: opacity 1s ease, transform 1s ease;
+	text-align: center;
+	z-index: 1;
+	padding: 20px;
+	background: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+	border-radius: 10px;
+}
+
+.overlay-content.visible {
+	opacity: 1;
+	transform: translate(-50%, -50%);
+}
+
+.overlay-content h1 {
+	font-size: 3em;
+	margin-bottom: 20px;
+}
+
+.overlay-content p {
+	font-size: 1.5em;
+	margin-bottom: 30px;
+}
+
+.btn {
+	display: inline-block;
+	padding: 15px 30px;
+	font-size: 1em;
+	color: #ffffff;
+	background-color: #ff5722;
+	border: none;
+	border-radius: 5px;
+	text-decoration: none;
+	transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+	background-color: #e64a19;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+	.overlay-content h1 {
+		font-size: 2em;
+	}
+
+	.overlay-content p {
+		font-size: 1.2em;
+	}
+
+	.btn {
+		padding: 10px 20px;
+		font-size: 0.9em;
+	}
+}
 @font-face {
 	font-family: 'yg-jalnan';
 	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');

@@ -88,7 +88,7 @@
                     <div>가상 POS <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/pos/main" target='_blank'>POS 실행</a></li>--%>
+                    <li><a href="/erp/pos/main" target='_blank'>POS 실행</a></li>
                 </ul>
             </li>
         </ul>
