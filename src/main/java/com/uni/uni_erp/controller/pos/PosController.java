@@ -97,7 +97,7 @@ public class PosController {
             try {
                 item = items.getJSONObject(i);
                 salesDetail = SalesDetail.builder()
-                        .itemCode(item.getLong("productId"))
+                        .itemCode(item.getLong("productCode"))
                         .itemName(item.getString("name"))
                         .quantity(item.getInt("quantity"))
                         .unitPrice(item.getInt("price"))

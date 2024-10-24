@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -147,6 +148,10 @@ public class SalesService {
                 .setScale(1, RoundingMode.HALF_UP); // Rounds to one decimal place
 
         return roundedDifference.doubleValue();
+    }
+
+    public List<Integer> findAllSalesNumByDateBetweenAndStoreId(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
+        return salesRepository.findAllSalesNumByDateBetweenAndStoreId(startDate, endDate, storeId);
     }
 
 }

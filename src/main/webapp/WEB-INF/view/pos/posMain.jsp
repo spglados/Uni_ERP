@@ -227,7 +227,7 @@
             <!-- Product 리스트를 반복하여 동적으로 버튼 생성 -->
             <c:forEach var="product" items="${productList.content}">
                 <div class="menu-item">
-                    <button class="add-to-order" data-item="${product.name}" data-price="${product.price}" data-id="${product.id}">
+                    <button class="add-to-order" data-item="${product.name}" data-price="${product.price}" data-code="${product.productCode}">
                             ${product.name}<br>
                         <span class="product-price">${product.price}원</span>
                     </button>
@@ -319,7 +319,7 @@
             }
 
             const itemName = this.getAttribute('data-item');
-            const itemId = this.getAttribute('data-id');
+            const itemCode = this.getAttribute('data-code');
             const itemPrice = parseInt(this.getAttribute('data-price'));
 
             // 이미 주문 목록에 있는 항목인지 확인
@@ -332,7 +332,7 @@
                 existingItem.quantity += 1;
             } else {
                 // 새로운 항목이면 목록에 추가
-                orderList.push({ name: itemName, price: itemPrice, quantity: 1, productId: itemId});
+                orderList.push({ name: itemName, price: itemPrice, quantity: 1, productCode: itemCode});
             }
 
             totalAmount += itemPrice;  // 총 금액 업데이트
