@@ -103,15 +103,27 @@ public class HrController {
 
         // TODO DTO로 변경해야함 모든 근무자 조회
         List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
+        List<Map<String, Object>> employeesMap = employees.stream()
+                .map(employee -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("empId", employee.getId());
+                    map.put("empName", employee.getName());
+                    return map;
+                })
+                .collect(Collectors.toList());
 
         String schedulesJson = null;
+        String employeesJson = null;
         try {
             schedulesJson = new ObjectMapper().writeValueAsString(schedules);
+            employeesJson = new ObjectMapper().writeValueAsString(employeesMap);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             throw new Exception500("알 수 없는 오류 발생.");
         }
-        model.addAttribute("schedules", schedulesJson);
+        model.addAttribute("schedulesJson", schedulesJson);
         model.addAttribute("employees", employees);
+        model.addAttribute("employeesJson", employeesJson);
 
         return "/erp/hr/schedule";
     }

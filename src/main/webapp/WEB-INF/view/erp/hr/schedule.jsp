@@ -8,12 +8,17 @@
 <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@4.4.2/main.min.css' rel='stylesheet'/>
 <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap@4.4.2/main.min.css' rel='stylesheet'/>
 <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
-
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/css/erp/hr/calendar.css">
 
-<div class="container mt-5">
-    <div id='calendar'></div>
+<div class="container mt-5 d-flex">
+    <!-- 월간 캘린더, 주간 캘린더의 헤더만 -->
+    <div id="calendarEmployeeName" class="d-none"></div>
+    <div>
+        <div id="calendar"></div>
+        <!-- 직원별 캘린더를 담을 컨테이너 -->
+        <div id="calendarsContainer" class="d-none"></div>
+    </div>
 </div>
 
 <!-- 일정 추가 모달 -->
@@ -73,23 +78,25 @@
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@4.4.2/main.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@4.4.2/main.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap@4.4.2/main.min.js'></script>
-
 <%-- scheduleModal.js 포함 --%>
 <script src="/js/erp/hr/scheduleModal.js"></script>
 
-<%-- calendarModule.js 포함 --%>
-<script src="/js/erp/hr/calendarModule.js"></script>
+<%-- calendar.js 포함 --%>
+<script src="/js/erp/hr/calendar.js"></script>
 
 <%-- 일정 데이터 초기화 --%>
 <script type="application/javascript">
-    const scheduleList = JSON.parse('${schedules}');
+    const scheduleList = JSON.parse('${schedulesJson}');
+    const employeeList = JSON.parse('${employeesJson}');
 </script>
 
 <%-- 캘린더 초기 랜더링 --%>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
-        initializeCalendar(calendarEl, scheduleList);
+        const calendarsContainer = document.getElementById('calendarsContainer');
+        initializeMainCalendar(calendarEl, scheduleList);
+        initializeEmployeeCalendars(calendarsContainer, scheduleList, employeeList);
     });
 </script>
 <!-- Toast 및 로딩 스피너를 위한 JavaScript 추가 -->
