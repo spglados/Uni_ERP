@@ -6,10 +6,12 @@ import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.erp.product.IngredientDTO;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
+import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.erp.inventory.MaterialRepository;
 import com.uni.uni_erp.repository.erp.product.IngredientsRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
+import com.uni.uni_erp.repository.sales.SalesRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.EntityManager;
@@ -32,6 +34,7 @@ public class ProductService {
     private final IngredientsRepository ingredientsRepository;
     private final MaterialRepository materialRepository;
     private final StoreRepository storeRepository;
+    private final SalesRepository salesRepository;
 
     /**
      * 상품 아이디로 설정되어있는 재료 리스트 Select
@@ -47,11 +50,13 @@ public class ProductService {
         return dtoList;
     }
 
+    @Transactional
     public List<ProductDTO> getProductByStoreId(Integer storeId) {
         List<ProductDTO> productList = new ArrayList<>();
         for (Product product : productRepository.findProductByStoreId(storeId)) {
             productList.add(product.toProductDTO());
         }
+        List<SalesDTO.SalesQuantityDTO>
         return productList;
     }
 
