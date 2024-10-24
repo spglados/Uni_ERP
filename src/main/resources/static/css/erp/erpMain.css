@@ -9,10 +9,13 @@
 /* 사이드바 스타일 */
 .sidebar {
     width: 250px;
-    background-color: #343a40;
+    background-color: #F5F5DC;
     padding: 20px;
     color: #fff;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .sidebar h2 {
@@ -21,24 +24,39 @@
     margin-bottom: 30px;
 }
 
+.sidebar a img {
+    margin-bottom: 20px;
+}
+
 .sidebar-menu {
     list-style-type: none;
     padding: 0;
+    width: 100%;
 }
-
 .sidebar-menu li {
     margin: 15px 0;
 }
 
 .sidebar-menu a {
+    display: flex;
+    align-items: center;
     text-decoration: none;
-    color: #fff;
+    color: black;
     font-size: 1.2em;
-    transition: color 0.3s;
+    transition: background-color 0.3s, color 0.3s;
+    padding: 10px;
+    border-radius: 5px;
 }
 
 .sidebar-menu a:hover {
-    color: #007bff;
+    background-color: #fff;
+    color: #000;
+}
+
+.sidebar-menu a i {
+    color: black;
+    margin-right: 10px; /* 아이콘과 텍스트 간 간격 조절 */
+    font-size: 1.2em;
 }
 
 /* 하위 메뉴 스타일 */
@@ -46,7 +64,11 @@
     list-style-type: none;
     padding-left: 20px;
     margin-top: 10px;
-    display: none;  /* 기본적으로 숨김 */
+    max-height: 0; /* 초기 상태: 닫힘 */
+    opacity: 0;
+    transform: translateY(-10px);
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
 .sub-menu li {
@@ -55,12 +77,24 @@
 
 .sub-menu a {
     font-size: 1em;
-    color: #dcdcdc;
+    color: black;
 }
 
 .sub-menu a:hover {
     color: #00bfff;
 }
+/* 활성화된 메뉴의 하위 메뉴 표시 */
+.menu-toggle.active + .sub-menu {
+    display: block;
+}
+
+/* 하위 메뉴가 열릴 때 적용될 클래스 */
+.sub-menu.open {
+    max-height: 500px; /* 실제 내용에 맞게 조정 */
+    opacity: 1;
+    transform: translateY(0);
+}
+
 
 /* 메인 컨텐츠 스타일 */
 .content {
@@ -126,4 +160,123 @@
 .erp-button:hover {
     background-color: #0056b3;
     transform: translateY(-3px);
+}
+
+.ag-theme-alpine {
+    height: 600px;
+    width: 100%;
+}
+/* 메뉴 컨테이너 스타일 */
+.menu {
+    display: block;
+    overflow: hidden;
+    width: 200px;
+    background-color: #000;
+    color: #fff;
+    transition: all 0.5s ease;
+    border-radius: 20px;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative; /* 절대 위치 요소를 위한 상대 위치 설정 */
+}
+
+.menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu a, .menu > label {
+    display: flex; /* 아이콘과 텍스트를 옆으로 배치하기 위해 flex 사용 */
+    align-items: center; /* 수직 정렬 */
+    height: 40px; /* 클릭 가능한 영역 확대 */
+    padding: 8px;
+    cursor: pointer;
+    color: #fff;
+    text-decoration: none;
+}
+
+.menu a:hover, .menu > label:hover {
+    background-color: #fff;
+    color: #000;
+    border-radius: 10px;
+}
+
+/* 아이콘 스타일 */
+.menu a::before, .menu > label::before {
+    font-family: 'Font Awesome 5 Free'; /* Font Awesome 폰트 적용 */
+    font-weight: 900; /* Font Awesome 아이콘을 위해 굵기 설정 */
+    margin-right: 10px; /* 아이콘과 텍스트 간 간격 */
+    font-size: 1.2em;
+}
+
+/* 각 메뉴 아이템에 맞는 아이콘 설정 */
+.menu label::before {
+    content: '\f0c9'; /* Font Awesome 'bars' 아이콘 */
+}
+
+.menu li:nth-child(1) a::before { content: '\f007'; } /* Font Awesome 'user' 아이콘 */
+.menu li:nth-child(2) a::before { content: '\f0e4'; } /* Font Awesome 'database' 아이콘 */
+.menu li:nth-child(3) a::before { content: '\f0c0'; } /* Font Awesome 'users' 아이콘 */
+.menu li:nth-child(4) a::before { content: '\f07a'; } /* Font Awesome 'shopping-cart' 아이콘 */
+.menu li:nth-child(5) a::before { content: '\f005'; } /* Font Awesome 'star' 아이콘 */
+.menu li:nth-child(6) a::before { content: '\f013'; } /* Font Awesome 'cog' 아이콘 */
+
+/* 메뉴 텍스트 스타일 */
+.menu div {
+    font-size: 1em;
+    font-family: 'Noto Sans KR', sans-serif;
+    padding-left: 5px; /* 텍스트와 아이콘 간 간격 조절 */
+}
+
+/* 체크박스 숨기기 */
+#expand-menu {
+    display: none;
+}
+
+/* 메뉴 확장 시 스타일 */
+#expand-menu:checked ~ ul {
+    display: block;
+}
+
+/* 기본적으로 메뉴는 축소 상태일 때 텍스트 숨김 */
+.menu ul {
+    display: none;
+}
+
+#expand-menu:checked ~ ul {
+    display: block;
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width:1023px) {
+    .sidebar {
+        width: 60px;
+    }
+    .sidebar-menu a div {
+        display: none; /* 축소 시 텍스트 숨김 */
+    }
+}
+
+@media screen and (max-width:560px) {
+    .sidebar {
+        width: 60px;
+    }
+    .sidebar-menu a div {
+        display: none;
+    }
+}
+
+/* 추가된 팝아웃 호버 효과 */
+.sidebar-menu li a.menu-toggle {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sidebar-menu li a.menu-toggle:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-color: #f0f0f0;
 }

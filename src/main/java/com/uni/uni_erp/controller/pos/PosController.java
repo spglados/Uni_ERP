@@ -43,21 +43,23 @@ public class PosController {
      * @return
      */
     @GetMapping("/main")
-    public String showPosMainPage(@RequestParam(defaultValue = "0", name = "page") int page,
+    public String showPosMainPage(@RequestParam(defaultValue = "1", name = "page") int page,
                                   @RequestParam(defaultValue = "12", name = "size") int size,
+                                  @RequestParam(required = false) String category,
                                   Model model,
                                   HttpSession session) {
 
         Integer storeId = (Integer) session.getAttribute("storeId");
-
-        Page<Product> productList = posService.getProductsByStoreId(storeId, page, size);
-        model.addAttribute("productList", productList);
+        Page<Product> productListByCategory = posService.getProductsByStoreIdAndCategory(storeId, category, page - 1, size);
+        model.addAttribute("productList", productListByCategory);
+        model.addAttribute("totalPages", productListByCategory.getTotalPages());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", productList.getTotalPages());
         model.addAttribute("pageSize", size);
+        model.addAttribute("category", category);
 
         return "pos/posMain";  // posMain.css 화면 반환
     }
+
 
     /**
      * 가상 포스 결제 요청
