@@ -2,7 +2,6 @@ package com.uni.uni_erp.service;
 
 import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.SalesDetail;
-import com.uni.uni_erp.dto.AttendanceDTO;
 import com.uni.uni_erp.dto.CostPerEmployeeDTO;
 import com.uni.uni_erp.dto.sales.*;
 import com.uni.uni_erp.repository.erp.hr.AttendanceRepository;
@@ -168,8 +167,8 @@ public class SalesService {
         salesRepository.save(sales);
     }
 
-    public void saveSalesDetail(SalesDetail salesDetail) {
-        salesDetailRepository.save(salesDetail);
+    public void saveSalesDetailList(List<SalesDetail> salesDetailList) {
+        salesDetailRepository.saveAll(salesDetailList);
     }
 
     public Integer findLatestOrderNum() {

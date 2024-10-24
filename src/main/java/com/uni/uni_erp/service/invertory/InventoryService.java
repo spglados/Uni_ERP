@@ -2,6 +2,8 @@ package com.uni.uni_erp.service.invertory;
 
 import com.uni.uni_erp.domain.entity.erp.product.*;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
+import com.uni.uni_erp.dto.erp.product.ProductDTO;
+import com.uni.uni_erp.exception.errors.Exception400;
 import com.uni.uni_erp.exception.errors.Exception401;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.erp.inventory.MaterialStatusRepository;
@@ -9,9 +11,11 @@ import com.uni.uni_erp.repository.erp.inventory.MaterialOrderRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialAdjustmentRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
+import com.uni.uni_erp.util.Str.UnitCategory;
 import com.uni.uni_erp.util.date.NumberFormatter;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InventoryService {
 
     private final MaterialRepository materialRepository;
@@ -32,6 +37,7 @@ public class InventoryService {
 
     /**
      * 자재 관리 품목 데이터 리스트
+     *
      * @param session
      * @return
      */
@@ -139,6 +145,7 @@ public class InventoryService {
 
     /**
      * 자재 입고내역 데이터 리스트
+     *
      * @param session
      * @return
      */
@@ -162,6 +169,7 @@ public class InventoryService {
 
     /**
      * 각 자재들의 상태 확인
+     *
      * @param session
      * @return
      */
@@ -220,6 +228,7 @@ public class InventoryService {
 
     /**
      * 어떤 자재가 어떤 단위를 가지고 있는 지
+     *
      * @param session
      * @return
      */
@@ -234,6 +243,7 @@ public class InventoryService {
 
     /**
      * 입고 내역 저장 메소드
+     *
      * @param materialOrderDTO
      * @return
      */
@@ -247,7 +257,7 @@ public class InventoryService {
 
         MaterialOrder materialOrder = materialOrderDTO.toMaterialOrder();
         Optional<Material> material = materialRepository.findById(materialOrderDTO.getMaterialId());
-        if(material.isEmpty()) {
+        if (material.isEmpty()) {
             throw new Exception404("입고내역 저장 중에 자재 쪽에서 문제가 발생했습니다.");
         }
         materialOrder.setMaterial(material.orElse(null));
@@ -259,6 +269,103 @@ public class InventoryService {
         status.setLoss(Double.valueOf(NumberFormatter.formatToDouble(status.getActualAmount() - status.getTheoreticalAmount())));
 
         return materialOrderRepository.save(materialOrder);
+    }
+
+    public void calcMaterialByProductSales(List<ProductDTO.ProductSalesDTO> productSalesDTOList, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        if (storeId == null) {
+            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+        }
+
+        List<Product> productDTOList = productRepository.findProductByStoreId(storeId);
+        List<MaterialStatus> materialStatusDTOList = materialStatusRepository.findByStoreId(storeId);
+        List<MaterialStatus> updateMaterialStatusDTOList = new ArrayList<>();
+
+        for (ProductDTO.ProductSalesDTO productSalesDTO : productSalesDTOList) {
+            for (Product product : productDTOList) {
+                if (product.getProductCode().equals(productSalesDTO.getProductCode())) {
+
+                    List<Ingredient> useIngredientList = product.getIngredients();
+
+                    if (!useIngredientList.isEmpty()) {
+
+                        for (Ingredient ingredient : useIngredientList) {
+
+                            for (MaterialStatus materialStatus : materialStatusDTOList) {
+                                if (ingredient.getMaterial().getId().equals(materialStatus.getMaterial().getId())) {
+
+
+                                    if (ingredient.getUnit().equals(UnitCategory.KG)) {
+                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.KG)) {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
+                                        } else {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - ((ingredient.getAmount() * productSalesDTO.getQuantity()) / 1000))));
+                                        }
+                                    } else if (ingredient.getUnit().equals(UnitCategory.G)) {
+                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.G)) {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
+                                        } else if (materialStatus.getMaterial().getUnit().equals(UnitCategory.KG)) {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - ((ingredient.getAmount() * productSalesDTO.getQuantity()) / 1000))));
+                                        } else if (materialStatus.getMaterial().getUnit().equals(UnitCategory.EA)) {
+                                            materialStatus.setTheoreticalAmount(Double.parseDouble(NumberFormatter.formatToDouble(((materialStatus.getTheoreticalAmount() * materialStatus.getMaterial().getSubAmount()) - (ingredient.getAmount() * productSalesDTO.getQuantity())))) / 100);
+                                        } else {
+                                            System.out.println("materialStatus.getMaterial().getName() : " + materialStatus.getMaterial().getName());
+                                            log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 문제발생 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                                            throw new Exception400("자재 등록 중 문제가 발생했습니다.");
+                                        }
+                                    } else if (ingredient.getUnit().equals(UnitCategory.L)) {
+                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.L)) {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
+                                        } else {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - ((ingredient.getAmount() * productSalesDTO.getQuantity()) / 1000))));
+                                        }
+                                    } else if (ingredient.getUnit().equals(UnitCategory.ML)) {
+
+                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.ML)) {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
+                                        } else if (materialStatus.getMaterial().getUnit().equals(UnitCategory.L)) {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - ((ingredient.getAmount() * productSalesDTO.getQuantity()) / 1000))));
+                                        } else {
+                                            System.out.println("materialStatus.getMaterial().getName() : " + materialStatus.getMaterial().getName());
+                                            log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 문제발생 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                                            throw new Exception400("자재 등록 중 문제가 발생했습니다.");
+                                        }
+
+                                    } else if (ingredient.getUnit().equals(UnitCategory.BOX)) {
+
+                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.BOX)) {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
+                                        }
+
+                                    } else if (ingredient.getUnit().equals(UnitCategory.EA)) {
+
+                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.BOX)) {
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(((materialStatus.getTheoreticalAmount() * materialStatus.getMaterial().getSubAmount()) - (ingredient.getAmount() * productSalesDTO.getQuantity())))) / 100);
+                                        } else if (materialStatus.getMaterial().getUnit().equals(UnitCategory.EA)) {
+
+                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(((materialStatus.getTheoreticalAmount() * materialStatus.getMaterial().getSubAmount()) - (ingredient.getAmount() * productSalesDTO.getQuantity())))) / 100);
+
+                                        }
+
+                                    } else {
+                                        System.out.println("materialStatus.getMaterial().getName() : " + materialStatus.getMaterial().getName());
+                                        log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 문제발생 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                                        throw new Exception400("자재 등록 중 문제가 발생했습니다.");
+                                    }
+
+                                }
+                                updateMaterialStatusDTOList.add(materialStatus);
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+        materialStatusRepository.saveAll(updateMaterialStatusDTOList);
+
     }
 
 }

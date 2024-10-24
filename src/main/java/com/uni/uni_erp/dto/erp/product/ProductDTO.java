@@ -78,4 +78,16 @@ public class ProductDTO {
 
     }
 
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProductSalesDTO {
+
+        private long productCode;
+        private int quantity;
+
+    }
+
 }
