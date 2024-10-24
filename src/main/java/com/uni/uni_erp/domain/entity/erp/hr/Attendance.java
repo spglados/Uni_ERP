@@ -5,6 +5,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,6 +50,7 @@ public class Attendance {
     @Builder.Default
     private Schedule.Status status = Schedule.Status.NOT_EXECUTED;
 
+    // 출석 상태를 관리하는 enum
     @RequiredArgsConstructor
     @Getter
     public enum Status {

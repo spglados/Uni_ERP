@@ -98,6 +98,8 @@ public class ProductService {
         dto.setStoreId(storeId);
         dto.setUserId(userId);
 
+        // TODO 이름 유효성 검사 추가
+
         // ProductDTO를 Product 엔티티로 변환 (id는 아직 없음)
         Product product = dto.toProduct(userId, storeId);
         product.setStore(storeRepository.findById(storeId).orElse(null));
@@ -122,5 +124,7 @@ public class ProductService {
         // 저장 후 DTO로 변환해서 반환
         return product.toProductDTO();
     }
+
+
 
 }

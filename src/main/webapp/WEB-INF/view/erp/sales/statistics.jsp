@@ -3,30 +3,51 @@
 <link rel="stylesheet" href="/css/statistics.css">
 
 <div class="content">
-    <h1>매출 분석 통계화면 입니다.</h1>
-    <div>
-        <label for="startDate">시작일:</label>
-        <input type="datetime-local" id="startDate" name="startDate" value="" min="2022-01-01T00:00" max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(new java.util.Date()) %>">
-        <label for="endDate">종료일:</label>
-        <input type="datetime-local" id="endDate" name="endDate" value="" min="2022-01-01T00:00" max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm").format(new java.util.Date()) %>">
-        <label for="storeId">가게:</label>
-        <select id="storeId" name="storeId">
-            <option value="">전체</option>
-            <c:forEach var="storeId" items="${storeIdList}">
-                <option value="${storeId}">${storeId}</option>
+    <h1 id="currentDate"> </h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+        <tr>
+            <th>시간</th>
+            <th>전일목표금액</th>
+            <th>전일매출</th>
+            <th>전일객수</th>
+            <th>금일목표금액</th>
+            <th>금일매출</th>
+            <th>금일객수</th>
+            <th>전일대비</th>
+            <th>전년도 대비</th>
+            <th>비고</th>
+            </tr>
+        <tb>
+            <c:forEach var="item" items="${salesComparison}">
+                <tr>
+                    <td>${item.hour}</td>
+                    <td>${item.lastDayTargetProfit}</td>
+                    <td>${item.lastDayTotalSales}</td>
+                    <td>${item.lastDaySalesCount}</td>
+                    <td>${item.todayTargetProfit}</td>
+                    <td>${item.todayTotalSales}</td>
+                    <td>${item.todaySalesCount}</td>
+                    <td>
+                        ${item.salesComparedToLastDay}
+                        <span class="percentage">(${item.percentageComparedToLastDay != null ? item.percentageComparedToLastDay : 'N/A'}%)</span>
+                    </td>
+                    <td>
+                        ${item.salesComparedToLastYear}
+                        <span class="percentage">(${item.percentageComparedToLastYear != null ? item.percentageComparedToLastYear : 'N/A'}%)</span>
+                    </td>
+                    <td></td>
+                </tr>
             </c:forEach>
-        </select>
-        <button id="confirm-button" class="btn btn-primary">확인</button>
-    </div>
+        </tb>
+    </table>
+</div>
 
     <div class="chart-grid">
         <div class="chart-row">
             <div class="chart-col">
-                <canvas id="sales-chart" width="400" height="400"></canvas>
-                <button id="hourly-button" class="btn btn-primary" onclick="updateSalesChart('hourly')">시간별</button>
-                <button id="daily-button" class="btn btn-primary" onclick="updateSalesChart('daily')">일별</button>
-                <button id="monthly-button" class="btn btn-primary" onclick="updateSalesChart('monthly')">월별</button>
-                <button id="yearly-button" class="btn btn-primary" onclick="updateSalesChart('yearly')">년별</button>
+                <canvas id="sales-chart" width="800" height="400"></canvas>
             </div>
             <div class="chart-col">
                 <canvas id="item-count-chart" width="400" height="400"></canvas>
@@ -43,5 +64,5 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="/js/statistics.js"></script>
+<script src="/js/erp/sales/statistics.js"></script>
 <%@include file="/WEB-INF/view/erp/layout/erpFooter.jsp"%>

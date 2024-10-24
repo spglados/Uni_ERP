@@ -1,11 +1,13 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
+import com.uni.uni_erp.util.Str.EnumCommonUtil;
+import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
-
 
 @NoArgsConstructor
 @AllArgsConstructor

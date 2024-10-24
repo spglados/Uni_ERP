@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "sales_detail_tb")
+@Table(name = "sales_detail_tb",
+        indexes = {
+                @Index(name = "idx_order_num", columnList = "order_num")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,16 +21,13 @@ public class SalesDetail {
     private Integer id;
 
     @Column(name = "item_code", nullable = false)
-    private String itemCode;
+    private Long itemCode;
 
     @Column(name = "item_name", nullable = false)
     private String itemName;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
-
-    @Column(name = "specs")
-    private String specs;
 
     @Column(name = "unit_price", nullable = false)
     private Integer unitPrice;

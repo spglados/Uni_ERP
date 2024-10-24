@@ -1,16 +1,13 @@
 package com.uni.uni_erp.service.invertory;
 
-import com.uni.uni_erp.domain.entity.erp.product.Ingredient;
-import com.uni.uni_erp.domain.entity.erp.product.Material;
-import com.uni.uni_erp.domain.entity.erp.product.MaterialOrder;
-import com.uni.uni_erp.domain.entity.erp.product.Product;
+import com.uni.uni_erp.domain.entity.erp.product.*;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.exception.errors.Exception401;
 import com.uni.uni_erp.exception.errors.Exception404;
-import com.uni.uni_erp.repository.erp.inventory.MaterialAdjustmentRepository;
+import com.uni.uni_erp.repository.erp.inventory.MaterialStatusRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialOrderRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialRepository;
-import com.uni.uni_erp.repository.erp.inventory.MaterialStatusRepository;
+import com.uni.uni_erp.repository.erp.inventory.MaterialAdjustmentRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +26,8 @@ public class InventoryService {
     private final MaterialRepository materialRepository;
     private final MaterialOrderRepository materialOrderRepository;
     private final ProductRepository productRepository;
+    private final MaterialAdjustmentRepository materialAdjustmentRepository;
+    private final MaterialStatusRepository materialStatusRepository;
 
     @Transactional
     public List<MaterialDTO.MaterialManagementDTO> getMaterialManagementList(HttpSession session) {
@@ -74,7 +73,7 @@ public class InventoryService {
 
             for(MaterialOrder materialOrder : materialOrderList) {
                 if(materialOrder.getMaterial().getId().equals(material.getId())) {
-                    materialEnterDateList.add(materialOrder.getReceiptDate().toLocalDate());
+                    materialEnterDateList.add(materialOrder.getReceiptDate());
                     if(materialOrder.getIsUse() == Boolean.TRUE) {
                         materialExpirationDateList.add(materialOrder.getExpirationDate());
                     }
@@ -130,6 +129,50 @@ public class InventoryService {
         }
 
         return materialStatusList;
+    }
+
+    public List<MaterialDTO.MaterialOrderDTO> getMaterialOrder(HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+
+        if(storeId == null) {
+            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+        }
+
+        List<MaterialOrder> materialOrderList = materialOrderRepository.findByStoreId(storeId);
+        List<MaterialDTO.MaterialOrderDTO> materialOrderDTOList = new ArrayList<>();
+        if(!materialOrderList.isEmpty()) {
+            for (MaterialOrder materialOrder : materialOrderList) {
+                materialOrderDTOList.add(materialOrder.toMaterialOrderDTO());
+            }
+        }
+        return materialOrderDTOList;
+    }
+
+    public List<MaterialDTO.MaterialStatusDTO> getMaterialStatus(HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+
+        if(storeId == null) {
+            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+        }
+        List<MaterialDTO.MaterialStatusDTO> materialStatusDTOList = new ArrayList<>();
+
+        List<MaterialStatus> materialStatusList = materialStatusRepository.findByStoreId(storeId);
+
+
+        for (MaterialStatus materialStatus : materialStatusList) {
+            materialStatusDTOList.add(MaterialDTO.MaterialStatusDTO.builder()
+                            .id(materialStatus.getId())
+                            .name(materialStatus.getMaterial().getName())
+                            .category(materialStatus.getMaterial().getCategory())
+                            .theoreticalAmount(materialStatus.getTheoreticalAmount())
+                            .actualAmount(materialStatus.getActualAmount())
+                            .unit(materialStatus.getMaterial().getUnit().toString())
+                            .loss(materialStatus.getLoss())
+
+                    .build());
+        }
+
+        return materialStatusDTOList;
     }
 
 }

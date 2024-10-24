@@ -51,8 +51,6 @@ public class EmployeeDTO {
         return empDocumentDTO;
     }
 
-
-
     // EmployeeDTO로 변환하는 생성자
     public EmployeeDTO(Employee employee) {
         this.id = employee.getId();
@@ -84,6 +82,5 @@ public class EmployeeDTO {
             this.empDocumentDTO = new EmpDocumentDTO(); // 빈 객체로 초기화
         }
     }
-
 
 }

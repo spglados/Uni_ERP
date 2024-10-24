@@ -16,3 +16,7 @@
 .chart-col.full-width {
     flex: 2;
 }
+
+.selected {
+  background-color: #ccc; /* or any other color you prefer */
+}

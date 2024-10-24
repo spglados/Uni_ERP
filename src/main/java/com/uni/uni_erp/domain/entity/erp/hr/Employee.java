@@ -67,7 +67,6 @@ public class Employee {
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // EmpDocument와의 관계
     private EmpDocument empDocument;
 
-
     @Column(nullable = false)  // Not Null 설정
     private Integer storeEmployeeNumber;  // 각 가게별로 증가하는 직원 번호
 

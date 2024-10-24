@@ -32,8 +32,8 @@ public class ProductController {
         return "erp/product/list";
     }
 
-    @GetMapping("/register")
-    public String registerPage(Model model) {
+    @GetMapping({"/registration", "/registration/{productName}"})
+    public String registerPage(Model model, @PathVariable(name = "productName", required = false) String productName) {
         // session 에서 스토어 아이디를 가져온 다음 해당 가게에 등록되어 있는 상품 리스트를 반환
         Integer storeId = (Integer) session.getAttribute("storeId");
         if (storeId == null) {
@@ -44,6 +44,10 @@ public class ProductController {
         List<String> materialList = new ArrayList<>();
         for (MaterialDTO materialDTO : materialDTOList) {
             materialList.add(materialDTO.getName());
+        }
+
+        if(productName != null) {
+            model.addAttribute("productName", productName);
         }
 
         model.addAttribute("productList", productService.getProductByStoreId(storeId));

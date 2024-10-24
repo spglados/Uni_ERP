@@ -12,25 +12,43 @@
 <link rel="stylesheet" href="/css/signUp.css">
 
 <main class="main-container">
-
   <div class="signup-container">
     <h2>회원가입</h2>
     <form action="/user/join" method="post" onsubmit="return validateForm();">
-      <input type="text" name="name" placeholder="이름" required>
-
+      <div>
+        <img src="/images/icon/email-icon.png" alt="이메일 아이콘">
+        <input type="email" name="email" placeholder="이메일 주소를 입력해주세요" required>
+      </div>
       <!-- 비밀번호 입력 -->
-      <input type="password" name="password" id="password" placeholder="비밀번호" required>
-      <input type="password" name="confirm_password" id="confirm_password" placeholder="비밀번호 확인" required>
+      <div>
+        <img src="/images/icon/password-icon.png" alt="비밀번호 아이콘">
+        <input type="password" name="password" id="password" placeholder="비밀번호를 입력해주세요" required>
+      </div>
+      <div>
+        <img src="/images/icon/password-icon.png" alt="비밀번호 아이콘">
+        <input type="password" name="confirm_password" id="confirm_password" placeholder="비밀번호 확인" required>
+      </div>
       <span id="passwordMessage" class="password-message"></span>
 
-      <input type="email" name="email" placeholder="이메일 주소" required>
-      <input type="tel" name="phone" placeholder="핸드폰 번호" required>
+      <div>
+        <img src="/images/icon/user-icon.png" alt="이름 아이콘">
+        <input type="text" name="name" placeholder="이름을 입력해주세요" required>
+      </div>
+      <div>
+        <img src="/images/icon/phone-icon.png" alt="핸드폰 아이콘">
+        <input type="tel" name="phone" placeholder="핸드폰 번호를 입력해주세요" required>
+      </div>
 
       <!-- 주소 입력 필드 -->
-      <input type="text" id="basicAddress" placeholder="기본 주소" readonly>
-      <input type="text" id="detailAddress" placeholder="상세 주소">
-      <input type="button" class="check--btn" onclick="execDaumPostcode()" value="주소 검색"><br>
-
+      <input type="button" class="check--btn" onclick="execDaumPostcode()" value="주소 검색">
+      <div>
+        <img src="/images/icon/address-icon.png" alt="주소 아이콘">
+        <input type="text" id="basicAddress" placeholder="주소 검색으로 기본주소를 입력해주세요" readonly>
+      </div>
+      <div>
+        <img src="/images/icon/address-icon.png" alt="주소 아이콘">
+        <input type="text" id="detailAddress" placeholder="상세 주소를 입력해주세요">
+      </div>
       <!-- 숨겨진 address 필드 -->
       <input type="hidden" id="fullAddress" name="address">
 

@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface SalesDetailRepository extends JpaRepository<SalesDetail, Long> {
     List<SalesDetailDTO> findAllByOrderNumIn(List<Integer> orderNums);
+
 }
 
 
