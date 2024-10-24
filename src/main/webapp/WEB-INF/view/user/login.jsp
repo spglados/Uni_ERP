@@ -29,11 +29,6 @@
 
 </main>
 
-<script>
-  document.getElementById("login-container").addEventListener("mouseover", function() {
-    this.style.animation = 'none'; // 애니메이션 중지
-  });
-</script>
 
 <!-- footer.jsp  -->
 <%@ include file="/WEB-INF/view/layout/footer.jsp"%>

@@ -10,26 +10,10 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    animation: pulse 1s ease-in-out infinite;
+    width: 400px;
     justify-content: center;
 }
 
-.login-container:hover {
-    animation: none;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
 
 .login-container img {
     margin-bottom: 20px;
