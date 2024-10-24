@@ -31,6 +31,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const tbody = document.querySelector('tbody');
     const dateSpan = document.getElementById('dateSpan');
 
+
+    // Update the sales summary spans
+    const salesMonthSpan = document.querySelector('.sales-month-span');
+    const salesMonthPercentSpan = document.querySelector('.sales-month-percent-span');
+    const salesYearSpan = document.querySelector('.sales-year-span');
+    const salesYearPercentSpan = document.querySelector('.sales-year-percent-span');
+    const salesProfitSpan = document.querySelector('.sales-profit-span');
+    const salesProfitPercentSpan = document.querySelector('.sales-profit-percent-span');
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   const targetAchievementRateSpan = document.querySelector('.target-achievement-rate-span');
+
     // Set default value to current year-month
     const currentDate = new Date();
     yearSelect.value = currentDate.getFullYear();
@@ -78,15 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                   tbody.appendChild(row);
                 });
-
-                // Update the sales summary spans
-                const salesMonthSpan = document.querySelector('.sales-month-span');
-                const salesMonthPercentSpan = document.querySelector('.sales-month-percent-span');
-                const salesYearSpan = document.querySelector('.sales-year-span');
-                const salesYearPercentSpan = document.querySelector('.sales-year-percent-span');
-                const salesProfitSpan = document.querySelector('.sales-profit-span');
-                const salesProfitPercentSpan = document.querySelector('.sales-profit-percent-span');
-                const targetAchievementRateSpan = document.querySelector('.target-achievement-rate-span');
 
                 // Calculate the total sales for the month and year
                 const totalMonthlySales = data.reduce((acc, item) => acc + item.monthlySales, 0);
