@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.PaymentHistory;
-import com.uni.uni_erp.domain.entity.payment.RefundRepository;
 import com.uni.uni_erp.dto.PaymentDTO;
 import com.uni.uni_erp.exception.errors.Exception400;
 import com.uni.uni_erp.repository.payment.PaymentHistoryRepository;
@@ -21,7 +20,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
@@ -109,6 +107,8 @@ public class PaymentService {
                      // 원하는 결제일
                 int desiredPaymentDay = Integer.parseInt(desiredPayDate);
 
+                int cancelAmount = 0;
+
                 if (user.getMembership() == User.Membership.COMMON) {
                     initialAmount = 50000;
                     if (day < currentDay) {
@@ -116,18 +116,25 @@ public class PaymentService {
                         int maxDaysInMonth = today.getActualMaximum(Calendar.DAY_OF_MONTH);
                         int remainingDays = maxDaysInMonth - currentDay;
                         double remainingAmount = initialAmount * (remainingDays / (double) maxDaysInMonth);
+                        nowPayAmount = Math.floor(remainingAmount) + initialAmount;
+                        cancelAmount = initialAmount;
 
                         String paymentDate = user.getPaymentDate();
                         if (paymentDate != null) {
                             int userPaymentDay = Integer.parseInt(paymentDate.split("-")[2]); // "2024-11-13" -> 13
                             if (userPaymentDay > desiredPaymentDay) {
+                                System.out.println("11111111111");
                                 nowPayAmount = Math.floor(remainingAmount) + initialAmount + latestAmount; // 추가 결제 금액
+                                cancelAmount = initialAmount +latestAmount;
                             } else {
+                                System.out.println("22222222222");
                                 nowPayAmount = Math.floor(remainingAmount) + initialAmount; // 이번 달 결제 + 다음 달 결제 금액
+                                cancelAmount = initialAmount;
                             }
                         }
                         user.setPaymentDate(nextDate);
                     } else {
+                        System.out.println("333333333333333333");
                         // 이번 달의 비례 금액만 계산
                         int maxDaysInMonth = today.getActualMaximum(Calendar.DAY_OF_MONTH);
                         int remainingDays = maxDaysInMonth - currentDay;
@@ -141,14 +148,18 @@ public class PaymentService {
                         int maxDaysInMonth = today.getActualMaximum(Calendar.DAY_OF_MONTH);
                         int remainingDays = maxDaysInMonth - currentDay;
                         double remainingAmount = initialAmount * (remainingDays / (double) maxDaysInMonth);
+                        nowPayAmount = Math.floor(remainingAmount) + initialAmount;
+                        cancelAmount = initialAmount;
 
                         String paymentDate = user.getPaymentDate();
                         if (paymentDate != null) {
                             int userPaymentDay = Integer.parseInt(paymentDate.split("-")[2]); // "2024-11-13" -> 13
                             if (userPaymentDay > desiredPaymentDay) {
                                 nowPayAmount = Math.floor(remainingAmount) + initialAmount + latestAmount; // 추가 결제 금액
+                                cancelAmount = initialAmount + latestAmount;
                             } else {
                                 nowPayAmount = Math.floor(remainingAmount) + initialAmount; // 이번 달 결제 + 다음 달 결제 금액
+                                cancelAmount = initialAmount;
                             }
                         }
                         user.setPaymentDate(nextDate);
@@ -161,6 +172,8 @@ public class PaymentService {
                     }
                 }
 
+                // 다음 달 결제 금액 계산
+                int nextPay = (paymentRepository.sumAmountByUserId(userPk) == null) ? initialAmount : paymentRepository.sumAmountByUserId(userPk) + initialAmount;
 
                 // DTO 변환
                 PaymentDTO.RegularPaymentDTO paymentDTO = PaymentDTO.RegularPaymentDTO.builder()
@@ -180,6 +193,7 @@ public class PaymentService {
                         .nowPayAmount((int) nowPayAmount) // 지금 당장 결제
                         .nextPayAmount(nextPay) // 다음 달 결제
                         .date(dateString)
+                        .cancelAmountSoon(cancelAmount)
                         .build();
 
                 user.setMembership(User.Membership.PREMIUM);
@@ -209,9 +223,10 @@ public class PaymentService {
         }
     }
 
-
+    // 환불
     @Transactional
-    public String cancelPayment(String paymentKey, String cancelReason, int adminId, int payPk) throws Exception {
+    public String cancelPayment(String paymentKey, String cancelReason,String payPk) throws Exception {
+        int payPkint = Integer.parseInt(payPk);
 
         String encodedAuthHeader = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
 
@@ -229,25 +244,74 @@ public class PaymentService {
         if ("200".equalsIgnoreCase(String.valueOf(cancelResponse.statusCode()))) {
             JsonNode cancelJson = objectMapper.readTree(cancelResponse.body());
 
+            //TODO - 환불 금액 로직 짜야함.
+            // 1. 결제한 날짜가 정기결제일 보다 이전일때만 환불금액이있음. 아니면 없음
+            // 2. (1번조건을 맞춘 상태)  오늘날짜의 달이 결제한 날짜의 달과 같다면 환불금액 있음
+
+            // 유저의 정기결제일 뽑기
+            User user =  userRepository.findById(1).orElseThrow(() -> new RuntimeException(""));
+
+            // 체크된 결제내역 뽑기
+            Payment payment = paymentRepository.findById(payPkint)
+                    .orElseThrow(() -> new RuntimeException("Payment not found with id: " + payPkint));
+
+
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String 결제한날짜 = payment.getDate();
+            String dateOnly = 결제한날짜.split(" ")[0];
+            String 정기결제일 = payment.getNextPay();
+
+            LocalDate 결제일 = LocalDate.parse(dateOnly, formatter);
+            LocalDate 정기결제일Date = LocalDate.parse(정기결제일, formatter);
+            LocalDate 오늘 = LocalDate.now();
+
+            Integer cancelAmount = 0;
+
+            if (결제일.getDayOfMonth() > 정기결제일Date.getDayOfMonth()) {
+                System.out.println("환불 금액있음");
+                if (오늘.getMonthValue() == 결제일.getMonthValue()) {
+                    System.out.println("환불 금액있음");
+                    cancelAmount = payment.getCancelAmount();
+                } else {
+                    System.out.println("환불 금액 없음.");
+                    cancelAmount = 0;
+                }
+            } else {
+                System.out.println("환불 금액 없음.");
+                cancelAmount = 0;
+            }
+            String cancelAmountStr = String.valueOf(cancelAmount);
+            //TODO - 여기까지
+
+
+
             // DTO 변환
             PaymentDTO.RegularPaymentDTO paymentDTO = PaymentDTO.RegularPaymentDTO.builder()
-                    // TODO - 관리자 pk 입력 예정
                     .lastTransactionKey(cancelJson.get("lastTransactionKey").asText())
                     .paymentKey(paymentKey)
                     .cancelReason(cancelReason)
                     .requestedAt(cancelJson.get("requestedAt").asText())
                     .approvedAt(cancelJson.get("approvedAt").asText())
-                    .cancelAmount("10000")
-                    .adminId(adminId)
+                    .cancelAmount(cancelAmountStr)
                     .build();
 
             refundRepository.save(paymentDTO.toRefund());
-            refundRepository.update(payPk); // payment_tb에 cancel 유무 업데이트
+            paymentRepository.updateCancel(payPkint); // payment_tb에 cancel 유무 업데이트
 
             return cancelJson.toPrettyString();
         } else {
             throw new RuntimeException(cancelResponse.body());
         }
+    }
+
+    public Payment findById(Integer id) {
+        return paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Payment not found with id: " + id));
+    }
+
+    public List<Payment> findByUserId(Integer userId) {
+        return paymentRepository.findByUserId(userId);
     }
 
 }
