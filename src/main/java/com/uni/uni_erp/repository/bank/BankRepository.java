@@ -13,4 +13,5 @@ public interface BankRepository extends JpaRepository<Bank, Integer> {
 
         // 모든 은행 리스트 조회
         List<Bank> findAll();
+
 }

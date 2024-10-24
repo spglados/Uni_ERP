@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,49 @@ public class HrService {
     private final BankRepository bankRepository;
     private final EmpDocumentRepository empDocumentRepository;
     private final EmpPositionRepository empPositionRepository;
+
+    @Transactional
+    public void updateEmployee(EmployeeDTO employeeDTO) {
+        Employee employee = employeeRepository.findById(employeeDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        // 수정할 필드 업데이트
+        employee.setName(employeeDTO.getName());
+        employee.setBirthday(employeeDTO.getBirthday());
+        employee.setGender(employeeDTO.getGender());
+        employee.setEmail(employeeDTO.getEmail());
+        employee.setPhone(employeeDTO.getPhone());
+        employee.setAddress(employeeDTO.getAddress());
+        employee.setAccountNumber(employeeDTO.getAccountNumber());
+        employee.setEmploymentStatus(employeeDTO.getEmploymentStatus());
+
+        // EmpDocument 업데이트
+        if (employee.getEmpDocument() != null) {
+            EmpDocument empDocument = employee.getEmpDocument();
+            empDocument.setEmploymentContract(employeeDTO.isEmploymentContract());
+            empDocument.setHealthCertificate(employeeDTO.isHealthCertificate());
+            // String을 Timestamp로 변환
+            String healthCertificateDateStr = employeeDTO.getHealthCertificateDate();
+            if (healthCertificateDateStr != null && !healthCertificateDateStr.isEmpty()) {
+                try {
+                    // 날짜 형식에 맞게 SimpleDateFormat을 사용하여 변환
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); // 원하는 날짜 형식에 맞게 조정
+                    Date parsedDate = format.parse(healthCertificateDateStr);
+                    Timestamp healthCertificateDate = new Timestamp(parsedDate.getTime());
+                    empDocument.setHealthCertificateDate(healthCertificateDate);
+                } catch (Exception e) {
+                    // 오류 처리: 로그 기록 또는 사용자에게 오류 메시지 전송
+                    e.printStackTrace(); // 로그를 기록할 수도 있습니다.
+                }
+            }
+            empDocument.setIdentificationCopy(employeeDTO.isIdentificationCopy());
+            empDocument.setBankAccountCopy(employeeDTO.isBankAccountCopy());
+            empDocument.setResidentRegistration(employeeDTO.isResidentRegistration());
+        }
+
+        // 수정된 엔티티 저장
+        employeeRepository.save(employee);
+    }
 
     // 스토어 ID로 직원 목록 조회
     public List<EmployeeDTO> getEmployeesByStoreId(Integer storeId) {
@@ -55,19 +100,27 @@ public class HrService {
 
     // 신규 직원 등록
     @Transactional
-    public Employee registerEmployee(EmployeeDTO employeeDTO, Integer storeId) {
+    public Employee registerEmployee(EmployeeDTO employeeDTO, Integer storeId, Integer sessionUserId) {
         Store store = getStoreById(storeId);
         Bank bank = getBankById(employeeDTO.getBankId());
         Integer newStoreEmployeeNumber = getNewStoreEmployeeNumber(storeId);
 
 
-        Employee employee = buildEmployee(employeeDTO, store, bank, newStoreEmployeeNumber);
+        Employee employee = buildEmployee(employeeDTO, sessionUserId, store, bank, newStoreEmployeeNumber);
         employee = employeeRepository.save(employee);
 
         EmpDocument empDocument = buildEmpDocument(employeeDTO.getEmpDocumentDTO(), employee);
         empDocumentRepository.save(empDocument);
 
         return employee;
+    }
+
+
+    // 직원 ID로 직원 정보 가져오기
+    public EmployeeDTO getEmployeeById(Integer employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new IllegalArgumentException("직원 정보를 찾을 수 없습니다."));
+        return new EmployeeDTO(employee); // Employee를 EmployeeDTO로 변환하여 반환
     }
 
     // 중복 이메일 검사
@@ -116,7 +169,7 @@ public class HrService {
         return (maxStoreEmployeeNumber == null) ? 1 : maxStoreEmployeeNumber + 1;
     }
 
-    private Employee buildEmployee(EmployeeDTO employeeDTO, Store store, Bank bank, Integer newStoreEmployeeNumber) {
+    private Employee buildEmployee(EmployeeDTO employeeDTO, Integer sessionUserId, Store store, Bank bank, Integer newStoreEmployeeNumber) {
         return Employee.builder()
                 .name(employeeDTO.getName())
                 .birthday(employeeDTO.getBirthday())
@@ -129,7 +182,7 @@ public class HrService {
                 .store(store)
                 .bank(bank)
                 .storeEmployeeNumber(newStoreEmployeeNumber)
-                .uniqueEmployeeNumber(store.getId() + "-" + newStoreEmployeeNumber)
+                .uniqueEmployeeNumber((long) (sessionUserId + store.getId() + newStoreEmployeeNumber))
                 .employmentStatus(Employee.EmploymentStatus.ACTIVE)
                 .build();
     }

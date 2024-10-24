@@ -76,7 +76,7 @@ public class Employee {
     private Integer storeEmployeeNumber;  // 각 가게별로 증가하는 직원 번호
 
     @Column(unique = true, nullable = false)  // 고유한 사원번호, Not Null, 유니크 설정
-    private String uniqueEmployeeNumber;
+    private Long uniqueEmployeeNumber;
 
 
     public enum EmploymentStatus {

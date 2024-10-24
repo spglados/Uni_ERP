@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @Builder
 public class EmpDocumentDTO {
-
+    private Integer id; // 추가된 ID 필드
     private Boolean employmentContract;
     private Boolean healthCertificate;
     private String healthCertificateDate; // String으로 변환된 건강증명서 날짜
@@ -20,6 +20,7 @@ public class EmpDocumentDTO {
 
     // EmpDocument 엔티티를 EmpDocumentDTO로 변환하는 생성자
     public EmpDocumentDTO(EmpDocument empDocument) {
+        this.id = empDocument.getId(); // ID 필드 초기화
         this.employmentContract = empDocument.getEmploymentContract() != null && empDocument.getEmploymentContract();
         this.healthCertificate = empDocument.getHealthCertificate() != null && empDocument.getHealthCertificate();
         // healthCertificateDate를 Timestamp에서 String으로 변환

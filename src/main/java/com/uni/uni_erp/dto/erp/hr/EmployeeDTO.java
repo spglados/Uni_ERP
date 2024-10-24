@@ -1,8 +1,6 @@
 package com.uni.uni_erp.dto.erp.hr;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
 import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import lombok.*;
@@ -31,7 +29,7 @@ public class EmployeeDTO {
     private String empPositionName; // 직책 이름 추가
     private Integer storeId;
     private Integer storeEmployeeNumber; // 각 가게별로 증가하는 직원 번호 추가
-    private String uniqueEmployeeNumber; // 유니크 사원 번호
+    private long uniqueEmployeeNumber; // 유니크 사원 번호
 
     private Employee.EmploymentStatus employmentStatus;
     @JsonIgnore

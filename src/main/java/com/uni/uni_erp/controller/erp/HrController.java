@@ -2,6 +2,7 @@ package com.uni.uni_erp.controller.erp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.BankDTO;
@@ -33,6 +34,19 @@ public class HrController {
     private final ScheduleService scheduleService;
     private final HttpSession session;
 
+    // 직원 수정
+    @PostMapping("/updateEmployee")
+    public ResponseEntity<?> updateEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        System.out.println("Received DTO: " + employeeDTO);
+        try {
+            hrService.updateEmployee(employeeDTO);
+            return ResponseEntity.ok("직원 정보가 수정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("수정 중 오류 발생: " + e.getMessage());
+        }
+    }
+
+    // 직원 등록 페이지 이동
     @GetMapping("/employee-register")
     public String employeeRegisterPage(Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
@@ -45,10 +59,13 @@ public class HrController {
         return "/erp/hr/employeeRegister";
     }
 
+    // 직원 등록
     @PostMapping("/registerEmployee")
-    public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam Integer storeId, Model model) {
+    public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam Integer storeId, Model model, HttpSession session) {
+        // TODO UserDTO로 변경 필
+        User user = (User) session.getAttribute("sessionUser");
         try {
-            hrService.registerEmployee(employeeDTO, storeId);
+            hrService.registerEmployee(employeeDTO, storeId, user.getId());
             return "redirect:/erp/hr/employee-list"; // 등록 성공 시 직원 리스트로 리다이렉트
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -75,6 +92,7 @@ public class HrController {
         return ResponseEntity.ok(response);
     }
 
+    // 직원 목록 조회
     @GetMapping("/employee-list")
     public String employeeListPage(HttpSession session, Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
