@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
-    @Query("SELECT s FROM Schedule s WHERE (:type IS NULL OR s.scheduleType = :type) AND s.store.id = :storeId")
-    List<Schedule> findByStoreIdAndType(@Param("storeId") Integer storeId, @Param("type") Schedule.ScheduleType type);
+    @Query("SELECT s FROM Schedule s WHERE (:type IS NULL OR s.status = :type) AND s.store.id = :storeId")
+    List<Schedule> findByStoreIdAndType(@Param("storeId") Integer storeId, @Param("type") Schedule.Status type);
 }

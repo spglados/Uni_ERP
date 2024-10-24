@@ -45,6 +45,9 @@
                    oninput="formatPhoneNumber(this)" maxlength="13"
                    title="전화번호를 000-0000-0000 형식으로 입력하세요" placeholder="000-0000-0000">
         </div>
+        <h3>문서 관련 정보</h3>
+            <p>문서 보관 여부를 선택해주세요.</p>
+        <br>
         <div>
             <label for="address">주소:</label>
             <input type="text" id="address" name="address" required>
