@@ -1,10 +1,12 @@
 package com.uni.uni_erp.controller.pos;
 
+import com.uni.uni_erp.controller.erp.SalesController;
 import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.repository.sales.SalesDetailRepository;
 import com.uni.uni_erp.repository.sales.SalesRepository;
+import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.pos.PosService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -30,8 +32,7 @@ import java.time.LocalDateTime;
 public class PosController {
 
     private final PosService posService;
-    private final SalesRepository salesRepository;
-    private final SalesDetailRepository salesDetailRepository;
+    private final SalesService salesService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -65,7 +66,7 @@ public class PosController {
      */
     @PostMapping("/payment")
     @Transactional(rollbackOn = Exception.class)
-    public ResponseEntity<?> posPayment(HttpServletRequest request, Model model, HttpSession session) {
+    public ResponseEntity<?> posPayment(HttpServletRequest request, HttpSession session) {
         String requestBody = null;
         double totalAmount;
         JSONArray items;
@@ -82,13 +83,13 @@ public class PosController {
         // Create a new Sales entity
         Sales sales = Sales.builder()
                 .storeId((Integer) session.getAttribute("storeId")) // Replace with the actual store ID
-                .orderNum(salesRepository.findLatestOrderNum() + 1)
+                .orderNum(salesService.findLatestOrderNum() + 1)
                 .totalPrice((int) totalAmount)
                 .salesDate(LocalDateTime.now().withNano(0))
                 .build();
 
         // Save the Sales entity
-        salesRepository.save(sales);
+        salesService.saveSales(sales);
 
         // Create SalesDetail entities
         for (int i = 0; i < items.length(); i++) {
@@ -108,7 +109,7 @@ public class PosController {
             }
 
             // Save the SalesDetail entity
-            salesDetailRepository.save(salesDetail);
+            salesService.saveSalesDetail(salesDetail);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body("Sales inserted successfully!");
