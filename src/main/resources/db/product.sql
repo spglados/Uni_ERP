@@ -87,6 +87,47 @@ INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUE
 
 
 
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (3, 113, '순두부찌개', '메인', 9000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (4, 114, '해물파전', '메인', 12000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (5, 115, '돼지국밥', '메인', 7000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (6, 116, '순대국밥', '메인', 7000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (7, 117, '신선로', '메인', 30000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (8, 118, '떡갈비', '메인', 15000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (9, 119, '비빔밥', '메인', 12000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (10, 120, '육회', '메인', 11000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (11, 121, '홍어삼합', '메인', 35000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (12, 122, '짬뽕', '메인', 8000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (13, 123, '짜장면', '메인', 8000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (14, 124, '스파게티', '메인', 11000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (15, 125, '피자', '메인', 22000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (16, 126, '치킨', '메인', 19000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (17, 127, '햄버거', '메인', 5500, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (18, 128, '마라탕', '메인', 12000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (19, 129, '볶음밥', '메인', 9000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (20, 130, '해물탕', '메인', 25000, 1);
+INSERT INTO product_tb (id, product_code, name, category, price, store_id)
+VALUES (21, 131, '보쌈', '메인', 22000, 1);
+
+
+
 INSERT INTO material_tb (name, material_code, category, unit, sub_amount, sub_unit, enter_date, store_id, alarm_cycle, alarm_unit)
 VALUES
 ('소금', 111, '상온품', 'KG', 0, 'G', '2024-10-01', 1, 100, 'G'),
