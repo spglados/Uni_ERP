@@ -38,6 +38,16 @@ public class ProductDTO {
 
     private String description;
 
+    private Integer todaySales;
+
+    private Integer yesterdaySales;
+
+    private Integer monthSales;
+
+    private Integer previousMonthSales;
+
+    private Integer yearSales;
+
     public String formatToPrice() {
         // DecimalFormat을 사용하여 3자리마다 콤마를 넣고, 앞에 \를 붙임
         DecimalFormat decimalFormat = new DecimalFormat("#,###");

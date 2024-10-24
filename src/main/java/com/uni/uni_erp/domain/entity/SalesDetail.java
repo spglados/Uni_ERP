@@ -17,7 +17,7 @@ public class SalesDetail {
     private Integer id;
 
     @Column(name = "item_code", nullable = false)
-    private String itemCode;
+    private Long itemCode;
 
     @Column(name = "item_name", nullable = false)
     private String itemName;

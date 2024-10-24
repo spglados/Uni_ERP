@@ -49,10 +49,11 @@
                     <th>상품명</th>
                     <th>분류</th>
                     <th>가격</th>
-                    <th>일일 판매량</th>
-                    <th>평균 일일 판매량</th>
-                    <th>전월 판매량</th>
-                    <th>금월 판매량</th>
+                    <th>금일 판매량</th>
+                    <th>전일 판매량</th>
+                    <th>금월 평균 일 판매량</th>
+                    <th>전월 평균 일 판매량</th>
+                    <th>금년 평균 일 판매량</th>
                     <th>재료</th>
                 </tr>
                 </thead>
@@ -63,10 +64,11 @@
                     <td>${product.name}</td>
                     <td>${product.category}</td>
                     <td>${product.formatToPrice()}원</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
+                    <td>${product.todaySales}개</td>
+                    <td>${product.yesterdaySales}개</td>
+                    <td>${product.monthSales}개</td>
+                    <td>${product.previousMonthSales}개</td>
+                    <td>${product.yearSales}개</td>
                     <td><button class="btn btn-sm btn-info" data-toggle="modal" id="modal-btn-${product.id}" data-target="#ingredientModal" onclick="showIngredients(${product.id})">재료 보기</button></td>
                 </tr>
                     </c:forEach>
