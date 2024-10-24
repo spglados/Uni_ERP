@@ -73,22 +73,34 @@ public class HrController {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         // 문자열로 받은 type을 enum 타입으로 변환
-        Schedule.ScheduleType scheduleType = EnumCommonUtil.getEnumFromString(Schedule.ScheduleType.class, type);
+        Schedule.Status scheduleType = EnumCommonUtil.getEnumFromString(Schedule.Status.class, type);
 
         // 일정 조회
         List<ScheduleDTO.ResponseDTO> schedules = scheduleService.findByStoreIdAndType(storeId, scheduleType);
 
         // TODO DTO로 변경해야함 모든 근무자 조회
         List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
+        List<Map<String, Object>> employeesMap = employees.stream()
+                .map(employee -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("empId", employee.getId());
+                    map.put("empName", employee.getName());
+                    return map;
+                })
+                .collect(Collectors.toList());
 
         String schedulesJson = null;
+        String employeesJson = null;
         try {
             schedulesJson = new ObjectMapper().writeValueAsString(schedules);
+            employeesJson = new ObjectMapper().writeValueAsString(employeesMap);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             throw new Exception500("알 수 없는 오류 발생.");
         }
-        model.addAttribute("schedules", schedulesJson);
+        model.addAttribute("schedulesJson", schedulesJson);
         model.addAttribute("employees", employees);
+        model.addAttribute("employeesJson", employeesJson);
 
         return "/erp/hr/schedule";
     }
@@ -107,12 +119,28 @@ public class HrController {
 
         // 응답 데이터 추가
         Map<String, Object> response = new HashMap<>();
-//        String scheduleJson = null;
-//        try {
-//            scheduleJson = new ObjectMapper().writeValueAsString(schedule);
-//        } catch (JsonProcessingException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
+        if (schedule != null) {
+            response.put("schedule", schedule);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    /**
+     * 근무 일정 수정
+     * @param reqDTO
+     * @return
+     */
+    @PutMapping("/schedule")
+    public ResponseEntity<?> scheduleUpdateProc(@RequestBody ScheduleDTO.UpdateDTO reqDTO, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+
+        // 일정 생성
+        ScheduleDTO.ResponseDTO schedule = scheduleService.update(reqDTO, storeId);
+
+        // 응답 데이터 추가
+        Map<String, Object> response = new HashMap<>();
         if (schedule != null) {
             response.put("schedule", schedule);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
