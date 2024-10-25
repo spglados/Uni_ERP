@@ -22,7 +22,7 @@
         async function submitInspection() {
             const inputAmount = document.getElementById("amountInput").value;
 
-            const response = await fetch('/safe', { // 기존 경로 유지
+            const response = await fetch('/safe2', { // 기존 경로 유지
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -41,7 +41,7 @@
 
         async function withdrawAmount() {
             const withdrawInput = document.getElementById("withdrawInput").value;
-            const response = await fetch('/withdraw', { // 출금 처리 경로 설정
+            const response = await fetch('/withdraw2', { // 출금 처리 경로 설정
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -41,6 +41,13 @@ public class PaymentService {
     @Value("${payment.secretKey}")
     private String secretKey;
 
+    //TODO 삭제예정
+    public void updateStatus(Payment payment) {
+
+        paymentRepository.save(payment); // 변경된 payment 객체를 저장
+    }
+
+
     @Transactional
     public String authorizeBillingAndAutoPayment(String authKey, String customerKey, String orderId, String orderName,
                                                  Integer amount, Integer userPk, String desiredPayDate) throws Exception {

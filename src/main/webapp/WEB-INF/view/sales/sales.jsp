@@ -10,21 +10,24 @@
 <br>
 
 <!--금고관리-->
-<button >금고관리</button>
+<button onclick="safe()">금고관리</button>
 <br><br><br><br><br>
 
 
 <!--오픈마감-->
-<button >오픈하기</button>
-<br>
-<button >마감하기</button>
- <label><input type="checkbox" name="option1" value="">24시간</label>
-
-
+<button onclick="openAndClosed()">오픈/마감</button>
 
 <script>
 function inspection() {
     window.open('http://localhost:8080/inspection', '_blank', 'width=800,height=600');
+}
+
+function safe() {
+    window.open('http://localhost:8080/safe', '_blank', 'width=800,height=600');
+}
+
+function openAndClosed() {
+    window.open('http://localhost:8080/openAndClosed', '_blank', 'width=800,height=600');
 }
 
 
