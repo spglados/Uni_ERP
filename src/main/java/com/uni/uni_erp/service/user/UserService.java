@@ -1,19 +1,22 @@
 package com.uni.uni_erp.service.user;
 
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.dto.PrincipalDTO;
 import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
+import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.List;
 
 
 @Service
@@ -21,6 +24,7 @@ import java.util.Random;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     @Value("${coolsms.api.key}")
     private String apiKey;
@@ -42,9 +46,23 @@ public class UserService {
 
     public User findById(int id) {
         User user = userRepository.findById(id).orElseThrow(() -> new Exception404("회원정보를 찾을 수 없습니다"));
-
         return user;
     }
+
+    public PrincipalDTO searchUserId(int id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new Exception404("회원정보를 찾을 수 없습니다."));
+        PrincipalDTO principalDTO = PrincipalDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .membership(user.getMembership())
+                .createdAt(user.getCreatedAt())
+                .build();
+
+        return principalDTO;
+    }
+
 
     public boolean checkDuplicateEmail(String email) {
         boolean isUse = userRepository.existsByEmail(email);
@@ -75,5 +93,29 @@ public class UserService {
             System.out.println(e.getCode());
         }
 
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    public void cleanUpUsers() {
+        List<User> users = userRepository.findAll(); // 모든 사용자 조회
+        for (User user : users) {
+            if (user.getPreviousMembership() != null &&
+                    user.getPreviousMembership().equals("COMMON") &&
+                    user.getPremiumToCommonDate() != null &&
+                    user.getPremiumToCommonDate().isBefore(LocalDateTime.now().minusMonths(1))) {
+
+                int paymentCount = paymentRepository.countPaymentsByUserIdAndStatus(user.getId());
+
+                if (paymentCount == 0) {
+                    // 결제 내역이 없으면 스토어와 임플로이를 삭제
+                    // storeService.deleteByUserId(user.getId());
+                    // employeeService.deleteByUserId(user.getId());
+                    System.out.println("스토어와 임플로이가 삭제되었습니다: " + user.getId());
+                } else {
+                    // 결제 내역이 하나라도 있으면 삭제하지 않음
+                    System.out.println("결제 내역이 있어 삭제되지 않았습니다: " + user.getId());
+                }
+            }
+        }
     }
 }

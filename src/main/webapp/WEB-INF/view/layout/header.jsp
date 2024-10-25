@@ -25,10 +25,19 @@
             <li class="nav-item"><a href="/payment">결제</a></li>
             <li class="nav-item"><a href="/support">고객지원</a></li>
         </ul>
-        <div class="header-icons">
-            <a href="/user/login" class="none-a"><i class="fa-solid fa-sign-in-alt">로그인</i></a>
-            <a href="#"><i class="fa-solid fa-clipboard"></i></a>
-        </div>
+       <div class="header-icons">
+                   <!-- 로그인 버튼 -->
+                   <c:if test="${empty sessionScope.principal}">
+                       <a href="/user/login" class="none-a"><i class="fa-solid fa-sign-in-alt"></i> 로그인</a>
+                   </c:if>
+
+                   <!-- 로그아웃 버튼 -->
+                   <c:if test="${not empty sessionScope.principal}">
+                       <a href="/user/logout" class="none-a">로그아웃</a>
+                   </c:if>
+
+                   <a href="#"><i class="fa-solid fa-clipboard"></i></a>
+               </div>
     </div>
 </header>
 

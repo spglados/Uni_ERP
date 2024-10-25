@@ -1,16 +1,18 @@
 package com.uni.uni_erp.controller.payment;
 
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.payment.Payment;
+import com.uni.uni_erp.dto.PrincipalDTO;
 import com.uni.uni_erp.service.payment.PaymentService;
 import com.uni.uni_erp.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -28,29 +30,30 @@ public class PaymentController {
 
     @GetMapping("")
     public String paymentPage() {
-
         return "/payment/payment";
     }
 
     // 단일,정기 결제 실패
     @GetMapping("/fail")
     public String paymentFail() {
-        return "payment/fail"; // 결제 실패 페이지
+        return "payment/fail";
     }
-
 
     // 정기 결제 성공
     @GetMapping("/success")
     public String success(@RequestParam("authKey") String authKey,
                           @RequestParam("customerKey") String customerKey,
                           @RequestParam("desiredPayDate") String desiredPayDate,
+                          @SessionAttribute(value = "principal") PrincipalDTO principal,
                           Model model) {
+
         try {
             // 주문 ID 생성
             String orderId = UUID.randomUUID().toString();
 
-            User user = userService.findById(1); // 사용자 정보 가져오기
-            int userPk = user.getId();
+            int userPk = principal.getId();
+
+            User user = userService.findById(userPk); // 사용자 정보 가져오기
 
             User.Membership membership = user.getMembership();
             String orderName = null;
@@ -79,23 +82,23 @@ public class PaymentController {
 
 
     @GetMapping("/refund")
-    public String refundPage(Model model) {
-        int userPk = 1;
+    public String refundPage(Model model, @SessionAttribute(value = "principal") PrincipalDTO principal) {
+        int userPk = principal.getId();
         List<Payment> payments = paymentService.findByUserId(userPk);
-        System.out.println(payments);
         model.addAttribute("payments", payments); // "payments"라는 키로 List<Payment> 추가
+
         return "/payment/refund";
     }
 
+
     @PostMapping("/refund")
-    public String cancelPayment(@RequestBody Map<String, Object> requestBody) throws Exception {
-        String paymentKey = (String) requestBody.get("paymentKey");
-        String cancelReason = (String) requestBody.get("cancelReason");
-        String payPk = (String) requestBody.get("payPk");
+    public String cancelPayments(@RequestBody List<Map<String, String>> paymentRequests) throws Exception {
+        // 총 환불 금액 계산
+        int totalCancelAmount = paymentService.cancelAndCalculateAmount(paymentRequests);
 
-        paymentService.cancelPayment(paymentKey, cancelReason, payPk);
-
-        return "redirect:/main";
+        System.out.println("TOTAL CANCEL AMOUNT =  " + totalCancelAmount);
+        // 총 환불 금액을 활용한 후속 처리를 할 수 있습니다.
+        return "redirect:/main"; // 필요한 리다이렉션
     }
 
 

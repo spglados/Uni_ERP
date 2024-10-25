@@ -37,46 +37,46 @@
 </table>
 
 <input type="text" id="cancelReason" placeholder="취소 사유" />
-<button onclick="cancelPayment()">환불 요청</button>
+<button onclick="cancelPayments()">환불 요청</button>
 
 <script>
-function cancelPayment() {
+function cancelPayments() {
     const cancelReason = document.getElementById("cancelReason").value;
-    const selectedPayments = document.querySelector('.payment-checkbox:checked');
+    const selectedPayments = document.querySelectorAll('.payment-checkbox:checked');
 
-    if (!selectedPayments) {
+    if (selectedPayments.length === 0) {
         alert('환불할 결제를 선택해주세요.');
         return;
     }
 
-    const paymentKey = selectedPayments.closest('tr').querySelector('.payment-key').value;
-    const payPk = selectedPayments.value; // payment.id를 payPk로 사용
+    const paymentRequests = Array.from(selectedPayments).map(checkbox => {
+        const paymentKey = checkbox.closest('tr').querySelector('.payment-key').value;
+        return {
+            paymentKey: paymentKey,
+            cancelReason: cancelReason,
+            payPk: checkbox.value // payment.id를 payPk로 사용
+        };
+    });
 
-    console.log("payPk",payPk);
-    console.log("paymentKey",paymentKey);
-    console.log("cancelReason",cancelReason);
     fetch('/payment/refund', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            'cancelReason': cancelReason,
-            'paymentKey': paymentKey, // 단일 paymentKey 전송
-            'payPk': payPk // 단일 payPk 전송
-        })
+        body: JSON.stringify(paymentRequests) // 리스트 형태로 전송
     })
     .then(response => {
         if (response.ok) {
             window.location.href = '/main'; // 성공 시 리다이렉트
         } else {
-            console.error('Error canceling payment');
+            console.error('Error canceling payments');
             // 에러 처리 추가 가능
         }
     })
     .catch(error => console.error('Fetch error:', error));
 }
 </script>
+
 
 <!-- footer.jsp  -->
 <%@include file="/WEB-INF/view/layout/footer.jsp"%>

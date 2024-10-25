@@ -9,6 +9,8 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -63,6 +65,10 @@ public class User {
     @Column(name = "payment_date")
     private String paymentDate;
 
+    // 멤버십 상태 변경 날짜
+    private String previousMembership; // 이전 멤버십 상태
+    private LocalDateTime premiumToCommonDate; // Premium에서 Common으로 변경된 날짜
+
 
     // 엔티티가 저장되기 전 실행되는 메서드
     @PrePersist
@@ -76,5 +82,23 @@ public class User {
     public enum Membership {
         COMMON,
         PREMIUM
+    }
+
+    public void setMembership(Membership membership) {
+        this.membership = membership;
+
+        // Premium에서 Common으로 변경될 때 날짜 기록
+        if (Membership.COMMON.equals(membership)) {
+            this.premiumToCommonDate = LocalDateTime.now();
+        }
+    }
+
+    public boolean isWithinWeekOfCommon() {
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println("Current time: " + now);
+        System.out.println("premiumToCommonDate: " + premiumToCommonDate);
+        // 이넘 타입으로 비교
+        return Membership.COMMON.equals(membership) && premiumToCommonDate != null &&
+                premiumToCommonDate.isAfter(LocalDateTime.now().minusWeeks(7));
     }
 }

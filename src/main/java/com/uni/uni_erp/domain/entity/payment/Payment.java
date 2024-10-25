@@ -37,6 +37,7 @@ public class Payment {
     private Integer nextPayAmount;
     private String nextPay;
     private String date;
+    private Integer status;
     private Integer cancelAmount;
 
     @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)

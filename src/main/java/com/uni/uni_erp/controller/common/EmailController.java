@@ -17,10 +17,8 @@ public class EmailController {
     public String sendVerificationEmail(@RequestParam("email") String email) {
         // 토큰 생성
         String token = emailService.generateVerificationToken();
-
         // 이메일 전송
         emailService.sendVerificationEmail(email, token);
-
         return "인증 이메일이 전송되었습니다.";
     }
 

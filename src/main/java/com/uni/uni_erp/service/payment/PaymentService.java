@@ -3,11 +3,14 @@ package com.uni.uni_erp.service.payment;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.PaymentHistory;
+import com.uni.uni_erp.domain.entity.payment.RefundRepository;
 import com.uni.uni_erp.dto.PaymentDTO;
 import com.uni.uni_erp.repository.payment.PaymentHistoryRepository;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +21,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -88,23 +94,20 @@ public class PaymentService {
                 nextPayDate.set(Calendar.MONTH, today.get(Calendar.MONTH) + 1);
                 nextPayDate.set(Calendar.DAY_OF_MONTH, day);
                 String nextDate = String.format("%d-%02d-%02d", nextPayDate.get(Calendar.YEAR), nextPayDate.get(Calendar.MONTH) + 1, day);
-                System.out.println(nextDate+"tjclcl");
+                System.out.println(nextDate + "tjclcl");
                 // 다음 달 결제 금액 계산
                 int nextPay = (paymentRepository.sumAmountByUserId(userPk) == null) ? initialAmount : paymentRepository.sumAmountByUserId(userPk) + initialAmount;
 
                 int latestAmount = paymentHistoryRepository.findLatestAmountByUserId(userPk)
                         .orElse(0); // null일 경우 기본값 0 사용
-                System.out.println(latestAmount+"tjcldnjs");
 
 
-
-
-
-
-                     // 원하는 결제일
+                // 원하는 결제일
                 int desiredPaymentDay = Integer.parseInt(desiredPayDate);
 
                 int cancelAmount = 0;
+
+                int status = 1;
 
                 if (user.getMembership() == User.Membership.COMMON) {
                     initialAmount = 50000;
@@ -120,22 +123,20 @@ public class PaymentService {
                         if (paymentDate != null) {
                             int userPaymentDay = Integer.parseInt(paymentDate.split("-")[2]); // "2024-11-13" -> 13
                             if (userPaymentDay > desiredPaymentDay) {
-                                System.out.println("11111111111");
                                 nowPayAmount = Math.floor(remainingAmount) + initialAmount + latestAmount; // 추가 결제 금액
-                                cancelAmount = initialAmount +latestAmount;
+                                cancelAmount = initialAmount + latestAmount;
                             } else {
-                                System.out.println("22222222222");
                                 nowPayAmount = Math.floor(remainingAmount) + initialAmount; // 이번 달 결제 + 다음 달 결제 금액
                                 cancelAmount = initialAmount;
                             }
                         }
                         user.setPaymentDate(nextDate);
                     } else {
-                        System.out.println("333333333333333333");
                         // 이번 달의 비례 금액만 계산
                         int maxDaysInMonth = today.getActualMaximum(Calendar.DAY_OF_MONTH);
                         int remainingDays = maxDaysInMonth - currentDay;
                         nowPayAmount = Math.floor(initialAmount * (remainingDays / (double) maxDaysInMonth)); // 비례 금액만
+                        status = -1;
                         user.setPaymentDate(nextDate);
                     }
                 } else if (user.getMembership() == User.Membership.PREMIUM) {
@@ -166,11 +167,12 @@ public class PaymentService {
                         int remainingDays = maxDaysInMonth - currentDay;
                         nowPayAmount = Math.floor(initialAmount * (remainingDays / (double) maxDaysInMonth)); // 비례 금액만
                         user.setPaymentDate(nextDate);
+                        status = -1;
                     }
                 }
 
                 // 다음 달 결제 금액 계산
-                int nextPay = (paymentRepository.sumAmountByUserId(userPk) == null) ? initialAmount : paymentRepository.sumAmountByUserId(userPk) + initialAmount;
+
 
                 // DTO 변환
                 PaymentDTO.RegularPaymentDTO paymentDTO = PaymentDTO.RegularPaymentDTO.builder()
@@ -191,6 +193,7 @@ public class PaymentService {
                         .nextPayAmount(nextPay) // 다음 달 결제
                         .date(dateString)
                         .cancelAmountSoon(cancelAmount)
+                        .status(status)
                         .build();
 
                 user.setMembership(User.Membership.PREMIUM);
@@ -220,9 +223,112 @@ public class PaymentService {
         }
     }
 
-    // 환불
     @Transactional
-    public String cancelPayment(String paymentKey, String cancelReason,String payPk) throws Exception {
+    public int cancelAndCalculateAmount(List<Map<String, String>> paymentRequests) throws Exception {
+        int totalCancelAmount = 0;
+
+        for (Map<String, String> paymentRequest : paymentRequests) {
+            String paymentKey = paymentRequest.get("paymentKey");
+            String cancelReason = paymentRequest.get("cancelReason");
+            String payPk = paymentRequest.get("payPk");
+
+            int payPkint = Integer.parseInt(payPk);
+            String encodedAuthHeader = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
+
+            // 결제 취소 요청
+            HttpRequest cancelRequest = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel"))
+                    .header("Authorization", "Basic " + encodedAuthHeader)
+                    .header("Content-Type", "application/json")
+                    .method("POST", HttpRequest.BodyPublishers.ofString("{\"cancelReason\":\"" + cancelReason + "\"}"))
+                    .build();
+
+            HttpResponse<String> cancelResponse = HttpClient.newHttpClient().send(cancelRequest, HttpResponse.BodyHandlers.ofString());
+
+            if ("200".equals(String.valueOf(cancelResponse.statusCode()))) {
+                JsonNode cancelJson = objectMapper.readTree(cancelResponse.body());
+
+                // 결제 정보 조회
+                Payment payment = paymentRepository.findById(payPkint)
+                        .orElseThrow(() -> new RuntimeException("Payment not found with id: " + payPkint));
+                int paymentStatusCount = paymentRepository.countPaymentsByUserIdAndStatus(1); // 예시로 userId 1로 설정
+                int cancelAmount = 0;
+
+                User user = userRepository.findById(1).orElseThrow(() -> new RuntimeException(""));
+
+                List<Payment> 결제내역들 = findByUserId(1);
+
+                // 상태 및 조건에 따른 환불 금액 계산
+                boolean hasNegativeOne = 결제내역들.stream().anyMatch(payments -> payments.getStatus() == -1); // -1 상태 확인
+                boolean 일이존재할때 = 결제내역들.stream().anyMatch(payments -> payments.getStatus() == 1); // 1 상태 확인
+                long 마이너스일갯수 = 결제내역들.stream().filter(payments -> payments.getStatus() == -1).count(); // -1 상태 개수 확인
+
+                if (paymentStatusCount > 1) {
+                    if (hasNegativeOne) {
+                        if (일이존재할때) {
+                            if (마이너스일갯수 >= 2) {
+                                cancelAmount = 0;
+                                paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
+                                payment.setStatus(0);
+                            } else {
+                                cancelAmount = 30000;
+                                paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
+                                payment.setStatus(0);
+                            }
+                        } else {
+                            cancelAmount = 0;
+                            paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
+                            payment.setStatus(0);
+                        }
+                    } else {
+                        cancelAmount = 30000;
+                        payment.setStatus(0);
+                    }
+                } else if (paymentStatusCount == 1) {
+                    if (hasNegativeOne) {
+                        cancelAmount = 0;
+                        paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
+                        payment.setStatus(0);
+                        user.setMembership(User.Membership.COMMON);
+
+                    } else {
+                        cancelAmount = 50000;
+                        payment.setStatus(0);
+                        user.setMembership(User.Membership.COMMON);
+
+                    }
+                }
+
+                // DTO 변환 및 저장
+                PaymentDTO.RegularPaymentDTO paymentDTO = PaymentDTO.RegularPaymentDTO.builder()
+                        .lastTransactionKey(cancelJson.get("lastTransactionKey").asText())
+                        .paymentKey(paymentKey)
+                        .cancelReason(cancelReason)
+                        .requestedAt(cancelJson.get("requestedAt").asText())
+                        .approvedAt(cancelJson.get("approvedAt").asText())
+                        .cancelAmount(String.valueOf(cancelAmount))
+                        .build();
+
+                refundRepository.save(paymentDTO.toRefund());
+                paymentRepository.updateCancel(payPkint); // payment_tb에 cancel 유무 업데이트
+
+                totalCancelAmount += cancelAmount; // 총 환불 금액에 추가
+            } else {
+                throw new RuntimeException(cancelResponse.body());
+            }
+        }
+
+        return totalCancelAmount; // 총 환불 금액 반환
+    }
+
+
+
+
+
+    // 환불
+    //TODO 되살려주기
+    /*@Transactional
+    public String cancelPayment(String paymentKey, String cancelReason, String payPk) throws Exception {
         int payPkint = Integer.parseInt(payPk);
 
         String encodedAuthHeader = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
@@ -238,49 +344,74 @@ public class PaymentService {
         HttpResponse<String> cancelResponse = HttpClient.newHttpClient().send(cancelRequest,
                 HttpResponse.BodyHandlers.ofString());
 
+        JsonNode cancelJson = null;
         if ("200".equalsIgnoreCase(String.valueOf(cancelResponse.statusCode()))) {
-            JsonNode cancelJson = objectMapper.readTree(cancelResponse.body());
+            cancelJson = objectMapper.readTree(cancelResponse.body());
 
             //TODO - 환불 금액 로직 짜야함.
             // 1. 결제한 날짜가 정기결제일 보다 이전일때만 환불금액이있음. 아니면 없음
             // 2. (1번조건을 맞춘 상태)  오늘날짜의 달이 결제한 날짜의 달과 같다면 환불금액 있음
 
             // 유저의 정기결제일 뽑기
-            User user =  userRepository.findById(1).orElseThrow(() -> new RuntimeException(""));
+            User user = userRepository.findById(1).orElseThrow(() -> new RuntimeException(""));
 
             // 체크된 결제내역 뽑기
             Payment payment = paymentRepository.findById(payPkint)
                     .orElseThrow(() -> new RuntimeException("Payment not found with id: " + payPkint));
 
-
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            String 결제한날짜 = payment.getDate();
-            String dateOnly = 결제한날짜.split(" ")[0];
-            String 정기결제일 = payment.getNextPay();
-
-            LocalDate 결제일 = LocalDate.parse(dateOnly, formatter);
-            LocalDate 정기결제일Date = LocalDate.parse(정기결제일, formatter);
-            LocalDate 오늘 = LocalDate.now();
+            int paymentStatusCount = paymentRepository.countPaymentsByUserIdAndStatus(1);
 
             Integer cancelAmount = 0;
 
-            if (결제일.getDayOfMonth() > 정기결제일Date.getDayOfMonth()) {
-                System.out.println("환불 금액있음");
-                if (오늘.getMonthValue() == 결제일.getMonthValue()) {
-                    System.out.println("환불 금액있음");
-                    cancelAmount = payment.getCancelAmount();
+            List<Payment> 결제내역들 = findByUserId(1);
+
+            boolean hasNegativeOne = 결제내역들.stream().anyMatch(payments -> payments.getStatus() == -1);
+
+            boolean 일이존재할때 = 결제내역들.stream().anyMatch(payments -> payments.getStatus() == 1);
+
+            long 마이너스일갯수 = 결제내역들.stream().filter(payments -> payments.getStatus() == -1).count();
+
+            //TODO 1. 결제를 한번만 했을때 이번달에 비례한 금액만 있을때 cancelAmount = 0;
+
+
+            // 1보다 크면 3만원 결제
+            if (paymentStatusCount > 1) {
+                if(hasNegativeOne) {
+                    if(일이존재할때){
+                        if(마이너스일갯수 >=2){
+                            cancelAmount = 0;
+                            paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
+                            payment.setStatus(0);
+                        } else {
+                            cancelAmount = 30000;
+                            paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
+                            payment.setStatus(0);
+                        }
+                    } else {
+                        cancelAmount = 0;
+                        paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
+                        payment.setStatus(0);
+                    }
                 } else {
-                    System.out.println("환불 금액 없음.");
-                    cancelAmount = 0;
+                    cancelAmount = 30000;
+                    payment.setStatus(0);
                 }
-            } else {
-                System.out.println("환불 금액 없음.");
-                cancelAmount = 0;
+                // 1이면 5만원 결제
+            } else if (paymentStatusCount == 1) {
+                if(hasNegativeOne) {
+                    cancelAmount = 0;
+                    paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
+                    payment.setStatus(0);
+                    user.setMembership(User.Membership.COMMON);
+                } else {
+                    cancelAmount = 50000;
+                    payment.setStatus(0);
+                    user.setMembership(User.Membership.COMMON);
+                }
             }
+
             String cancelAmountStr = String.valueOf(cancelAmount);
             //TODO - 여기까지
-
 
 
             // DTO 변환
@@ -300,7 +431,7 @@ public class PaymentService {
         } else {
             throw new RuntimeException(cancelResponse.body());
         }
-    }
+    }*/
 
     public Payment findById(Integer id) {
         return paymentRepository.findById(id)
@@ -310,5 +441,4 @@ public class PaymentService {
     public List<Payment> findByUserId(Integer userId) {
         return paymentRepository.findByUserId(userId);
     }
-
 }

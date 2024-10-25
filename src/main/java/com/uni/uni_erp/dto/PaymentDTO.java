@@ -51,7 +51,9 @@ public class PaymentDTO {
         //결제한 날짜
         private String date;
 
+
         private Integer cancelAmountSoon;
+        private Integer status;
         // 에러 메시지
         private Integer billingErrorCode;
         private Integer payErrorCode;
@@ -77,6 +79,7 @@ public class PaymentDTO {
                     .nextPay(nextPay)
                     .date(date)
                     .cancelAmount(cancelAmountSoon)
+                    .status(status)
                     .build();
         }
 
