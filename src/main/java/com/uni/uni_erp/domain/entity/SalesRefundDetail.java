@@ -1,6 +1,5 @@
 package com.uni.uni_erp.domain.entity;
 
-import com.uni.uni_erp.domain.entity.erp.product.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +14,7 @@ public class SalesRefundDetail {
 
     @Id
     @GeneratedValue
-    @Column(name = "sales_refund_detail_id")
+    @Column(name = "id")
     private Integer id;
 
     @Column(name = "item_code", nullable = false)
