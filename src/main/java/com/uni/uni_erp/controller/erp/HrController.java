@@ -2,16 +2,10 @@ package com.uni.uni_erp.controller.erp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
+import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
-import com.uni.uni_erp.domain.entity.erp.hr.Employee;
-import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
-import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.dto.EmpDocumentDTO;
-import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
 import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
 import com.uni.uni_erp.dto.erp.hr.EmployeeUpdateDTO;
@@ -27,10 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import java.util.HashMap;
 import java.util.List;
@@ -159,7 +149,7 @@ public class HrController {
         List<ScheduleDTO.ResponseDTO> schedules = scheduleService.findByStoreIdAndType(storeId, scheduleType);
 
         // TODO DTO로 변경해야함 모든 근무자 조회
-        List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
+        List<EmployeeDTO> employees = hrService.getEmployeesByStoreId(storeId);
         List<Map<String, Object>> employeesMap = employees.stream()
                 .map(employee -> {
                     Map<String, Object> map = new HashMap<>();
