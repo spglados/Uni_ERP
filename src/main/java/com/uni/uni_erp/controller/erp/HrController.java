@@ -2,11 +2,13 @@ package com.uni.uni_erp.controller.erp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
+import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.dto.EmployeeDTO;
+import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
+import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
+import com.uni.uni_erp.dto.erp.hr.EmployeeUpdateDTO;
 import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.service.erp.hr.HrService;
@@ -33,33 +35,100 @@ public class HrController {
     private final HrService hrService;
     private final ScheduleService scheduleService;
     private final HttpSession session;
-    private final Gson Gson;
 
+    // 직원 수정
+    @PutMapping("/employees/{id}")
+    public ResponseEntity<?> updateEmployee(@PathVariable("id") Long id, @RequestBody EmployeeUpdateDTO employeeDTO) {
+        System.out.println("id :" + id);
+        System.out.println("Received DTO: " + employeeDTO);
+        try {
+            hrService.updateEmployee(id, employeeDTO);
+            return ResponseEntity.ok("직원 정보 수정완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("수정 중 오류 발생: " + e.getMessage());
+        }
+    }
 
+    // 직원 등록 페이지 이동
     @GetMapping("/employee-register")
     public String employeeRegisterPage(Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
         List<BankDTO> bankList = hrService.getAllBankDTOs();
+        List<EmpPositionDTO> positionsList = hrService.getPositionsByStoreId(storeId); // 직책 목록 추가
         model.addAttribute("bankList", bankList);
+        model.addAttribute("positionsList", positionsList); // 모델에 직책 추가
         model.addAttribute("employee", new Employee());
         model.addAttribute("storeId", storeId); // storeId를 모델에 추가
         return "/erp/hr/employeeRegister";
     }
 
-    @PostMapping("/employee-register")
-    public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam(name = "storeId") Integer storeId) {
-        System.out.println("storeId: " + storeId);
-        hrService.registerEmployee(employeeDTO, storeId);
-        return "redirect:/erp/hr/employee-list";
+    // 직원 등록
+    @PostMapping("/registerEmployee")
+    public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam Integer storeId, Model model, HttpSession session) {
+        // TODO UserDTO로 변경 필
+        User user = (User) session.getAttribute("sessionUser");
+        try {
+            hrService.registerEmployee(employeeDTO, storeId, user.getId());
+            return "redirect:/erp/hr/employee-list"; // 등록 성공 시 직원 리스트로 리다이렉트
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("employeeDTO", employeeDTO); // 입력한 데이터 유지
+            return "forward:/erp/hr/employee-register"; // 등록 폼으로 돌아감
+        }
     }
 
-    // TODO 스토어로 바꾸기
+    // 중복 이메일 검사
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
+        Map<String, Object> response = new HashMap<>();
+        boolean isDuplicated = hrService.isEmailDuplicated(email);
+        response.put("isDuplicated", isDuplicated);
+        return ResponseEntity.ok(response);
+    }
+
+    // 중복 전화번호 검사
+    @GetMapping("/check-phone")
+    public ResponseEntity<Map<String, Object>> checkPhone(@RequestParam String phone) {
+        Map<String, Object> response = new HashMap<>();
+        boolean isDuplicated = hrService.isPhoneDuplicated(phone);
+        response.put("isDuplicated", isDuplicated);
+        return ResponseEntity.ok(response);
+    }
+
+    // 직원 목록 조회
     @GetMapping("/employee-list")
     public String employeeListPage(HttpSession session, Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreIdWithDocuments(storeId);
+        List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreId(storeId); // EmployeeDTO로 변경
+
+        // 모든 직책 목록 조회
+        List<EmpPositionDTO> positionDTOList = hrService.getPositionsByStoreId(storeId);
+
+        // 모든 은행 목록 조회
+        List<BankDTO> bankDTOList = hrService.getAllBankDTOs();
+
+
+        // 직원 목록의 내용 확인
+//        for (EmployeeDTO dto : employeeDTOList) {
+//            System.out.println("EmployeeDTO: " + dto); // 각 DTO 출력
+//        }
+
         model.addAttribute("employees", employeeDTOList); // 직원 목록을 모델에 추가
-        model.addAttribute("employeesJson", Gson.toJson(employeeDTOList));
+
+        // DTO 리스트를 JSON으로 변환
+        String employeesJson;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            employeesJson = objectMapper.writeValueAsString(employeeDTOList);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace(); // 예외의 상세 정보 출력
+            throw new RuntimeException("직원 목록을 JSON으로 변환하는 중 오류 발생: " + e.getMessage(), e);
+        }
+
+        model.addAttribute("employeesJson", employeesJson); // JSON 데이터를 모델에 추가
+        model.addAttribute("positions", positionDTOList);
+        model.addAttribute("banks", bankDTOList);
+
         return "erp/hr/employeeList"; // 직원 목록 페이지 반환
     }
 
@@ -80,7 +149,7 @@ public class HrController {
         List<ScheduleDTO.ResponseDTO> schedules = scheduleService.findByStoreIdAndType(storeId, scheduleType);
 
         // TODO DTO로 변경해야함 모든 근무자 조회
-        List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
+        List<EmployeeDTO> employees = hrService.getEmployeesByStoreId(storeId);
         List<Map<String, Object>> employeesMap = employees.stream()
                 .map(employee -> {
                     Map<String, Object> map = new HashMap<>();
