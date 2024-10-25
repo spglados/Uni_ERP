@@ -6,6 +6,7 @@ import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.BankDTO;
 import com.uni.uni_erp.dto.EmployeeDTO;
+import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.repository.bank.BankReposigory;
 import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ public class HrService {
 
     public List<Employee> getEmployeesByStoreId(Integer storeId) {
         List<Employee> employees = hrRepository.findByStoreId(storeId);
-        System.out.println("Employees found for user ID " + storeId + ": " + employees.size()); // 직원 수 로그 추가
+        System.out.println("Employees found for store ID " + storeId + ": " + employees.size());
         if (employees.isEmpty()) {
             System.out.println("No employees found for store ID " + storeId);
         } // 직원 수 로그 추가
@@ -136,10 +138,22 @@ public class HrService {
         return employee != null ? convertToDTO(employee) : null;
     }
 
-    public List<EmpDocument> getEmpDocumentsByEmployeeId(Integer employeeId) {
+    public EmpDocument getEmpDocumentsByEmployeeId(Integer employeeId) {
         return hrRepository.findByEmployeeId(employeeId);
     }
 
+    public List<EmployeeDTO> getEmployeesByStoreIdWithDocuments(Integer storeId) {
+        List<Employee> employees = empDocumentRepository.findByStoreIdWithDocuments(storeId);
 
+        if(employees.isEmpty()) {
+            throw new Exception404("등록된 직원이 없습니다.");
+        }
+
+        List<EmployeeDTO> empDocumentDTOS = new ArrayList<>();
+        for (Employee employee : employees) {
+            empDocumentDTOS.add(employee.toEmployeeDTO());
+        }
+        return empDocumentDTOS;
+    }
 
 }

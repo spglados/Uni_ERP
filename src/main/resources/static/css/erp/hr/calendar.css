@@ -33,6 +33,6 @@
     --fc-now-indicator-color: red;
 }
 
-tbody[role='presentation'] tr {
-    height: calc(100% / 6);
+#calendarEmployeeName {
+    padding-top: 90px;
 }

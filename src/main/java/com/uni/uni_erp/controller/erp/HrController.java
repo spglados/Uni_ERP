@@ -2,6 +2,10 @@ package com.uni.uni_erp.controller.erp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.uni.uni_erp.domain.entity.erp.hr.Employee;
+import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
+import com.uni.uni_erp.dto.BankDTO;
 import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
@@ -21,6 +25,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +42,8 @@ public class HrController {
     private final HrService hrService;
     private final ScheduleService scheduleService;
     private final HttpSession session;
+    private final Gson Gson;
+
 
     @GetMapping("/employee-register")
     public String employeeRegisterPage(Model model) {
@@ -57,31 +66,9 @@ public class HrController {
     @GetMapping("/employee-list")
     public String employeeListPage(HttpSession session, Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
-        // 각 직원에 대한 문서 정보를 추가
-        // 각 직원에 대한 문서 정보를 추가
-        List<EmpDocumentDTO> empDocuments = employees.stream()
-                .map(employee -> {
-                    List<EmpDocument> documents = hrService.getEmpDocumentsByEmployeeId(employee.getId());
-                    // 첫 번째 문서 정보를 가져와 DTO로 변환 (필요에 따라 수정)
-                    EmpDocumentDTO empDocumentDTO = new EmpDocumentDTO();
-                    empDocumentDTO.setEmployeeId(employee.getId());
-                    // 문서 정보를 개별적으로 설정
-                    if (!documents.isEmpty()) {
-                        EmpDocument document = documents.get(0); // 첫 번째 문서만 가져오도록 설정 (예시)
-                        empDocumentDTO.setEmploymentContract(document.getEmploymentContract());
-                        empDocumentDTO.setHealthCertificate(document.getHealthCertificate());
-                        empDocumentDTO.setIdentificationCopy(document.getIdentificationCopy());
-                        empDocumentDTO.setBankAccountCopy(document.getBankAccountCopy());
-                        empDocumentDTO.setResidentRegistration(document.getResidentRegistration());
-                    }
-                    return empDocumentDTO;
-                }).collect(Collectors.toList());
-
-
-        model.addAttribute("employees", employees); // 직원 목록을 모델에 추가
-        model.addAttribute("empDocuments", empDocuments); // 문서 정보를 모델에 추가
-
+        List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreIdWithDocuments(storeId);
+        model.addAttribute("employees", employeeDTOList); // 직원 목록을 모델에 추가
+        model.addAttribute("employeesJson", Gson.toJson(employeeDTOList));
         return "erp/hr/employeeList"; // 직원 목록 페이지 반환
     }
 
@@ -96,22 +83,34 @@ public class HrController {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         // 문자열로 받은 type을 enum 타입으로 변환
-        Schedule.ScheduleType scheduleType = EnumCommonUtil.getEnumFromString(Schedule.ScheduleType.class, type);
+        Schedule.Status scheduleType = EnumCommonUtil.getEnumFromString(Schedule.Status.class, type);
 
         // 일정 조회
         List<ScheduleDTO.ResponseDTO> schedules = scheduleService.findByStoreIdAndType(storeId, scheduleType);
 
         // TODO DTO로 변경해야함 모든 근무자 조회
         List<Employee> employees = hrService.getEmployeesByStoreId(storeId);
+        List<Map<String, Object>> employeesMap = employees.stream()
+                .map(employee -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("empId", employee.getId());
+                    map.put("empName", employee.getName());
+                    return map;
+                })
+                .collect(Collectors.toList());
 
         String schedulesJson = null;
+        String employeesJson = null;
         try {
             schedulesJson = new ObjectMapper().writeValueAsString(schedules);
+            employeesJson = new ObjectMapper().writeValueAsString(employeesMap);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             throw new Exception500("알 수 없는 오류 발생.");
         }
-        model.addAttribute("schedules", schedulesJson);
+        model.addAttribute("schedulesJson", schedulesJson);
         model.addAttribute("employees", employees);
+        model.addAttribute("employeesJson", employeesJson);
 
         return "/erp/hr/schedule";
     }
@@ -130,12 +129,28 @@ public class HrController {
 
         // 응답 데이터 추가
         Map<String, Object> response = new HashMap<>();
-//        String scheduleJson = null;
-//        try {
-//            scheduleJson = new ObjectMapper().writeValueAsString(schedule);
-//        } catch (JsonProcessingException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
+        if (schedule != null) {
+            response.put("schedule", schedule);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    /**
+     * 근무 일정 수정
+     * @param reqDTO
+     * @return
+     */
+    @PutMapping("/schedule")
+    public ResponseEntity<?> scheduleUpdateProc(@RequestBody ScheduleDTO.UpdateDTO reqDTO, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+
+        // 일정 생성
+        ScheduleDTO.ResponseDTO schedule = scheduleService.update(reqDTO, storeId);
+
+        // 응답 데이터 추가
+        Map<String, Object> response = new HashMap<>();
         if (schedule != null) {
             response.put("schedule", schedule);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

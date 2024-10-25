@@ -1,6 +1,7 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.dto.CostPerEmployeeDTO;
 import com.uni.uni_erp.dto.sales.SalesComparisonDTO;
 import com.uni.uni_erp.dto.sales.SalesTargetDTO;
 import com.uni.uni_erp.service.SalesService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.List;
 
@@ -51,11 +53,17 @@ public class SalesController {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         LocalDate lastYear = LocalDate.now().minusYears(1);
 
+        List<CostPerEmployeeDTO> todayCostPerEmployee = salesService.calculateEmployeeSales(today.atStartOfDay(), today.atTime(LocalTime.MAX), 1);
+
         List<SalesTargetDTO> todaySalesTargets = salesService.getSalesTargetByHour(1, today);
         List<SalesTargetDTO> yesterdaySalesTargets = salesService.getSalesTargetByHour(1, yesterday);
         List<SalesTargetDTO> lastYearSalesTargets = salesService.getSalesTargetByHour(1, lastYear);
 
         List<SalesComparisonDTO> salesComparison = salesService.getSalesComparison(todaySalesTargets, yesterdaySalesTargets, lastYearSalesTargets);
+
+        System.err.println(todayCostPerEmployee);
+        System.err.println(todayCostPerEmployee);
+        System.err.println(todayCostPerEmployee);
 
         model.addAttribute("salesComparison", salesComparison);
 
