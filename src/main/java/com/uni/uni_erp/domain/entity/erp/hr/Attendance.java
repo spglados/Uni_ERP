@@ -2,6 +2,9 @@ package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import jakarta.persistence.*;
+import lombok.*;
+
+import java.sql.Timestamp;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,23 +15,24 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 @Entity
-@Table(name = "attendance_tb")
+@Table(name = "hr_attendance_tb")
 public class Attendance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "attendance_id")
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    // 외래 키 설정: Employee와 다대일 관계 (하나의 직원은 여러 출석 기록을 가질 수 있음)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
+    @JoinColumn(name = "emp_id", nullable = false)
     private Employee employee;
 
     @Column(name = "start_time", nullable = true)
@@ -37,9 +41,14 @@ public class Attendance {
     @Column(name = "end_time", nullable = true)
     private Timestamp endTime;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private Schedule schedule;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status; // 출석 상태
+    @Builder.Default
+    private Schedule.Status status = Schedule.Status.NOT_EXECUTED;
 
     // 출석 상태를 관리하는 enum
     @RequiredArgsConstructor
