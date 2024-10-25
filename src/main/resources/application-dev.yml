@@ -10,6 +10,11 @@ spring:
     view:
       prefix: /WEB-INF/view/ # JSP 파일이 위치한 디렉토리 접두사를 설정합니다.
       suffix: .jsp
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:uni_ERP;MODE=MySQL
@@ -27,6 +32,7 @@ spring:
         format_sql: true
         default_batch_fetch_size: 10 # 한 번에 들고오는 개수 설정
     defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
 
   output:
     ansi:

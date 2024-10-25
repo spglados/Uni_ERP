@@ -6,6 +6,7 @@ import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.repository.payment.Sms;
 import com.uni.uni_erp.repository.payment.smsrepository;
 import com.uni.uni_erp.service.common.EmailService;
+import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class UserController {
 
 
     private final UserService userService;
+    private final StoreService storeService;
     private final HttpSession session;
     private final EmailService emailService;
 
@@ -38,11 +42,24 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(@ModelAttribute UserDTO.JoinDTO dto) {
+        // TODO 유효성 검사 추가
         User user = userService.login(dto);
         PrincipalDTO principalDTO = userService.searchUserId(user.getId());
         session.setAttribute("principal", principalDTO);
-        session.setAttribute("userSession", user);
-        return "main";
+        List<Integer> storeIdList = storeService.ownedStores(user.getId());
+
+        if(storeIdList != null) {
+            // 맨 처음 가게 아이디 추가
+            session.setAttribute("storeId", storeIdList.get(0));
+        }
+
+        if (user != null) {
+            session.setAttribute("userSession", user);
+            System.out.println("User logged in: " + user.getId());
+        } else {
+            System.out.println("Login failed");
+        }
+        return "main"; // 로그인 후 이동할 페이지
     }
 
 

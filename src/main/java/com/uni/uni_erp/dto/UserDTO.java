@@ -34,11 +34,10 @@ public class UserDTO {
                     .email(email)
                     .password(password)
                     .phone(phone)
-                    .address(address).build();
+                    .address(address)
+                    .build();
         }
 
     }
-
-
 
 }
