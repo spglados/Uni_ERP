@@ -23,6 +23,7 @@
                         data-name="${employee.name}"
                         data-birthday="${employee.birthday}"
                         data-gender="${employee.gender}"
+                        data-address="${employee.address}"
                         data-email="${employee.email}"
                         data-phone="${employee.phone}"
                         data-status="${employee.employmentStatus}"
@@ -73,6 +74,15 @@
         <label for="editEmployeeBirthday">생년월일:</label>
         <input type="date" id="editEmployeeBirthday" name="birthday" required/>
 
+        <label for="editEmployeeGender">성별:</label>
+        <select id="editEmployeeGender" name="gender" required>
+            <option value="M">남성</option>
+            <option value="F">여성</option>
+        </select>
+
+        <label for="editEmployeeAddress">주소:</label>
+        <input type="text" id="editEmployeeAddress" name="address" required>
+
         <label for="editEmployeeEmail">이메일:</label>
         <input type="email" id="editEmployeeEmail" name="email" required/>
 
@@ -81,7 +91,7 @@
 
         <!-- 은행 정보 추가 -->
         <label for="bankSelect">은행:</label>
-        <select id="bankSelect" name="bankId">
+        <select id="bankSelect" name="bank">
             <c:forEach items="${banks}" var="bank">
                 <option value="${bank.id}">${bank.name}</option>
             </c:forEach>
@@ -91,12 +101,18 @@
         <input type="text" id="editEmployeeAccountNumber" name="accountNumber" required/>
 
         <!-- 직책 정보 추가 -->
-         <!-- 직책 정보 추가 -->
         <label for="positionSelect">직책:</label>
         <select id="positionSelect" name="positionId">
             <c:forEach items="${positions}" var="position">
                 <option value="${position.id}">${position.name}</option>
             </c:forEach>
+        </select>
+
+        <label for="editEmployeeStatus">상태:</label>
+        <select id="editEmployeeStatus" name="employmentStatus">
+            <option value="ACTIVE">재직</option>
+            <option value="INACTIVE">퇴사</option>
+            <option value="ONLEAVE">휴직</option>
         </select>
 
         <!-- 문서 정보 추가 -->
@@ -134,6 +150,13 @@
 </div>
 
 <script>
+
+    const bankMapping = [
+        <c:forEach items="${banks}" var="bank" varStatus="status">
+        { id: "${bank.id}", name: "${bank.name}" }<c:if test="${!status.last}">,</c:if>
+        </c:forEach>
+    ];
+
     function openModal() {
         document.getElementById('editEmployeeModal').style.display = 'block';
     }
@@ -143,7 +166,6 @@
     }
 
     const employeesJson = '${employeesJson}'; // JSON 문자열을 올바르게 설정
-    console.log(employeesJson); // JSON 문자열 출력 확인
 
     // JSON 문자열 유효성 검사
     let employeesData = [];
@@ -163,11 +185,11 @@
                 const uniqueId = row.dataset.id;
                 const name = row.dataset.name;
                 const birthday = row.dataset.birthday;
-                const gender = row.dataset.gender === 'M' ? '남성' : '여성';
+                const gender = row.dataset.gender;
+                const address = row.dataset.address;
                 const email = row.dataset.email;
                 const phone = row.dataset.phone;
-                const status = row.dataset.status === 'ACTIVE' ? '재직' :
-                    row.dataset.status === 'INACTIVE' ? '퇴사' : row.dataset.status === 'ONLEAVE' ? '휴직' : '정보 없음';
+                const status = row.dataset.status;
                 const bank = row.dataset.bank;
                 const account = row.dataset.account;
                 const position = row.dataset.position;
@@ -187,6 +209,7 @@
                     '<p>사원번호: ' + uniqueId + '</p>' +
                     '<p>생년월일: ' + birthday + '</p>' +
                     '<p>성별: ' + gender + '</p>' +
+                    '<p>주소: ' + address + '</p>' +
                     '<p>이메일: ' + email + '</p>' +
                     '<p>연락처: ' + phone + '</p>' +
                     '<p>상태: ' + status + '</p>' +
@@ -205,22 +228,74 @@
 
                 // 수정 버튼 클릭 이벤트 리스너
                 document.getElementById('edit-button').addEventListener('click', function () {
-                    openEditModal(uniqueId, name, birthday, email, phone, bank, account, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate);
+                    // 콘솔 로그로 변수 값 확인
+                    openEditModal(uniqueId, name, birthday, gender, address, email, phone, bank, account, status, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate);
                 });
             }
         });
 
+        // TODO 우리형 공부 !! ^^
+        /**
+        * 밑에 함수들은 은행 아이디로 이름을 반환하거나
+         * 이름으로 아이디를 반환하는 함수이다 !
+         * 하지만 설계자의 문제로 bankId와 bankName 이라는 key 값으로 Json 데이터를 보내야 하나
+         * bank 라는 key 값으로 은행 아이디를 value로 보냈다 !
+         * 그럼 bankId=7, bankName=농협은행 이라는 데이터를 보내야되는 상황에서
+         * bank=7 이라는 데이터를 보내고 있으니 이게 맞을까????
+         * 그러니 반복문을 돌릴 때 만약 key 값이 bank 일 때 !!!!! 필터를 거는 것이다.
+         * 왜? 다른 key 들은 올바르게 세팅되어 있어서 값을 넣고 있는 상황을 확인했기 때문이다 !
+         * 그럼 bank=7 이라는 값을 가공을 해야되는데 그걸 밑에 2개의 함수가 처리를 해준다
+         * 왜? 우리가 가지고 있는 건 은행 아이디거든
+         * 그럼 bank=7이라는 데 k, v로 만들어서 보내주면 된다 !!! 그 코드가
+         *
+         * jsonData['bankId'] = value;
+         * jsonData['bankName'] = getBankNameById(value);
+         *
+         * 이 코드이다 !
+         */
 
-        function openEditModal(uniqueId, name, birthday, email, phone, bank, account, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate) {
+        function getBankIdByName(bankName) {
+            // bankMapping 배열에서 id가 일치하는 name 찾기
+            const bank = bankMapping.find(b => b.name === bankName);
+            return bank ? bank.id : null; // 해당하는 이름 반환
+        }
+
+        function getBankNameById(bankId) {
+            // bankMapping 배열에서 id가 일치하는 name 찾기
+            const bank = bankMapping.find(b => b.id === bankId);
+            return bank ? bank.name : null; // 해당하는 이름 반환
+        }
+
+
+        function openEditModal(uniqueId, name, birthday, gender, address, email, phone, bank, account, status, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate) {
             // 모달 입력 필드에 데이터 세팅
             document.getElementById('editEmployeeId').value = uniqueId;
             document.getElementById('editEmployeeName').value = name;
             document.getElementById('editEmployeeBirthday').value = birthday;
+            document.getElementById('editEmployeeGender').value = gender;
+            document.getElementById('editEmployeeAddress').value = address;
             document.getElementById('editEmployeeEmail').value = email;
             document.getElementById('editEmployeePhone').value = phone;
-            document.getElementById('bankSelect').value = bank; // 은행 ID 설정
-            document.getElementById('positionSelect').value = position; // 직책 ID 설정
+
+            // 은행 및 직책 선택 설정
+            const bankSelect = document.getElementById('bankSelect');
+            for (let option of bankSelect.options) {
+                if (option.value === getBankIdByName(bank)) {
+                    option.selected = true; // 은행 ID와 일치하면 선택
+                    break;
+                }
+            }
+
+            const positionSelect = document.getElementById('positionSelect');
+            for (let option of positionSelect.options) {
+                if (option.value === position) {
+                    option.selected = true; // 직책 ID와 일치하면 선택
+                    break;
+                }
+            }
+
             document.getElementById('editEmployeeAccountNumber').value = account;
+            document.getElementById('editEmployeeStatus').value = status;
 
             // 문서 제출 상태 체크박스 설정
             document.getElementById('editEmploymentContract').checked = employmentContract;
@@ -234,6 +309,7 @@
             openModal(); // openModal 함수는 기존에 정의한 모달 여는 함수
         }
 
+
         document.getElementById('editEmployeeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             // 수정 요청 처리 로직 추가
@@ -245,9 +321,15 @@
 
             // FormData를 JSON 객체로 변환
             formData.forEach((value, key) => {
-                jsonData[key] = value;
+
+                if(key === 'bank') {
+                    jsonData['bankId'] = value;
+                    jsonData['bankName'] = getBankNameById(value);
+                } else {
+                    jsonData[key] = value;
+                }
             });
-            console.log('jsonData',jsonData);
+            console.log('jsonData', jsonData);
             const employeeId = jsonData.id;
 
             // 예시: 수정된 직원 정보를 서버에 전송

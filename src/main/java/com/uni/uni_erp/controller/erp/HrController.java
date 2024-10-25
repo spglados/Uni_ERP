@@ -53,7 +53,7 @@ public class HrController {
     public String employeeRegisterPage(Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
         List<BankDTO> bankList = hrService.getAllBankDTOs();
-        List<EmpPositionDTO> positionsList = hrService.getPositionsByStoreId(storeId); // 직책 목록 추가 // 직책 목록 추가
+        List<EmpPositionDTO> positionsList = hrService.getPositionsByStoreId(storeId); // 직책 목록 추가
         model.addAttribute("bankList", bankList);
         model.addAttribute("positionsList", positionsList); // 모델에 직책 추가
         model.addAttribute("employee", new Employee());
@@ -108,9 +108,9 @@ public class HrController {
 
 
         // 직원 목록의 내용 확인
-        for (EmployeeDTO dto : employeeDTOList) {
-            System.out.println("EmployeeDTO: " + dto); // 각 DTO 출력
-        }
+//        for (EmployeeDTO dto : employeeDTOList) {
+//            System.out.println("EmployeeDTO: " + dto); // 각 DTO 출력
+//        }
 
         model.addAttribute("employees", employeeDTOList); // 직원 목록을 모델에 추가
 

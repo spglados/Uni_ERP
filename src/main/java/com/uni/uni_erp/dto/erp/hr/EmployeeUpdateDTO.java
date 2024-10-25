@@ -13,6 +13,7 @@ public class EmployeeUpdateDTO {
     private String address;
     private String phone;
     private Integer bankId;
+    private String bankName;
     private String email;
     private String gender;
     private String accountNumber;

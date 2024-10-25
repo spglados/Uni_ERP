@@ -52,12 +52,12 @@ public class HrService {
             // 수정할 필드 업데이트
             employeeEntity.setName(employeeDTO.getName());
             employeeEntity.setBirthday(employeeDTO.getBirthday());
-           // employeeEntity.setGender(EnumCommonUtil.getEnumFromString(Employee.Gender.class, employeeDTO.getGender()));
+            employeeEntity.setGender(EnumCommonUtil.getEnumFromString(Employee.Gender.class, employeeDTO.getGender()));
             employeeEntity.setEmail(employeeDTO.getEmail());
             employeeEntity.setPhone(employeeDTO.getPhone());
-            //employeeEntity.setAddress(employeeDTO.getAddress());
+            employeeEntity.setAddress(employeeDTO.getAddress());
             employeeEntity.setAccountNumber(employeeDTO.getAccountNumber());
-            //employeeEntity.setEmploymentStatus(EnumCommonUtil.getEnumFromString(Employee.EmploymentStatus.class, employeeDTO.getEmploymentStatus()));
+            employeeEntity.setEmploymentStatus(EnumCommonUtil.getEnumFromString(Employee.EmploymentStatus.class, employeeDTO.getEmploymentStatus()));
             employeeEntity.setEmpPosition(empPositionRepository.findById(employeeDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Employee not found")));
             empDocumentEntity.setEmploymentContract(employeeDTO.getEmploymentContract() != null);
             empDocumentEntity.setHealthCertificate(employeeDTO.getHealthCertificate() != null);
