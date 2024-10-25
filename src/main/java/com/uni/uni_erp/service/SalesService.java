@@ -2,12 +2,14 @@ package com.uni.uni_erp.service;
 
 import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.SalesDetail;
-import com.uni.uni_erp.dto.AttendanceDTO;
+import com.uni.uni_erp.domain.entity.SalesRefund;
 import com.uni.uni_erp.dto.CostPerEmployeeDTO;
 import com.uni.uni_erp.dto.sales.*;
 import com.uni.uni_erp.repository.erp.hr.AttendanceRepository;
 import com.uni.uni_erp.repository.sales.SalesDetailRepository;
+import com.uni.uni_erp.repository.sales.SalesRefundRepository;
 import com.uni.uni_erp.repository.sales.SalesRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,7 @@ public class SalesService {
 
     private final SalesRepository salesRepository;
     private final SalesDetailRepository salesDetailRepository;
+    private final SalesRefundRepository salesRefundRepository;
     private final AttendanceRepository attendanceRepository;
 
     public List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
@@ -164,16 +167,59 @@ public class SalesService {
         return roundedDifference.doubleValue();
     }
 
-    public void saveSales(Sales sales) {
+    private Sales createSales(SalesInsertDTO salesInsertDTO) {
+        return Sales.builder()
+                .orderNum(salesInsertDTO.getOrderNum())
+                .totalPrice(salesInsertDTO.getTotalPrice())
+                .salesDate(salesInsertDTO.getSalesDate())
+                .storeId(salesInsertDTO.getStoreId())
+                .build();
+    }
+
+    @Transactional
+    public void saveSales(SalesInsertDTO salesInsertDTO) {
+        Sales sales = createSales(salesInsertDTO);
         salesRepository.save(sales);
     }
 
-    public void saveSalesDetail(SalesDetail salesDetail) {
+    @Transactional
+    public void saveSalesDetail(SalesDetailDTO salesDetailDTO, Integer orderNum) {
+        Sales sales = salesRepository.findByOrderNum(orderNum);
+        SalesDetail salesDetail = SalesDetail.builder()
+                .itemCode(salesDetailDTO.getItemCode())
+                .itemName(salesDetailDTO.getItemName())
+                .quantity(salesDetailDTO.getQuantity())
+                .unitPrice(salesDetailDTO.getUnitPrice())
+                .sales(sales)
+                .build();
         salesDetailRepository.save(salesDetail);
     }
 
+    @Transactional
+    public void saveSalesRefund(SalesRefundDTO salesRefundDTO, Integer orderNum) {
+        Sales sales = salesRepository.findByOrderNum(orderNum);
+        SalesRefund salesRefund = SalesRefund.builder()
+                .itemCode(salesRefundDTO.getItemCode())
+                .itemName(salesRefundDTO.getItemName())
+                .quantity(salesRefundDTO.getQuantity())
+                .unitPrice(salesRefundDTO.getUnitPrice())
+                .refundStatus(SalesRefund.RefundStatus.취소)
+                .sales(sales)
+                .build();
+
+        // TODO 여기에 재고 수량 관리하는 코드 추가(남철햄)
+        // 근데 취소일때만 올라가고 환불일때는 안올라가야하는거 아닌가요잉
+
+        salesRefundRepository.save(salesRefund);
+    }
+
     public Integer findLatestOrderNum() {
-        return salesRepository.findLatestOrderNum();
+        Integer latestOrderNum = salesRepository.findLatestOrderNum();
+        if (latestOrderNum == null) {
+            return 1000000;
+        } else {
+            return latestOrderNum;
+        }
     }
 
     public List<CostPerEmployeeDTO> calculateEmployeeSales(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
