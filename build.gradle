@@ -34,6 +34,10 @@ dependencies {
     // Json 데이터를 가공하기 위한 GSON 의존성 추가
     implementation 'com.google.code.gson:gson:2.10.1'
 
+    // qr 생성을 위한 라이브러리
+    implementation 'com.google.zxing:core:3.4.1'
+    implementation 'com.google.zxing:javase:3.4.1'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
