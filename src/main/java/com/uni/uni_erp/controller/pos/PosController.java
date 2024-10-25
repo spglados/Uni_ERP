@@ -68,7 +68,7 @@ public class PosController {
      */
     @PostMapping("/payment")
     @Transactional(rollbackOn = Exception.class)
-    public ResponseEntity<?> posPayment(HttpServletRequest request, HttpSession session) {
+    public ResponseEntity<?> posPayment(HttpServletRequest request, Model model, HttpSession session) {
         String requestBody = null;
         double totalAmount;
         JSONArray items;
