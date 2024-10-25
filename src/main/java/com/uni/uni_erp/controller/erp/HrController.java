@@ -8,6 +8,7 @@ import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.BankDTO;
 import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
 import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
+import com.uni.uni_erp.dto.erp.hr.EmployeeUpdateDTO;
 import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.service.erp.hr.HrService;
@@ -35,12 +36,13 @@ public class HrController {
     private final HttpSession session;
 
     // 직원 수정
-    @PostMapping("/updateEmployee")
-    public ResponseEntity<?> updateEmployee(@RequestBody EmployeeDTO employeeDTO) {
+    @PutMapping("/employees/{id}")
+    public ResponseEntity<?> updateEmployee(@PathVariable("id") Long id, @RequestBody EmployeeUpdateDTO employeeDTO) {
+        System.out.println("id :" + id);
         System.out.println("Received DTO: " + employeeDTO);
         try {
-            hrService.updateEmployee(employeeDTO);
-            return ResponseEntity.ok("직원 정보가 수정되었습니다.");
+            hrService.updateEmployee(id, employeeDTO);
+            return ResponseEntity.ok("직원 정보 수정완료");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("수정 중 오류 발생: " + e.getMessage());
         }
@@ -98,6 +100,13 @@ public class HrController {
         Integer storeId = (Integer) session.getAttribute("storeId");
         List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreId(storeId); // EmployeeDTO로 변경
 
+        // 모든 직책 목록 조회
+        List<EmpPositionDTO> positionDTOList = hrService.getPositionsByStoreId(storeId);
+
+        // 모든 은행 목록 조회
+        List<BankDTO> bankDTOList = hrService.getAllBankDTOs();
+
+
         // 직원 목록의 내용 확인
         for (EmployeeDTO dto : employeeDTOList) {
             System.out.println("EmployeeDTO: " + dto); // 각 DTO 출력
@@ -116,6 +125,8 @@ public class HrController {
         }
 
         model.addAttribute("employeesJson", employeesJson); // JSON 데이터를 모델에 추가
+        model.addAttribute("positions", positionDTOList);
+        model.addAttribute("banks", bankDTOList);
 
         return "erp/hr/employeeList"; // 직원 목록 페이지 반환
     }

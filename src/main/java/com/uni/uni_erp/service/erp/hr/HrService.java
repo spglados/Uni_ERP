@@ -9,6 +9,7 @@ import com.uni.uni_erp.dto.BankDTO;
 import com.uni.uni_erp.dto.erp.hr.EmpDocumentDTO;
 import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
 import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
+import com.uni.uni_erp.dto.erp.hr.EmployeeUpdateDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.repository.bank.BankRepository;
@@ -16,12 +17,14 @@ import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
 import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.util.Str.EnumCommonUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,47 +40,43 @@ public class HrService {
     private final EmpPositionRepository empPositionRepository;
 
     @Transactional
-    public void updateEmployee(EmployeeDTO employeeDTO) {
-        Employee employee = employeeRepository.findById(employeeDTO.getId())
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+    public EmployeeDTO updateEmployee(Long id, EmployeeUpdateDTO employeeDTO) {
+        try {
 
-        // 수정할 필드 업데이트
-        employee.setName(employeeDTO.getName());
-        employee.setBirthday(employeeDTO.getBirthday());
-        employee.setGender(employeeDTO.getGender());
-        employee.setEmail(employeeDTO.getEmail());
-        employee.setPhone(employeeDTO.getPhone());
-        employee.setAddress(employeeDTO.getAddress());
-        employee.setAccountNumber(employeeDTO.getAccountNumber());
-        employee.setEmploymentStatus(employeeDTO.getEmploymentStatus());
+            // 직원 id로 엔티티 조회
+            Employee employeeEntity = employeeRepository.findByUniqueEmployeeNumber(id)
+                    .orElseThrow(() -> new RuntimeException("Employee not found"));
+            EmpDocument empDocumentEntity = empDocumentRepository.findByEmployeeId(employeeEntity.getId())
+                    .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        // EmpDocument 업데이트
-        if (employee.getEmpDocument() != null) {
-            EmpDocument empDocument = employee.getEmpDocument();
-            empDocument.setEmploymentContract(employeeDTO.isEmploymentContract());
-            empDocument.setHealthCertificate(employeeDTO.isHealthCertificate());
-            // String을 Timestamp로 변환
-            String healthCertificateDateStr = employeeDTO.getHealthCertificateDate();
-            if (healthCertificateDateStr != null && !healthCertificateDateStr.isEmpty()) {
-                try {
-                    // 날짜 형식에 맞게 SimpleDateFormat을 사용하여 변환
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); // 원하는 날짜 형식에 맞게 조정
-                    Date parsedDate = format.parse(healthCertificateDateStr);
-                    Timestamp healthCertificateDate = new Timestamp(parsedDate.getTime());
-                    empDocument.setHealthCertificateDate(healthCertificateDate);
-                } catch (Exception e) {
-                    // 오류 처리: 로그 기록 또는 사용자에게 오류 메시지 전송
-                    e.printStackTrace(); // 로그를 기록할 수도 있습니다.
-                }
+            // 수정할 필드 업데이트
+            employeeEntity.setName(employeeDTO.getName());
+            employeeEntity.setBirthday(employeeDTO.getBirthday());
+           // employeeEntity.setGender(EnumCommonUtil.getEnumFromString(Employee.Gender.class, employeeDTO.getGender()));
+            employeeEntity.setEmail(employeeDTO.getEmail());
+            employeeEntity.setPhone(employeeDTO.getPhone());
+            //employeeEntity.setAddress(employeeDTO.getAddress());
+            employeeEntity.setAccountNumber(employeeDTO.getAccountNumber());
+            //employeeEntity.setEmploymentStatus(EnumCommonUtil.getEnumFromString(Employee.EmploymentStatus.class, employeeDTO.getEmploymentStatus()));
+            employeeEntity.setEmpPosition(empPositionRepository.findById(employeeDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Employee not found")));
+            empDocumentEntity.setEmploymentContract(employeeDTO.getEmploymentContract() != null);
+            empDocumentEntity.setHealthCertificate(employeeDTO.getHealthCertificate() != null);
+            empDocumentEntity.setIdentificationCopy(employeeDTO.getIdentificationCopy() != null);
+            empDocumentEntity.setBankAccountCopy(employeeDTO.getBankAccountCopy() != null);
+            empDocumentEntity.setResidentRegistration(employeeDTO.getResidentRegistration() != null);
+            if (employeeDTO.getHealthCertificateDate() != null && !employeeDTO.getHealthCertificateDate().isEmpty()) {
+                LocalDate localDate = LocalDate.parse(employeeDTO.getHealthCertificateDate());
+                empDocumentEntity.setHealthCertificateDate(Timestamp.valueOf(localDate.atStartOfDay()));
             }
-            empDocument.setIdentificationCopy(employeeDTO.isIdentificationCopy());
-            empDocument.setBankAccountCopy(employeeDTO.isBankAccountCopy());
-            empDocument.setResidentRegistration(employeeDTO.isResidentRegistration());
+            employeeEntity.setEmpDocument(empDocumentEntity);
+            employeeRepository.save(employeeEntity);
+            return new EmployeeDTO(employeeEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-
-        // 수정된 엔티티 저장
-        employeeRepository.save(employee);
     }
+
 
     // 스토어 ID로 직원 목록 조회
     public List<EmployeeDTO> getEmployeesByStoreId(Integer storeId) {
@@ -224,3 +223,4 @@ public class HrService {
         return employeeDTO; // employeeDTO 반환
     }
 }
+

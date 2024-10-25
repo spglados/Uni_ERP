@@ -27,6 +27,7 @@
                         data-phone="${employee.phone}"
                         data-status="${employee.employmentStatus}"
                         data-bank="${employee.bankName != null ? employee.bankName : '정보 없음'}"
+                        data-position="${employee.empPosition.id != null ? employee.empPosition.id : '0'}"
                         data-account="${employee.accountNumber}"
                         data-healthcertificatedate="${employee.healthCertificateDate}"
                         data-employmentcontract="${employee.empDocumentDTO.employmentContract}"
@@ -63,36 +64,37 @@
 <!-- 수정 팝업 모달 -->
 <div id="editEmployeeModal" style="display: none;">
     <h2>직원 수정</h2>
-    <form id="editEmployeeForm">
-        <input type="hidden" id="editEmployeeId" name="id" />
+    <form id="editEmployeeForm" onsubmit="return false;">
+        <input type="hidden" id="editEmployeeId" name="id"/>
 
         <label for="editEmployeeName">이름:</label>
-        <input type="text" id="editEmployeeName" name="name" required />
+        <input type="text" id="editEmployeeName" name="name" required/>
 
         <label for="editEmployeeBirthday">생년월일:</label>
-        <input type="date" id="editEmployeeBirthday" name="birthday" required />
+        <input type="date" id="editEmployeeBirthday" name="birthday" required/>
 
         <label for="editEmployeeEmail">이메일:</label>
-        <input type="email" id="editEmployeeEmail" name="email" required />
+        <input type="email" id="editEmployeeEmail" name="email" required/>
 
         <label for="editEmployeePhone">전화번호:</label>
-        <input type="tel" id="editEmployeePhone" name="phone" required />
+        <input type="tel" id="editEmployeePhone" name="phone" required/>
 
         <!-- 은행 정보 추가 -->
-        <label for="editEmployeeBank">은행:</label>
-        <select id="editEmployeeBank" name="bankId" required>
-            <c:forEach var="bank" items="${banks}">
+        <label for="bankSelect">은행:</label>
+        <select id="bankSelect" name="bankId">
+            <c:forEach items="${banks}" var="bank">
                 <option value="${bank.id}">${bank.name}</option>
             </c:forEach>
         </select>
 
         <label for="editEmployeeAccountNumber">계좌번호:</label>
-        <input type="text" id="editEmployeeAccountNumber" name="accountNumber" required />
+        <input type="text" id="editEmployeeAccountNumber" name="accountNumber" required/>
 
         <!-- 직책 정보 추가 -->
-        <label for="editEmployeePosition">직책:</label>
-        <select id="editEmployeePosition" name="positionId" required>
-            <c:forEach var="position" items="${positions}">
+         <!-- 직책 정보 추가 -->
+        <label for="positionSelect">직책:</label>
+        <select id="positionSelect" name="positionId">
+            <c:forEach items="${positions}" var="position">
                 <option value="${position.id}">${position.name}</option>
             </c:forEach>
         </select>
@@ -103,27 +105,27 @@
         <br>
         <div>
             <label for="editEmploymentContract">고용 계약서:</label>
-            <input type="checkbox" id="editEmploymentContract" name="empDocumentDTO.employmentContract">
+            <input type="checkbox" id="editEmploymentContract" value="true" name="employmentContract">
         </div>
         <div>
             <label for="editHealthCertificate">건강증명서:</label>
-            <input type="checkbox" id="editHealthCertificate" name="empDocumentDTO.healthCertificate">
+            <input type="checkbox" id="editHealthCertificate" value="true" name="healthCertificate">
         </div>
         <div>
             <label for="editIdentificationCopy">신분증 사본:</label>
-            <input type="checkbox" id="editIdentificationCopy" name="empDocumentDTO.identificationCopy">
+            <input type="checkbox" id="editIdentificationCopy" value="true" name="identificationCopy">
         </div>
         <div>
             <label for="editBankAccountCopy">계좌 사본:</label>
-            <input type="checkbox" id="editBankAccountCopy" name="empDocumentDTO.bankAccountCopy">
+            <input type="checkbox" id="editBankAccountCopy" value="true" name="bankAccountCopy">
         </div>
         <div>
             <label for="editResidentRegistration">주민등록증:</label>
-            <input type="checkbox" id="editResidentRegistration" name="empDocumentDTO.residentRegistration">
+            <input type="checkbox" id="editResidentRegistration" value="true" name="residentRegistration">
         </div>
         <div>
             <label for="editHealthCertificateDate">보건증 발급일:</label>
-            <input type="date" id="editHealthCertificateDate" name="healthCertificateDate" />
+            <input type="date" id="editHealthCertificateDate" name="healthCertificateDate"/>
         </div>
 
         <button type="submit">수정하기</button>
@@ -168,6 +170,7 @@
                     row.dataset.status === 'INACTIVE' ? '퇴사' : row.dataset.status === 'ONLEAVE' ? '휴직' : '정보 없음';
                 const bank = row.dataset.bank;
                 const account = row.dataset.account;
+                const position = row.dataset.position;
 
                 // 문서 정보 추가
                 const employmentContract = row.dataset.employmentcontract === 'true';
@@ -202,21 +205,21 @@
 
                 // 수정 버튼 클릭 이벤트 리스너
                 document.getElementById('edit-button').addEventListener('click', function () {
-                    openEditModal(uniqueId, name, birthday, email, phone, bank, account, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate);
+                    openEditModal(uniqueId, name, birthday, email, phone, bank, account, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate);
                 });
             }
         });
 
 
-
-        function openEditModal(uniqueId, name, birthday, email, phone, bank, account, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate) {
+        function openEditModal(uniqueId, name, birthday, email, phone, bank, account, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate) {
             // 모달 입력 필드에 데이터 세팅
             document.getElementById('editEmployeeId').value = uniqueId;
             document.getElementById('editEmployeeName').value = name;
             document.getElementById('editEmployeeBirthday').value = birthday;
             document.getElementById('editEmployeeEmail').value = email;
             document.getElementById('editEmployeePhone').value = phone;
-            document.getElementById('editEmployeeBank').value = bank; // 선택된 은행 ID로 설정
+            document.getElementById('bankSelect').value = bank; // 은행 ID 설정
+            document.getElementById('positionSelect').value = position; // 직책 ID 설정
             document.getElementById('editEmployeeAccountNumber').value = account;
 
             // 문서 제출 상태 체크박스 설정
@@ -235,23 +238,39 @@
             event.preventDefault();
             // 수정 요청 처리 로직 추가
             const formData = new FormData(event.target);
-            // 예시: 수정된 직원 정보를 서버에 전송
-            fetch('/api/employees/' + formData.get('id'), {
-                method: 'PUT',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('직원 정보가 수정되었습니다.');
-                    // 필요 시 직원 목록 새로 고침 또는 수정된 직원 정보 업데이트 로직 추가
-                    closeModal();
-                } else {
-                    alert('수정 실패: ' + response.statusText);
-                }
-            })
-            .catch(error => {
-                console.error('수정 요청 오류:', error);
+            console.log('event.target', event.target);
+            console.log('formData', formData);
+            // const formData = new FormData(this); // 폼 데이터 가져오기
+            const jsonData = {}; // JSON 객체 초기화
+
+            // FormData를 JSON 객체로 변환
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
             });
+            console.log('jsonData',jsonData);
+            const employeeId = jsonData.id;
+
+            // 예시: 수정된 직원 정보를 서버에 전송
+            fetch('/erp/hr/employees/' + employeeId, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(jsonData)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('직원 정보가 수정되었습니다.');
+                        // 필요 시 직원 목록 새로 고침 또는 수정된 직원 정보 업데이트 로직 추가
+                        closeModal();
+                        location.reload();
+                    } else {
+                        alert('수정 실패: ' + response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error('수정 요청 오류:', error);
+                });
         });
     });
 </script>

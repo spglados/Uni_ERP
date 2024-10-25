@@ -75,7 +75,9 @@ public class EmployeeDTO {
             this.empDocumentDTO = new EmpDocumentDTO(employee.getEmpDocument());
             this.employmentContract = this.empDocumentDTO.getEmploymentContract();
             this.healthCertificate = this.empDocumentDTO.getHealthCertificate();
-            this.healthCertificateDate = this.empDocumentDTO.getHealthCertificateDate();
+            if (empDocumentDTO.getHealthCertificateDate() != null) {
+                this.healthCertificateDate = this.empDocumentDTO.getHealthCertificateDate();
+            }
             this.identificationCopy = this.empDocumentDTO.getIdentificationCopy();
             this.bankAccountCopy = this.empDocumentDTO.getBankAccountCopy();
             this.residentRegistration = this.empDocumentDTO.getResidentRegistration();

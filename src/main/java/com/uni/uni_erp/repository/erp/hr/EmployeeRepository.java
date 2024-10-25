@@ -44,6 +44,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Optional<Employee> findByEmail(String email);
     // 전화번호 찾기
     Optional<Employee> findByPhone(String phone);
+    // 사원번호 찾기
+    Optional<Employee> findByUniqueEmployeeNumber(Long id);
 
 
 
