@@ -6,11 +6,6 @@ import com.google.gson.Gson;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.domain.entity.erp.hr.EmpDocument;
-import com.uni.uni_erp.domain.entity.erp.hr.Employee;
-import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
-import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.dto.EmpDocumentDTO;
 import com.uni.uni_erp.dto.EmployeeDTO;
 import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
 import com.uni.uni_erp.exception.errors.Exception500;
@@ -24,10 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import java.util.HashMap;
 import java.util.List;
