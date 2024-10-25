@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SalesRefundDetail {
+public class SalesRefund {
 
     @Id
     @GeneratedValue
@@ -40,7 +40,7 @@ public class SalesRefundDetail {
     @JoinColumn(name = "order_num", referencedColumnName = "order_num", nullable = false)
     private Sales sales;
 
-    private enum RefundStatus {
+    public enum RefundStatus {
         취소, // Cancelled
         환불  // Refunded
     }
