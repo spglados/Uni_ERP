@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
 
-    @Query(value = "SELECT employee_id FROM Attendance_tb WHERE start_time BETWEEN ? AND ? AND store_id = ? AND status = 'WORKING'", nativeQuery = true)
+    @Query(value = "SELECT emp_id FROM hr_attendance_tb WHERE start_time <= ? AND end_time >= ? AND store_id = ?", nativeQuery = true)
     List<Integer> findAttendanceByDateAndStoreId(Date startDate, Date endDate, Integer storeId);
 
 }
