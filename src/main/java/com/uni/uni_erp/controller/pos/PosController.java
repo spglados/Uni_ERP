@@ -1,15 +1,12 @@
 package com.uni.uni_erp.controller.pos;
 
-import com.uni.uni_erp.controller.erp.SalesController;
 import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.dto.sales.SalesInsertDTO;
 import com.uni.uni_erp.dto.sales.SalesRefundDTO;
-import com.uni.uni_erp.repository.sales.SalesDetailRepository;
-import com.uni.uni_erp.repository.sales.SalesRepository;
-import com.uni.uni_erp.service.SalesService;
+import com.uni.uni_erp.service.payment.SalesService;
 import com.uni.uni_erp.service.pos.PosService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
