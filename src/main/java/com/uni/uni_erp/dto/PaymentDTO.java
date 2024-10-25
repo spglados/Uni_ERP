@@ -2,6 +2,7 @@ package com.uni.uni_erp.dto;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.payment.Payment;
+import com.uni.uni_erp.domain.entity.payment.Refund;
 import com.uni.uni_erp.domain.entity.payment.UserPay;
 import lombok.*;
 

@@ -3,10 +3,8 @@ package com.uni.uni_erp.service.payment;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.PaymentHistory;
 import com.uni.uni_erp.dto.PaymentDTO;
-import com.uni.uni_erp.exception.errors.Exception400;
 import com.uni.uni_erp.repository.payment.PaymentHistoryRepository;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
@@ -22,7 +20,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Base64;
 import java.util.Calendar;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
