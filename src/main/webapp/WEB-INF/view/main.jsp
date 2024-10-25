@@ -14,10 +14,8 @@
 
 <main class="main-container">
     <div class="video-container">
-        <video autoplay muted loop id="bgVideo">
-            <source src="<c:url value='/videos/main.mp4'/>" type="video/mp4">
-            <!-- 추가 포맷 제공 (선택 사항) -->
-            Your browser does not support HTML5 video.
+        <video autoplay loop muted width="100%">
+            <source src="/videos/main.mp4">
         </video>
         <div class="overlay-content">
             <h1>환영합니다!</h1>
