@@ -4,6 +4,11 @@ import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
+import com.uni.uni_erp.dto.sales.SalesDetailDTO;
+import com.uni.uni_erp.dto.sales.SalesInsertDTO;
+import com.uni.uni_erp.dto.sales.SalesRefundDTO;
+import com.uni.uni_erp.repository.sales.SalesDetailRepository;
+import com.uni.uni_erp.repository.sales.SalesRepository;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.invertory.InventoryService;
 import com.uni.uni_erp.service.pos.PosService;
@@ -69,7 +74,6 @@ public class PosController {
      * @return
      */
     @PostMapping("/payment")
-    @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<?> posPayment(HttpServletRequest request, HttpSession session) {
         String requestBody = null;
         double totalAmount;
@@ -85,15 +89,15 @@ public class PosController {
         }
 
         // Create a new Sales entity
-        Sales sales = Sales.builder()
-                .storeId((Integer) session.getAttribute("storeId")) // Replace with the actual store ID
+        SalesInsertDTO salesInsertDTO = SalesInsertDTO.builder()
                 .orderNum(salesService.findLatestOrderNum() + 1)
                 .totalPrice((int) totalAmount)
                 .salesDate(LocalDateTime.now().withNano(0))
+                .storeId((Integer) session.getAttribute("storeId")) // Replace with the actual store ID
                 .build();
 
         // Save the Sales entity
-        salesService.saveSales(sales);
+        salesService.saveSales(salesInsertDTO);
 
         List<SalesDetail> salesDetailList = new ArrayList<>();
         List<ProductDTO.ProductSalesDTO> productSalesDTOList = new ArrayList<>();
@@ -101,22 +105,36 @@ public class PosController {
         // Create SalesDetail entities
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = null;
-            SalesDetail salesDetail;
+            SalesDetailDTO salesDetailDTO;
             try {
                 item = items.getJSONObject(i);
-                salesDetail = SalesDetail.builder()
-                        .itemCode(item.getLong("productCode"))
+                salesDetailDTO = SalesDetailDTO.builder()
+                        .itemCode(item.getLong("productId"))
                         .itemName(item.getString("name"))
                         .quantity(item.getInt("quantity"))
                         .unitPrice(item.getInt("price"))
-                        .sales(sales)
                         .build();
                 productSalesDTOList.add(ProductDTO.ProductSalesDTO.builder().productCode(item.getLong("productCode")).quantity(item.getInt("quantity")).build());
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
 
-            salesDetailList.add(salesDetail);
+//            SalesRefundDTO salesRefundDTO;
+//            try {
+//                item = items.getJSONObject(i);
+//                salesRefundDTO = SalesRefundDTO.builder()
+//                        .itemCode(item.getLong("productId"))
+//                        .itemName(item.getString("name"))
+//                        .quantity(item.getInt("quantity"))
+//                        .unitPrice(item.getInt("price"))
+//                        .build();
+//            } catch (JSONException e) {
+//                throw new RuntimeException(e);
+//            }
+
+            // Save the SalesDetail entity
+            salesService.saveSalesDetail(salesDetailDTO, salesService.findLatestOrderNum());
+//            salesService.saveSalesRefund(salesRefundDTO, salesService.findLatestOrderNum());
         }
 
         salesService.saveSalesDetailList(salesDetailList);
@@ -125,4 +143,5 @@ public class PosController {
 
         return ResponseEntity.status(HttpStatus.OK).body("Sales inserted successfully!");
     }
+
 }

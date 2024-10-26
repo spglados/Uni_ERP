@@ -2,12 +2,13 @@ package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.Bank;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
+import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,9 +51,14 @@ public class Employee {
     private String accountNumber;
     // 사용자 정의 직책
 
-    @Column(nullable = true)
-    private String position;
+   // @Column(nullable = true)
+    //private String position;
     // 외래 키 설정: Employee는 하나의 Store에 속함
+   // 사용자 정의 직책 (EmpPosition 추가)
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "emp_position_id") // EmpPosition의 ID를 참조
+   private EmpPosition empPosition;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
@@ -62,15 +68,14 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // EmpDocument와의 관계
-    private List<EmpDocument> empDocuments; // 리스트로 수정
-
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // EmpDocument와의 관계
+    private EmpDocument empDocument;
 
     @Column(nullable = false)  // Not Null 설정
     private Integer storeEmployeeNumber;  // 각 가게별로 증가하는 직원 번호
 
     @Column(unique = true, nullable = false)  // 고유한 사원번호, Not Null, 유니크 설정
-    private String uniqueEmployeeNumber;
+    private Long uniqueEmployeeNumber;
 
 
     public enum EmploymentStatus {
@@ -107,4 +112,5 @@ public class Employee {
     public void onUpdate() {
         this.updatedAt = Timestamp.from(Instant.now());
     }
+
 }
