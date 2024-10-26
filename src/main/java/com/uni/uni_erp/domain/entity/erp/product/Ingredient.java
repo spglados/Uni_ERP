@@ -36,14 +36,4 @@ public class Ingredient {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public IngredientDTO toIngredientDTO() {
-        return IngredientDTO.builder()
-                .id(this.id)
-                .name(this.name)
-                .amount(this.amount)
-                .unit(this.unit.toString())
-                .productId(this.product.getId())
-                .build();
-    }
-
 }
