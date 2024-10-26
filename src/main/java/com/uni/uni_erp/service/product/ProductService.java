@@ -50,7 +50,7 @@ public class ProductService {
         List<Ingredient> ingredients = ingredientsRepository.findByProductId(productId);
         List<IngredientDTO> dtoList = new ArrayList<>();
         for (Ingredient ingredient : ingredients) {
-            dtoList.add(ingredient.toIngredientDTO());
+            dtoList.add(new IngredientDTO(ingredient));
         }
         return dtoList;
     }
@@ -163,7 +163,7 @@ public class ProductService {
         ingredient.setName(dto.getName());
         ingredient.setAmount(dto.getAmount());
         ingredient.setUnit(UnitCategory.valueOf(dto.getUnit().toUpperCase()));
-        return ingredient.toIngredientDTO();
+        return new IngredientDTO(ingredient);
     }
 
     @Transactional

@@ -11,7 +11,6 @@ import com.uni.uni_erp.repository.erp.inventory.MaterialOrderRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialAdjustmentRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
-import com.uni.uni_erp.util.Str.UnitCategory;
 import com.uni.uni_erp.util.date.NumberFormatter;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,9 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -34,111 +36,108 @@ public class InventoryService {
     private final ProductRepository productRepository;
     private final MaterialAdjustmentRepository materialAdjustmentRepository;
     private final MaterialStatusRepository materialStatusRepository;
+    private final UnitConversionService unitConversionService;
 
-    /**
-     * 자재 관리 품목 데이터 리스트
-     *
-     * @param session
-     * @return
-     */
     @Transactional
     public List<MaterialDTO.MaterialManagementDTO> getMaterialManagementList(HttpSession session) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-
         if (storeId == null) {
             throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
         }
 
         List<Product> productList = productRepository.findProductByStoreId(storeId);
-
-        if (productList.isEmpty()) {
+        if (productList == null || productList.isEmpty()) {
             throw new Exception404("등록된 상품이 없습니다.");
         }
 
         List<Material> materialList = materialRepository.findAllByStoreId(storeId);
-        List<Integer> materialIdList = new ArrayList<>();
-        if (materialList.isEmpty()) {
+        if (materialList == null || materialList.isEmpty()) {
             throw new Exception404("자재가 존재하지 않습니다.");
         }
 
-        for (Material material : materialList) {
-            materialIdList.add(material.getId());
-        }
+        List<Integer> materialIdList = materialList.stream()
+                .map(Material::getId)
+                .collect(Collectors.toList());
 
         List<MaterialOrder> materialOrderList = materialOrderRepository.findByMaterialId(materialIdList);
-
         if (materialOrderList == null || materialOrderList.isEmpty()) {
             throw new Exception404("자재 입고 내역이 없습니다.");
         }
 
-        List<MaterialDTO.MaterialManagementDTO> materialStatusList = new ArrayList<>();
+        // Material ID를 키로 하는 MaterialOrder 리스트 맵핑
+        Map<Integer, List<MaterialOrder>> ordersByMaterialId = materialOrderList.stream()
+                .collect(Collectors.groupingBy(order -> order.getMaterial().getId()));
 
-        for (Material material : materialList) {
+        // Product ID와 이름을 저장한 맵 생성
+        Map<Integer, String> productMap = productList.stream()
+                .collect(Collectors.toMap(Product::getId, Product::getName));
 
-            List<LocalDate> materialEnterDateList = new ArrayList<>();
-            List<LocalDate> materialExpirationDateList = new ArrayList<>();
-            LocalDate lastEnterDate = null;
-            LocalDate expirationDate = null;
-            Integer stockCycle = null;
-            double alarmCycle = material.getAlarmCycle() != null ? material.getAlarmCycle() : 0.0;
-
-
-            for (MaterialOrder materialOrder : materialOrderList) {
-                if (materialOrder.getMaterial().getId().equals(material.getId())) {
-                    materialEnterDateList.add(materialOrder.getReceiptDate());
-                    if (materialOrder.getIsUse() == Boolean.TRUE) {
-                        materialExpirationDateList.add(materialOrder.getExpirationDate());
+        // Ingredient를 Material ID로 매핑
+        Map<Integer, Set<Integer>> materialToProductIds = productList.stream()
+                .flatMap(product -> {
+                    List<Ingredient> ingredients = product.getIngredients();
+                    if (ingredients != null) {
+                        return ingredients.stream()
+                                .map(ingredient -> new AbstractMap.SimpleEntry<>(ingredient.getMaterial().getId(), product.getId()));
+                    } else {
+                        return Stream.empty();
                     }
-                }
-            }
+                })
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.toSet())
+                ));
 
-            if (!materialEnterDateList.isEmpty() && materialEnterDateList.size() > 1) {
-                lastEnterDate = materialEnterDateList.get(materialEnterDateList.size() - 1);
-                if (lastEnterDate != null && materialOrderList.size() > 1) {
-                    materialEnterDateList.sort(null);
-                    Period period = materialEnterDateList.get(materialEnterDateList.size() - 2).until(materialEnterDateList.get(materialEnterDateList.size() - 1));
-                    stockCycle = period.getDays();
-                }
-            } else if (materialEnterDateList.size() == 1) {
-                lastEnterDate = materialEnterDateList.get(0);
-            }
-            if (!materialExpirationDateList.isEmpty()) {
-                expirationDate = Collections.min(materialExpirationDateList);
-            }
+        List<MaterialDTO.MaterialManagementDTO> materialStatusList = materialList.stream()
+                .map(material -> {
+                    List<MaterialOrder> orders = ordersByMaterialId.getOrDefault(material.getId(), Collections.emptyList());
 
-            Map<Integer, String> useProductList = new HashMap<>();
+                    List<LocalDate> enterDates = orders.stream()
+                            .map(MaterialOrder::getReceiptDate)
+                            .filter(Objects::nonNull)
+                            .sorted()
+                            .collect(Collectors.toList());
 
-            for (Product product : productList) {
-                List<Ingredient> useIngredientList = product.getIngredients();
+                    List<LocalDate> expirationDates = orders.stream()
+                            .filter(order -> Boolean.TRUE.equals(order.getIsUse()))
+                            .map(MaterialOrder::getExpirationDate)
+                            .filter(Objects::nonNull)
+                            .sorted()
+                            .collect(Collectors.toList());
 
-                if (useIngredientList == null || useIngredientList.isEmpty()) {
-                    break;
-                }
-
-                for (Ingredient ingredient : useIngredientList) {
-                    if (ingredient.getMaterial().getId().equals(material.getId())) {
-                        useProductList.put(product.getId(), product.getName());
+                    LocalDate lastEnterDate = enterDates.isEmpty() ? null : enterDates.get(enterDates.size() - 1);
+                    Integer stockCycle = null;
+                    if (enterDates.size() > 1) {
+                        Period period = Period.between(enterDates.get(enterDates.size() - 2), lastEnterDate);
+                        stockCycle = period.getDays();
                     }
-                }
-            }
 
-            boolean imminentDate = expirationDate != null && ChronoUnit.DAYS.between(LocalDate.now(), expirationDate) <= 3;
+                    LocalDate expirationDate = expirationDates.isEmpty() ? null : expirationDates.get(0);
 
-            MaterialDTO.MaterialManagementDTO dto = MaterialDTO.MaterialManagementDTO.builder()
-                    .materialCode(material.getMaterialCode())
-                    .name(material.getName())
-                    .category(material.getCategory())
-                    .unit(material.getUnit().toString())
-                    .lastEnterDate(lastEnterDate)
-                    .expirationDate(expirationDate)
-                    .stockCycle(stockCycle)
-                    .alarmCycle(Double.toString(alarmCycle))
-                    .alarmUnit(material.getAlarmUnit().toString())
-                    .imminent(imminentDate)
-                    .useProduct(useProductList)
-                    .build();
-            materialStatusList.add(dto);
-        }
+                    Set<Integer> usedProductIds = materialToProductIds.getOrDefault(material.getId(), Collections.emptySet());
+                    Map<Integer, String> useProductList = usedProductIds.stream()
+                            .collect(Collectors.toMap(id -> id, productMap::get));
+
+                    boolean imminentDate = expirationDate != null &&
+                            ChronoUnit.DAYS.between(LocalDate.now(), expirationDate) <= 3;
+
+                    double alarmCycle = material.getAlarmCycle() != null ? material.getAlarmCycle() : 0.0;
+
+                    return MaterialDTO.MaterialManagementDTO.builder()
+                            .materialCode(material.getMaterialCode())
+                            .name(material.getName())
+                            .category(material.getCategory())
+                            .unit(material.getUnit() != null ? material.getUnit().toString() : "")
+                            .lastEnterDate(lastEnterDate)
+                            .expirationDate(expirationDate)
+                            .stockCycle(stockCycle)
+                            .alarmCycle(Double.toString(alarmCycle))
+                            .alarmUnit(material.getAlarmUnit() != null ? material.getAlarmUnit().toString() : "")
+                            .imminent(imminentDate)
+                            .useProduct(useProductList)
+                            .build();
+                })
+                .collect(Collectors.toList());
 
         return materialStatusList;
     }
@@ -271,101 +270,56 @@ public class InventoryService {
         return materialOrderRepository.save(materialOrder);
     }
 
+    @Transactional
     public void calcMaterialByProductSales(List<ProductDTO.ProductSalesDTO> productSalesDTOList, HttpSession session) {
         Integer storeId = (Integer) session.getAttribute("storeId");
         if (storeId == null) {
             throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
         }
 
-        List<Product> productDTOList = productRepository.findProductByStoreId(storeId);
-        List<MaterialStatus> materialStatusDTOList = materialStatusRepository.findByStoreId(storeId);
-        List<MaterialStatus> updateMaterialStatusDTOList = new ArrayList<>();
+        // 제품과 자재 상태를 조회하고 맵으로 변환
+        List<Product> productList = productRepository.findProductByStoreId(storeId);
+        Map<Long, Product> productMap = productList.stream()
+                .collect(Collectors.toMap(Product::getProductCode, Function.identity()));
 
+        List<MaterialStatus> materialStatusList = materialStatusRepository.findByStoreId(storeId);
+        Map<Integer, MaterialStatus> materialStatusMap = materialStatusList.stream()
+                .collect(Collectors.toMap(ms -> ms.getMaterial().getId(), Function.identity()));
+
+        // 판매된 각 상품에 대해 처리
         for (ProductDTO.ProductSalesDTO productSalesDTO : productSalesDTOList) {
-            for (Product product : productDTOList) {
-                if (product.getProductCode().equals(productSalesDTO.getProductCode())) {
+            Product product = productMap.get(productSalesDTO.getProductCode());
+            if (product == null) {
+                log.warn("Product not found for code: " + productSalesDTO.getProductCode());
+                throw new Exception400("판매된 상품 중 존재하지 않는 상품이 있습니다: " + productSalesDTO.getProductCode());
+            }
 
-                    List<Ingredient> useIngredientList = product.getIngredients();
-
-                    if (!useIngredientList.isEmpty()) {
-
-                        for (Ingredient ingredient : useIngredientList) {
-
-                            for (MaterialStatus materialStatus : materialStatusDTOList) {
-                                if (ingredient.getMaterial().getId().equals(materialStatus.getMaterial().getId())) {
-
-
-                                    if (ingredient.getUnit().equals(UnitCategory.KG)) {
-                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.KG)) {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
-                                        } else {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - ((ingredient.getAmount() * productSalesDTO.getQuantity()) / 1000))));
-                                        }
-                                    } else if (ingredient.getUnit().equals(UnitCategory.G)) {
-                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.G)) {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
-                                        } else if (materialStatus.getMaterial().getUnit().equals(UnitCategory.KG)) {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - ((ingredient.getAmount() * productSalesDTO.getQuantity()) / 1000))));
-                                        } else if (materialStatus.getMaterial().getUnit().equals(UnitCategory.EA)) {
-                                            materialStatus.setTheoreticalAmount(Double.parseDouble(NumberFormatter.formatToDouble(((materialStatus.getTheoreticalAmount() * materialStatus.getMaterial().getSubAmount()) - (ingredient.getAmount() * productSalesDTO.getQuantity())))) / 100);
-                                        } else {
-                                            System.out.println("materialStatus.getMaterial().getName() : " + materialStatus.getMaterial().getName());
-                                            log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 문제발생 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                                            throw new Exception400("자재 등록 중 문제가 발생했습니다.");
-                                        }
-                                    } else if (ingredient.getUnit().equals(UnitCategory.L)) {
-                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.L)) {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
-                                        } else {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - ((ingredient.getAmount() * productSalesDTO.getQuantity()) / 1000))));
-                                        }
-                                    } else if (ingredient.getUnit().equals(UnitCategory.ML)) {
-
-                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.ML)) {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
-                                        } else if (materialStatus.getMaterial().getUnit().equals(UnitCategory.L)) {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - ((ingredient.getAmount() * productSalesDTO.getQuantity()) / 1000))));
-                                        } else {
-                                            System.out.println("materialStatus.getMaterial().getName() : " + materialStatus.getMaterial().getName());
-                                            log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 문제발생 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                                            throw new Exception400("자재 등록 중 문제가 발생했습니다.");
-                                        }
-
-                                    } else if (ingredient.getUnit().equals(UnitCategory.BOX)) {
-
-                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.BOX)) {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(materialStatus.getTheoreticalAmount() - (ingredient.getAmount() * productSalesDTO.getQuantity()))));
-                                        }
-
-                                    } else if (ingredient.getUnit().equals(UnitCategory.EA)) {
-
-                                        if (materialStatus.getMaterial().getUnit().equals(UnitCategory.BOX)) {
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(((materialStatus.getTheoreticalAmount() * materialStatus.getMaterial().getSubAmount()) - (ingredient.getAmount() * productSalesDTO.getQuantity())))) / 100);
-                                        } else if (materialStatus.getMaterial().getUnit().equals(UnitCategory.EA)) {
-
-                                            materialStatus.setTheoreticalAmount(Double.valueOf(NumberFormatter.formatToDouble(((materialStatus.getTheoreticalAmount() * materialStatus.getMaterial().getSubAmount()) - (ingredient.getAmount() * productSalesDTO.getQuantity())))) / 100);
-
-                                        }
-
-                                    } else {
-                                        System.out.println("materialStatus.getMaterial().getName() : " + materialStatus.getMaterial().getName());
-                                        log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 문제발생 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                                        throw new Exception400("자재 등록 중 문제가 발생했습니다.");
-                                    }
-
-                                }
-                                updateMaterialStatusDTOList.add(materialStatus);
-                            }
-
-                        }
-
-                    }
+            for (Ingredient ingredient : product.getIngredients()) {
+                int materialId = ingredient.getMaterial().getId();
+                MaterialStatus materialStatus = materialStatusMap.get(materialId);
+                if (materialStatus == null) {
+                    log.warn("MaterialStatus not found for material ID: " + materialId);
+                    throw new Exception400("자재 상태를 찾을 수 없습니다: " + materialId);
                 }
+
+                if(materialStatus.getMaterial().getUnit().equals(ingredient.getUnit())) {
+                    double newSameUnitTheoreticalAmount = NumberFormatter.formatToTwoDecimal(materialStatus.getTheoreticalAmount() - ingredient.getAmount());
+                    materialStatus.setTheoreticalAmount(newSameUnitTheoreticalAmount);
+                    continue;
+                }
+
+                double usedAmount = unitConversionService.convert(
+                        ingredient.getAmount() * productSalesDTO.getQuantity(),
+                        ingredient.getUnit(),
+                        materialStatus.getMaterial().getUnit(),
+                        materialStatus.getMaterial()
+                );
+                double newTheoreticalAmount = NumberFormatter.formatToTwoDecimal(materialStatus.getTheoreticalAmount() - usedAmount);
+                materialStatus.setTheoreticalAmount(newTheoreticalAmount);
             }
         }
 
-        materialStatusRepository.saveAll(updateMaterialStatusDTOList);
-
+        materialStatusRepository.saveAll(materialStatusList);
     }
 
 }

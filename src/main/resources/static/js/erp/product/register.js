@@ -1,53 +1,7 @@
 // 재료 보기 모달을 열 때 선택된 상품의 재료 정보를 표시하는 함수
 let ingredients = null;
-function showIngredients(productId, productName) {
-    fetch('/erp/product/ingredient/' + productId)
-        .then(response => {
-            if(response.status === 404) {
-                return alert('재료 정보를 조회할 수 없습니다.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            ingredients = data;
-            console.log('data', data);
-            console.log('Ingredients:', ingredients);
-        })
-        .catch(error => {
-            console.log('error', error);
-        });
-
-    const ingredientList = document.getElementById('ingredientList');
-    ingredientList.innerHTML = '';
-    ingredients.forEach(function(ingredient, index) {
-        console.log('ingredient', ingredient)
-        const li = document.createElement('li');
-        li.innerHTML =
-            '<div class="ingredient-item" id="ingredient-' + index + '">' +
-            '<input type="text" class="ingredient-name form-control d-inline-block" value="' + ingredient.name + '" disabled>' +
-            '<input type="number" class="ingredient-amount form-control d-inline-block" value="' + ingredient.amount + '" disabled>' +
-            '<select class="ingredient-unit form-control d-inline-block" disabled>' +
-            '<option value="g" ' + (ingredient.unit.toUpperCase() === 'G' ? 'selected' : '') + '>g</option>' +
-            '<option value="kg" ' + (ingredient.unit.toUpperCase() === 'KG' ? 'selected' : '') + '>kg</option>' +
-            '<option value="ml" ' + (ingredient.unit.toUpperCase() === 'ML' ? 'selected' : '') + '>ml</option>' +
-            '<option value="L" ' + (ingredient.unit.toUpperCase() === 'L' ? 'selected' : '') + '>L</option>' +
-            '<option value="EA" ' + (ingredient.unit.toUpperCase() === 'EA' ? 'selected' : '') + '>EA</option>' +
-            '<option value="box" ' + (ingredient.unit.toUpperCase() === 'BOX' ? 'selected' : '') + '>box</option>' +
-            '</select>' +
-            '<button class="custom-btn edit-btn" onclick="editIngredient(' + index + ')">수정</button>' +
-            '<button class="custom-btn delete-btn" onclick="deleteIngredient(' + index + ')">삭제</button>' +
-            '</div>';
-        ingredientList.appendChild(li);
-    });
-}
-
 let canSubmit = true;  // 요청이 가능한지 여부를 확인하는 플래그
 const submissionTerm = 2000;  // 2초(2000ms) 동안 재요청 차단
-
-
-
-console.log('materialList', materialList);
-console.log('materialDTOList', materialDTOList);
 
 function showIngredients(productId) {
     document.getElementById('modalProductId').value = productId;
@@ -302,7 +256,11 @@ function editIngredient(index) {
         unit: unit,
         productId: index
     };
-    console.log('data', data);
+
+    if(!checkUnit(name, unit)) {
+        return;
+    }
+
     if (editButton.textContent === '수정') {
         inputs.forEach(function(input) { input.disabled = false; });
         editButton.textContent = '저장';
@@ -524,4 +482,28 @@ document.addEventListener('DOMContentLoaded', function() {
 function getUnitByName(materialName) {
     const material = materialDTOList.find(item => item.name === materialName);
     return material ? material.unit : null; // 자재가 존재하면 unit 반환, 없으면 null 반환
+}
+
+function checkUnit(name, unit) {
+    const materialName = getUnitByName(name).toLowerCase();
+    const effectivenessUnit = unit.toLowerCase();
+
+    let gram = (materialName === 'kg' && effectivenessUnit === 'g') || (materialName === 'g' && effectivenessUnit === 'kg');
+    let liter = (materialName === 'l' && effectivenessUnit === 'ml') || (materialName === 'ml' && effectivenessUnit === 'l');
+    let boxEa = (materialName === 'box' && effectivenessUnit === 'ea') || (materialName === 'ea' && effectivenessUnit === 'box');
+
+// material과 effectivenessUnit이 동일하거나, 상호 치환 가능한 경우는 계속 진행 (pass)
+    if (!(materialName === effectivenessUnit || gram || liter || boxEa)) {
+        // 치환 불가능한 단위일 때 경고 메시지와 함께 실행을 중단
+        if (materialName === 'kg' || materialName === 'g') {
+            alert(`${name}의 단위는 kg 또는 g만 사용 가능합니다.`);
+        } else if (materialName === 'l' || materialName === 'ml') {
+            alert(`${name}의 단위는 l 또는 ml만 사용 가능합니다.`);
+        } else if (materialName === 'box' || materialName === 'ea') {
+            alert(`${name}의 단위는 box 또는 ea만 사용 가능합니다.`);
+        }
+        return false;  // 부정 조건에 해당하면 함수 실행을 중단
+    }
+
+    return true;
 }

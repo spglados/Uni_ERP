@@ -55,9 +55,20 @@ public class Material {
     private List<MaterialAdjustment> statusHistory;
 
     @PrePersist
-    protected void onCreate() {
+    protected void prePersist() {
         if (enterDate == null) {
             enterDate = LocalDate.now();
+        }
+
+        // 표준 단위 변환 설정
+        if (unit == UnitCategory.KG && subUnit == UnitCategory.G) {
+            subAmount = 1000.0;
+        } else if (unit == UnitCategory.G && subUnit == UnitCategory.KG) {
+            subAmount = 0.001;
+        } else if (unit == UnitCategory.L && subUnit == UnitCategory.ML) {
+            subAmount = 1000.0;
+        } else if (unit == UnitCategory.ML && subUnit == UnitCategory.L) {
+            subAmount = 0.001;
         }
     }
 

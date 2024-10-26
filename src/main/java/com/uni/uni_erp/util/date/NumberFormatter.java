@@ -21,4 +21,8 @@ public class NumberFormatter {
         return decimalFormat.format(v);
     }
 
+    public static double formatToTwoDecimal(double v) {
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        return Double.parseDouble(decimalFormat.format(v));
+    }
 }
