@@ -125,7 +125,7 @@ VALUES
 (3, 900.0, 0, '2024-10-22', 9),
 (0.5, 500, 0, '2024-10-22', 10);
 
-INSERT INTO material_order_tb (name, price, amount, unit, supplier, receipt_date, expiration_date, material_id, status_id, is_use, enter_date)
+INSERT INTO material_order_tb (name, price, amount, unit, supplier, receipt_date, expiration_date, material_id, adjustment_id, is_use, enter_date)
 VALUES
     ('천일염', 1000, 1.0, 'KG', '최이제', '2024-10-12', '2024-12-01', 1, 1, 'true', '2024-10-21'),
     ('총각 김치', 5000, 0.5, 'KG', '최이제', '2024-10-13', '2024-10-18', 2, 2, 'true', '2024-10-19'),

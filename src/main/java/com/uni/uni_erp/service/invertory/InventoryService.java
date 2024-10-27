@@ -1,5 +1,6 @@
 package com.uni.uni_erp.service.invertory;
 
+import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.*;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
@@ -11,6 +12,7 @@ import com.uni.uni_erp.repository.erp.inventory.MaterialOrderRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialAdjustmentRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
+import com.uni.uni_erp.repository.store.StoreRepository;
 import com.uni.uni_erp.util.date.NumberFormatter;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class InventoryService {
     private final MaterialAdjustmentRepository materialAdjustmentRepository;
     private final MaterialStatusRepository materialStatusRepository;
     private final UnitConversionService unitConversionService;
+    private final StoreRepository storeRepository;
 
     @Transactional
     public List<MaterialDTO.MaterialManagementDTO> getMaterialManagementList(HttpSession session) {
@@ -192,9 +195,10 @@ public class InventoryService {
             throw new Exception404("등록된 자재가 없습니다.");
         }
 
-        Map<Integer, String> useProductList = new HashMap<>();
 
         for (MaterialStatus materialStatus : materialStatusList) {
+
+            Map<Integer, String> useProductList = new HashMap<>();
 
             for (Product product : productList) {
                 List<Ingredient> useIngredientList = product.getIngredients();
@@ -302,7 +306,7 @@ public class InventoryService {
                     throw new Exception400("자재 상태를 찾을 수 없습니다: " + materialId);
                 }
 
-                if(materialStatus.getMaterial().getUnit().equals(ingredient.getUnit())) {
+                if (materialStatus.getMaterial().getUnit().equals(ingredient.getUnit())) {
                     double newSameUnitTheoreticalAmount = NumberFormatter.formatToTwoDecimal(materialStatus.getTheoreticalAmount() - ingredient.getAmount());
                     materialStatus.setTheoreticalAmount(newSameUnitTheoreticalAmount);
                     continue;
@@ -315,11 +319,103 @@ public class InventoryService {
                         materialStatus.getMaterial()
                 );
                 double newTheoreticalAmount = NumberFormatter.formatToTwoDecimal(materialStatus.getTheoreticalAmount() - usedAmount);
+                double newActualAmount = NumberFormatter.formatToTwoDecimal(materialStatus.getActualAmount() - usedAmount);
                 materialStatus.setTheoreticalAmount(newTheoreticalAmount);
+                materialStatus.setActualAmount(newActualAmount);
+                materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(newActualAmount - newTheoreticalAmount));
             }
         }
 
         materialStatusRepository.saveAll(materialStatusList);
+    }
+
+    @Transactional
+    public MaterialDTO.MaterialSaveDTO saveMaterial(MaterialDTO.MaterialSaveDTO materialSaveDTO, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        if (storeId == null) {
+            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+        }
+
+        // TODO DTO 변환 예정
+        User user = (User) session.getAttribute("userSession");
+        if (user == null) {
+            throw new Exception401("로그인이 필요합니다.");
+        }
+
+        Material reqMaterial = materialSaveDTO.toMaterial();
+
+        reqMaterial.setStore(storeRepository.findById(storeId).get());
+
+        Material resMaterial = materialRepository.save(reqMaterial);
+
+        String MaterialCode = user.getId() + "" + storeId + "" + resMaterial.getId();
+
+        resMaterial.setMaterialCode(Long.parseLong(MaterialCode));
+        materialRepository.save(reqMaterial);
+        materialStatusRepository.save(materialSaveDTO.toMaterialStatus(resMaterial));
+        materialAdjustmentRepository.save(materialSaveDTO.toAdjustment(resMaterial));
+
+        return new MaterialDTO.MaterialSaveDTO(resMaterial);
+    }
+
+    @Transactional
+    public void saveDayAdjustmentList(HttpSession session, List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        if (storeId == null) {
+            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+        }
+
+        List<MaterialStatus> materialStatusList = materialStatusRepository.findByStoreId(storeId);
+
+        Map<Long, Double> actualAmountList = reqDtoList.stream().collect(Collectors.toMap(MaterialDTO.MaterialDayAdjustmentDTO::getMaterialCode, MaterialDTO.MaterialDayAdjustmentDTO::getActualAmount));
+
+        for (MaterialStatus materialStatus : materialStatusList) {
+            materialStatus.setActualAmount(actualAmountList.get(materialStatus.getMaterial().getMaterialCode()));
+            materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(materialStatus.getActualAmount() - materialStatus.getTheoreticalAmount()));
+        }
+        materialStatusRepository.saveAll(materialStatusList);
+    }
+
+    public List<MaterialDTO.MaterialDisposalListDTO> getMaterialDisposalList(HttpSession session) {
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        if (storeId == null) {
+            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+        }
+
+        List<Material> materialList = materialRepository.findAllByStoreId(storeId);
+
+        List<MaterialDTO.MaterialDisposalListDTO> disposalList = new ArrayList<>();
+
+        for (Material material : materialList) {
+            disposalList.add(MaterialDTO.MaterialDisposalListDTO.builder()
+                    .materialCode(material.getMaterialCode())
+                    .materialName(material.getName())
+                    .category(material.getCategory())
+                    .unit(material.getUnit().toString())
+                    .build());
+        }
+        return disposalList;
+    }
+
+    public List<MaterialDTO.ProductDisposalListDTO> getProductDisposalList(HttpSession session) {
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        if (storeId == null) {
+            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+        }
+
+        List<Product> productList = productRepository.findProductByStoreId(storeId);
+        List<MaterialDTO.ProductDisposalListDTO> disposalList = new ArrayList<>();
+
+        for (Product product : productList) {
+            disposalList.add(MaterialDTO.ProductDisposalListDTO.builder()
+                    .productCode(product.getProductCode())
+                    .productName(product.getName())
+                    .category(product.getCategory())
+                    .build());
+        }
+        return disposalList;
     }
 
 }

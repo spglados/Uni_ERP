@@ -1,12 +1,12 @@
 package com.uni.uni_erp.dto.erp.material;
 
-import com.uni.uni_erp.domain.entity.erp.product.MaterialOrder;
-import com.uni.uni_erp.domain.entity.erp.product.MaterialStatus;
+import com.uni.uni_erp.domain.entity.erp.product.*;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import com.uni.uni_erp.util.date.NumberFormatter;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Map;
 
 @Data
@@ -158,6 +158,100 @@ public class MaterialDTO {
             this.useProduct = useProduct;
         }
 
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class MaterialSaveDTO {
+
+        private String name;
+        private Long materialCode;
+        private String category;
+        private String unit;
+        private Double subAmount;
+        private String subUnit;
+        private Double alarmCycle;
+        private String alarmUnit;
+
+        public MaterialSaveDTO(Material material) {
+            this.name = material.getName();
+            this.materialCode = material.getMaterialCode();
+            this.category = material.getCategory();
+            this.unit = material.getUnit().toString();
+            this.subAmount = material.getSubAmount();
+            this.subUnit = material.getSubUnit().toString();
+            this.alarmCycle = material.getAlarmCycle();
+            this.alarmUnit = material.getAlarmUnit().toString();
+        }
+
+        public Material toMaterial() {
+            return Material.builder()
+                    .name(this.name)
+                    .category(this.category)
+                    .unit(UnitCategory.valueOf(this.unit))
+                    .subAmount(this.subAmount)
+                    .subUnit(UnitCategory.valueOf(this.subUnit))
+                    .alarmCycle(this.alarmCycle)
+                    .alarmUnit(UnitCategory.valueOf(this.alarmUnit))
+                    .build();
+        }
+
+        public MaterialStatus toMaterialStatus(Material material) {
+            return MaterialStatus.builder()
+                    .theoreticalAmount(0.0)
+                    .actualAmount(0.0)
+                    .loss(0.0)
+                    .material(material)
+                    .build();
+        }
+
+        public MaterialAdjustment toAdjustment(Material material) {
+            return MaterialAdjustment.builder()
+                    .amount(0.0)
+                    .subAmount(0.0)
+                    .previousLossAmount(0.0)
+                    .material(material)
+                    .orders(new ArrayList<>())
+                    .build();
+        }
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MaterialDayAdjustmentDTO {
+        private long materialCode;
+        private double actualAmount;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MaterialDisposalListDTO {
+        private long materialCode;
+        private String materialName;
+        private String category;
+        private String unit;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ProductDisposalListDTO {
+        private long productCode;
+        private String productName;
+        private String category;
     }
 
 }

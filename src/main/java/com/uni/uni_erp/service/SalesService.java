@@ -282,4 +282,10 @@ public class SalesService {
         return intervals;
     }
 
+    public List<Integer> findAllSalesNumByDateBetweenAndStoreId(LocalDateTime startDateCurrent, LocalDateTime endDateCurrent, Integer storeId) {
+        return null;
+    }
+
+    public void saveSalesDetailList(List<SalesDetail> salesDetailList) {
+    }
 }

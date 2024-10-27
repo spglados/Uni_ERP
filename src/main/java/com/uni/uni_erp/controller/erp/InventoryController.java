@@ -3,15 +3,15 @@ package com.uni.uni_erp.controller.erp;
 import com.google.gson.Gson;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.service.invertory.InventoryService;
+import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -39,8 +39,16 @@ public class InventoryController {
     }
 
     @GetMapping("/registration")
-    public String registerPage() {
+    public String registerPage(Model model, HttpSession session) {
+        List<UnitCategory> unitCategories = Arrays.stream(UnitCategory.values()).toList();
+        model.addAttribute("unitCategories", unitCategories);
+
         return "/erp/inventory/register";
+    }
+
+    @PostMapping("/registration")
+    public ResponseEntity<MaterialDTO.MaterialSaveDTO> registerPage(@RequestBody MaterialDTO.MaterialSaveDTO materialSaveDTO, HttpSession session) {
+        return ResponseEntity.ok(inventoryService.saveMaterial(materialSaveDTO, session));
     }
 
     @GetMapping("/status")
@@ -58,8 +66,18 @@ public class InventoryController {
     }
 
     @GetMapping("/day-adjustment")
-    public String dayAdjustmentPage() {
+    public String dayAdjustmentPage(Model model, HttpSession session) {
+        List<MaterialDTO.MaterialStatusDTO> materialStatusDTOList = inventoryService.getMaterialStatus(session);
+        model.addAttribute("materialStatusList", materialStatusDTOList);
         return "/erp/inventory/day-adjustment";
+    }
+
+    @PostMapping("/day-adjustment")
+    public ResponseEntity<?> saveDayAdjustment(HttpSession session, @RequestBody List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
+
+        inventoryService.saveDayAdjustmentList(session, reqDtoList);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/month-adjustment")
@@ -68,7 +86,11 @@ public class InventoryController {
     }
 
     @GetMapping("/disposal")
-    public String disposePage() {
+    public String disposePage(Model model, HttpSession session) {
+        List<MaterialDTO.MaterialDisposalListDTO> materialDisposalListDTO = inventoryService.getMaterialDisposalList(session);
+        List<MaterialDTO.ProductDisposalListDTO> productDisposalListDTO = inventoryService.getProductDisposalList(session);
+        model.addAttribute("materialDisposalList", materialDisposalListDTO);
+        model.addAttribute("productDisposalList", productDisposalListDTO);
         return "/erp/inventory/dispose";
     }
 
