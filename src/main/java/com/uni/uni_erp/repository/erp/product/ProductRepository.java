@@ -13,4 +13,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     public List<Product> findProductByStoreId(Integer storeId);
 
+    // 카테고리 추출
+    @Query("SELECT DISTINCT p.category FROM Product p")
+    List<String> findDistinctCategories();
+
 }

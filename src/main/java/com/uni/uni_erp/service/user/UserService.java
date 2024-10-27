@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +96,28 @@ public class UserService {
         }
 
     }
+
+    // 구독자 수
+    public int getPremiumUserCount() {
+        Integer subscribeUserCount = userRepository.countByMembership(User.Membership.PREMIUM);
+        return subscribeUserCount;
+    }
+
+    // 작년 구독자수
+    public int getPremiumUserCountForLastYear() {
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.minusYears(1).withDayOfMonth(1).withMonth(1); // 작년 1월 1일
+        LocalDate endDate = now.minusYears(1).withDayOfMonth(31).withMonth(12); // 작년 12월 31일
+
+        Timestamp startTimestamp = Timestamp.valueOf(startDate.atStartOfDay());
+        Timestamp endTimestamp = Timestamp.valueOf(endDate.plusDays(1).atStartOfDay().minusNanos(1)); // 12월 31일의 마지막 순간
+
+        Integer subscriberCount = userRepository.countByMembershipAndCreatedAtBetween(User.Membership.PREMIUM, startTimestamp, endTimestamp);
+
+        return subscriberCount;
+    }
+
+
 
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
     public void cleanUpUsers() {

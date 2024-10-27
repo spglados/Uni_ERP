@@ -125,6 +125,10 @@ public class ProductService {
         return product.toProductDTO();
     }
 
+    public List<String> getDistinctCategories() {
+        return productRepository.findDistinctCategories();
+    }
+
 
 
 }

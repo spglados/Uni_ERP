@@ -31,6 +31,31 @@ public interface SalesRepository extends JpaRepository<Sales, Integer> {
 
     Sales findByOrderNum(Integer orderNum);
 
+    @Query("SELECT DISTINCT s.storeId FROM Sales s")
+    List<Integer> findDistinctStoreIds();
+
+
+
+    @Query("SELECT s.storeId AS storeId, YEAR(s.salesDate) AS year, AVG(s.totalPrice) AS averageTotalPrice " +
+            "FROM Sales s " +
+            "GROUP BY s.storeId, YEAR(s.salesDate)")
+    List<Object[]> findYearlyAverageTotalPriceByStore();
+
+    @Query("SELECT s.storeId AS storeId, YEAR(s.salesDate) AS year, MONTH(s.salesDate) AS month, AVG(s.totalPrice) AS averageTotalPrice " +
+            "FROM Sales s " +
+            "GROUP BY s.storeId, YEAR(s.salesDate), MONTH(s.salesDate)")
+    List<Object[]> findMonthlyAverageTotalPriceByStoreAndYear();
+
+    @Query("SELECT s.storeId AS storeId, YEAR(s.salesDate) AS year, MONTH(s.salesDate) AS month, DAY(s.salesDate) AS day, SUM(s.totalPrice) AS totalDailyPrice " +
+            "FROM Sales s " +
+            "GROUP BY s.storeId, YEAR(s.salesDate), MONTH(s.salesDate), DAY(s.salesDate)")
+    List<Object[]> findDailyTotalPriceByStoreAndYearMonth();
+
+
+
+
+
+
 }
 
 
