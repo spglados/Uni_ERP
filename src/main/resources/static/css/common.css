@@ -3,7 +3,7 @@ body {
     height: 100%;
     margin: 0;
     font-family: 'yg-jalnan', sans-serif;
-    color: #ffffff;
+    color: #000000;
 }
 
 @font-face {
@@ -39,7 +39,7 @@ body {
     opacity: 0;
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 30%;
     transform: translate(-50%, -60%);
     transition: opacity 1s ease, transform 1s ease;
     text-align: center;
@@ -82,13 +82,12 @@ body {
     margin-bottom: 30px;
 }
 
-
 .overlay-content-btn {
     display: inline-block;
     padding: 15px 30px;
     font-size: 1em;
     color: #ffffff;
-    background-color: #ff5722;
+    background-color: #0284FF;
     border: none;
     border-radius: 5px;
     text-decoration: none;
@@ -98,6 +97,30 @@ body {
 .overlay-content-btn:hover {
     background-color: #e64a19;
 }
+.explanation-container-right{
+    width: 50%;
+    height: 100%;
+    border: 1px solid black;
+    float: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.explanation-container{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-left: 30px;
+    border-left: 10px solid #0284FF;
+}
+
+.explanation-container h2{
+    text-align: center;
+}
+
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {

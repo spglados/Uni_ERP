@@ -18,11 +18,18 @@
 <%--        </video>--%>
         <div class="overlay-content">
             <h1>당신의 가게를 관리합니다</h1>
-            <p id="animated-text">똑똑하게 가게를 관리해보세요!</p>
+            <p id="animated-text">똑똑하게 가게를 관리해보세요 !</p>
             <!-- 추가 버튼이나 링크를 여기에 배치할 수 있습니다 -->
-            <a href="/payment" class="overlay-content-btn"><span>Click!</span><span>Read More</span></a>
+            <a href="/payment" class="overlay-content-btn">UNI-ERP 서비스 시작하기</a>
+        </div>
+        <div class="explanation-container-right">
+            <div class="explanation-container">
+                <h2>어떤 서비스가 있나요?</h2>
+                <h3>UNI-ERP는 매출, 상품, 재고, 인사를 관리하는 서비스를 제공해드리고 있습니다. 이하 설명</h3>
+            </div>
         </div>
     </div>
+
         </main>
 
 <script>
