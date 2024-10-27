@@ -21,8 +21,8 @@ public class UniExceptionHandler {
         logger.error("Exception400 발생: {}", ex.getMessage(), ex);
         return mav;
     }
-    @ExceptionHandler(Exception401.class)
-    public ModelAndView handleException401(Exception401 ex, Model model) {
+    @ExceptionHandler(RestException401.class)
+    public ModelAndView handleException401(RestException401 ex, Model model) {
         ModelAndView mav = new ModelAndView("/err/401");
         mav.addObject("message", ex.getMessage());
         logger.error("Exception401 발생: {}", ex.getMessage(), ex);

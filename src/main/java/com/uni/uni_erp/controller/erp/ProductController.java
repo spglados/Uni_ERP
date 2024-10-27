@@ -5,7 +5,7 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.erp.product.IngredientDTO;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
-import com.uni.uni_erp.exception.errors.Exception401;
+import com.uni.uni_erp.exception.errors.RestException401;
 import com.uni.uni_erp.service.product.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class ProductController {
         // session 에서 스토어 아이디를 가져온 다음 해당 가게에 등록되어 있는 상품 리스트를 반환
         Integer storeId = (Integer) session.getAttribute("storeId");
         if (storeId == null) {
-            throw new Exception401("관리하고 있는 가게가 없습니다.");
+            throw new RestException401("관리하고 있는 가게가 없습니다.");
         }
 
         List<MaterialDTO> materialDTOList = productService.getMaterialList(storeId);

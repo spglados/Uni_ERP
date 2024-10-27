@@ -2,7 +2,7 @@ package com.uni.uni_erp.service.invertory;
 
 import com.uni.uni_erp.domain.entity.erp.product.*;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
-import com.uni.uni_erp.exception.errors.Exception401;
+import com.uni.uni_erp.exception.errors.RestException401;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.erp.inventory.MaterialStatusRepository;
 import com.uni.uni_erp.repository.erp.inventory.MaterialOrderRepository;
@@ -34,7 +34,7 @@ public class InventoryService {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         if(storeId == null) {
-            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+            throw new RestException401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
         }
 
         List<Product> productList = productRepository.findProductByStoreId(storeId);
@@ -135,7 +135,7 @@ public class InventoryService {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         if(storeId == null) {
-            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+            throw new RestException401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
         }
 
         List<MaterialOrder> materialOrderList = materialOrderRepository.findByStoreId(storeId);
@@ -152,7 +152,7 @@ public class InventoryService {
         Integer storeId = (Integer) session.getAttribute("storeId");
 
         if(storeId == null) {
-            throw new Exception401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
+            throw new RestException401("인증되지 않거나, 소유하고 있는 가게가 없습니다.");
         }
         List<MaterialDTO.MaterialStatusDTO> materialStatusDTOList = new ArrayList<>();
 

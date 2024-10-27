@@ -148,7 +148,6 @@ public class HrController {
         // 일정 조회
         List<ScheduleDTO.ResponseDTO> schedules = scheduleService.findByStoreIdAndType(storeId, scheduleType);
 
-        // TODO DTO로 변경해야함 모든 근무자 조회
         List<EmployeeDTO> employees = hrService.getEmployeesByStoreId(storeId);
         List<Map<String, Object>> employeesMap = employees.stream()
                 .map(employee -> {
@@ -213,7 +212,7 @@ public class HrController {
         Map<String, Object> response = new HashMap<>();
         if (schedule != null) {
             response.put("schedule", schedule);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
