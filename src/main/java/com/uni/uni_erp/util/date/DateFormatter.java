@@ -22,4 +22,12 @@ public class DateFormatter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         return localDateTime.format(formatter);
     }
+
+    public static Timestamp toTimestamp(LocalDateTime localDateTime) {
+        return Timestamp.valueOf(localDateTime);
+    }
+
+    public static LocalDateTime toLocalDateTime(Timestamp timestamp) {
+        return timestamp.toLocalDateTime();
+    }
 }

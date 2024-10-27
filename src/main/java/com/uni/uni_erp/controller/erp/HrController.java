@@ -6,11 +6,9 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
-import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
-import com.uni.uni_erp.dto.erp.hr.EmployeeUpdateDTO;
-import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
+import com.uni.uni_erp.dto.erp.hr.*;
 import com.uni.uni_erp.exception.errors.Exception500;
+import com.uni.uni_erp.service.erp.hr.AttendanceService;
 import com.uni.uni_erp.service.erp.hr.HrService;
 import com.uni.uni_erp.service.erp.hr.ScheduleService;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
@@ -34,6 +32,7 @@ public class HrController {
 
     private final HrService hrService;
     private final ScheduleService scheduleService;
+    private final AttendanceService attendanceService;
     private final HttpSession session;
 
     // 직원 수정
@@ -131,6 +130,28 @@ public class HrController {
 
         return "erp/hr/employeeList"; // 직원 목록 페이지 반환
     }
+
+    /**
+     * 사번 조회 요청
+     * @param uniqueEmployeeNumber
+     * @param session
+     * @return
+     */
+    @GetMapping("/attendance/{uniqueEmployeeNumber}")
+    public ResponseEntity<?> attendanceRequest(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        List<AttendanceDTO.ResponseDTO> resDTO = attendanceService.findEmployeeByUniqueEmployeeNumber(uniqueEmployeeNumber, storeId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("dataList", resDTO);
+        return ResponseEntity.ok(response);
+    }
+
+//    @PostMapping("/attendance/{uniqueEmployeeNumber}")
+//    public ResponseEntity<?> attendanceProc(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, @RequestBody AttendanceDTO.LoginDTO reqDTO, HttpSession session) {
+//        Integer storeId = (Integer) session.getAttribute("storeId");
+//        return null;
+//    }
+
 
     /**
      * 근무 일정 관리 페이지 호출

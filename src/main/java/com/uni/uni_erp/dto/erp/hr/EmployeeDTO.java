@@ -89,5 +89,4 @@ public class EmployeeDTO {
         this.empDocumentDTO = empDocumentDTO;
     }
 
-
 }

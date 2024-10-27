@@ -42,7 +42,7 @@ public class Attendance {
     private Timestamp endTime;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", nullable = false)
+    @JoinColumn(name = "schedule_id", nullable = true)
     private Schedule schedule;
 
     @Column(nullable = false)
@@ -59,7 +59,8 @@ public class Attendance {
         ATTENDED("출석"),
         LATE("지각"),
         LEFT_EARLY("조퇴"),
-        ABSENT("결근");
+        ABSENT("결근"),
+        UNPLANNED_WORK("계획에 없는 근무");
 
         private final String description;
     }

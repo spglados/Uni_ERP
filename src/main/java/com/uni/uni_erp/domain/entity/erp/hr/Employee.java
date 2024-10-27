@@ -77,6 +77,9 @@ public class Employee {
     @Column(unique = true, nullable = false)  // 고유한 사원번호, Not Null, 유니크 설정
     private Long uniqueEmployeeNumber;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private String password = "0000";
 
     public enum EmploymentStatus {
         ACTIVE, // 재직중

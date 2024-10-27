@@ -1,5 +1,6 @@
 package com.uni.uni_erp.service.erp.hr;
 
+import com.uni.uni_erp.domain.entity.erp.hr.Attendance;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
@@ -8,6 +9,7 @@ import com.uni.uni_erp.exception.errors.Exception400;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.exception.errorsRest.RestException400;
 import com.uni.uni_erp.exception.errorsRest.RestException500;
+import com.uni.uni_erp.repository.erp.hr.AttendanceRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.erp.hr.ScheduleRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
@@ -28,6 +30,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final StoreRepository storeRepository;
     private final EmployeeRepository employeeRepository;
+    private final AttendanceRepository attendanceRepository;
 
     /**
      * 일정 조회
@@ -49,8 +52,8 @@ public class ScheduleService {
     }
 
     /**
-     * 일정 등록
-     *
+     * 근무 일정 등록
+     * + 근태 관리와 연동
      * @param reqDTO  받아온 일정 데이터
      * @param storeId 세션에 담긴 상점 id
      * @return 생성한 일정을 DTO 형태로 반환
@@ -62,6 +65,12 @@ public class ScheduleService {
             Store storeEntity = storeRepository.findById(storeId).orElseThrow(() -> new RestException400("식당 정보가 없습니다."));
             Employee employeeEntity = employeeRepository.findById(reqDTO.getEmpId()).orElseThrow(() -> new RestException400("해당 직원이 없습니다."));
             scheduleEntity = scheduleRepository.save(reqDTO.toEntity(storeEntity, employeeEntity));
+            Attendance attendanceEntity = Attendance.builder()
+                    .schedule(scheduleEntity)
+                    .store(storeEntity)
+                    .employee(employeeEntity)
+                    .build();
+            attendanceRepository.save(attendanceEntity);
         } catch (DataIntegrityViolationException e) {
             throw new RestException400("데이터 무결성 위반으로 스케줄 생성에 실패했습니다.");
         } catch (JpaSystemException e) {

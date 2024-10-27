@@ -1,0 +1,281 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<!-- 모달 버튼 (테스트용) -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#clockInOutModal">
+    출퇴근 모달 열기
+</button>
+
+<!-- 모달 구조 -->
+<div class="modal fade" id="clockInOutModal" tabindex="-1" role="dialog" aria-labelledby="clockInOutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clockInOutModalLabel">출퇴근 관리</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <!-- 왼쪽: 입력 필드 영역 -->
+                        <div class="col-md-6">
+                            <form>
+                                <div class="form-group">
+                                    <label for="employeeNumber">사번</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="employeeNumber" placeholder="사번 입력">
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-secondary" onclick="fetchEmployeeInfo()">조회</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeeName">이름</label>
+                                    <input type="text" class="form-control" id="employeeName" placeholder="자동 입력" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">비밀번호</label>
+                                    <input type="password" class="form-control" id="password" placeholder="비밀번호 입력">
+                                </div>
+                            </form>
+                        </div>
+                        <!-- 오른쪽: 숫자 패드 영역 -->
+                        <div class="col-md-6">
+                            <div class="number-pad">
+                                <div class="row">
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(1)">1</button>
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(2)">2</button>
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(3)">3</button>
+                                </div>
+                                <div class="row mt-2">
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(4)">4</button>
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(5)">5</button>
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(6)">6</button>
+                                </div>
+                                <div class="row mt-2">
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(7)">7</button>
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(8)">8</button>
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(9)">9</button>
+                                </div>
+                                <div class="row mt-2">
+                                    <button class="btn btn-secondary col-4" onclick="deleteNumber()">←</button>
+                                    <button class="btn btn-secondary col-4" onclick="addNumber(0)">0</button>
+                                    <button class="btn btn-secondary col-4" onclick="clearNumber()">C</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 아래: 근무 목록, 출퇴근 시간, 버튼 -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="attendanceList">근무 목록</label>
+                                <select id="attendanceList" class="form-control mb-3" onchange="handleAttendanceChange()">
+                                    <!-- 근무 항목이 동적으로 추가됩니다 -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="scheduledTime">계획된 근무 시간</label>
+                                <input type="text" class="form-control" id="scheduledTime" placeholder="자동 입력" disabled>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="clockInTime">출근 시간</label>
+                                        <input type="text" class="form-control" id="clockInTime" placeholder="자동 입력" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="clockOutTime">퇴근 시간</label>
+                                        <input type="text" class="form-control" id="clockOutTime" placeholder="자동 입력" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button type="button" class="btn btn-primary btn-block" id="clockInButton" style="display: none;" onclick="handleClockIn()">출근</button>
+                                    <button type="button" class="btn btn-primary btn-block" id="clockOutButton" style="display: none;" onclick="handleClockOut()">퇴근</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="toastContainer" class="position-fixed bottom-0 right-0 p-3" style="z-index: 1060;">
+    <!-- JavaScript를 통해 토스트가 여기에 동적으로 추가됩니다 -->
+</div>
+<!-- JavaScript -->
+<script>
+    let attendancesData = [];
+    // 현재 활성화된 입력 필드를 추적
+    let activeInputField = null;
+
+    // 숫자 버튼 클릭 시 숫자 추가
+    function addNumber(num) {
+        if (activeInputField) {
+            activeInputField.value += num;
+        }
+    }
+
+    // ← 버튼 클릭 시 숫자 삭제
+    function deleteNumber() {
+        if (activeInputField) {
+            activeInputField.value = activeInputField.value.slice(0, -1);
+        }
+    }
+
+    // C 버튼 클릭 시 숫자 초기화
+    function clearNumber() {
+        if (activeInputField) {
+            activeInputField.value = '';
+        }
+    }
+
+    // 입력 필드에 포커스가 가면 해당 필드를 활성화
+    document.getElementById('employeeNumber').addEventListener('focus', function () {
+        activeInputField = this;
+    });
+    document.getElementById('password').addEventListener('focus', function () {
+        activeInputField = this;
+    });
+
+    // 모달이 열릴 때 초기화
+    $('#clockInOutModal').on('shown.bs.modal', function () {
+        resetModalFields();
+    });
+
+    // 조회 버튼 클릭 시 사번으로 직원 정보 조회
+    function fetchEmployeeInfo() {
+        const employeeNumber = document.getElementById('employeeNumber').value;
+
+        // 사번이 입력되었는지 확인
+        if (!employeeNumber) {
+            alert('사번을 입력하세요.');
+            return;
+        }
+        fetch("/erp/hr/attendance/" + employeeNumber, {
+            method: "GET",
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message);
+                    });
+                }
+            })
+            .then(response => {
+                attendancesData = response.dataList;
+                if (attendancesData.length > 1) {
+                    displayAttendanceOptions(attendancesData);
+                } else {
+                    const data = attendancesData[0];
+                    if (data.status === "UNPLANNED_WORK") {
+                        showToast("계획된 근무가 없습니다.");
+                        document.getElementById('employeeName').value = data.name;
+                        document.getElementById('clockInButton').style.display = 'flex';
+                        document.getElementById('scheduledTime').value = '계획된 근무가 없습니다.';
+                        return;
+                    }
+                    selectAttendance(data);
+                }
+            })
+            .catch(error => {
+                // 오류 발생 시 처리
+                resetModalFields();
+                console.error('오류:', error.message);
+                showToast(error.message);
+            });
+
+    }
+
+    // 확인 버튼 클릭 시 로직
+    function submitClockInOut() {
+        // TODO 여기서 출퇴근 정보를 서버로 전송하는 로직을 구현
+        alert('출퇴근 정보가 전송되었습니다.');
+    }
+
+    // 근무가 2개 이상일 경우 select 옵션으로 적용
+    function displayAttendanceOptions(attendances) {
+        console.log('attendances', attendances);
+        const attendanceList = document.getElementById('attendanceList');
+        attendanceList.innerHTML = ''; // 기존 리스트 초기화
+
+        // 기본 옵션 추가
+        const defaultOption = document.createElement('option');
+        defaultOption.textContent = '근무를 선택하세요';
+        defaultOption.value = '';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        attendanceList.appendChild(defaultOption);
+
+        // 근무 항목을 select 옵션으로 추가
+        attendances.forEach((attendance, index) => {
+            const option = document.createElement('option');
+            option.textContent = "근무 " + (index + 1) + ": " + attendance.start + " - " + attendance.end;
+            option.value = index; // 인덱스를 값으로 사용
+            attendanceList.appendChild(option);
+        });
+
+        // 기본적으로 첫 번째 근무를 선택
+        if (attendances.length > 0) {
+            selectAttendance(attendances[0]);
+        }
+    }
+
+    // select 변경 시 선택한 근무에 따라 업데이트
+    function handleAttendanceChange() {
+        const attendanceList = document.getElementById('attendanceList');
+        const selectedIndex = attendanceList.value;
+
+        // 유효한 선택이었는지 확인
+        if (selectedIndex !== '') {
+            const selectedAttendance = attendancesData[selectedIndex]; // 이전에 불러온 데이터에서 가져옴
+            selectAttendance(selectedAttendance);
+        }
+    }
+
+    function selectAttendance(attendance) {
+        document.getElementById('employeeName').value = attendance.name;
+        if (attendance.status === 'NOT_EXECUTED') {
+            // 출근하지 않은 상태라면 출근 버튼만 표시
+            document.getElementById('clockInButton').style.display = 'flex';
+            document.getElementById('clockOutButton').style.display = 'none';
+        } else if (attendance.status === 'WORKING') {
+            // 이미 출근한 상태라면 퇴근 버튼만 표시
+            document.getElementById('clockInButton').style.display = 'none';
+            document.getElementById('clockOutButton').style.display = 'flex';
+        } else {
+            // 이외 모든 상황에서 버튼 없앰
+            document.getElementById('clockInButton').style.display = 'none';
+            document.getElementById('clockOutButton').style.display = 'none';
+        }
+        document.getElementById('scheduledTime').value = attendance.start + ' - ' + attendance.end;
+        document.getElementById('clockInTime').value = attendance.attendanceTime;
+        document.getElementById('clockOutTime').value = attendance.leaveTime;
+    }
+
+    // 모든 필드를 초기화하는 함수
+    function resetModalFields() {
+        document.getElementById('employeeNumber').value = '';
+        document.getElementById('employeeName').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('clockInTime').value = '';
+        document.getElementById('clockOutTime').value = '';
+        document.getElementById('scheduledTime').value = '';
+        document.getElementById('attendanceList').innerHTML = ''; // 근무 목록 초기화
+
+        // 출근/퇴근 버튼 숨기기
+        document.getElementById('clockInButton').style.display = 'none';
+        document.getElementById('clockOutButton').style.display = 'none';
+
+        // 활성화된 입력 필드를 사번 입력 필드로 설정
+        activeInputField = document.getElementById('employeeNumber');
+    }
+</script>
+<!-- Toast 및 로딩 스피너를 위한 JavaScript 추가 -->
+<script src="/js/toastHelper.js"></script>
