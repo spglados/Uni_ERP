@@ -10,6 +10,7 @@ VALUES ('이영희', 'younghee.lee@example.com', 'securePass!', '010-9876-5432',
 INSERT INTO user_tb (name, email, password, phone, address, membership, created_at)
 VALUES ('박민수', 'minsoo.park@example.com', 'minsooPass45', '010-5555-6666', '인천광역시 연수구 송도대로 789', 'COMMON', NOW());
 
+
 -- 은행 데이터
 INSERT INTO bank_tb (id, name) VALUES
 (002, '산업은행'),

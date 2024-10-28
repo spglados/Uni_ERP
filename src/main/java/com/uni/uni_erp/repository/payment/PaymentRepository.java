@@ -32,6 +32,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
 
 
+
     /* @Query("UPDATE User u SET u.membership = :membership WHERE u.id = :userId")
     void updateMembership(Integer userId, User.Membership membership);*/
 }
