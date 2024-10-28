@@ -25,6 +25,12 @@ public class Store {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "is_24_hours", nullable = false)
+    private Integer is24Hours;
+
+    @Column(name = "is_open", nullable = false)
+    private Integer isOpen;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
