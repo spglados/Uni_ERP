@@ -12,8 +12,22 @@
 <!-- 선택 사항: 부트스트랩 포함 (스타일링용) -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
+
 <!-- 메인 컨텐츠 -->
 <div class="content">
+    <%--ㅈ--%>
+    <c:if test="${storeList != null}">
+    <div class="user-information">
+        <div class="name-welcome">최예나님 환영합니다!</div>
+        <label for="storeId">가게선택</label>
+        <select name="store" id="storeId">
+            <c:forEach var="store" items="${storeList}">
+                <option value="${store.id}">${store.id} - ${store.name}</option>
+            </c:forEach>
+        </select>
+    </div>
+</c:if>
     <header>
         <h1>ERP 시스템 대시보드</h1>
     </header>
@@ -71,8 +85,8 @@
             rowData: test,
             // Columns to be displayed (Should match rowData properties)
             columnDefs: [
-                { field: "id" },
-                { field: "name" }
+                {field: "id"},
+                {field: "name"}
                 // { field: "make" },
                 // { field: "model" },
                 // { field: "price" },
