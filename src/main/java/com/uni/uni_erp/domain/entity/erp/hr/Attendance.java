@@ -1,18 +1,12 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -48,7 +42,12 @@ public class Attendance {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private Schedule.Status status = Schedule.Status.NOT_EXECUTED;
+    private Status status = Status.NOT_EXECUTED;
+
+    @Column(name = "work_time", nullable = true)
+    private Integer workTime; // 정산용 근무 시간을 분단위로 저장
+
+    private Integer wage; // 시급
 
     // 출석 상태를 관리하는 enum
     @RequiredArgsConstructor
@@ -63,5 +62,13 @@ public class Attendance {
         UNPLANNED_WORK("계획에 없는 근무");
 
         private final String description;
+    }
+
+    public void setValuesAtLeave() {
+        // TODO 퇴근 로직 일단 미룸
+        LocalDateTime plannedStart = DateFormatter.toLocalDateTime(schedule.getStartTime());
+        LocalDateTime plannedEnd = DateFormatter.toLocalDateTime(schedule.getEndTime());
+        LocalDateTime workedStart = DateFormatter.toLocalDateTime(this.startTime);
+        LocalDateTime workedEnd = DateFormatter.toLocalDateTime(this.endTime);
     }
 }

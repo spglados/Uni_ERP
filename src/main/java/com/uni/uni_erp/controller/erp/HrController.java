@@ -132,10 +132,10 @@ public class HrController {
     }
 
     /**
-     * 사번 조회 요청
-     * @param uniqueEmployeeNumber
-     * @param session
-     * @return
+     * 사번으로 조회 요청
+     * @param uniqueEmployeeNumber 사번
+     * @param session 현재 상점 확인용
+     * @return 조회된 근무 리스트 및 사원 이름 반환
      */
     @GetMapping("/attendance/{uniqueEmployeeNumber}")
     public ResponseEntity<?> attendanceRequest(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, HttpSession session) {
@@ -146,11 +146,20 @@ public class HrController {
         return ResponseEntity.ok(response);
     }
 
-//    @PostMapping("/attendance/{uniqueEmployeeNumber}")
-//    public ResponseEntity<?> attendanceProc(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, @RequestBody AttendanceDTO.LoginDTO reqDTO, HttpSession session) {
-//        Integer storeId = (Integer) session.getAttribute("storeId");
-//        return null;
-//    }
+    /**
+     * 사번으로 출퇴근 요청
+     * @param uniqueEmployeeNumber 사번
+     * @param reqDTO 출퇴근 여부 및 비밀번호
+     * @param session 현재 상점 확인용
+     * @return
+     */
+    @PostMapping("/attendance/{uniqueEmployeeNumber}")
+    public ResponseEntity<?> attendanceProc(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, @RequestBody AttendanceDTO.RequestDTO reqDTO, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        attendanceService.updateAttendance(uniqueEmployeeNumber, storeId, reqDTO);
+        Map<String, Object> response = new HashMap<>();
+        return ResponseEntity.ok(response);
+    }
 
 
     /**

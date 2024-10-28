@@ -11,6 +11,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="clockInOutModalLabel">출퇴근 관리</h5>
+                <div class="current-time ml-auto" id="currentTime" style="font-size: 1rem;"></div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -170,19 +171,19 @@
             })
             .then(response => {
                 attendancesData = response.dataList;
-                if (attendancesData.length > 1) {
+                const data = attendancesData[0];
+                if (data.status === "UNPLANNED_WORK") {
+                    attendancesData = [];
                     displayAttendanceOptions(attendancesData);
-                } else {
-                    const data = attendancesData[0];
-                    if (data.status === "UNPLANNED_WORK") {
-                        showToast("계획된 근무가 없습니다.");
-                        document.getElementById('employeeName').value = data.name;
-                        document.getElementById('clockInButton').style.display = 'flex';
-                        document.getElementById('scheduledTime').value = '계획된 근무가 없습니다.';
-                        return;
-                    }
-                    selectAttendance(data);
+                    showToast("계획된 근무가 없습니다.");
+                    document.getElementById('employeeName').value = data.name;
+                    document.getElementById('clockInButton').style.display = 'flex';
+                    document.getElementById('scheduledTime').value = '계획된 근무가 없습니다.';
+                    return;
                 }
+                showToast("조회되었습니다.");
+                displayAttendanceOptions(attendancesData);
+                selectAttendance(data);
             })
             .catch(error => {
                 // 오류 발생 시 처리
@@ -191,12 +192,6 @@
                 showToast(error.message);
             });
 
-    }
-
-    // 확인 버튼 클릭 시 로직
-    function submitClockInOut() {
-        // TODO 여기서 출퇴근 정보를 서버로 전송하는 로직을 구현
-        alert('출퇴근 정보가 전송되었습니다.');
     }
 
     // 근무가 2개 이상일 경우 select 옵션으로 적용
@@ -214,13 +209,34 @@
         attendanceList.appendChild(defaultOption);
 
         // 근무 항목을 select 옵션으로 추가
-        attendances.forEach((attendance, index) => {
+        let index = 0;
+        attendances.forEach((attendance, curIndex) => {
             const option = document.createElement('option');
-            option.textContent = "근무 " + (index + 1) + ": " + attendance.start + " - " + attendance.end;
-            option.value = index; // 인덱스를 값으로 사용
+            option.textContent = "근무 " + (curIndex + 1) + ": " + attendance.start + " - " + attendance.end;
+            option.value = curIndex; // 인덱스를 값으로 사용
+            option.setAttribute('data-id', attendance.id);
+            // index가 0일 경우 해당 옵션을 선택된 상태로 설정
+            if (curIndex === 0) {
+                option.selected = true;
+            }
+            index = curIndex;
             attendanceList.appendChild(option);
         });
-
+        // 반복문이 끝난 후 "예정에 없는 근무" 항목 추가
+        const additionalOption = document.createElement('option');
+        additionalOption.textContent = "예정에 없는 근무";
+        additionalOption.value = index + 1; // 고유한 값을 설정
+        attendanceList.appendChild(additionalOption);
+        if (attendances.length === 0) {
+            additionalOption.selected = true;
+        }
+        const additionalAttendance = {
+            start: null,
+            end: null,
+            attendanceTime: null,
+            leaveTime: null
+        };
+        attendances.push(additionalAttendance);
         // 기본적으로 첫 번째 근무를 선택
         if (attendances.length > 0) {
             selectAttendance(attendances[0]);
@@ -239,9 +255,12 @@
         }
     }
 
+    // 근무 선택시 값 변경
     function selectAttendance(attendance) {
-        document.getElementById('employeeName').value = attendance.name;
-        if (attendance.status === 'NOT_EXECUTED') {
+        if (attendance.name) {
+            document.getElementById('employeeName').value = attendance.name;
+        }
+        if (!attendance.status || attendance.status === 'NOT_EXECUTED') {
             // 출근하지 않은 상태라면 출근 버튼만 표시
             document.getElementById('clockInButton').style.display = 'flex';
             document.getElementById('clockOutButton').style.display = 'none';
@@ -254,7 +273,11 @@
             document.getElementById('clockInButton').style.display = 'none';
             document.getElementById('clockOutButton').style.display = 'none';
         }
-        document.getElementById('scheduledTime').value = attendance.start + ' - ' + attendance.end;
+        if (attendance.start && attendance.end){
+            document.getElementById('scheduledTime').value = attendance.start + ' - ' + attendance.end;
+        } else {
+            document.getElementById('scheduledTime').value = "예정에 없는 근무";
+        }
         document.getElementById('clockInTime').value = attendance.attendanceTime;
         document.getElementById('clockOutTime').value = attendance.leaveTime;
     }
@@ -275,6 +298,107 @@
 
         // 활성화된 입력 필드를 사번 입력 필드로 설정
         activeInputField = document.getElementById('employeeNumber');
+    }
+
+    // 현재 시간을 표시하는 함수
+    function updateTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const formattedTime = hours + ":" + minutes + ":" + seconds;
+        document.getElementById('currentTime').textContent = formattedTime;
+    }
+
+    // 매초마다 시간을 업데이트
+    setInterval(updateTime, 1000);
+    // 페이지 로드 시 시간을 즉시 표시
+    updateTime();
+
+    // 출근 버튼 클릭 시
+    function handleClockIn() {
+        const employeeNumber = document.getElementById('employeeNumber').value;
+        const password = document.getElementById('password').value;
+        const type = "attendance";
+        const attendanceId = getSelectedAttendanceId();
+
+        // 유효성 검사
+        if (!validateForm(employeeNumber, password)) {
+            return;
+        }
+
+        // 출근 요청 전송
+        sendAttendanceRequest(employeeNumber, password, type, attendanceId);
+    }
+
+    // 퇴근 버튼 클릭 시
+    function handleClockOut() {
+        const employeeNumber = document.getElementById('employeeNumber').value;
+        const password = document.getElementById('password').value;
+        const type = 'leave'; // 퇴근 타입 설정
+        const attendanceId = getSelectedAttendanceId(); // 선택된 근무의 id 가져오기
+
+        // 유효성 검사
+        if (!validateForm(employeeNumber, password)) {
+            return;
+        }
+
+        // 퇴근 요청 전송
+        sendAttendanceRequest(employeeNumber, password, type, attendanceId);
+    }
+    // 선택된 근무의 id 가져오는 함수
+    function getSelectedAttendanceId() {
+        const attendanceList = document.getElementById('attendanceList');
+        const selectedOption = attendanceList.options[attendanceList.selectedIndex];
+        const attendanceId = selectedOption.getAttribute('data-id');
+
+        // data-id가 없거나 빈 문자열일 경우 null 반환
+        return attendanceId ? attendanceId : null;
+    }
+
+    // 유효성 검사 함수
+    function validateForm(employeeNumber, password) {
+        if (!employeeNumber) {
+            showToast('사번을 입력하세요.');
+            return false;
+        }
+        if (!password) {
+            showToast('비밀번호를 입력하세요.');
+            return false;
+        }
+        return true;
+    }
+
+    // 출근/퇴근 요청 전송 함수
+    function sendAttendanceRequest(employeeNumber, password, type, attendanceId) {
+        fetch("/erp/hr/attendance/" + employeeNumber, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                password: password,
+                type: type, // 출근/퇴근 타입을 body에 포함
+                id: attendanceId // 선택된 근무의 id를 body에 포함
+            })
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message);
+                    });
+                }
+            })
+            .then(response => {
+                showToast(response.message);
+                // TODO 추가적으로 성공 시 처리할 내용 작성
+            })
+            .catch(error => {
+                console.error('오류:', error.message);
+                showToast(error.message);
+            });
     }
 </script>
 <!-- Toast 및 로딩 스피너를 위한 JavaScript 추가 -->

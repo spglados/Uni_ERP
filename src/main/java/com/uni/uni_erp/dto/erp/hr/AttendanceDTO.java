@@ -10,6 +10,7 @@ public class AttendanceDTO {
     @Data
     @NoArgsConstructor
     public static class ResponseDTO {
+        private Integer id;
         private String name;
         private String start; // 근무 일정상 시작
         private String end; // 근무 일정상 종료
@@ -18,9 +19,10 @@ public class AttendanceDTO {
         private String status; // 상태
 
         public ResponseDTO(Attendance attendance) {
+            this.id = attendance.getId();
             this.name = attendance.getEmployee().getName();
             if (attendance.getSchedule() != null) {
-                this.start = DateFormatter.toTimeHourAndMinute(attendance.getSchedule().getStartTime());
+                this.start = DateFormatter.toDateAndTimeExcludeYear(attendance.getSchedule().getStartTime());
                 this.end = DateFormatter.toTimeHourAndMinute(attendance.getSchedule().getEndTime());
             }
             if (attendance.getStartTime() != null) {
@@ -32,6 +34,14 @@ public class AttendanceDTO {
             this.status = EnumCommonUtil.getStringFromEnum(attendance.getStatus());
         }
 
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class RequestDTO {
+        private Integer id;
+        private String type;
+        private String password;
     }
 
 }
