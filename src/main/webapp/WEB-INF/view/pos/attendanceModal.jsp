@@ -110,6 +110,8 @@
 </div>
 <!-- JavaScript -->
 <script>
+    // 엘리먼트 초기화
+    const passwordElement = document.getElementById('password');
     let attendancesData = [];
     // 현재 활성화된 입력 필드를 추적
     let activeInputField = null;
@@ -139,7 +141,7 @@
     document.getElementById('employeeNumber').addEventListener('focus', function () {
         activeInputField = this;
     });
-    document.getElementById('password').addEventListener('focus', function () {
+    passwordElement.addEventListener('focus', function () {
         activeInputField = this;
     });
 
@@ -212,20 +214,29 @@
         let index = 0;
         attendances.forEach((attendance, curIndex) => {
             const option = document.createElement('option');
-            option.textContent = "근무 " + (curIndex + 1) + ": " + attendance.start + " - " + attendance.end;
+            if (!attendance.start || !attendance.end) {
+                option.textContent = "근무 " + (curIndex + 1) + ": " + "예정에 없는 근무";
+            } else {
+                option.textContent = "근무 " + (curIndex + 1) + ": " + attendance.start + " - " + attendance.end;
+            }
+            if (attendance.leaveTime) {
+                option.textContent += ' (완료)';
+            } else if (attendance.attendanceTime) {
+                option.textContent += ' (근무중)';
+            }
             option.value = curIndex; // 인덱스를 값으로 사용
             option.setAttribute('data-id', attendance.id);
             // index가 0일 경우 해당 옵션을 선택된 상태로 설정
             if (curIndex === 0) {
                 option.selected = true;
             }
-            index = curIndex;
+            index = curIndex + 1;
             attendanceList.appendChild(option);
         });
         // 반복문이 끝난 후 "예정에 없는 근무" 항목 추가
         const additionalOption = document.createElement('option');
-        additionalOption.textContent = "예정에 없는 근무";
-        additionalOption.value = index + 1; // 고유한 값을 설정
+        additionalOption.textContent = "근무 " + (index + 1) + ": " + "예정에 없는 근무";
+        additionalOption.value = index; // 고유한 값을 설정
         attendanceList.appendChild(additionalOption);
         if (attendances.length === 0) {
             additionalOption.selected = true;
@@ -273,7 +284,7 @@
             document.getElementById('clockInButton').style.display = 'none';
             document.getElementById('clockOutButton').style.display = 'none';
         }
-        if (attendance.start && attendance.end){
+        if (attendance.start && attendance.end) {
             document.getElementById('scheduledTime').value = attendance.start + ' - ' + attendance.end;
         } else {
             document.getElementById('scheduledTime').value = "예정에 없는 근무";
@@ -318,7 +329,7 @@
     // 출근 버튼 클릭 시
     function handleClockIn() {
         const employeeNumber = document.getElementById('employeeNumber').value;
-        const password = document.getElementById('password').value;
+        const password = passwordElement.value;
         const type = "attendance";
         const attendanceId = getSelectedAttendanceId();
 
@@ -334,7 +345,7 @@
     // 퇴근 버튼 클릭 시
     function handleClockOut() {
         const employeeNumber = document.getElementById('employeeNumber').value;
-        const password = document.getElementById('password').value;
+        const password = passwordElement.value;
         const type = 'leave'; // 퇴근 타입 설정
         const attendanceId = getSelectedAttendanceId(); // 선택된 근무의 id 가져오기
 
@@ -346,6 +357,7 @@
         // 퇴근 요청 전송
         sendAttendanceRequest(employeeNumber, password, type, attendanceId);
     }
+
     // 선택된 근무의 id 가져오는 함수
     function getSelectedAttendanceId() {
         const attendanceList = document.getElementById('attendanceList');
@@ -360,10 +372,14 @@
     function validateForm(employeeNumber, password) {
         if (!employeeNumber) {
             showToast('사번을 입력하세요.');
+            activeInputField = document.getElementById('employeeNumber');
+            document.getElementById('employeeNumber').focus();
             return false;
         }
         if (!password) {
             showToast('비밀번호를 입력하세요.');
+            activeInputField = passwordElement;
+            passwordElement.focus();
             return false;
         }
         return true;
@@ -372,7 +388,7 @@
     // 출근/퇴근 요청 전송 함수
     function sendAttendanceRequest(employeeNumber, password, type, attendanceId) {
         fetch("/erp/hr/attendance/" + employeeNumber, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -385,6 +401,12 @@
             .then(response => {
                 if (response.status === 200) {
                     return response.json();
+                } else if (response.status === 401) {
+                    return response.json().then(errorData => {
+                        passwordElement.value = '';
+                        passwordElement.focus();
+                        showToast(errorData.message);
+                    });
                 } else {
                     return response.json().then(errorData => {
                         throw new Error(errorData.message);
@@ -392,10 +414,14 @@
                 }
             })
             .then(response => {
-                showToast(response.message);
-                // TODO 추가적으로 성공 시 처리할 내용 작성
+                attendancesData = response.dataList;
+                const data = attendancesData[0];
+                showToast("조회되었습니다.");
+                displayAttendanceOptions(attendancesData);
+                selectAttendance(data);
             })
             .catch(error => {
+                resetModalFields();
                 console.error('오류:', error.message);
                 showToast(error.message);
             });

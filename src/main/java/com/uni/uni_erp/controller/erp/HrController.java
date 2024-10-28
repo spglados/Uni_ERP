@@ -151,13 +151,14 @@ public class HrController {
      * @param uniqueEmployeeNumber 사번
      * @param reqDTO 출퇴근 여부 및 비밀번호
      * @param session 현재 상점 확인용
-     * @return
+     * @return 업데이트된 근무 리스트 및 사원 이름 반환
      */
-    @PostMapping("/attendance/{uniqueEmployeeNumber}")
+    @PutMapping("/attendance/{uniqueEmployeeNumber}")
     public ResponseEntity<?> attendanceProc(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, @RequestBody AttendanceDTO.RequestDTO reqDTO, HttpSession session) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        attendanceService.updateAttendance(uniqueEmployeeNumber, storeId, reqDTO);
+        List<AttendanceDTO.ResponseDTO> resDTO = attendanceService.updateAttendance(uniqueEmployeeNumber, storeId, reqDTO);
         Map<String, Object> response = new HashMap<>();
+        response.put("dataList", resDTO);
         return ResponseEntity.ok(response);
     }
 
