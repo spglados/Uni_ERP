@@ -84,9 +84,6 @@ INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUE
 INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (72, 1272, '하이볼', '주류', 7500, 2);
 
 
-
-
-
 INSERT INTO material_tb (name, material_code, category, unit, sub_amount, sub_unit, enter_date, store_id, alarm_cycle, alarm_unit)
 VALUES
     ('소금', 111, '상온품', 'KG', 0, 'G', '2024-10-01', 1, 100, 'G'),
@@ -103,30 +100,30 @@ VALUES
 INSERT INTO ingredient_tb (name, amount, unit, product_id, material_id)
 -- 김치찌개
 VALUES
-    ('김치', 200, 'G', 1, 1),
-    ('돼지고기', 150, 'G', 1, 2),
-    ('두부', 100, 'G', 1, 3),
-    ('고춧가루', 10, 'G', 1, 4),
-    ('마늘', 5, 'G', 1, 5),
+('김치', 200, 'G', 1, 2),
+('돼지고기', 150, 'G', 1, 3),
+('두부', 100, 'G', 1, 4),
+('고춧가루', 10, 'G', 1, 5),
+('마늘', 5, 'G', 1, 6),
 -- 된장찌개
-    ('된장', 50, 'G', 2, 6),
-    ('두부', 100, 'G', 2, 7),
-    ('애호박', 80, 'G', 2, 8),
-    ('양파', 50, 'G', 2, 9),
-    ('버섯', 70, 'G', 2, 10);
+('된장', 50, 'G', 2, 7),
+('두부', 100, 'G', 2, 4),
+('애호박', 80, 'G', 2, 8),
+('양파', 50, 'G', 2, 9),
+('버섯', 70, 'G', 2, 10);
 
 INSERT INTO material_adjustment_tb (amount, sub_amount, previous_loss_amount, status_date, material_id)
 VALUES
-    (1.0, 0, 0, '2024-10-01', 1),
-    (1.5, 0, 0, '2024-10-01', 2),
-    (1.5, 0, 0, '2024-10-01', 3),
-    (1.0, 500.0, 0, '2024-10-01', 4),
-    (0.2, 200, 0, '2024-10-01', 5),
-    (0.2, 200, 0, '2024-10-01', 6),
-    (0.3, 300, 0, '2024-10-01', 7),
-    (2, 400.0, 0, '2024-10-01', 8),
-    (3, 900.0, 0, '2024-10-01', 9),
-    (0.5, 500, 0, '2024-10-1', 10);
+(1.0, 0, 0, '2024-10-22', 1),
+(1.5, 0, 0, '2024-10-22', 2),
+(1.5, 0, 0, '2024-10-22', 3),
+(1.0, 500.0, 0, '2024-10-22', 4),
+(0.2, 200, 0, '2024-10-22', 5),
+(0.2, 200, 0, '2024-10-22', 6),
+(0.3, 300, 0, '2024-10-22', 7),
+(2, 400.0, 0, '2024-10-22', 8),
+(3, 900.0, 0, '2024-10-22', 9),
+(0.5, 500, 0, '2024-10-22', 10);
 
 INSERT INTO material_order_tb (name, price, amount, unit, supplier, receipt_date, expiration_date, material_id, status_id, is_use, enter_date)
 VALUES

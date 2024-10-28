@@ -1,21 +1,16 @@
 package com.uni.uni_erp.controller.pos;
 
-import com.uni.uni_erp.controller.erp.SalesController;
-import com.uni.uni_erp.domain.entity.Sales;
-import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
+import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.dto.sales.SalesInsertDTO;
-import com.uni.uni_erp.dto.sales.SalesRefundDTO;
-import com.uni.uni_erp.repository.sales.SalesDetailRepository;
-import com.uni.uni_erp.repository.sales.SalesRepository;
 import com.uni.uni_erp.service.SalesService;
+import com.uni.uni_erp.service.invertory.InventoryService;
 import com.uni.uni_erp.service.pos.PosService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +23,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/erp/pos")
@@ -36,6 +33,7 @@ public class PosController {
 
     private final PosService posService;
     private final SalesService salesService;
+    private final InventoryService inventoryService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -95,6 +93,8 @@ public class PosController {
         // Save the Sales entity
         salesService.saveSales(salesInsertDTO);
 
+        List<ProductDTO.ProductSalesDTO> productSalesDTOList = new ArrayList<>();
+
         // Create SalesDetail entities
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = null;
@@ -107,29 +107,16 @@ public class PosController {
                         .quantity(item.getInt("quantity"))
                         .unitPrice(item.getInt("price"))
                         .build();
+                productSalesDTOList.add(ProductDTO.ProductSalesDTO.builder().productCode(item.getLong("productCode")).quantity(item.getInt("quantity")).build());
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
 
-//            SalesRefundDTO salesRefundDTO;
-//            try {
-//                item = items.getJSONObject(i);
-//                salesRefundDTO = SalesRefundDTO.builder()
-//                        .itemCode(item.getLong("productId"))
-//                        .itemName(item.getString("name"))
-//                        .quantity(item.getInt("quantity"))
-//                        .unitPrice(item.getInt("price"))
-//                        .build();
-//            } catch (JSONException e) {
-//                throw new RuntimeException(e);
-//            }
-
-            // Save the SalesDetail entity
             salesService.saveSalesDetail(salesDetailDTO, salesService.findLatestOrderNum());
-//            salesService.saveSalesRefund(salesRefundDTO, salesService.findLatestOrderNum());
         }
+
+        inventoryService.calcMaterialByProductSales(productSalesDTOList, session);
 
         return ResponseEntity.status(HttpStatus.OK).body("Sales inserted successfully!");
     }
-
 }
