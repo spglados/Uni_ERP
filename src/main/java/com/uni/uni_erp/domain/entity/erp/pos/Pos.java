@@ -32,4 +32,5 @@ public class Pos {
     @ManyToOne
     @JoinColumn(name = "pos_history_id")  // FK를 정의합니다.
     private PosHistory posHistory;
+
 }

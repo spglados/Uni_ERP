@@ -4,8 +4,7 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.CostPerEmployeeDTO;
 import com.uni.uni_erp.dto.sales.SalesComparisonDTO;
 import com.uni.uni_erp.dto.sales.SalesTargetDTO;
-import com.uni.uni_erp.service.SalesService;
-import com.uni.uni_erp.service.user.StoreService;
+import com.uni.uni_erp.service.payment.SalesService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.List;
