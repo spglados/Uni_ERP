@@ -6,10 +6,7 @@ import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.dto.erp.hr.EmpDocumentDTO;
-import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
-import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
-import com.uni.uni_erp.dto.erp.hr.EmployeeUpdateDTO;
+import com.uni.uni_erp.dto.erp.hr.*;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.repository.bank.BankRepository;
@@ -17,11 +14,19 @@ import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
 import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.util.ExcelUtil.EmpExcelUtil;
+import com.uni.uni_erp.util.ExcelUtil.ExcelUtil;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -38,6 +43,49 @@ public class HrService {
     private final BankRepository bankRepository;
     private final EmpDocumentRepository empDocumentRepository;
     private final EmpPositionRepository empPositionRepository;
+    private final ExcelUtil excelUtil;
+
+    // 엑셀 다운로드
+    public void downloadEmployeeExcel(HttpServletResponse response) {
+        // 직원 정보 리스트 가져오기
+        List<EmployeeDTO> employees = employeeRepository.findAll().stream()
+                .map(EmployeeDTO::new) // Employee를 EmployeeDTO로 변환
+                .collect(Collectors.toList());
+
+        // Excel DTO 리스트로 변환
+        List<EmployeeExcelDTO> excelEmployees = employees.stream()
+                .map(EmployeeExcelDTO::new)
+                .collect(Collectors.toList());
+
+        // 엑셀 파일 생성
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Employees");
+
+        // 헤더 생성
+        Row headerRow = sheet.createRow(0);
+        excelUtil.createHeader(headerRow);
+        // EmpExcelUtil.createHeader(headerRow); // 유틸리티 클래스의 메서드 호출
+
+        // 데이터 추가
+        for (int i = 0; i < excelEmployees.size(); i++) {
+            Row row = sheet.createRow(i + 1);
+            EmployeeExcelDTO employeeExcelDTO = excelEmployees.get(i);
+            excelUtil.fillRow(row, employeeExcelDTO); // 유틸리티 클래스의 메서드 호출
+        }
+
+        // 응답 설정
+        response.setContentType("application/octet-stream");
+        String fileName = "employees_" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+        // 엑셀 파일 다운로드
+        try {
+            workbook.write(response.getOutputStream());
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Transactional
     public EmployeeDTO updateEmployee(Long id, EmployeeUpdateDTO employeeDTO) {
@@ -59,6 +107,7 @@ public class HrService {
             employeeEntity.setAccountNumber(employeeDTO.getAccountNumber());
             employeeEntity.setEmploymentStatus(EnumCommonUtil.getEnumFromString(Employee.EmploymentStatus.class, employeeDTO.getEmploymentStatus()));
             employeeEntity.setEmpPosition(empPositionRepository.findById(employeeDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Employee not found")));
+            employeeEntity.setBank(bankRepository.findById(employeeDTO.getBankId()).orElseThrow(() -> new RuntimeException("Bank not found")));
             empDocumentEntity.setEmploymentContract(employeeDTO.getEmploymentContract() != null);
             empDocumentEntity.setHealthCertificate(employeeDTO.getHealthCertificate() != null);
             empDocumentEntity.setIdentificationCopy(employeeDTO.getIdentificationCopy() != null);

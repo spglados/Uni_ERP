@@ -8,7 +8,7 @@
 
     <c:if test="${not empty errorMessage}">
         <div style="color: red;">
-            ${errorMessage}
+                ${errorMessage}
         </div>
     </c:if>
 
@@ -37,22 +37,17 @@
         <div>
             <label for="email">이메일:</label>
             <input type="text" id="email" name="email" required
-                   pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
-                   title="유효한 이메일 형식으로 입력하세요" value="${employeeDTO.email}">
-            <select name="emailDomain" id="emailDomain" onchange="updateEmail()">
+                   pattern="^[A-Za-z0-9._%+-]+$"
+                   title="유효한 이메일 형식으로 입력하세요" value="${employeeDTO.email.split('@')[0]}">
+            @
+            <input type="text" id="emailDomain" name="emailDomain" required
+                   title="도메인을 입력하세요" value="${employeeDTO.email.split('@')[1]}">
+            <select id="domainSelect" onchange="updateDomain()">
                 <option value="">직접 입력</option>
-                <option value="naver.com" <c:if test="${employeeDTO.emailDomain == 'naver.com'}">selected</c:if>>
-                    naver.com
-                </option>
-                <option value="daum.net" <c:if test="${employeeDTO.emailDomain == 'daum.net'}">selected</c:if>>
-                    daum.net
-                </option>
-                <option value="gmail.com" <c:if test="${employeeDTO.emailDomain == 'gmail.com'}">selected</c:if>>
-                    gmail.com
-                </option>
-                <option value="nate.com" <c:if test="${employeeDTO.emailDomain == 'nate.com'}">selected</c:if>>
-                    nate.com
-                </option>
+                <option value="naver.com">naver.com</option>
+                <option value="daum.net">daum.net</option>
+                <option value="gmail.com">gmail.com</option>
+                <option value="nate.com">nate.com</option>
             </select>
             <button type="button" onclick="checkEmail()">중복 확인</button>
             <span id="emailCheckResult" style="color: red;"></span> <!-- 이메일 중복 검사 결과 표시 -->
@@ -132,14 +127,12 @@
     let isEmailChecked = false;
     let isPhoneChecked = false;
 
-    function updateEmail() {
-        const emailInput = document.getElementById("email");
-        const domainSelect = document.getElementById("emailDomain");
-        const selectedDomain = domainSelect.options[domainSelect.selectedIndex].value;
-        if (selectedDomain) {
-            emailInput.value = emailInput.value.split('@')[0] + '@' + selectedDomain;
+    function updateDomain() {
+            const domainSelect = document.getElementById("domainSelect");
+            const emailDomainInput = document.getElementById("emailDomain");
+            emailDomainInput.value = domainSelect.value;
         }
-    }
+
 
     function formatPhoneNumber(input) {
         const value = input.value.replace(/\D/g, '');
@@ -155,28 +148,21 @@
     // 이메일 중복 확인
     function checkEmail() {
         const email = document.getElementById("email").value;
-        const resultSpan = document.getElementById("emailCheckResult");
+        const emailDomain = document.getElementById("emailDomain").value;
+        const fullEmail = `${email}@${emailDomain}`;
 
-        if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
-            alert("유효한 이메일을 입력해주세요.");
-            return;
+        if (fullEmail) {
+            fetch(`/erp/hr/check-email?email=${fullEmail}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultText = data.isDuplicated ? "이미 사용 중인 이메일입니다." : "사용 가능한 이메일입니다.";
+                    document.getElementById("emailCheckResult").innerText = resultText;
+                    isEmailChecked = !data.isDuplicated; // 중복된 경우 false, 아닌 경우 true
+                    updateSubmitButtonState(); // 제출 버튼 상태 업데이트
+                });
+        } else {
+            document.getElementById("emailCheckResult").innerText = "이메일을 입력하세요.";
         }
-
-        fetch('${pageContext.request.contextPath}/erp/hr/check-email?email=' + encodeURIComponent(email))
-            .then(response => response.json())
-            .then(data => {
-                if (data.isDuplicated) {
-                    resultSpan.innerText = "이미 등록된 이메일입니다.";
-                    isEmailChecked = false;
-                } else {
-                    resultSpan.innerText = "사용 가능한 이메일입니다.";
-                    isEmailChecked = true;
-                }
-                updateSubmitButtonState();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
     }
 
     // 전화번호 중복 확인

@@ -14,6 +14,7 @@ import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.service.erp.hr.HrService;
 import com.uni.uni_erp.service.erp.hr.ScheduleService;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,12 @@ public class HrController {
     private final HrService hrService;
     private final ScheduleService scheduleService;
     private final HttpSession session;
+
+    // 직원 엑셀 다운로드
+    @GetMapping("/download/excel")
+    public void downloadExcel(HttpServletResponse response) {
+        hrService.downloadEmployeeExcel(response);
+    }
 
     // 직원 수정
     @PutMapping("/employees/{id}")
@@ -66,7 +73,11 @@ public class HrController {
     @PostMapping("/registerEmployee")
     public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam Integer storeId, Model model, HttpSession session) {
         // TODO UserDTO로 변경 필
-        User user = (User) session.getAttribute("sessionUser");
+        String email = employeeDTO.getEmail() + "@" + employeeDTO.getEmailDomain();
+        employeeDTO.setEmail(email);
+
+
+        User user = (User) session.getAttribute("userSession");
         try {
             hrService.registerEmployee(employeeDTO, storeId, user.getId());
             return "redirect:/erp/hr/employee-list"; // 등록 성공 시 직원 리스트로 리다이렉트

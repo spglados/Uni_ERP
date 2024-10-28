@@ -24,7 +24,7 @@
                         data-birthday="${employee.birthday}"
                         data-gender="${employee.gender}"
                         data-address="${employee.address}"
-                        data-email="${employee.email}"
+                        data-email="${employee.email.split('@')[0]}@${employee.email.split('@')[1]}"
                         data-phone="${employee.phone}"
                         data-status="${employee.employmentStatus}"
                         data-bank="${employee.bankName != null ? employee.bankName : '정보 없음'}"
@@ -49,6 +49,7 @@
                         <td>${employee.phone}</td>
                     </tr>
                 </c:forEach>
+                <button onclick="location.href='/erp/hr/download/excel'">엑셀 다운로드</button>
                 </tbody>
             </table>
         </c:if>
@@ -69,10 +70,12 @@
         <input type="hidden" id="editEmployeeId" name="id"/>
 
         <label for="editEmployeeName">이름:</label>
-        <input type="text" id="editEmployeeName" name="name" required/>
+        <input type="text" id="editEmployeeName" name="name" maxlength="10" required pattern="^[가-힣]{2,10}$"
+               title="이름은 한글 2~10자로 입력해야 합니다."/>
 
         <label for="editEmployeeBirthday">생년월일:</label>
-        <input type="date" id="editEmployeeBirthday" name="birthday" required/>
+        <input type="date" id="editEmployeeBirthday" name="birthday" required min="1900-01-01"
+               max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"/>
 
         <label for="editEmployeeGender">성별:</label>
         <select id="editEmployeeGender" name="gender" required>
@@ -83,11 +86,28 @@
         <label for="editEmployeeAddress">주소:</label>
         <input type="text" id="editEmployeeAddress" name="address" required>
 
-        <label for="editEmployeeEmail">이메일:</label>
-        <input type="email" id="editEmployeeEmail" name="email" required/>
+        <div>
+            <label for="editEmployeeEmail">이메일 아이디:</label>
+            <input type="text" id="editEmployeeEmail" name="email" required
+                   pattern="^[A-Za-z0-9._%+-]+$"
+                   title="유효한 이메일 형식으로 입력하세요" value=""/>
+            @
+            <input type="text" id="emailDomain" name="emailDomain" required
+                   title="도메인을 입력하세요" value="">
+            <select id="domainSelect" onchange="updateEmail()">
+                <option value="">직접 입력</option>
+                <option value="naver.com">naver.com</option>
+                <option value="daum.net">daum.net</option>
+                <option value="gmail.com">gmail.com</option>
+                <option value="nate.com">nate.com</option>
+            </select>
+        </div>
 
         <label for="editEmployeePhone">전화번호:</label>
-        <input type="tel" id="editEmployeePhone" name="phone" required/>
+        <input type="text" id="editEmployeePhone" name="phone" required
+               oninput="formatPhoneNumber(this)" maxlength="13"
+               placeholder="000-0000-0000"
+               title="유효한 전화번호 형식이 아닙니다."/>
 
         <!-- 은행 정보 추가 -->
         <label for="bankSelect">은행:</label>
@@ -98,7 +118,10 @@
         </select>
 
         <label for="editEmployeeAccountNumber">계좌번호:</label>
-        <input type="text" id="editEmployeeAccountNumber" name="accountNumber" required/>
+        <input type="text" id="editEmployeeAccountNumber" name="accountNumber" required
+               maxlength="16"
+               pattern="^\d{1,16}$"
+               title="계좌번호를 1자리 이상 16자리 이하의 숫자로 입력하세요"/>
 
         <!-- 직책 정보 추가 -->
         <label for="positionSelect">직책:</label>
@@ -153,7 +176,7 @@
 
     const bankMapping = [
         <c:forEach items="${banks}" var="bank" varStatus="status">
-        { id: "${bank.id}", name: "${bank.name}" }<c:if test="${!status.last}">,</c:if>
+        {id: "${bank.id}", name: "${bank.name}"}<c:if test="${!status.last}">, </c:if>
         </c:forEach>
     ];
 
@@ -179,6 +202,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         // 직원 목록 클릭 시 상세 정보 표시
+
         document.querySelector('.left-panel table tbody').addEventListener('click', function (event) {
             const row = event.target.closest('.employee-row');
             if (row) {
@@ -226,6 +250,7 @@
                     '</ul>' +
                     '<button id="edit-button" data-id="' + uniqueId + '" class="edit-btn">수정</button>'; // 수정 버튼 추가
 
+
                 // 수정 버튼 클릭 이벤트 리스너
                 document.getElementById('edit-button').addEventListener('click', function () {
                     // 콘솔 로그로 변수 값 확인
@@ -235,8 +260,9 @@
         });
 
         // TODO 우리형 공부 !! ^^
+
         /**
-        * 밑에 함수들은 은행 아이디로 이름을 반환하거나
+         * 밑에 함수들은 은행 아이디로 이름을 반환하거나
          * 이름으로 아이디를 반환하는 함수이다 !
          * 하지만 설계자의 문제로 bankId와 bankName 이라는 key 값으로 Json 데이터를 보내야 하나
          * bank 라는 key 값으로 은행 아이디를 value로 보냈다 !
@@ -260,6 +286,7 @@
             return bank ? bank.id : null; // 해당하는 이름 반환
         }
 
+
         function getBankNameById(bankId) {
             // bankMapping 배열에서 id가 일치하는 name 찾기
             const bank = bankMapping.find(b => b.id === bankId);
@@ -276,6 +303,8 @@
             document.getElementById('editEmployeeAddress').value = address;
             document.getElementById('editEmployeeEmail').value = email;
             document.getElementById('editEmployeePhone').value = phone;
+
+
 
             // 은행 및 직책 선택 설정
             const bankSelect = document.getElementById('bankSelect');
@@ -309,7 +338,6 @@
             openModal(); // openModal 함수는 기존에 정의한 모달 여는 함수
         }
 
-
         document.getElementById('editEmployeeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             // 수정 요청 처리 로직 추가
@@ -322,7 +350,7 @@
             // FormData를 JSON 객체로 변환
             formData.forEach((value, key) => {
 
-                if(key === 'bank') {
+                if (key === 'bank') {
                     jsonData['bankId'] = value;
                     jsonData['bankName'] = getBankNameById(value);
                 } else {
@@ -355,6 +383,30 @@
                 });
         });
     });
+    function updateEmail() {
+        const emailInput = document.getElementById("editEmployeeEmail");
+        const domainInput = document.getElementById("emailDomain");
+        const selectedDomain = document.getElementById("domainSelect").value;
+
+        // 선택된 도메인이 있으면 도메인 입력란의 값으로 업데이트
+        if (selectedDomain) {
+            domainInput.value = selectedDomain; // 도메인 선택 시 입력란에 도메인 업데이트
+        } else {
+            domainInput.value = ''; // 직접 입력으로 전환 시 도메인 입력란 비우기
+        }
+    }
+
+
+    function formatPhoneNumber(input) {
+        const value = input.value.replace(/\D/g, '');
+        if (value.length < 4) {
+            input.value = value;
+        } else if (value.length < 8) {
+            input.value = value.slice(0, 3) + '-' + value.slice(3);
+        } else {
+            input.value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
+        }
+    }
 </script>
 
 
