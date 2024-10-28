@@ -120,8 +120,7 @@
                     </div>
                     <div class="form-group">
                         <label for="receiptDate">입고 날짜</label>
-                        <input type="date" class="form-control" id="receiptDate" name="receiptDate"
-                               value="<fmt:formatDate value='${today}' pattern='yyyy-MM-dd'/>" required>
+                        <input type="date" class="form-control" id="receiptDate" name="receiptDate" required>
                     </div>
                     <input type="hidden" name="isUse" value="true">
                 </div>
@@ -135,6 +134,9 @@
 </div>
 
 <script>
+
+    const receiveDate = document.getElementById('receiptDate');
+
     var materialsData = [
         <c:forEach var="material" items="${materialDTOList}" varStatus="status">
         {
@@ -153,6 +155,9 @@
         var selectedMaterialId = materialSelect.value;
 
         unitSelect.innerHTML = '';
+
+        // 입고 날짜 오늘로 기본 세팅
+        receiveDate.value = getTodayDate();
 
         var defaultOption = document.createElement('option');
         defaultOption.value = '';
@@ -199,6 +204,14 @@
                alert('저장에 실패했습니다.');
             });
 
+    }
+
+    function getTodayDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+        const day = String(today.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
     }
 </script>
 

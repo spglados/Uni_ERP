@@ -21,7 +21,7 @@ public class ProductDisposal {
     private Long productCode;
 
     @Column(nullable = false)
-    private Integer amount;
+    private Double amount;
 
     private LocalDate disposalDate;
 

@@ -19,5 +19,10 @@ public interface MaterialRepository extends JpaRepository<Material, Integer> {
 
     public List<Material> findAllByStoreId(Integer storeId);
 
+    @Query("SELECT m FROM Material m WHERE m.materialCode IN :materialCodes AND m.store.id = :storeId")
+    public List<Material> findAllByStoreIdForMaterialCode(Integer storeId, List<Long> materialCodes);
+
     Material findByName(String name);
+
+    List<Material> findByStoreId(Integer storeId);
 }

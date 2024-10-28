@@ -65,6 +65,13 @@ public class InventoryController {
         return "/erp/inventory/situation";
     }
 
+    @GetMapping("/correction")
+    public String correctionPage() {
+        return "/erp/inventory/correction";
+    }
+
+
+
     @GetMapping("/day-adjustment")
     public String dayAdjustmentPage(Model model, HttpSession session) {
         List<MaterialDTO.MaterialStatusDTO> materialStatusDTOList = inventoryService.getMaterialStatus(session);
@@ -73,7 +80,7 @@ public class InventoryController {
     }
 
     @PostMapping("/day-adjustment")
-    public ResponseEntity<?> saveDayAdjustment(HttpSession session, @RequestBody List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
+    public ResponseEntity<Void> saveDayAdjustment(HttpSession session, @RequestBody List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
 
         inventoryService.saveDayAdjustmentList(session, reqDtoList);
 
@@ -85,6 +92,13 @@ public class InventoryController {
         return "/erp/inventory/month-adjustment";
     }
 
+    @PostMapping("/month-adjustment")
+    public ResponseEntity<List<MaterialDTO.DisposalHistoryDTO>> monthAdjustmentPage(HttpSession session) {
+        List<MaterialDTO.DisposalHistoryDTO> disposalHistory = inventoryService.getDisposalHistory(session);
+        System.out.println(disposalHistory.toString());
+        return ResponseEntity.ok(disposalHistory);
+    }
+
     @GetMapping("/disposal")
     public String disposePage(Model model, HttpSession session) {
         List<MaterialDTO.MaterialDisposalListDTO> materialDisposalListDTO = inventoryService.getMaterialDisposalList(session);
@@ -92,6 +106,19 @@ public class InventoryController {
         model.addAttribute("materialDisposalList", materialDisposalListDTO);
         model.addAttribute("productDisposalList", productDisposalListDTO);
         return "/erp/inventory/dispose";
+    }
+
+    @PostMapping("/disposal")
+    public ResponseEntity<Void> saveDisposal(HttpSession session, @RequestBody MaterialDTO.DisposalSaveDTO reqDtoList) {
+
+        inventoryService.saveDisposal(session, reqDtoList);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/disposalHistory")
+    public String disposeHistoryPage(Model model, HttpSession session) {
+        return "/erp/inventory/disposalHistory";
     }
 
 }

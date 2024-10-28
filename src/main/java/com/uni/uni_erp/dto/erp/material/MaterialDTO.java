@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -252,6 +253,100 @@ public class MaterialDTO {
         private long productCode;
         private String productName;
         private String category;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class DisposalSaveDTO {
+
+        private List<MaterialDisposalSaveDTO> materials = new ArrayList<>();
+        private List<ProductDisposalSaveDTO> products = new ArrayList<>();
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class MaterialDisposalSaveDTO {
+            long materialCode;
+            String materialName;
+            String category;
+            double disposalAmount;
+            LocalDate disposalDate;
+
+            public MaterialDisposal toMaterialDisposal(Material material) {
+                return MaterialDisposal.builder()
+                        .materialCode(this.materialCode)
+                        .amount(this.disposalAmount)
+                        .disposalDate(this.disposalDate)
+                        .material(material)
+                        .build();
+            }
+
+        }
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class ProductDisposalSaveDTO {
+            long productCode;
+            String productName;
+            String category;
+            double disposalAmount;
+            LocalDate disposalDate;
+
+            public ProductDisposal toProductDisposal(Product product) {
+                return ProductDisposal.builder()
+                        .productCode(this.productCode)
+                        .amount(this.disposalAmount)
+                        .disposalDate(this.disposalDate)
+                        .product(product)
+                        .build();
+            }
+
+        }
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class DisposalHistoryDTO {
+
+        private String type;
+        private long code;
+        private String name;
+        private String category;
+        private double disposalAmount;
+        private String unit;
+        private LocalDate disposalDate;
+
+        public DisposalHistoryDTO(MaterialDisposal materialDisposal) {
+            this.type = "자재";
+            this.code = materialDisposal.getMaterialCode();
+            this.name = materialDisposal.getMaterial().getName();
+            this.category = materialDisposal.getMaterial().getCategory();
+            this.disposalAmount = materialDisposal.getAmount();
+            this.unit = materialDisposal.getMaterial().getUnit().toString();
+            this.disposalDate = materialDisposal.getDisposalDate();
+        }
+
+        public DisposalHistoryDTO(ProductDisposal productDisposal) {
+            this.type = "상품";
+            this.code = productDisposal.getProductCode();
+            this.name = productDisposal.getProduct().getName();
+            this.category = productDisposal.getProduct().getCategory();
+            this.disposalAmount = productDisposal.getAmount();
+            this.unit = "개";
+            this.disposalDate = productDisposal.getDisposalDate();
+        }
+
     }
 
 }
