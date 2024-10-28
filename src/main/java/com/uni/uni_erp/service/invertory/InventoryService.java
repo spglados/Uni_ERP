@@ -11,6 +11,7 @@ import com.uni.uni_erp.repository.erp.inventory.*;
 import com.uni.uni_erp.repository.erp.product.ProductDisposalRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.util.Str.UnitCategory;
 import com.uni.uni_erp.util.date.NumberFormatter;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -696,4 +697,54 @@ public class InventoryService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 자재 코드로 자재 데이터 조회
+     *
+     * @param materialCode 자재 코드
+     * @return MaterialSaveDTO 또는 null
+     */
+    @Transactional(readOnly = true)
+    public MaterialDTO.MaterialSaveDTO getMaterialByCode(Long materialCode) {
+        Optional<Material> optionalMaterial = materialRepository.findByMaterialCode(materialCode);
+        if (optionalMaterial.isPresent()) {
+            Material material = optionalMaterial.get();
+            return new MaterialDTO.MaterialSaveDTO(material);
+        }
+        return null;
+    }
+
+    /**
+     * 특정 자재 코드로 자재 데이터 수정
+     *
+     * @param materialSaveDTO 수정된 자재 데이터 DTO
+     * @return 수정 성공 여부
+     */
+    @Transactional
+    public boolean updateMaterial(MaterialDTO.MaterialSaveDTO materialSaveDTO) {
+        Optional<Material> optionalMaterial = materialRepository.findByMaterialCode(materialSaveDTO.getMaterialCode());
+        if (!optionalMaterial.isPresent()) {
+            return false;
+        }
+
+        Material material = optionalMaterial.get();
+
+        try {
+            // 수정 가능한 필드 업데이트
+            material.setName(materialSaveDTO.getName());
+            material.setCategory(materialSaveDTO.getCategory());
+            material.setUnit(UnitCategory.valueOf(materialSaveDTO.getUnit()));
+            material.setSubAmount(materialSaveDTO.getSubAmount());
+            material.setSubUnit(UnitCategory.valueOf(materialSaveDTO.getSubUnit()));
+            material.setAlarmCycle(materialSaveDTO.getAlarmCycle());
+            material.setAlarmUnit(UnitCategory.valueOf(materialSaveDTO.getAlarmUnit()));
+
+            // 변경 사항 저장
+            materialRepository.save(material);
+            return true;
+        } catch (IllegalArgumentException e) {
+            // Enum 값이 잘못된 경우
+            log.error("Enum 변환 오류: {}", e.getMessage());
+            return false;
+        }
+    }
 }

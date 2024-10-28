@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MaterialRepository extends JpaRepository<Material, Integer> {
 
@@ -25,4 +26,6 @@ public interface MaterialRepository extends JpaRepository<Material, Integer> {
     Material findByName(String name);
 
     List<Material> findByStoreId(Integer storeId);
+
+    Optional<Material> findByMaterialCode(Long materialCode);
 }
