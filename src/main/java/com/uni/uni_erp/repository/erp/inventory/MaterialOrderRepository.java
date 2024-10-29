@@ -20,10 +20,14 @@ public interface MaterialOrderRepository extends JpaRepository<MaterialOrder, In
     List<MaterialOrder> findByMaterialIdAndUseStatusAndStoreId(List<Integer> materialIdList, Integer storeId);
 
     @Query("SELECT mo FROM MaterialOrder mo " +
-            "WHERE mo.enterDate BETWEEN :startDate AND :endDate " +
+            "WHERE FUNCTION('YEAR', mo.enterDate) = :year " +
+            "AND FUNCTION('MONTH', mo.enterDate) = :month " +
             "AND mo.material.store.id = :storeId")
-    List<MaterialOrder> findByEnterDateBetweenAndStoreId(@Param("startDate") LocalDate startDate,
-                                                         @Param("endDate") LocalDate endDate,
-                                                         @Param("storeId") Integer storeId);
+    List<MaterialOrder> findByEnterDateInCurrentMonthAndStoreId(@Param("year") int year,
+                                                                @Param("month") int month,
+                                                                @Param("storeId") Integer storeId);
+
+    @Query("SELECT mo FROM MaterialOrder mo WHERE mo.material.id IN :materialIds")
+    List<MaterialOrder> findByMaterialIds(@Param("materialIds") List<Integer> materialIds);
 
 }

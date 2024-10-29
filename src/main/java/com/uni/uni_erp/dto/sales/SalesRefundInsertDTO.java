@@ -7,11 +7,12 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class SalesRefundDTO {
+public class SalesRefundInsertDTO {
 
     private Long itemCode;
     private String itemName;
     private Integer quantity;
+    private String refundStatus;
     private Integer unitPrice;
 
 }

@@ -239,8 +239,16 @@ public class MaterialDTO {
     @Builder
     public static class MaterialMonthAdjustmentDTO {
         private long materialCode;
+        private String materialName;
         private double monthReceiveAmount;
         private double useAmount;
+
+        public MaterialMonthAdjustmentDTO(MaterialOrder order) {
+            this.materialCode = order.getMaterial().getMaterialCode();
+            this.materialName = order.getMaterial().getName();
+            this.monthReceiveAmount = 0.0;
+            this.useAmount = 0.0;
+        }
     }
 
     @Getter
