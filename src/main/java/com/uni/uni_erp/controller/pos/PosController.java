@@ -1,21 +1,17 @@
 package com.uni.uni_erp.controller.pos;
 
-import com.uni.uni_erp.domain.entity.Sales;
-import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.erp.pos.Pos;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.dto.sales.SalesInsertDTO;
-import com.uni.uni_erp.dto.sales.SalesRefundDTO;
-import com.uni.uni_erp.service.payment.SalesService;
+import com.uni.uni_erp.service.sales.SalesService;
 import com.uni.uni_erp.service.pos.PosService;
 import com.uni.uni_erp.service.user.StoreService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -152,7 +148,7 @@ public class PosController {
 
 
         model.addAttribute("posNowAmount", posNowAmountInt);
-        return "/sales/inspection"; // JSP 파일 경로
+        return "/pos/inspection"; // JSP 파일 경로
     }
 
     @PostMapping("/inspection")
@@ -188,7 +184,7 @@ public class PosController {
         Integer posNowAmountInt = posNowAmount.intValue();
 
         model.addAttribute("posNowAmount", posNowAmountInt);
-        return "/sales/safe"; // JSP 파일 경로
+        return "/pos/safe"; // JSP 파일 경로
     }
 
     @PostMapping("/safe")
@@ -264,7 +260,7 @@ public class PosController {
 
         model.addAttribute("posNowAmount", posNowAmountInt);
 
-        return "/sales/openAndClosed"; // JSP file path
+        return "/pos/openAndClosed"; // JSP file path
     }
 
     @PostMapping("/close")

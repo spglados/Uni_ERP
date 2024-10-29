@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.PaymentHistory;
-import com.uni.uni_erp.domain.entity.payment.RefundRepository;
+import com.uni.uni_erp.repository.refund.RefundRepository;
 import com.uni.uni_erp.dto.PaymentDTO;
 import com.uni.uni_erp.repository.payment.PaymentHistoryRepository;
 import com.uni.uni_erp.repository.payment.PaymentRepository;

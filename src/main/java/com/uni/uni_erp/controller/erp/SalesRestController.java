@@ -1,7 +1,7 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.uni.uni_erp.dto.sales.*;
-import com.uni.uni_erp.service.payment.SalesService;
+import com.uni.uni_erp.service.sales.SalesService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;

@@ -38,11 +38,9 @@
 
             <!-- Nav Items -->
             <li class="nav-item active"><a class="nav-link" href="/admin/main"><i class="fas fa-fw fa-tachometer-alt"></i> <span>대시보드</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/admin/#"><i class="fas fa-fw fa-table"></i> <span>유저 관리</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/admin/#"><i class="fas fa-fw fa-table"></i> <span>가게 관리</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/admin/#"><i class="fas fa-fw fa-table"></i> <span>미정</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/admin/#"><i class="fas fa-fw fa-table"></i> <span>미정</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/admin/#"><i class="fas fa-fw fa-wrench"></i> <span>미정</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/userManagement"><i class="fas fa-fw fa-table"></i> <span>유저 관리</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/storeManagement"><i class="fas fa-fw fa-table"></i> <span>가게 관리</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/salesManagement"><i class="fas fa-fw fa-table"></i> <span>매출 관리</span></a></li>
             <li class="nav-item"><a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"><i class="fas fa-fw fa-cog"></i> <span>고객 지원</span></a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
@@ -119,19 +117,14 @@
                         <div class="col-xl-8 col-lg-8">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">가게별 매출 평균</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">전체 가게 매출 평균</h6>
                                 </div>
                                 <div>
-                                    <button onclick="updateChart('daily')">일별</button>
-                                    <button onclick="updateChart('monthly')">월별</button>
-                                    <button onclick="updateChart('yearly')">연별</button>
-                                    <label for="storeSelect">가게 선택:</label>
-                                    <select id="storeSelect" onchange="filterStore()">
-                                        <option value="all">모든 가게</option>
-                                        <option value="store1">가게 1</option>
-                                        <option value="store2">가게 2</option>
-                                        <option value="store3">가게 3</option>
-                                    </select>
+                                    <button onclick="updateChart('daily')" onchange="filterStore()">일별</button>
+                                    <button onclick="updateChart('monthly')" onchange="filterStore()">월별</button>
+                                    <button onclick="updateChart('yearly')" onchange="filterStore()">연별</button>
+                                    * 오늘 날짜를 기준으로 해당하는 월, 연도별 전체 가게 매출을 보여줍니다
+                                    <div id="storeSelect" onchange="filterStore()"></div>
                                     <canvas id="myChart"></canvas>
                                 </div>
                             </div>
@@ -255,15 +248,46 @@
         var myChart;
         var currentPeriod = 'daily';
 
+        var salesYear = /*[[${salesYear}]]*/ [];
+        var salesYearTotalPrice = /*[[${salesYearTotalPrice}]]*/ [];
+
+        <c:forEach var="year" items="${salesYear}">
+            salesYear.push('${year}');
+        </c:forEach>
+        <c:forEach var="totalPrice" items="${salesYearTotalPrice}">
+            salesYearTotalPrice.push('${totalPrice}');
+        </c:forEach>
+
+        var salesMonth = /*[[${salesMonth}]]*/ [];
+                var salesMonthTotalPrice = /*[[${salesMonthTotalPrice}]]*/ [];
+
+                <c:forEach var="month" items="${salesMonth}">
+                    salesMonth.push('${month}');
+                </c:forEach>
+                <c:forEach var="totalPrice" items="${salesMonthTotalPrice}">
+                    salesMonthTotalPrice.push('${totalPrice}');
+                </c:forEach>
+
+ var salesDays = /*[[${salesDays}]]*/ [];
+        var salesTotalPrice = /*[[${salesTotalPrice}]]*/ [];
+
+        <c:forEach var="day" items="${salesDays}">
+            salesDays.push('${day}');
+        </c:forEach>
+        <c:forEach var="totalPrice" items="${salesTotalPrice}">
+            salesTotalPrice.push('${totalPrice}');
+        </c:forEach>
+
+
         function updateChart(period) {
             currentPeriod = period;
             var data = {};
             if (period === 'daily') {
-                data = { labels: ['2024-10-01', '2024-10-02', '2024-10-03', '2024-10-04', '2024-10-05'], values: [120, 150, 180, 90, 220] };
+                data = { labels: salesDays, values: salesTotalPrice };
             } else if (period === 'monthly') {
-                data = { labels: ['2024-10', '2024-11', '2024-12'], values: [3000, 4000, 3500] };
+                data = { labels: salesMonth, values: salesMonthTotalPrice };
             } else if (period === 'yearly') {
-                data = { labels: ['2022', '2023', '2024'], values: [25000, 30000, 28000] };
+                data = { labels: salesYear, values: salesYearTotalPrice };
             }
 
             var selectedStore = document.getElementById('storeSelect').value;

@@ -1,6 +1,5 @@
 package com.uni.uni_erp.domain.entity;
 
-import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.PaymentHistory;
@@ -10,7 +9,6 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

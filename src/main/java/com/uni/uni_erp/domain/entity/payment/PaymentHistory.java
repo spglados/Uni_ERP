@@ -5,11 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-
 @Entity
-@Table(name = "c")
+@Table(name = "payment_history_tb")
 @Getter
 @Setter
 @NoArgsConstructor

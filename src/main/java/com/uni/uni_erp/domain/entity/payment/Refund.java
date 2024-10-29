@@ -16,7 +16,11 @@ public class Refund {
     private Integer id;
 
     private String lastTransactionKey;
+
+    @Column(nullable = false)
     private String paymentKey;
+
+    @Column(nullable = false)
     private String cancelReason;
     private String requestedAt;
     private String approvedAt;

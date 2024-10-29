@@ -1,24 +1,23 @@
 package com.uni.uni_erp.controller.admin;
 
-import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.domain.entity.payment.Payment;
-import com.uni.uni_erp.repository.erp.product.ProductRepository;
-import com.uni.uni_erp.repository.user.UserRepository;
-import com.uni.uni_erp.service.payment.SalesService;
+import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.dto.sales.SalesDataDTO;
+import com.uni.uni_erp.dto.sales.SalesbyCategoryDTO;
+import com.uni.uni_erp.dto.sales.StoreListDTO;
 import com.uni.uni_erp.service.product.ProductService;
+import com.uni.uni_erp.service.sales.SalesService;
+import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -29,6 +28,9 @@ public class AdminController {
     private final UserService userService;
     private final ProductService productService;
     private final SalesService salesService;
+    private final StoreService storeService;
+
+
 
 
     // 관리자 Home 페이지
@@ -53,14 +55,11 @@ public class AdminController {
         model.addAttribute("percentageOfSubscribeUser", (int) Math.round(percentageOfSubscribeUser));
 
         // 매출 상승률
-        //TODO 임시값 서비스호출필요
-        Integer salesAmount = 123456;
+        Long salesAmount = salesService.getTotalSalesForThisYear();
         // 작년 매출
-        // TODO 임시값 서비스호출필요
-        Integer salesAmountForLastYear = 123456;
+        Long salesAmountForLastYear = salesService.getTotalSalesForLastYear();
         // 목표치 매출 105%
         int percentOfSalesAmountForLastYear = (int) (salesAmountForLastYear * 1.05);
-        //int percentOfSalesAmountForLastYear = ;
 
         double percentageOfSalesAmount = (salesAmount != null && percentOfSalesAmountForLastYear != 0)
                 ? (salesAmount / (double) percentOfSalesAmountForLastYear) * 100
@@ -70,14 +69,11 @@ public class AdminController {
         model.addAttribute("percentageOfSalesAmount", (int) Math.round(percentageOfSalesAmount));
 
         // 가게 수
-        //TODO 임시값 서비스호출필요
-        Integer storeCount = 700;
+        Long storeCount = storeService.countStoresCreatedThisYear();
         // 작년 가게수
-        // TODO 임시값 서비스호출필요
-        Integer storeCountForLastYear = 500;
+        Long storeCountForLastYear = storeService.countStoresCreatedLastYear();
         // 목표치 가게수 110%
         int percentOfStoreCountForLastYear = (int) (storeCountForLastYear * 1.1);
-        //int percentOfSalesAmountForLastYear = ;
 
         double percentageOfStoreCount = (storeCount != null && percentOfStoreCountForLastYear != 0)
                 ? (storeCount / (double) percentOfStoreCountForLastYear) * 100
@@ -87,23 +83,66 @@ public class AdminController {
         model.addAttribute("percentageOfStoreCount", (int) Math.round(percentageOfStoreCount));
 
         // 상품 카테고리별 매출
+        List<SalesbyCategoryDTO> salesbyCategory = salesService.getItemSummaries();
+        List<String> productList = new ArrayList<>();
+
         // 상품 카테고리 추출
-        List<String> productList = productService.getDistinctCategories();
-        model.addAttribute("productList",productList);
         // 상품 카테고리 매출 추출
-        //TODO 임시값
-        List<Integer> salesAmounts = Arrays.asList(10000, 50000, 106000, 15000);
-        int totalSales = salesAmounts.stream().mapToInt(Integer::intValue).sum();
+        List<Long> sumAmount = new ArrayList<>();
+        for (SalesbyCategoryDTO dto : salesbyCategory) {
+            productList.add(dto.getCategory());
+            sumAmount.add(dto.getTotalUnitPrice());
+        }
+        model.addAttribute("productList",productList);
 
         // 비율 계산
+        Long totalSales = sumAmount.stream().mapToLong(Long::longValue).sum();
         List<Integer> percentageSaleList = new ArrayList<>();
-        for (Integer amount : salesAmounts) {
+        for (Long amount : sumAmount) {
             int percentage = (int) ((amount / (double) totalSales) * 100); // int로 변환
             percentageSaleList.add(percentage);
         }
         model.addAttribute("percentageSaleList",percentageSaleList);
 
         // 가게별 매출
+        //연도별
+        List<SalesDataDTO> salesYearData = salesService.getTotalPriceByYear();
+        List<Integer> salesYear = new ArrayList<>();
+        List<Long> salesYearTotalPrice = new ArrayList<>();
+
+        for (SalesDataDTO data : salesYearData) {
+            salesYear.add(data.getDate());
+            salesYearTotalPrice.add(data.getTotalPrice());
+        }
+
+        model.addAttribute("salesYear",salesYear);
+        model.addAttribute("salesYearTotalPrice",salesYearTotalPrice);
+
+        // 달별
+        List<SalesDataDTO> salesMonthData = salesService.getTotalSalesForCurrentYearByMonth();
+        List<Integer> salesMonth = new ArrayList<>();
+        List<Long> salesMonthTotalPrice = new ArrayList<>();
+        for (SalesDataDTO data : salesMonthData) {
+            salesMonth.add(data.getDate());
+            salesMonthTotalPrice.add(data.getTotalPrice());
+        }
+        model.addAttribute("salesMonth",salesMonth);
+        model.addAttribute("salesMonthTotalPrice",salesMonthTotalPrice);
+
+        // 일별
+        // 현재 월의 매출 데이터 가져오기
+        List<SalesDataDTO> salesDailyData = salesService.getTotalSalesForCurrentMonth();
+
+        // 모델에 데이터 추가
+        List<Integer> salesDays = new ArrayList<>();
+        List<Long> salesTotalPrice = new ArrayList<>();
+        for (SalesDataDTO data : salesDailyData) {
+            salesDays.add(data.getDate()); // SalesDataDTO에서 Day를 가져온다고 가정
+            salesTotalPrice.add(data.getTotalPrice());
+        }
+        model.addAttribute("salesDays", salesDays);
+        model.addAttribute("salesTotalPrice", salesTotalPrice);
+
 
         /*model.addAttribute("averageSalesData", averageSalesData);
         model.addAttribute("storeId", storeId);
@@ -111,6 +150,47 @@ public class AdminController {
 
         return "admin/dashboard";
     }
+
+
+    @GetMapping("/userManagement")
+    public String userManagementPage(Model model){
+        List<User> userList = userService.findAll();
+        model.addAttribute("userList",userList);
+        return "/admin/userManagement";
+    }
+
+    @GetMapping("/storeManagement")
+    public String storeManagementPage(Model model){
+        List<StoreListDTO> storeList = storeService.getAllStoresWithUserNames();
+        model.addAttribute("storeList",storeList);
+
+        return "/admin/storeManagement";
+    }
+
+    @GetMapping("/store/details/{id}")
+    public String getStoreDetails(@PathVariable("id") Integer id, Model model) {
+        // StoreService를 통해 가게 정보를 조회
+        Store store = storeService.findById(id);
+
+
+
+        if (store == null) {
+            // 가게가 존재하지 않을 경우 404 페이지로 리다이렉트하거나 에러 처리
+            return "error/404"; // 예시: 에러 페이지 경로
+        }
+
+        model.addAttribute("store", store);
+        return "/admin/storeDetails"; // 뷰의 이름 (storeDetails.jsp)
+    }
+
+    @GetMapping("/salesManagement")
+    public String salesManagementPage(Model model){
+        List<StoreListDTO> storeList = storeService.getAllStoresWithUserNames(); // 가게 목록 가져오기
+        model.addAttribute("storeList", storeList);
+        return "/admin/salesManagement";
+    }
+
+
 
 
 

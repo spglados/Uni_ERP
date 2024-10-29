@@ -1,4 +1,4 @@
-package com.uni.uni_erp.service.payment;
+package com.uni.uni_erp.service.sales;
 
 import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.SalesDetail;
@@ -12,7 +12,6 @@ import com.uni.uni_erp.repository.sales.SalesRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -287,63 +286,43 @@ public class SalesService {
         return intervals;
     }
 
-
-    // 1. 연도별 스토어 ID별 평균 total_price 조회
-    public Map<Integer, Map<Integer, Double>> getYearlyAverageTotalPriceByStore() {
-        List<Object[]> results = salesRepository.findYearlyAverageTotalPriceByStore();
-        Map<Integer, Map<Integer, Double>> yearlyAverageMap = new HashMap<>();
-
-        for (Object[] row : results) {
-            Integer storeId = (Integer) row[0];
-            Integer year = (Integer) row[1];
-            Double averageTotalPrice = (Double) row[2];
-
-            yearlyAverageMap
-                    .computeIfAbsent(storeId, k -> new HashMap<>())
-                    .put(year, averageTotalPrice);
-        }
-        return yearlyAverageMap;
+    public List<SalesbyCategoryDTO> getItemSummaries() {
+        return salesDetailRepository.findItemSummaries();
     }
 
-    // 2. 월별 연도별 스토어 ID별 평균 total_price 조회
-    public Map<Integer, Map<Integer, Map<Integer, Double>>> getMonthlyAverageTotalPriceByStoreAndYear() {
-        List<Object[]> results = salesRepository.findMonthlyAverageTotalPriceByStoreAndYear();
-        Map<Integer, Map<Integer, Map<Integer, Double>>> monthlyAverageMap = new HashMap<>();
-
-        for (Object[] row : results) {
-            Integer storeId = (Integer) row[0];
-            Integer year = (Integer) row[1];
-            Integer month = (Integer) row[2];
-            Double averageTotalPrice = (Double) row[3];
-
-            monthlyAverageMap
-                    .computeIfAbsent(storeId, k -> new HashMap<>())
-                    .computeIfAbsent(year, k -> new HashMap<>())
-                    .put(month, averageTotalPrice);
-        }
-        return monthlyAverageMap;
+    public Long getTotalSalesForLastYear() {
+        LocalDateTime startDate = LocalDateTime.of(LocalDateTime.now().getYear() - 1, 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(LocalDateTime.now().getYear() - 1, 12, 31, 23, 59, 59);
+        return salesRepository.findTotalSalesPriceForLastYear(startDate, endDate);
     }
 
-    // 3. 일별 연도별 월별 스토어 ID별 total_price 합계 조회
-    public Map<Integer, Map<Integer, Map<Integer, Map<Integer, Double>>>> getDailyTotalPriceByStoreAndYearMonth() {
-        List<Object[]> results = salesRepository.findDailyTotalPriceByStoreAndYearMonth();
-        Map<Integer, Map<Integer, Map<Integer, Map<Integer, Double>>>> dailyTotalMap = new HashMap<>();
-
-        for (Object[] row : results) {
-            Integer storeId = (Integer) row[0];
-            Integer year = (Integer) row[1];
-            Integer month = (Integer) row[2];
-            Integer day = (Integer) row[3];
-            Double totalDailyPrice = (Double) row[4];
-
-            dailyTotalMap
-                    .computeIfAbsent(storeId, k -> new HashMap<>())
-                    .computeIfAbsent(year, k -> new HashMap<>())
-                    .computeIfAbsent(month, k -> new HashMap<>())
-                    .put(day, totalDailyPrice);
-        }
-        return dailyTotalMap;
+    public Long getTotalSalesForThisYear() {
+        LocalDateTime startDate = LocalDateTime.of(LocalDateTime.now().getYear(), 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(LocalDateTime.now().getYear(), 12, 31, 23, 59, 59);
+        return salesRepository.findTotalSalesPriceForThisYear(startDate, endDate);
     }
 
+
+    // 연도별
+    public List<SalesDataDTO> getTotalPriceByYear() {
+        return salesRepository.findTotalPriceByYear();
+    }
+
+    // 월별
+    public List<SalesDataDTO> getTotalSalesForCurrentYearByMonth() {
+        int currentYear = LocalDateTime.now().getYear();
+        return salesRepository.findTotalPriceByMonth(currentYear);
+    }
+    // 일별
+    public List<SalesDataDTO> getTotalSalesForCurrentMonth() {
+        // 현재 날짜 가져오기
+        LocalDateTime now = LocalDateTime.now();
+        int currentMonth = now.getMonthValue();
+        int currentYear = now.getYear();
+
+        // 해당 월의 매출 데이터 조회
+        return salesRepository.findTotalPriceByDay(currentMonth, currentYear);
+    }
 
 }
+

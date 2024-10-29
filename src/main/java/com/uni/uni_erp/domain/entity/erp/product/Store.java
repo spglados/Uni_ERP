@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -30,6 +32,10 @@ public class Store {
 
     @Column(name = "is_open", nullable = false)
     private Integer isOpen;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Timestamp createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

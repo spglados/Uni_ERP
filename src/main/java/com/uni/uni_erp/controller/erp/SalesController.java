@@ -4,7 +4,7 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.CostPerEmployeeDTO;
 import com.uni.uni_erp.dto.sales.SalesComparisonDTO;
 import com.uni.uni_erp.dto.sales.SalesTargetDTO;
-import com.uni.uni_erp.service.payment.SalesService;
+import com.uni.uni_erp.service.sales.SalesService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

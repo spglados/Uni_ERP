@@ -22,12 +22,25 @@ public class Payment {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(nullable = false)
     private String lastTransactionKey;
+
+    @Column(nullable = false)
     private String paymentKey;
+
+    @Column(nullable = false)
     private String orderId;
+
+    @Column(nullable = false)
     private String orderName;
+
+    @Column(nullable = false)
     private String billingKey;
+
+    @Column(nullable = false)
     private String customerKey;
+
+    @Column(nullable = false)
     private Integer amount;
     private String totalAmount;
     private String requestedAt;
