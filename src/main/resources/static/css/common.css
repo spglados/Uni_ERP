@@ -1,18 +1,231 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 body {
     width: 100%;
     height: 100%;
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    color: #ffffff;
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    color: #000000;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
+nav{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
 
+.site__header {
+    background-color: white;
+    padding: 0 2rem;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    border-radius: 0.5rem;
+    -webkit-transition: all 0.25s cubic-bezier(0.42, 0, 0, 1);
+    transition: all 0.25s cubic-bezier(0.42, 0, 0, 1);
+    -webkit-box-shadow: 0px 2px 4px -1px #0000000f, 0px 4px 6px -1px #0000001a;
+    box-shadow: 0px 2px 4px -1px #0000000f, 0px 4px 6px -1px #0000001a;
+}
+
+.site__header.darkmode {
+    background-color: #1f2937;
+    color: white;
+}
+
+.site__header.darkmode .menu li a {
+    color: white;
+}
+
+.site__header.darkmode .menu li a:hover {
+    color: #3b82f6;
+}
+
+.site__header.darkmode .menu li a.active:hover {
+    color: white;
+}
+
+.brand {
+    text-transform: uppercase;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.brand--point {
+    color: #3b82f6;
+}
+
+.menu {
+    width: 90%;
+    list-style: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    height: 64px;
+}
+
+.menu li {
+    height: 100%;
+    width: 15%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+    position: relative;
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.5rem;
+    -webkit-transition: all 0.25s cubic-bezier(0.42, 0, 0, 1);
+    transition: all 0.25s cubic-bezier(0.42, 0, 0, 1);
+    padding: 0 1rem;
+    z-index: 1;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.menu li a.active {
+    color: white;
+}
+
+.menu li a.active:hover {
+    color: white;
+}
+
+.menu li a.active:before {
+    background-color: #3b82f6;
+    z-index: -1;
+    -webkit-transform: translateY(0%);
+    transform: translateY(0%);
+}
+
+.menu li a:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    -webkit-transform: translateY(100%);
+    transform: translateY(100%);
+    -webkit-transition: all 0.25s cubic-bezier(0.42, 0, 0, 1);
+    transition: all 0.25s cubic-bezier(0.42, 0, 0, 1);
+}
+
+.menu li a:after {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    content: '';
+    width: 100%;
+    height: 0px;
+    background-color: #3b82f6;
+    -webkit-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+.menu li a:hover {
+    color: #3b82f6;
+}
+
+.menu li a:hover:after {
+    width: 100%;
+    height: 4px;
+}
+
+.toggle {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    background-color: #e5e5e5;
+    width: 38px;
+    height: 22px;
+    border-radius: 22px;
+    cursor: pointer;
+}
+
+.toggle--switch {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background-color: white;
+    border-radius: 18px;
+    top: 2px;
+    left: 2px;
+    -webkit-transition: all 0.3s cubic-bezier(0.42, 0, 0, 1);
+    transition: all 0.3s cubic-bezier(0.42, 0, 0, 1);
+}
+
+.toggle.active {
+    background-color: #3b82f6;
+}
+
+.toggle.active .toggle--switch {
+    left: calc(100% - 20px);
+}
+
+.header-icons{
+    height: 100%;
+    width: 23%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+/**********************************************/
+
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
 .video-container {
     position: relative;
     height: 100vh;
     width: 100%;
     overflow: hidden;
     opacity: 0.9; /* 50% 투명 */
+}
+
+/* 비디오 설정 */
+.video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1; /* 가장 아래에 위치하도록 z-index 설정 */
 }
 
 #bgVideo {
@@ -32,13 +245,13 @@ body {
     opacity: 0;
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 30%;
     transform: translate(-50%, -60%);
     transition: opacity 1s ease, transform 1s ease;
     text-align: center;
-    z-index: 1;
+    z-index: 2; /* 비디오 위에 위치하도록 z-index 설정 */
     padding: 20px;
-    background: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+    background: rgba(90, 98, 104, 0.5); /* 반투명 배경 */
     border-radius: 10px;
 }
 
@@ -52,25 +265,93 @@ body {
     margin-bottom: 20px;
 }
 
+/* 애니메이션 클래스 */
+.animate-slideIn {
+    animation-duration: 0.8s;
+    animation-name: slideIn;
+}
+
+@keyframes slideIn {
+    from {
+        margin-left: 50%;
+        width: 100%;
+    }
+
+    to {
+        margin-left: 0%;
+        width: 100%;
+    }
+}
+
 .overlay-content p {
     font-size: 1.5em;
     margin-bottom: 30px;
 }
 
-.btn {
+.overlay-content-btn {
     display: inline-block;
     padding: 15px 30px;
     font-size: 1em;
     color: #ffffff;
-    background-color: #ff5722;
+    background-color: #0284FF;
     border: none;
     border-radius: 5px;
     text-decoration: none;
     transition: background-color 0.3s ease;
 }
 
-.btn:hover {
+.overlay-content-btn:hover {
     background-color: #e64a19;
+}
+.explanation-container-right{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2; /* 비디오 위에 위치하도록 z-index 설정 */
+}
+
+.explanation-container{
+    color: white;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-left: 30px;
+    border-left: 10px solid #0284FF;
+
+    /* 팝-아웃 효과를 위한 스타일 추가 */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* 외부 그림자 추가 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    transform: translateZ(0) scale(1.05); /* 약간 확대하여 입체감 부여 */
+
+    /* 텍스트에 입체감 부여 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+
+    /* 테두리에 입체감 추가 */
+    border-left: 10px solid #0284FF;
+    position: relative; /* ::before를 위한 상대 위치 설정 */
+}
+
+.explanation-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -10px; /* 기존 테두리와 겹치도록 설정 */
+    width: 10px;
+    height: 100%;
+    background-color: #0284FF;
+    box-shadow: inset 5px 0 5px rgba(0, 0, 0, 0.2); /* 내부 그림자 추가 */
+    border-radius: 8px 0 0 8px; /* 테두리 모서리 둥글게 */
+}
+
+.explanation-container h2{
+    text-align: center;
 }
 
 /* 반응형 디자인 */
@@ -90,10 +371,10 @@ body {
 }
 
 @font-face {
-    font-family: 'yg-jalnan';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+	font-family: 'yg-jalnan';
+	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
 }
 
 /* 공통 스타일 */
@@ -161,60 +442,128 @@ body {
     margin: 0;
 }
 
-/* 헤더 스타일 */
-.header {
-    width: 100%;
-    margin: 0 auto;
-    background-color: #ffffff;
-    color: #d3d3d3;
-    padding: 1rem 0;
-    text-align: center;
-    border-bottom: 1px solid #333;
-    position: relative;
-    top: 0;
+/*!* 헤더 스타일 *!*/
+/*.header {*/
+/*    width: 100%;*/
+/*    margin: 0 auto;*/
+/*    background-color: #ffffff;*/
+/*    color: #d3d3d3;*/
+/*    padding: 1rem 0;*/
+/*    text-align: center;*/
+/*    border-bottom: 1px solid #333;*/
+/*    position: relative;*/
+/*    top: 0;*/
+/*}*/
+
+/*.inner--header {*/
+/*    width: 90%;*/
+/*    margin: 0 auto;*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*    height: 140px;*/
+/*}*/
+
+/*.h--logo {*/
+/*    font-size: 1.5rem;*/
+/*    font-weight: bold;*/
+/*    margin: 0;*/
+/*    color: #0284FF;*/
+/*    text-decoration: none;*/
+/*}*/
+
+/*.nav {*/
+/*    list-style: none;*/
+/*    padding: 0;*/
+/*    margin: 0;*/
+/*    display: flex;*/
+/*    height: 100%;*/
+/*    width: 80%;*/
+/*    align-items: center;*/
+/*    justify-content: space-around;*/
+/*}*/
+
+/*.nav-item {*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    display: flex;*/
+/*    position: relative;*/
+/*    overflow: hidden;*/
+/*    transition: transform 0.3s ease, box-shadow 0.3s ease; !* 애니메이션 전환 효과 추가 *!*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*}*/
+
+/*.nav-item:hover {*/
+/*    transform: scale(1.1) rotateY(5deg); !* 약간의 3D 기울기 추가 *!*/
+/*    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); !* 깊이감을 위한 그림자 추가 *!*/
+/*}*/
+
+/*.nav-item a {*/
+/*    display: block;*/
+/*    position: relative;*/
+/*    z-index: 1;*/
+/*    transition: transform 0.3s ease, color 0.3s ease; !* 애니메이션 전환 효과 추가 *!*/
+/*    color: #000;*/
+/*    font-size: 2rem;*/
+/*    text-decoration: none;*/
+/*}*/
+
+/*.nav-item::before {*/
+/*    border-radius: 50%;*/
+/*    transform: translate(-50%, -50%);*/
+/*    transition: width 0.5s ease, height 0.5s ease;*/
+/*    z-index: 0;*/
+/*}*/
+
+
+/*.nav-item:hover a {*/
+/*    transform: scale(1.2) rotateY(-5deg); !* 텍스트의 반대 방향 기울기 *!*/
+/*    color: #0284FF; !* 테마에 맞게 색상 변경 *!*/
+/*}*/
+
+/* 컨테이너 스타일 */
+.main-section-container {
+    margin: 50px auto;
+    padding: 20px;
 }
 
-.inner--header {
-    width: 90%;
-    margin: 0 auto;
+/* 행 스타일 */
+.main-section-line-container {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+/* 카드 스타일 */
+.section-content-box {
+    display: flex;
+    flex-direction: column;
+    border-left : thick solid #32a1ce;
+    padding: 20px;
+    text-align: center;
+    width: 32%; /* 카드가 한 행에 3개씩 맞도록 설정 */
+    justify-content: center;
     align-items: center;
 }
 
-.h--logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0;
+.section-content-box img.icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 15px;
 }
 
-.none-a {
-    color: #0284FF;
-    text-decoration: none;
+.section-content-box h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
 }
 
-.nav {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 2rem;
-}
-
-.nav-item {
-    font-size: 1rem;
-}
-
-.nav-item a {
-    color: #0284FF;
-    text-decoration: none;
-    transition: color 0.3s;
-    font-size: 25px;
-    font-weight: bold;
-}
-
-.nav-item a:hover {
-    color: #f0a500;
+.section-content-box p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    width: 80%;
 }
 
 /* 반응형 스타일 */
@@ -236,10 +585,6 @@ body {
         text-align: center;
     }
 
-    .nav {
-        flex-direction: column;
-        gap: 1rem;
-    }
 }
 
 @media (max-width: 480px) {
@@ -262,4 +607,103 @@ body {
     .nav-item {
         font-size: 0.9rem;
     }
+}
+.information-box{
+    display: flex;
+    width: 100%;
+    height: 1000px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.information-content{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.information-text-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+}
+
+.information-input-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+}
+
+.google-map{
+    width: 900px;
+    height: 400px;
+    border:0;
+}
+
+.custom-form {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    padding: 20px;
+    border: 1px solid #000;
+    background-color: #fff;
+}
+
+.custom-form label {
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+.custom-form input,
+.custom-form textarea {
+    margin-top: 5px;
+    padding: 8px;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    font-size: 0.9em;
+}
+
+.custom-form textarea {
+    resize: none;
+    height: 100px;
+}
+
+.custom-form button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    text-align: center;
+}
+
+.custom-form button:hover {
+    background-color: #555;
+}
+
+.header-icon{
+    color: #000000;
+    font-size: 1.2rem;
+    text-decoration: none;
+}
+
+.header-icon:hover{
+    color: #3a78d8;
+}
+
+.main-introduce-container{
+    width: 100%;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #0284FF;
 }
