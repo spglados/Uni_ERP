@@ -9,12 +9,10 @@ import lombok.*;
 @ToString
 public class SalesRefundDTO {
 
-    private Integer id;
     private Long itemCode;
     private String itemName;
     private Integer quantity;
+    private String refundStatus;
     private Integer unitPrice;
-
-    private enum Status {REFUND, RETURN}
 
 }

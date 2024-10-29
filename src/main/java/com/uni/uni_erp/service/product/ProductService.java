@@ -63,10 +63,9 @@ public class ProductService {
         // 2024년 전체의 판매 데이터를 조회하기 위한 기간 설정
         LocalDateTime startDate = LocalDateTime.of(today.getYear(), 1, 1, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(today.getYear(), 12, 31, 23, 59, 59);
-        List<SalesDetail.SaleStatus> status = List.of(SalesDetail.SaleStatus.결제, SalesDetail.SaleStatus.환불);
 
         // 판매 내역 조회
-        List<SalesQuantityDTO> salesQuantityList = salesRepository.findSalesQuantity(startDate, endDate, storeId, status);
+        List<SalesQuantityDTO> salesQuantityList = salesRepository.findSalesQuantity(startDate, endDate, storeId);
 
         // 상품 목록 처리
         for (Product product : productRepository.findProductByStoreId(storeId)) {
