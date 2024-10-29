@@ -19,6 +19,7 @@ public class EmployeeDTO {
     private Timestamp createdAt;
     private Employee.Gender gender;
     private String email;
+    private String emailDomain; // 도메인 부분
     private String phone;
     private String address;
     private Integer bankId; // 은행 ID

@@ -1,7 +1,11 @@
 INSERT INTO emp_position_tb (name, store_id, schedule_color)
 VALUES ('주방장', 1, '#FF5733'), -- 주황색
        ('매니저', 1, '#33FF57'), -- 초록색
-       ('서빙', 1, '#3357FF');
+       ('서빙', 1, '#3357FF'),
+       ('철방장', 2, '#FF5733'), -- 주황색
+       ('남방장', 2, '#33FF57'), -- 초록색
+       ('김방장', 2, '#3357FF');
+
 
 -- 직책 샘플
 INSERT INTO employee_tb
@@ -29,6 +33,17 @@ VALUES ('최이제', '1994-01-30', 'M', 'sss@naver.com', '010-3082-7894', '부�
         'ACTIVE', 92, NOW(), '1110');
 -- 파란색
 
+
+INSERT INTO employee_tb
+(name, birthday, gender, email, phone, address, account_number, emp_position_id, store_id, store_employee_number,
+ employment_status, bank_id, updated_at, unique_employee_number)
+VALUES
+    ('이영수', '1995-01-15', 'M', 'lee_youngsoo@naver.com', '010-5454-1118', '서울시 강서구 화곡로 100', '121230', 4, 2, 1,
+     'ACTIVE', 92, NOW(), '211'),
+    ('김민지', '1993-03-25', 'F', 'kim_minji@naver.com', '010-9999-1616', '부산시 해운대구 해운대해변로 50', '121231', 5, 2, 2,
+     'ACTIVE', 48, NOW(), '212'),
+    ('박철민', '1990-07-30', 'M', 'park_chulmin@naver.com', '010-0000-0101', '대구광역시 달서구 상인동 300', '121232', 6, 2, 3,
+     'INACTIVE', 20, NOW(), '213');
 
 -- 샘플
 INSERT INTO emp_document_tb (emp_id, employment_contract, health_certificate, identification_copy, bank_account_copy,

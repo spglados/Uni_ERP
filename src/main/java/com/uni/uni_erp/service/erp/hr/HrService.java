@@ -6,10 +6,7 @@ import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.dto.erp.hr.EmpDocumentDTO;
-import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
-import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
-import com.uni.uni_erp.dto.erp.hr.EmployeeUpdateDTO;
+import com.uni.uni_erp.dto.erp.hr.*;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.repository.bank.BankRepository;
@@ -17,11 +14,18 @@ import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
 import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.util.ExcelUtil.ExcelUtil;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -38,6 +42,76 @@ public class HrService {
     private final BankRepository bankRepository;
     private final EmpDocumentRepository empDocumentRepository;
     private final EmpPositionRepository empPositionRepository;
+    private final ExcelUtil excelUtil;
+
+    public List<EmployeeDTO> getEmployeesByStatusAndStoreId(String employeeStatus, Integer storeId) {
+        List<Employee> employees;
+
+        if (employeeStatus == null || employeeStatus.isEmpty()) {
+            // employeeStatus가 null 또는 빈 문자열이면 전체 직원 조회
+            employees = employeeRepository.findByStoreId(storeId);
+        } else {
+            // 특정 employmentStatus에 따라 직원 조회
+            Employee.EmploymentStatus employmentStatus = Employee.EmploymentStatus.valueOf(employeeStatus);
+            employees = employeeRepository.findByEmploymentStatusAndStoreId(employmentStatus, storeId);
+        }
+
+        // Employee 리스트를 EmployeeDTO 리스트로 변환
+        return employees.stream()
+                .map(EmployeeDTO::new) // EmployeeDTO 생성자를 이용한 변환
+                .collect(Collectors.toList());
+    }
+
+    // 엑셀 다운로드
+    public void downloadEmployeeExcel(Integer storeId, String employeeStatus, HttpServletResponse response) {
+        List<EmployeeDTO> employees;
+
+        // 상태가 있는 경우 해당 상태의 직원 목록을 스토어 ID로 필터링하여 조회
+        if (employeeStatus != null && !employeeStatus.isEmpty()) {
+            // 상태에 따른 직원 목록을 필터링하여 조회
+            employees = employeeRepository.findByEmploymentStatusAndStoreId(
+                            Employee.EmploymentStatus.valueOf(employeeStatus), storeId)
+                    .stream()
+                    .map(EmployeeDTO::new)
+                    .collect(Collectors.toList());
+        } else {
+            // 상태가 없을 경우 스토어 ID에 따른 모든 직원 목록 조회
+            employees = employeeRepository.findEmployeesByStoreId(storeId);
+        }
+
+        // Excel DTO 리스트로 변환
+        List<EmployeeExcelDTO> excelEmployees = employees.stream()
+                .map(EmployeeExcelDTO::new)
+                .collect(Collectors.toList());
+
+        // 엑셀 파일 생성
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Employees");
+
+        // 헤더 생성
+        Row headerRow = sheet.createRow(0);
+        excelUtil.createHeader(headerRow);
+
+        // 데이터 추가
+        for (int i = 0; i < excelEmployees.size(); i++) {
+            Row row = sheet.createRow(i + 1);
+            EmployeeExcelDTO employeeExcelDTO = excelEmployees.get(i);
+            excelUtil.fillRow(row, employeeExcelDTO);
+        }
+
+        // 응답 설정
+        response.setContentType("application/octet-stream");
+        String fileName = "employees_" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".xlsx";
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+        // 엑셀 파일 다운로드
+        try {
+            workbook.write(response.getOutputStream());
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Transactional
     public EmployeeDTO updateEmployee(Long id, EmployeeUpdateDTO employeeDTO) {
@@ -53,12 +127,15 @@ public class HrService {
             employeeEntity.setName(employeeDTO.getName());
             employeeEntity.setBirthday(employeeDTO.getBirthday());
             employeeEntity.setGender(EnumCommonUtil.getEnumFromString(Employee.Gender.class, employeeDTO.getGender()));
-            employeeEntity.setEmail(employeeDTO.getEmail());
+            // 이메일 아이디와 도메인을 조합하여 이메일 설정
+            String fullEmail = employeeDTO.getEmail() + "@" + employeeDTO.getEmailDomain();
+            employeeEntity.setEmail(fullEmail);
             employeeEntity.setPhone(employeeDTO.getPhone());
             employeeEntity.setAddress(employeeDTO.getAddress());
             employeeEntity.setAccountNumber(employeeDTO.getAccountNumber());
             employeeEntity.setEmploymentStatus(EnumCommonUtil.getEnumFromString(Employee.EmploymentStatus.class, employeeDTO.getEmploymentStatus()));
             employeeEntity.setEmpPosition(empPositionRepository.findById(employeeDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Employee not found")));
+            employeeEntity.setBank(bankRepository.findById(employeeDTO.getBankId()).orElseThrow(() -> new RuntimeException("Bank not found")));
             empDocumentEntity.setEmploymentContract(employeeDTO.getEmploymentContract() != null);
             empDocumentEntity.setHealthCertificate(employeeDTO.getHealthCertificate() != null);
             empDocumentEntity.setIdentificationCopy(employeeDTO.getIdentificationCopy() != null);
@@ -181,7 +258,7 @@ public class HrService {
                 .store(store)
                 .bank(bank)
                 .storeEmployeeNumber(newStoreEmployeeNumber)
-                .uniqueEmployeeNumber((long) (sessionUserId + store.getId() + newStoreEmployeeNumber))
+                .uniqueEmployeeNumber(Long.parseLong((sessionUserId + "" + store.getId() + "" + newStoreEmployeeNumber)))
                 .employmentStatus(Employee.EmploymentStatus.ACTIVE)
                 .build();
     }
