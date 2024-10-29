@@ -100,10 +100,33 @@ public class SalesRestController {
         }
     }
 
+    @GetMapping("/refund-data")
+    public List<SalesRefundDTO> getItemRefunds(HttpSession session) {
+        try {
+            int year = LocalDate.now().getYear();
+            LocalDateTime startDateCurrentYear = LocalDateTime.of(year, 1, 1, 0, 0);
+            LocalDateTime endDateCurrentYear = LocalDateTime.of(year, 12, 31, 23, 59, 59);
+            Integer storeId = (Integer) session.getAttribute("storeId");
+
+            List<Integer> orderNum = salesService.findAllSalesNumByDateBetweenAndStoreId(startDateCurrentYear, endDateCurrentYear, storeId);
+
+            List<SalesRefundDTO> refundList = salesService.findRefundByOrderNum(orderNum);
+
+            System.err.println(salesService.groupRefundDetails(refundList));
+            System.err.println(salesService.groupRefundDetails(refundList));
+            System.err.println(salesService.groupRefundDetails(refundList));
+
+            return salesService.groupRefundDetails(refundList);
+        } catch (Exception e) {
+            log.error("err", e);
+            return Collections.emptyList();
+        }
+    }
+
     @GetMapping("/details")
     public ResponseEntity<List<ProductSalesDTO>> getDetails(@RequestParam Integer year,
-                                                   @RequestParam Integer month,
-                                                   HttpSession session) {
+                                                            @RequestParam Integer month,
+                                                            HttpSession session) {
 
         // Selected Month
         LocalDateTime startDateCurrent = LocalDateTime.of(year, month, 1, 0, 0);
@@ -191,7 +214,6 @@ public class SalesRestController {
             productSalesList.add(productSalesDTO);
         }
 
-        System.err.println(productSalesList);
         return ResponseEntity.ok(productSalesList);
     }
 

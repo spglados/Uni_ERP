@@ -9,7 +9,7 @@ import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.dto.sales.SalesInsertDTO;
-import com.uni.uni_erp.dto.sales.SalesRefundDTO;
+import com.uni.uni_erp.dto.sales.SalesRefundInsertDTO;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.invertory.InventoryService;
 import com.uni.uni_erp.service.pos.PosService;
@@ -18,7 +18,6 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.tags.shaded.org.apache.bcel.generic.IFLT;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,13 +26,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/erp/pos")
@@ -200,20 +205,19 @@ public class PosController {
 
         if (!salesDetail.isEmpty()) {
             for (SalesDetailDTO salesDetailDTO : salesDetail) {
-                SalesRefundDTO salesRefundDTO = SalesRefundDTO.builder()
+                SalesRefundInsertDTO salesRefundInsertDTO = SalesRefundInsertDTO.builder()
                         .itemCode(salesDetailDTO.getItemCode())
                         .itemName(salesDetailDTO.getItemName())
                         .quantity(salesDetailDTO.getQuantity())
                         .unitPrice(salesDetailDTO.getUnitPrice())
                         .refundStatus(refundMethod.equals("cancel") ? String.valueOf(SalesRefund.RefundStatus.취소) : String.valueOf(SalesRefund.RefundStatus.환불))
                         .build();
-
                 salesRefundDTOList.add(salesRefundDTO);
 
 
                 // TODO 취소 품목 로직 추가
 
-                salesService.saveSalesRefund(salesRefundDTO, orderNum);
+                salesService.saveSalesRefund(salesRefundInsertDTO, orderNum);
             }
             inventoryService.cancelOrder(salesRefundDTOList);
             return ResponseEntity.status(HttpStatus.OK).body(refundMethod.equals("cancel") ? "취소 완료" : "환불 완료");
