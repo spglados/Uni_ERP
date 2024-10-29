@@ -2,8 +2,6 @@ package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.Bank;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
-import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -77,6 +75,9 @@ public class Employee {
     @Column(unique = true, nullable = false)  // 고유한 사원번호, Not Null, 유니크 설정
     private Long uniqueEmployeeNumber;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private String password = "0000";
 
     public enum EmploymentStatus {
         ACTIVE, // 재직중
@@ -95,6 +96,10 @@ public class Employee {
 
     @Column(name = "hired_at", nullable = true)
     private Timestamp hiredAt;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer wage = 9860;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_id", nullable = false)
