@@ -4,7 +4,7 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.*;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
-import com.uni.uni_erp.dto.sales.SalesRefundDTO;
+import com.uni.uni_erp.dto.sales.SalesRefundInsertDTO;
 import com.uni.uni_erp.exception.errors.Exception400;
 import com.uni.uni_erp.exception.errors.Exception401;
 import com.uni.uni_erp.exception.errors.Exception404;
@@ -942,10 +942,10 @@ public class InventoryService {
     }
 
     @Transactional
-    public void cancelOrder(List<SalesRefundDTO> salesRefundDTOList) {
+    public void cancelOrder(List<SalesRefundInsertDTO> salesRefundDTOList) {
         // 환불된 상품의 제품 코드 리스트 추출
         List<Long> productCodes = salesRefundDTOList.stream()
-                .map(SalesRefundDTO::getItemCode)
+                .map(SalesRefundInsertDTO::getItemCode)
                 .collect(Collectors.toList());
 
         // 제품 코드로 해당 제품들을 조회
@@ -985,7 +985,7 @@ public class InventoryService {
                 ));
 
         // 환불된 각 상품에 대해 처리
-        for (SalesRefundDTO refundDTO : salesRefundDTOList) {
+        for (SalesRefundInsertDTO refundDTO : salesRefundDTOList) {
             Long productCode = refundDTO.getItemCode();
             Integer quantity = refundDTO.getQuantity();
 
