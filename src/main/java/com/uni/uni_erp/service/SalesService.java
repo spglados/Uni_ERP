@@ -20,10 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -282,4 +279,40 @@ public class SalesService {
         return intervals;
     }
 
+    public List<Integer> findAllSalesNumByDateBetweenAndStoreId(LocalDateTime startDateCurrent, LocalDateTime endDateCurrent, Integer storeId) {
+        return salesRepository.findAllSalesNumByDateBetweenAndStoreId(startDateCurrent, endDateCurrent, storeId);
+    }
+
+    public List<SalesDetailDTO> compareQuantities(List<SalesDetailDTO> salesDetails1, List<SalesDetailDTO> salesDetails2) {
+        Map<Long, Integer> quantities1 = salesDetails1.stream()
+                .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode, Collectors.summingInt(SalesDetailDTO::getQuantity)));
+        Map<Long, Integer> quantities2 = salesDetails2.stream()
+                .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode, Collectors.summingInt(SalesDetailDTO::getQuantity)));
+
+        List<SalesDetailDTO> result = new ArrayList<>();
+        for (Map.Entry<Long, Integer> entry : quantities1.entrySet()) {
+            Long itemCode = entry.getKey();
+            Integer quantity1 = entry.getValue();
+            Integer quantity2 = quantities2.get(itemCode);
+
+            if (quantity2 != null && !quantity1.equals(quantity2)) {
+                result.add(SalesDetailDTO.builder()
+                        .itemCode(itemCode)
+                        .itemName(salesDetails1.stream()
+                                .filter(d -> d.getItemCode().equals(itemCode))
+                                .findFirst()
+                                .orElseThrow()
+                                .getItemName())
+                        .quantity(quantity1 - quantity2)
+                        .unitPrice(salesDetails1.stream()
+                                .filter(d -> d.getItemCode().equals(itemCode))
+                                .findFirst()
+                                .orElseThrow()
+                                .getUnitPrice())
+                        .build());
+            }
+        }
+
+        return result;
+    }
 }
