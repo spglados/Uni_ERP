@@ -474,7 +474,7 @@ public class InventoryService {
      * @param reqDtoList 자재 일일 조정 DTO 리스트
      */
     @Transactional
-    public void saveDayAdjustmentList(HttpSession session, List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
+    public boolean saveDayAdjustmentList(HttpSession session, List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
         // 세션에서 storeId 추출
         Integer storeId = getStoreId(session);
 
@@ -482,24 +482,33 @@ public class InventoryService {
         List<MaterialStatus> materialStatusList = materialStatusRepository.findByStoreId(storeId);
 
         // 일일 조정 요청을 Map으로 변환 (MaterialCode -> ActualAmount)
-        Map<Long, Double> actualAmountList = reqDtoList.stream().collect(Collectors.toMap(
+        Map<Long, Double> actualAmountMap = reqDtoList.stream().collect(Collectors.toMap(
                 MaterialDTO.MaterialDayAdjustmentDTO::getMaterialCode,
                 MaterialDTO.MaterialDayAdjustmentDTO::getActualAmount
         ));
 
+        boolean isUpdated = false;
+
         // 각 MaterialStatus에 대해 실제량과 손실량 업데이트
         for (MaterialStatus materialStatus : materialStatusList) {
             // 요청된 ActualAmount가 있는 경우 업데이트
-            Double newActualAmount = actualAmountList.get(materialStatus.getMaterial().getMaterialCode());
-            checkStock(newActualAmount, "0 이하로 재고량을 조절할 수 없습니다.");
-            if (newActualAmount != null) {
+            Double newActualAmount = actualAmountMap.get(materialStatus.getMaterial().getMaterialCode());
+            if (newActualAmount != null && !Objects.equals(newActualAmount, materialStatus.getActualAmount())) {
+                // 변경이 발생한 경우 isUpdated를 true로 설정
+                isUpdated = true;
                 materialStatus.setActualAmount(newActualAmount);
                 materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(newActualAmount - materialStatus.getTheoreticalAmount()));
             }
         }
-        // 변경된 MaterialStatus 저장
-        materialStatusRepository.saveAll(materialStatusList);
+
+        // 변경된 MaterialStatus가 있는 경우 저장
+        if (isUpdated) {
+            materialStatusRepository.saveAll(materialStatusList);
+        }
+
+        return isUpdated;
     }
+
 
     /**
      * 자재 폐기 목록 조회 메소드

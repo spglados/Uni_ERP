@@ -75,7 +75,7 @@ public class MaterialDTO {
 
         private String name;
 
-        private String price;
+        private int price;
 
         private double amount;
 
@@ -98,7 +98,7 @@ public class MaterialDTO {
         public MaterialOrderDTO(MaterialOrder materialOrder) {
             this.id = materialOrder.getId();
             this.name = materialOrder.getName();
-            this.price = NumberFormatter.formatToPrice(materialOrder.getPrice());
+            this.price = materialOrder.getPrice();
             this.amount = materialOrder.getAmount();
             this.unit = materialOrder.getUnit().toString();
             this.supplier = materialOrder.getSupplier();
@@ -227,6 +227,7 @@ public class MaterialDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @ToString
     public static class MaterialDayAdjustmentDTO {
         private long materialCode;
         private double actualAmount;
