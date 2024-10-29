@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.repository.user.UserRepository;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,13 +22,10 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/erp")
+@RequiredArgsConstructor
 public class ErpController {
 
     private final UserRepository userRepository;
-
-    public ErpController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     /**
      * 메인페이지 요청
@@ -33,7 +33,13 @@ public class ErpController {
      * @return
      */
     @GetMapping("/main")
-    public String mainPage(Model model) {
+    public String mainPage(Model model, HttpSession session) {
+
+        List<StoreDTO> storeList = (List<StoreDTO>) session.getAttribute("storeList");
+        if(storeList != null) {
+            model.addAttribute("storeList", storeList);
+        }
+
         List<Map<String, Object>> test = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         map.put("id", "123");
@@ -68,6 +74,19 @@ public class ErpController {
         }
         return "erp/main";
     }
+
+    /**
+     * 가게선택 페이지
+     *
+     * @return
+     */
+    @GetMapping("/storeChoice")
+    public String storeChoicePage(Model model) {
+
+        return "erp/storeSelect";
+    }
+
+
 
     // 모든 사용자 데이터를 반환하는 REST 엔드포인트
     @GetMapping("/api/users")

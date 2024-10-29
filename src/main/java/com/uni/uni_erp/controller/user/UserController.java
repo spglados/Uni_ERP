@@ -1,6 +1,7 @@
 package com.uni.uni_erp.controller.user;
 
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.PrincipalDTO;
 import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.repository.payment.Sms;
@@ -45,14 +46,18 @@ public class UserController {
         // TODO 유효성 검사 추가
         User user = userService.login(dto);
         PrincipalDTO principalDTO = userService.searchUserId(user.getId());
-        session.setAttribute("principal", principalDTO);
         List<Integer> storeIdList = storeService.ownedStores(user.getId());
+        List<StoreDTO> storeList = storeService.ownedStores(user.getId());
 
-        if(storeIdList != null) {
+        if(storeList != null) {
             // 맨 처음 가게 아이디 추가
-            session.setAttribute("storeId", storeIdList.get(1));
+            session.setAttribute("storeId", storeList.get(0).getId());
+            if(storeList.size() > 1) {
+                session.setAttribute("storeList", storeList);
+            }
         }
 
+        session.setAttribute("userSession", principalDTO);
         if (user != null) {
             session.setAttribute("userSession", user);
             System.out.println("User logged in: " + user.getId());

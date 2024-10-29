@@ -15,7 +15,7 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
 
-    public List<Integer> ownedStores(Integer userId) {
+    public List<StoreDTO> ownedStores(Integer userId) {
         return storeRepository.findStoresWithIdByUserId(userId);
     }
 
