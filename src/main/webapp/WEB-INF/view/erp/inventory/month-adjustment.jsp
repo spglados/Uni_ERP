@@ -49,7 +49,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <c:forEach var="material" items="${materialStatusList}" varStatus="status">
+                <c:forEach var="material" items="${monthAdjustmentList}" varStatus="status">
+                    <tr>
+                        <td>${material.materialCode}</td>
+                        <td>${material.materialName}</td>
+                        <td>${material.monthReceiveAmount}</td>
+                        <td>${material.useAmount}</td>
+                    </tr>
                 </c:forEach>
                 </tbody>
             </table>

@@ -4,6 +4,7 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.*;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
+import com.uni.uni_erp.dto.sales.SalesRefundDTO;
 import com.uni.uni_erp.exception.errors.Exception400;
 import com.uni.uni_erp.exception.errors.Exception401;
 import com.uni.uni_erp.exception.errors.Exception404;
@@ -918,12 +919,155 @@ public class InventoryService {
         return alarmCycleDTOList;
     }
 
-    public List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustment(HttpSession session) {
+    public List<MaterialDTO.MaterialMonthAdjustmentDTO> getMonthAdjustment(HttpSession session) {
         Integer storeId = getStoreId(session);
 
-        List<MaterialOrder> materialOrderList = materialOrderRepository.findByStoreId(storeId);
+        List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentDTOList = new ArrayList<>();
+        // Map<Long, MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentMap = monthAdjustmentDTOList.stream().collect(Collectors.toMap(MaterialDTO.MaterialMonthAdjustmentDTO::getMaterialCode, Function.identity()));
 
-        return null;
+        // 현재 연도와 월을 가져옵니다.
+        int currentYear = LocalDate.now().getYear();
+        int currentMonth = LocalDate.now().getMonthValue();
+
+        // Repository 메소드 호출
+        List<MaterialOrder> orders = materialOrderRepository.findByEnterDateInCurrentMonthAndStoreId(currentYear, currentMonth, storeId);
+
+        for(MaterialOrder order : orders) {
+            monthAdjustmentDTOList.add(new MaterialDTO.MaterialMonthAdjustmentDTO(order));
+        }
+
+
+
+        return monthAdjustmentDTOList;
     }
+
+    @Transactional
+    public void cancelOrder(List<SalesRefundDTO> salesRefundDTOList) {
+        // 환불된 상품의 제품 코드 리스트 추출
+        List<Long> productCodes = salesRefundDTOList.stream()
+                .map(SalesRefundDTO::getItemCode)
+                .collect(Collectors.toList());
+
+        // 제품 코드로 해당 제품들을 조회
+        List<Product> productList = productRepository.findAllByProductCodes(productCodes);
+
+        // 제품 코드를 키로 하는 Product 맵 생성
+        Map<Long, Product> productMap = productList.stream()
+                .collect(Collectors.toMap(Product::getProductCode, Function.identity()));
+
+        // 필요한 자재 ID 추출
+        Set<Integer> requiredMaterialIds = productList.stream()
+                .flatMap(product -> product.getIngredients().stream())
+                .map(ingredient -> ingredient.getMaterial().getId())
+                .collect(Collectors.toSet());
+
+        // 필요한 자재 ID 리스트 생성
+        List<Integer> materialIdList = new ArrayList<>(requiredMaterialIds);
+
+        // 자재 상태 조회
+        List<MaterialStatus> materialStatusList = materialStatusRepository.findByMaterialIds(materialIdList);
+        // 자재 ID를 키로 하는 MaterialStatus 맵 생성
+        Map<Integer, MaterialStatus> materialStatusMap = materialStatusList.stream()
+                .collect(Collectors.toMap(ms -> ms.getMaterial().getId(), Function.identity()));
+
+        // 필요한 자재의 MaterialOrder를 조회
+        List<MaterialOrder> materialOrderList = materialOrderRepository.findByMaterialIds(materialIdList);
+        // MaterialCode를 키로 하는 MaterialOrder 리스트 맵 생성 (유통기한 순으로 정렬된 상태)
+        Map<Long, List<MaterialOrder>> ordersByMaterialCode = materialOrderList.stream()
+                .collect(Collectors.groupingBy(
+                        mo -> mo.getMaterial().getMaterialCode(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparing(MaterialOrder::getExpirationDate))
+                                        .collect(Collectors.toList())
+                        )
+                ));
+
+        // 환불된 각 상품에 대해 처리
+        for (SalesRefundDTO refundDTO : salesRefundDTOList) {
+            Long productCode = refundDTO.getItemCode();
+            Integer quantity = refundDTO.getQuantity();
+
+            Product product = productMap.get(productCode);
+            if (product == null) {
+                log.warn("Product not found for code: " + productCode);
+                throw new Exception400("환불된 상품 중 존재하지 않는 상품이 있습니다: " + productCode);
+            }
+
+            // 각 제품의 자재 사용량 계산 및 자재 상태 업데이트
+            for (Ingredient ingredient : product.getIngredients()) {
+                Material material = ingredient.getMaterial();
+                Integer materialId = material.getId();
+                MaterialStatus materialStatus = materialStatusMap.get(materialId);
+                if (materialStatus == null) {
+                    log.warn("MaterialStatus not found for material ID: " + materialId);
+                    throw new Exception400("자재 상태를 찾을 수 없습니다: " + materialId);
+                }
+
+                // 단위 변환 후 사용량 계산
+                double usedAmount = unitConversionService.convert(
+                        ingredient.getAmount() * quantity,
+                        ingredient.getUnit(),
+                        material.getUnit(),
+                        material
+                );
+
+                // MaterialOrder에서 유통기한 역순으로 사용량 추가
+                addAmountToMaterialOrder(ordersByMaterialCode, material.getMaterialCode(), usedAmount);
+
+                // 이론량 및 실제량 증가
+                double newTheoreticalAmount = NumberFormatter.formatToTwoDecimal(
+                        materialStatus.getTheoreticalAmount() + usedAmount
+                );
+                double newActualAmount = NumberFormatter.formatToTwoDecimal(
+                        materialStatus.getActualAmount() + usedAmount
+                );
+
+                materialStatus.setTheoreticalAmount(newTheoreticalAmount);
+                materialStatus.setActualAmount(newActualAmount);
+
+                // 손실량 계산
+                materialStatus.setLoss(
+                        NumberFormatter.formatToTwoDecimal(
+                                newActualAmount - newTheoreticalAmount
+                        )
+                );
+            }
+        }
+
+        // 변경된 자재 상태 저장
+        materialStatusRepository.saveAll(materialStatusList);
+        // 변경된 MaterialOrder는 영속성 컨텍스트에 의해 자동으로 저장됩니다.
+    }
+
+    private void addAmountToMaterialOrder(Map<Long, List<MaterialOrder>> ordersByMaterialCode, long materialCode, double amount) {
+        List<MaterialOrder> materialOrderList = ordersByMaterialCode.get(materialCode);
+        if (materialOrderList == null || materialOrderList.isEmpty()) {
+            // 처리할 주문이 없을 경우
+            return;
+        }
+        double remainingAmount = amount;
+        // 유통기한 역순으로 처리 (최근에 사용된 주문부터)
+        for (int i = materialOrderList.size() - 1; i >= 0; i--) {
+            MaterialOrder order = materialOrderList.get(i);
+            double maxUseAmount = order.getAmount();
+            double currentUseAmount = order.getUseAmount();
+            double availableToAdd = maxUseAmount - currentUseAmount;
+
+            if (availableToAdd >= remainingAmount) {
+                // 남은 양을 모두 현재 주문에 추가할 수 있는 경우
+                order.setUseAmount(currentUseAmount + remainingAmount);
+                order.setIsUse(true); // 사용 가능 상태로 변경
+                break;
+            } else {
+                // 현재 주문에 추가할 수 있는 만큼 추가하고 다음 주문으로 이동
+                order.setUseAmount(maxUseAmount);
+                order.setIsUse(true);
+                remainingAmount -= availableToAdd;
+            }
+        }
+    }
+
 
 }
