@@ -3,6 +3,8 @@ package com.uni.uni_erp.repository.sales;
 import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.dto.sales.SalesDTO;
+import com.uni.uni_erp.dto.sales.SalesDetailDTO;
+import com.uni.uni_erp.dto.sales.SalesQuantityDTO;
 import com.uni.uni_erp.dto.sales.SalesQuantityDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

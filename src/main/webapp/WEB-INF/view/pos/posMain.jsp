@@ -361,22 +361,22 @@ addToOrderButtons.forEach(function(button) {
             return;
         }
 
-        const itemName = this.getAttribute('data-item');
-        const itemCode = this.getAttribute('data-code');
-        const itemPrice = parseInt(this.getAttribute('data-price'));
+            const itemName = this.getAttribute('data-item');
+            const itemCode = this.getAttribute('data-code');
+            const itemPrice = parseInt(this.getAttribute('data-price'));
 
         // 이미 주문 목록에 있는 항목인지 확인
         const existingItem = orderList.find(function(item) {
             return item.name === itemName;
         });
 
-        if (existingItem) {
-            // 이미 있는 항목이면 수량과 총 금액 증가
-            existingItem.quantity += 1;
-        } else {
-            // 새로운 항목이면 목록에 추가
-            orderList.push({ name: itemName, price: itemPrice, quantity: 1, productCode: itemCode});
-        }
+            if (existingItem) {
+                // 이미 있는 항목이면 수량과 총 금액 증가
+                existingItem.quantity += 1;
+            } else {
+                // 새로운 항목이면 목록에 추가
+                orderList.push({ name: itemName, price: itemPrice, quantity: 1, productCode: itemCode});
+            }
 
         totalAmount += itemPrice;  // 총 금액 업데이트
         updateOrderSummary();
@@ -559,6 +559,8 @@ function handleButtonClick() {
                     totalAmount = 0;
                     updateOrderSummary();
                     window.location.href = "/erp/pos/main"
+                } else if(response.status === 422) {
+                    alert('재고가 부족합니다.');
                 } else {
                     alert('결제에 실패했습니다. 다시 시도해주세요.');
                 }

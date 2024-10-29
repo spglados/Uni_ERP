@@ -19,16 +19,27 @@ import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
 
     @PersistenceContext
@@ -69,7 +80,7 @@ public class ProductService {
 
         // 상품 목록 처리
         for (Product product : productRepository.findProductByStoreId(storeId)) {
-            ProductDTO productDTO = product.toProductDTO();
+            ProductDTO productDTO = new ProductDTO(product);
 
             // 판매량 초기화
             productDTO.setYearSales(0);
@@ -199,8 +210,109 @@ public class ProductService {
         productRepository.save(product);
 
         // 저장 후 DTO로 변환해서 반환
-        return product.toProductDTO();
+        return new ProductDTO(product);
     }
 
+    /**
+     * 특정 상품 코드로 상품 데이터 조회하여 ProductResponseDTO 반환
+     *
+     * @param productCode 조회할 상품 코드
+     * @param storeId     조회할 스토어 ID
+     * @return ProductResponseDTO 또는 null
+     */
+    @Transactional(readOnly = true)
+    public ProductDTO.ProductResponseDTO getProductResponseDTOByProductCode(Long productCode, Integer storeId) {
+        Optional<Product> optionalProduct = productRepository.findByProductCode(productCode);
+        System.out.println(optionalProduct.toString());
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+
+            // 스토어 ID 일치 확인
+            if (!product.getStore().getId().equals(storeId)) {
+                return null;
+            }
+
+            // Blob 이미지를 Base64 문자열로 변환
+            String imageBase64 = null;
+            if (product.getImage() != null) {
+                try {
+                    byte[] imageBytes = product.getImage().getBytes(1, (int) product.getImage().length());
+                    imageBase64 = Base64.getEncoder().encodeToString(imageBytes);
+                } catch (Exception e) {
+                    log.warn("이미지 변환 실패: " + e.getMessage());
+                }
+            }
+
+            // 기존 ProductDTO에서 필요한 필드 추출
+            ProductDTO dto = new ProductDTO(product);
+            ProductDTO.ProductResponseDTO responseDTO = ProductDTO.ProductResponseDTO.builder()
+                    .id(dto.getId())
+                    .productCode(dto.getProductCode())
+                    .name(dto.getName())
+                    .category(dto.getCategory())
+                    .price(dto.getPrice())
+                    .description(dto.getDescription())
+                    .todaySales(dto.getTodaySales())
+                    .yesterdaySales(dto.getYesterdaySales())
+                    .monthSales(dto.getMonthSales())
+                    .previousMonthSales(dto.getPreviousMonthSales())
+                    .yearSales(dto.getYearSales())
+                    .image(imageBase64)
+                    .build();
+
+            return responseDTO;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 특정 상품 코드로 상품 데이터 수정
+     *
+     * @param productCode 수정할 상품 코드
+     * @param dto         수정된 상품 데이터
+     * @param imageFile   수정된 이미지 파일 (선택 사항)
+     * @param storeId     스토어 ID
+     * @param userId      사용자 ID
+     * @return 수정 성공 여부
+     */
+    @Transactional
+    public boolean updateProductByProductCode(Long productCode, ProductDTO dto, MultipartFile imageFile, Integer storeId, Integer userId) {
+        Optional<Product> optionalProduct = productRepository.findByProductCode(productCode);
+        if (!optionalProduct.isPresent()) {
+            return false;
+        }
+
+        Product product = optionalProduct.get();
+
+        // 스토어 ID 일치 확인
+        if (!product.getStore().getId().equals(storeId)) {
+            return false;
+        }
+
+        // 수정 가능한 필드 업데이트
+        product.setName(dto.getName());
+        product.setCategory(dto.getCategory());
+        product.setPrice(dto.getPrice());
+        product.setDescription(dto.getDescription());
+        // 이미지 처리
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                Blob blob = new SerialBlob(imageFile.getBytes());
+                product.setImage(blob);
+            } catch (IOException e) {
+                log.warn("이미지 업로드 실패: " + e.getMessage());
+                return false;
+            } catch (SerialException e) {
+                throw new RuntimeException(e);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // 변경 사항 저장
+        productRepository.save(product);
+        return true;
+    }
 
 }

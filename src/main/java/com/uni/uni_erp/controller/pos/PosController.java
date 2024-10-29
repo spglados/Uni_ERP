@@ -1,7 +1,10 @@
 package com.uni.uni_erp.controller.pos;
 
+import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.SalesRefund;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
+import com.uni.uni_erp.dto.erp.material.MaterialDTO;
+import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
@@ -27,6 +30,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -66,6 +71,15 @@ public class PosController {
         model.addAttribute("pageSize", size);
         model.addAttribute("category", category);
         model.addAttribute("previousOrders", previousOrders);
+
+        // 유통기한 임박 자재
+        List<MaterialDTO.nearingExpirationDateDTO> nearingExpirationDateList = inventoryService.nearingExpirationDate(session);
+
+        // 재고 부족 알람 리스트
+        // TODO 반드시 알람 단위가 메인 단위와 일치해야 결과가 나옴 !! 공지 필수 !!!
+        List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycleList = inventoryService.alarmCycle(session);
+        model.addAttribute("nearingExpirationDateList", nearingExpirationDateList);
+        model.addAttribute("alarmCycleList", alarmCycleList);
 
         return "pos/posMain";  // posMain.css 화면 반환
     }
@@ -126,7 +140,13 @@ public class PosController {
             salesService.saveSalesDetail(salesDetailDTO, salesService.findLatestOrderNum());
         }
 
-        inventoryService.calcMaterialByProductSales(productSalesDTOList, session);
+
+        boolean checkStock = inventoryService.calcMaterialByProductSales(productSalesDTOList, session);
+
+        if(!checkStock) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body("재고 부족으로 인해 계산할 수 없습니다.");
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body("Sales inserted successfully!");
     }
@@ -185,6 +205,9 @@ public class PosController {
                         .unitPrice(salesDetailDTO.getUnitPrice())
                         .refundStatus(refundMethod.equals("cancel") ? String.valueOf(SalesRefund.RefundStatus.취소) : String.valueOf(SalesRefund.RefundStatus.환불))
                         .build();
+
+                // TODO 취소 품목 로직 추가
+                
                 salesService.saveSalesRefund(salesRefundDTO, orderNum);
             }
             return ResponseEntity.status(HttpStatus.OK).body(refundMethod.equals("cancel") ? "취소 완료" : "환불 완료");

@@ -3,9 +3,11 @@ package com.uni.uni_erp.config;
 import com.uni.uni_erp.interceptor.LoginInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -20,4 +22,5 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/erp/**");  // /erp 경로 하위 요청을 인터셉터로 검사
     }
+
 }
