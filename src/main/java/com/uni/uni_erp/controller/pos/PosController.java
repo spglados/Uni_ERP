@@ -210,6 +210,9 @@ public class PosController {
 
                 salesRefundDTOList.add(salesRefundDTO);
 
+
+                // TODO 취소 품목 로직 추가
+
                 salesService.saveSalesRefund(salesRefundDTO, orderNum);
             }
             inventoryService.cancelOrder(salesRefundDTOList);

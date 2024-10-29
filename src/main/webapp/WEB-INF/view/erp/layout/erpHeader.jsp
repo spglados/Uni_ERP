@@ -23,6 +23,7 @@
           rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="/css/erp/erpMain.css">
+
 </head>
 <body>
 <div class="erp-container">
@@ -30,9 +31,9 @@
     <nav class="sidebar">
         <!-- 로고 이미지 -->
         <a href="/erp/main">
-            <img src="/images/logo/logo_clear.png" class="animate__animated animate__fadeIn" alt="메인로고"
-                 style="height: 100px; width: 125px;">
+            <img src="/images/logo/logo_clear.png" class="animate__animated animate__fadeIn" alt="메인로고" style="height: 100px; width: 125px;">
         </a>
+
         <!-- 메뉴 리스트 -->
         <ul class="sidebar-menu">
             <li>
