@@ -101,7 +101,9 @@ public class HrService {
             employeeEntity.setName(employeeDTO.getName());
             employeeEntity.setBirthday(employeeDTO.getBirthday());
             employeeEntity.setGender(EnumCommonUtil.getEnumFromString(Employee.Gender.class, employeeDTO.getGender()));
-            employeeEntity.setEmail(employeeDTO.getEmail());
+            // 이메일 아이디와 도메인을 조합하여 이메일 설정
+            String fullEmail = employeeDTO.getEmail() + "@" + employeeDTO.getEmailDomain();
+            employeeEntity.setEmail(fullEmail);
             employeeEntity.setPhone(employeeDTO.getPhone());
             employeeEntity.setAddress(employeeDTO.getAddress());
             employeeEntity.setAccountNumber(employeeDTO.getAccountNumber());

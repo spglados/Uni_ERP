@@ -94,7 +94,7 @@
             @
             <input type="text" id="emailDomain" name="emailDomain" required
                    title="도메인을 입력하세요" value="">
-            <select id="domainSelect" onchange="updateEmail()">
+            <select id="domainSelect" onchange="updateEmailDomain()">
                 <option value="">직접 입력</option>
                 <option value="naver.com">naver.com</option>
                 <option value="daum.net">daum.net</option>
@@ -167,7 +167,7 @@
             <input type="date" id="editHealthCertificateDate" name="healthCertificateDate"/>
         </div>
 
-        <button type="submit">수정하기</button>
+        <button type="submit" onclick="updateEmployee()">수정하기</button>
         <button type="button" onclick="closeModal()">취소</button>
     </form>
 </div>
@@ -301,7 +301,8 @@
             document.getElementById('editEmployeeBirthday').value = birthday;
             document.getElementById('editEmployeeGender').value = gender;
             document.getElementById('editEmployeeAddress').value = address;
-            document.getElementById('editEmployeeEmail').value = email;
+            document.getElementById('editEmployeeEmail').value = email.split('@')[0];
+            document.getElementById('emailDomain').value = email.split('@')[1];
             document.getElementById('editEmployeePhone').value = phone;
 
 
@@ -375,7 +376,7 @@
                         closeModal();
                         location.reload();
                     } else {
-                        alert('수정 실패: ' + response.statusText);
+                        alert('직원 정보 수정에 실패했습니다. 다시 시도해주세요.: ' + response.statusText);
                     }
                 })
                 .catch(error => {
@@ -383,18 +384,47 @@
                 });
         });
     });
-    function updateEmail() {
-        const emailInput = document.getElementById("editEmployeeEmail");
-        const domainInput = document.getElementById("emailDomain");
-        const selectedDomain = document.getElementById("domainSelect").value;
 
-        // 선택된 도메인이 있으면 도메인 입력란의 값으로 업데이트
+    function updateEmailDomain() {
+        const domainSelect = document.getElementById("domainSelect");
+        const emailDomainInput = document.getElementById("emailDomain");
+
+
+        // 선택된 도메인 값을 가져옴
+        const selectedDomain = domainSelect.value;
+
+        // 선택된 도메인이 있을 경우 emailDomain 입력란 업데이트
+        if (selectedDomain) {
+            emailDomainInput.value = selectedDomain; // 선택한 도메인으로 도메인 입력란 업데이트
+        } else {
+            emailDomainInput.value = ""; // 도메인이 선택되지 않은 경우 초기화
+        }
+
+        // 이메일 ID를 업데이트하는 함수 호출
+        updateFullEmail();
+    }
+
+    function updateFullEmail() {
+        const emailIdInput = document.getElementById("editEmployeeEmail");
+        const emailDomainInput = document.getElementById("emailDomain");
+
+        const emailId = emailIdInput.value.split('@')[0]; // '@' 이전의 이메일 ID
+        const domainValue = emailDomainInput.value; // 도메인 입력란의 값
+
+        // 도메인이 존재할 경우 이메일 ID는 그대로 두고, 도메인 선택 시 사용
+        if (domainValue) {
+            emailIdInput.value = emailId; // 이메일 ID를 그대로 유지
+        }
+    }
+
+
+    // 선택된 도메인이 있으면 도메인 입력란의 값으로 업데이트
         if (selectedDomain) {
             domainInput.value = selectedDomain; // 도메인 선택 시 입력란에 도메인 업데이트
         } else {
             domainInput.value = ''; // 직접 입력으로 전환 시 도메인 입력란 비우기
         }
-    }
+
 
 
     function formatPhoneNumber(input) {
@@ -406,6 +436,21 @@
         } else {
             input.value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
         }
+    }
+
+    function updateEmployee() {
+        const emailIdInput = document.getElementById("editEmployeeEmail");
+        const emailDomainInput = document.getElementById("emailDomain");
+
+        const fullEmail = emailIdInput.value + "@" + emailDomainInput.value; // 전체 이메일
+        const existingEmails = ["existing1@example.com", "existing2@example.com"]; // DB에서 가져온 기존 이메일 목록
+
+        // 기존 이메일과 비교
+        if (existingEmails.includes(fullEmail)) {
+            alert("중복된 이메일입니다."); // 중복 경고 메시지
+            return; // 수정 막기
+        }
+
     }
 </script>
 
