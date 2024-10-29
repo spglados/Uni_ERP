@@ -30,8 +30,13 @@
             </div>
         </div>
     </div>
-    <div>
-        <p>내용</p>
+    <div class="main-introduce-container">
+        <p>회사 소개</p>
+        <h1>소상공인 대상 ERP 시스템</h1>
+        <p>UNI-ERP는 소상공인 대상 어쩌고 저쩌고 최예나 네모네모 많이 사랑해주세요<br>
+            UNI-ERP는 소상공인 대상 어쩌고 저쩌고 최예나 스마일리 많이 사랑해주세요<br>
+            UNI-ERP는 소상공인 대상 어쩌고 저쩌고 최예나 굿모닝 많이 사랑해주세요<br>
+        </p>
     </div>
     <div class="main-section-container">
         <div class="main-section-line-container">
