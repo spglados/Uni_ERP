@@ -6,14 +6,15 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.dto.BankDTO;
-import com.uni.uni_erp.dto.erp.hr.EmpPositionDTO;
-import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
-import com.uni.uni_erp.dto.erp.hr.EmployeeUpdateDTO;
-import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
+import com.uni.uni_erp.dto.erp.hr.*;
 import com.uni.uni_erp.exception.errors.Exception500;
+import com.uni.uni_erp.service.erp.hr.AttendanceService;
 import com.uni.uni_erp.service.erp.hr.HrService;
 import com.uni.uni_erp.service.erp.hr.ScheduleService;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
+import com.uni.uni_erp.util.Str.GsonUtil;
+import com.uni.uni_erp.util.define.Define_HR;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +36,17 @@ public class HrController {
 
     private final HrService hrService;
     private final ScheduleService scheduleService;
+    private final AttendanceService attendanceService;
     private final HttpSession session;
+
+    @GetMapping("/download/excel")
+    public void downloadExcel(HttpSession session, @RequestParam(required = false) String employeeStatus, HttpServletResponse response) {
+        // 상태값 출력 확인
+        System.out.println("Employee Status: " + employeeStatus);
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        hrService.downloadEmployeeExcel(storeId, employeeStatus, response);
+    }
 
     // 직원 수정
     @PutMapping("/employees/{id}")
@@ -48,6 +60,7 @@ public class HrController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("수정 중 오류 발생: " + e.getMessage());
         }
     }
+
 
     // 직원 등록 페이지 이동
     @GetMapping("/employee-register")
@@ -66,7 +79,11 @@ public class HrController {
     @PostMapping("/registerEmployee")
     public String registerEmployee(@ModelAttribute EmployeeDTO employeeDTO, @RequestParam Integer storeId, Model model, HttpSession session) {
         // TODO UserDTO로 변경 필
-        User user = (User) session.getAttribute("sessionUser");
+        String email = employeeDTO.getEmail() + "@" + employeeDTO.getEmailDomain();
+        employeeDTO.setEmail(email);
+
+
+        User user = (User) session.getAttribute("userSession");
         try {
             hrService.registerEmployee(employeeDTO, storeId, user.getId());
             return "redirect:/erp/hr/employee-list"; // 등록 성공 시 직원 리스트로 리다이렉트
@@ -97,9 +114,18 @@ public class HrController {
 
     // 직원 목록 조회
     @GetMapping("/employee-list")
-    public String employeeListPage(HttpSession session, Model model) {
+    public String employeeListPage(@RequestParam(required = false) String status, HttpSession session, Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreId(storeId); // EmployeeDTO로 변경
+
+        List<EmployeeDTO> employeeDTOList;
+
+        // 상태가 있는 경우 해당 상태의 직원 목록을 스토어 ID로 필터링하여 조회
+        if (status != null && !status.isEmpty()) {
+            employeeDTOList = hrService.getEmployeesByStatusAndStoreId(status, storeId);
+        } else {
+            // 상태가 없을 경우 스토어 ID에 따른 모든 직원 목록 조회
+            employeeDTOList = hrService.getEmployeesByStoreId(storeId);
+        }
 
         // 모든 직책 목록 조회
         List<EmpPositionDTO> positionDTOList = hrService.getPositionsByStoreId(storeId);
@@ -133,6 +159,56 @@ public class HrController {
     }
 
     /**
+     * 근태 관리 페이지 요청
+     * @param startDate 날짜 필터
+     * @param endDate 날짜 필터
+     * @param session 현재 상점 확인용
+     * @param model 근태 리스트 추가
+     * @return jsp
+     */
+    @GetMapping("/attendance-list")
+    public String attendanceListPage(@RequestParam(name = "startDate", required = false) LocalDate startDate, @RequestParam(name = "endDate", required = false) LocalDate endDate, HttpSession session, Model model) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        List<AttendanceDTO.GridDTO> dataList = attendanceService.findAttendanceList(storeId, startDate, endDate);
+        String dataJson = GsonUtil.convertToJson(dataList);
+        System.out.println(dataJson);
+        model.addAttribute(Define_HR.DATALIST, dataJson);
+        return "erp/hr/attendanceList";
+    }
+
+    /**
+     * 사번으로 조회 요청
+     * @param uniqueEmployeeNumber 사번
+     * @param session 현재 상점 확인용
+     * @return 조회된 근무 리스트 및 사원 이름 반환
+     */
+    @GetMapping("/attendance/{uniqueEmployeeNumber}")
+    public ResponseEntity<?> attendanceRequest(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        List<AttendanceDTO.ResponseDTO> resDTO = attendanceService.findSchedulesByUniqueEmployeeNumber(uniqueEmployeeNumber, storeId);
+        Map<String, Object> response = new HashMap<>();
+        response.put(Define_HR.DATALIST, resDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 사번으로 출퇴근 요청
+     * @param uniqueEmployeeNumber 사번
+     * @param reqDTO 출퇴근 여부 및 비밀번호
+     * @param session 현재 상점 확인용
+     * @return 업데이트된 근무 리스트 및 사원 이름 반환
+     */
+    @PutMapping("/attendance/{uniqueEmployeeNumber}")
+    public ResponseEntity<?> attendanceProc(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, @RequestBody AttendanceDTO.RequestDTO reqDTO, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        List<AttendanceDTO.ResponseDTO> resDTO = attendanceService.attendanceProc(uniqueEmployeeNumber, storeId, reqDTO);
+        Map<String, Object> response = new HashMap<>();
+        response.put("dataList", resDTO);
+        return ResponseEntity.ok(response);
+    }
+
+
+    /**
      * 근무 일정 관리 페이지 호출
      * @param type
      * @param model
@@ -148,7 +224,6 @@ public class HrController {
         // 일정 조회
         List<ScheduleDTO.ResponseDTO> schedules = scheduleService.findByStoreIdAndType(storeId, scheduleType);
 
-        // TODO DTO로 변경해야함 모든 근무자 조회
         List<EmployeeDTO> employees = hrService.getEmployeesByStoreId(storeId);
         List<Map<String, Object>> employeesMap = employees.stream()
                 .map(employee -> {
@@ -213,7 +288,7 @@ public class HrController {
         Map<String, Object> response = new HashMap<>();
         if (schedule != null) {
             response.put("schedule", schedule);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }

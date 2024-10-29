@@ -150,10 +150,10 @@ function createSchedule(empId, start, end, calendar) {
         .then(response => {
             if (response.status === 201) {
                 return response.json();
-            } else if (response.status === 400) {
-                throw new Error('잘못된 요청입니다.');
             } else {
-                throw new Error('알 수 없는 오류가 발생했습니다.');
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message);
+                });
             }
         })
         .then(data => {
@@ -189,7 +189,7 @@ function updateSchedule(id, start, end, calendar, info) {
         }),
     })
         .then(response => {
-            if (response.status === 201) {
+            if (response.status === 200) {
                 return response.json();
             } else if (response.status === 400) {
                 throw new Error('잘못된 요청입니다.');

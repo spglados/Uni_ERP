@@ -3,15 +3,17 @@ package com.uni.uni_erp.controller.erp;
 import com.google.gson.Gson;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.service.invertory.InventoryService;
+import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -39,8 +41,16 @@ public class InventoryController {
     }
 
     @GetMapping("/registration")
-    public String registerPage() {
+    public String registerPage(Model model, HttpSession session) {
+        List<UnitCategory> unitCategories = Arrays.stream(UnitCategory.values()).toList();
+        model.addAttribute("unitCategories", unitCategories);
+
         return "/erp/inventory/register";
+    }
+
+    @PostMapping("/registration")
+    public ResponseEntity<MaterialDTO.MaterialSaveDTO> registerPage(@RequestBody MaterialDTO.MaterialSaveDTO materialSaveDTO, HttpSession session) {
+        return ResponseEntity.ok(inventoryService.saveMaterial(materialSaveDTO, session));
     }
 
     @GetMapping("/status")
@@ -57,19 +67,99 @@ public class InventoryController {
         return "/erp/inventory/situation";
     }
 
+    @GetMapping("/correction")
+    public String correctionPage(Model model) {
+        List<UnitCategory> unitCategories = Arrays.stream(UnitCategory.values()).toList();
+        model.addAttribute("unitCategories", unitCategories);
+        return "/erp/inventory/correction";
+    }
+
+    @GetMapping("/materials/{materialCode}")
+    @ResponseBody
+    public ResponseEntity<MaterialDTO.MaterialSaveDTO> getMaterial(@PathVariable Long materialCode) {
+        MaterialDTO.MaterialSaveDTO material = inventoryService.getMaterialByCode(materialCode);
+        if (material == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(material);
+    }
+
+    @PutMapping("/materials")
+    @ResponseBody
+    public ResponseEntity<String> updateMaterial(
+             @RequestBody MaterialDTO.MaterialSaveDTO materialSaveDTO,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessages = new StringBuilder();
+            bindingResult.getAllErrors().forEach(error -> {
+                errorMessages.append(error.getDefaultMessage()).append("\n");
+            });
+            return ResponseEntity.badRequest().body(errorMessages.toString());
+        }
+
+        boolean isUpdated = inventoryService.updateMaterial(materialSaveDTO);
+        if (isUpdated) {
+            return ResponseEntity.ok("자재가 성공적으로 수정되었습니다.");
+        } else {
+            return ResponseEntity.status(500).body("자재 수정에 실패했습니다.");
+        }
+    }
+
     @GetMapping("/day-adjustment")
-    public String dayAdjustmentPage() {
+    public String dayAdjustmentPage(Model model, HttpSession session) {
+        List<MaterialDTO.MaterialStatusDTO> materialStatusDTOList = inventoryService.getMaterialStatus(session);
+        model.addAttribute("materialStatusList", materialStatusDTOList);
         return "/erp/inventory/day-adjustment";
     }
 
+    @PostMapping("/day-adjustment")
+    public ResponseEntity<Void> saveDayAdjustment(HttpSession session, @RequestBody List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
+
+        inventoryService.saveDayAdjustmentList(session, reqDtoList);
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/month-adjustment")
-    public String monthAdjustmentPage() {
+    public String monthAdjustmentPage(Model model, HttpSession session) {
+        List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentList =
+                inventoryService.getMonthAdjustment(session);
+        model.addAttribute("monthAdjustmentList", monthAdjustmentList);
         return "/erp/inventory/month-adjustment";
     }
 
+    @PostMapping("/month-adjustment")
+    public ResponseEntity<List<MaterialDTO.DisposalHistoryDTO>> monthAdjustmentPage(HttpSession session) {
+        List<MaterialDTO.DisposalHistoryDTO> disposalHistory = inventoryService.getDisposalHistory(session);
+        System.out.println(disposalHistory.toString());
+        return ResponseEntity.ok(disposalHistory);
+    }
+
     @GetMapping("/disposal")
-    public String disposePage() {
+    public String disposePage(Model model, HttpSession session) {
+        List<MaterialDTO.MaterialDisposalListDTO> materialDisposalListDTO = inventoryService.getMaterialDisposalList(session);
+        List<MaterialDTO.ProductDisposalListDTO> productDisposalListDTO = inventoryService.getProductDisposalList(session);
+        model.addAttribute("materialDisposalList", materialDisposalListDTO);
+        model.addAttribute("productDisposalList", productDisposalListDTO);
         return "/erp/inventory/dispose";
+    }
+
+    @PostMapping("/disposal")
+    public ResponseEntity<?> saveDisposal(HttpSession session, @RequestBody MaterialDTO.DisposalSaveDTO reqDtoList) {
+
+        if(reqDtoList.getMaterials().isEmpty() && reqDtoList.getProducts().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        inventoryService.saveDisposal(session, reqDtoList);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/disposalHistory")
+    public String disposeHistoryPage(Model model, HttpSession session) {
+        return "/erp/inventory/disposalHistory";
     }
 
 }

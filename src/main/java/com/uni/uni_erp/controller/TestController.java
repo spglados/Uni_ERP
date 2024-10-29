@@ -27,4 +27,9 @@ public class TestController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/modal-test")
+    public String testModal() {
+        return "/pos/modalTest";
+    }
+
 }

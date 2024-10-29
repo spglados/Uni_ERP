@@ -15,6 +15,7 @@ public class EmployeeUpdateDTO {
     private Integer bankId;
     private String bankName;
     private String email;
+    private String emailDomain;
     private String gender;
     private String accountNumber;
     private String employmentStatus;
