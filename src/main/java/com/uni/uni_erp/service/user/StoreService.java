@@ -1,6 +1,7 @@
 package com.uni.uni_erp.service.user;
 
 import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.sales.StoreListDTO;
 import com.uni.uni_erp.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;

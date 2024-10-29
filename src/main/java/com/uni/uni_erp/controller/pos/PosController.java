@@ -1,19 +1,24 @@
 package com.uni.uni_erp.controller.pos;
 
+import com.uni.uni_erp.domain.entity.SalesRefund;
 import com.uni.uni_erp.domain.entity.erp.pos.Pos;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.dto.erp.material.MaterialDTO;
+import com.uni.uni_erp.dto.erp.product.ProductDTO;
+import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.dto.sales.SalesInsertDTO;
-import com.uni.uni_erp.service.sales.SalesService;
+import com.uni.uni_erp.dto.sales.SalesRefundDTO;
+import com.uni.uni_erp.service.invertory.InventoryService;
 import com.uni.uni_erp.service.pos.PosService;
+import com.uni.uni_erp.service.sales.SalesService;
 import com.uni.uni_erp.service.user.StoreService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.tags.shaded.org.apache.bcel.generic.IFLT;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,10 +30,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Controller

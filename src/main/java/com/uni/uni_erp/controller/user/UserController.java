@@ -46,7 +46,6 @@ public class UserController {
         // TODO 유효성 검사 추가
         User user = userService.login(dto);
         PrincipalDTO principalDTO = userService.searchUserId(user.getId());
-        List<Integer> storeIdList = storeService.ownedStores(user.getId());
         List<StoreDTO> storeList = storeService.ownedStores(user.getId());
 
         if(storeList != null) {
@@ -57,7 +56,7 @@ public class UserController {
             }
         }
 
-        session.setAttribute("userSession", principalDTO);
+        session.setAttribute("principal", principalDTO);
         if (user != null) {
             session.setAttribute("userSession", user);
             System.out.println("User logged in: " + user.getId());
