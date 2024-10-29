@@ -56,9 +56,11 @@
                     <li><a href="/erp/inventory/registration">재고 등록</a></li>
                     <li><a href="/erp/inventory/situation">재고 현황</a></li>
                     <li><a href="/erp/inventory/status">재고 관리</a></li>
+                    <li><a href="/erp/inventory/correction">재고 수정</a></li>
                     <li><a href="/erp/inventory/day-adjustment">일 재고 현황</a></li>
                     <li><a href="/erp/inventory/month-adjustment">월 재고 현황</a></li>
-                    <li><a href="/erp/inventory/disposal">폐기 관리</a></li>
+                    <li><a href="/erp/inventory/disposal">폐기 등록</a></li>
+                    <li><a href="/erp/inventory/disposalHistory">폐기 내역</a></li>
                 </ul>
             </li>
             <li>
@@ -78,8 +80,9 @@
                     <div>상품 관리 <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/product/registration">상품 등록</a></li>
                     <li><a href="/erp/product/list">상품 목록</a></li>
+                    <li><a href="/erp/product/registration">상품 등록</a></li>
+                    <li><a href="/erp/product/correction">상품 수정</a></li>
                 </ul>
             </li>
             <li>

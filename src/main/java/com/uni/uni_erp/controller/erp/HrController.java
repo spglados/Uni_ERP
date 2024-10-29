@@ -59,6 +59,7 @@ public class HrController {
         }
     }
 
+
     // 직원 등록 페이지 이동
     @GetMapping("/employee-register")
     public String employeeRegisterPage(Model model) {

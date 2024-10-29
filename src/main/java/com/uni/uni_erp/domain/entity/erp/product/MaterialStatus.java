@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class MaterialStatus {
 
     @Id
@@ -30,5 +31,12 @@ public class MaterialStatus {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Material material;
+
+    @PrePersist
+    protected void onCreate() {
+        if(statusDate == null) {
+            statusDate = LocalDate.now();
+        }
+    }
 
 }

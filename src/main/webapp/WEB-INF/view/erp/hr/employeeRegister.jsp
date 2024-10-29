@@ -44,10 +44,18 @@
                    title="도메인을 입력하세요" value="${employeeDTO.email.split('@')[1]}">
             <select id="domainSelect" onchange="updateDomain()">
                 <option value="">직접 입력</option>
-                <option value="naver.com">naver.com</option>
-                <option value="daum.net">daum.net</option>
-                <option value="gmail.com">gmail.com</option>
-                <option value="nate.com">nate.com</option>
+                <option value="naver.com" <c:if test="${employeeDTO.emailDomain == 'naver.com'}">selected</c:if>>
+                    naver.com
+                </option>
+                <option value="daum.net" <c:if test="${employeeDTO.emailDomain == 'daum.net'}">selected</c:if>>
+                    daum.net
+                </option>
+                <option value="gmail.com" <c:if test="${employeeDTO.emailDomain == 'gmail.com'}">selected</c:if>>
+                    gmail.com
+                </option>
+                <option value="nate.com" <c:if test="${employeeDTO.emailDomain == 'nate.com'}">selected</c:if>>
+                    nate.com
+                </option>
             </select>
             <button type="button" onclick="checkEmail()">중복 확인</button>
             <span id="emailCheckResult" style="color: red;"></span> <!-- 이메일 중복 검사 결과 표시 -->
