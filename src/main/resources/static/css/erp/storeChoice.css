@@ -1,0 +1,119 @@
+/* posSelection.css */
+
+/* POS 선택 섹션 스타일 */
+.pos-selection-section {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.pos-selection-section h1 {
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    color: #0284FF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* POS 카드 컨테이너 */
+.pos-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
+
+/* POS 카드 스타일 */
+.pos-card {
+    background: rgba(90, 98, 104, 0.8);
+    border-radius: 10px;
+    width: 300px;
+    padding: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: white;
+    position: relative;
+}
+
+.pos-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.pos-card h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.pos-card p {
+    font-size: 1em;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+/* 선택 버튼 스타일 */
+.pos-select-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0284FF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.pos-select-btn:hover {
+    background-color: #026fcc;
+    transform: translateY(-3px);
+}
+
+/* 카드 호버 효과 */
+.pos-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+}
+
+.pos-card:hover img {
+    transform: scale(1.1);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+    .pos-card {
+        width: 45%;
+    }
+}
+
+@media (max-width: 768px) {
+    .pos-cards-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pos-card {
+        width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+    .pos-selection-section h1 {
+        font-size: 2em;
+    }
+
+    .pos-card {
+        width: 100%;
+    }
+
+    .pos-card p {
+        font-size: 0.9em;
+    }
+
+    .pos-select-btn {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+}

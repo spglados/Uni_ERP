@@ -40,6 +40,8 @@ public class MaterialOrder {
 
     private LocalDate enterDate;
 
+    private Double useAmount;
+
     private Boolean isUse;
 
     @ManyToOne
@@ -59,6 +61,10 @@ public class MaterialOrder {
 
         if(isUse == null) {
             isUse = Boolean.TRUE;
+        }
+
+        if(useAmount == null) {
+            useAmount = amount;
         }
 
     }

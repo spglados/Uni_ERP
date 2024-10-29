@@ -372,7 +372,7 @@ function showDropdown(index) {
 
 // "추가" 버튼 클릭 시 다른 페이지로 이동하는 함수
 function goToAddMaterialPage() {
-    window.location.href = '/erp/inventory/status'; // 추가 페이지로 이동
+    window.location.href = '/erp/inventory/registration'; // 추가 페이지로 이동
 }
 
 // 이미지 미리보기 기능
