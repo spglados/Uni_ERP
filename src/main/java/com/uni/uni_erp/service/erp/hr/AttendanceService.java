@@ -51,7 +51,7 @@ public class AttendanceService {
             List<AttendanceDTO.ResponseDTO> attendanceDTOList = new ArrayList<>();
             AttendanceDTO.ResponseDTO attendanceDTO = new AttendanceDTO.ResponseDTO();
             attendanceDTO.setName(employeeEntity.getName());
-            attendanceDTO.setStatus("UNPLANNED_WORK");
+            attendanceDTO.setStatus("UNPLANNED");
             attendanceDTOList.add(attendanceDTO);
             return attendanceDTOList;
         }
@@ -150,7 +150,7 @@ public class AttendanceService {
                 attendance.setStatus(Attendance.Status.ATTENDED);
             }
             // 일찍 온 시간
-            int earlyAttendanceMinutes = (int) Duration.between(attendanceTime, plannedEndTime).toMinutes();
+            int earlyAttendanceMinutes = (int) Duration.between(attendanceTime, plannedStartTime).toMinutes();
             // 늦게 간 시간
             int lateLeaveMinutes = (int) Duration.between(plannedEndTime, leaveTime).toMinutes();
             // 초과 시간 계산
