@@ -149,10 +149,10 @@
     function checkEmail() {
         const email = document.getElementById("email").value;
         const emailDomain = document.getElementById("emailDomain").value;
-        const fullEmail = `${email}@${emailDomain}`;
-
+        const fullEmail = email + "@" + emailDomain;
+        console.log(fullEmail);
         if (fullEmail) {
-            fetch(`/erp/hr/check-email?email=${fullEmail}`)
+            fetch("/erp/hr/check-email?email=" + encodeURIComponent(fullEmail))
                 .then(response => response.json())
                 .then(data => {
                     const resultText = data.isDuplicated ? "이미 사용 중인 이메일입니다." : "사용 가능한 이메일입니다.";

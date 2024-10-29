@@ -230,7 +230,7 @@ public class HrService {
                 .store(store)
                 .bank(bank)
                 .storeEmployeeNumber(newStoreEmployeeNumber)
-                .uniqueEmployeeNumber((long) (sessionUserId + store.getId() + newStoreEmployeeNumber))
+                .uniqueEmployeeNumber(Long.parseLong((sessionUserId + "" + store.getId() + "" + newStoreEmployeeNumber)))
                 .employmentStatus(Employee.EmploymentStatus.ACTIVE)
                 .build();
     }
