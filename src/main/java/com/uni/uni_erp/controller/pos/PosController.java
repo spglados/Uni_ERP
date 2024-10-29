@@ -118,7 +118,6 @@ public class PosController {
         // Save the Sales entity
         salesService.saveSales(salesInsertDTO);
 
-        List<SalesDetail> salesDetailList = new ArrayList<>();
         List<ProductDTO.ProductSalesDTO> productSalesDTOList = new ArrayList<>();
 
         // Create SalesDetail entities
@@ -141,7 +140,6 @@ public class PosController {
             salesService.saveSalesDetail(salesDetailDTO, salesService.findLatestOrderNum());
         }
 
-        salesService.saveSalesDetailList(salesDetailList);
 
         boolean checkStock = inventoryService.calcMaterialByProductSales(productSalesDTOList, session);
 
@@ -207,6 +205,9 @@ public class PosController {
                         .unitPrice(salesDetailDTO.getUnitPrice())
                         .refundStatus(refundMethod.equals("cancel") ? String.valueOf(SalesRefund.RefundStatus.취소) : String.valueOf(SalesRefund.RefundStatus.환불))
                         .build();
+
+                // TODO 취소 품목 로직 추가
+                
                 salesService.saveSalesRefund(salesRefundDTO, orderNum);
             }
             return ResponseEntity.status(HttpStatus.OK).body(refundMethod.equals("cancel") ? "취소 완료" : "환불 완료");
