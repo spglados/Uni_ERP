@@ -3,10 +3,7 @@ package com.uni.uni_erp.domain.entity.erp.product;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -37,4 +34,7 @@ public class Store {
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Material> materials;
+
+    @Column(name = "allow_minutes",nullable = false)
+    private Integer allowMinutes = 1;
 }
