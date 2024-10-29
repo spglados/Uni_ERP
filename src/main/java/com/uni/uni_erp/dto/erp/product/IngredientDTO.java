@@ -22,7 +22,18 @@ public class IngredientDTO {
 
     private String unit;
 
+    private String subUnit;
+
     private int productId;
+
+    public IngredientDTO(Ingredient ingredient) {
+        this.id = ingredient.getId();
+        this.name = ingredient.getName();
+        this.amount = ingredient.getAmount();
+        this.unit = String.valueOf(ingredient.getUnit());
+        this.subUnit = String.valueOf(ingredient.getMaterial().getSubUnit());
+        this.productId = ingredient.getProduct().getId();
+    }
 
     public Ingredient toIngredient(Product product) {
         return Ingredient.builder()

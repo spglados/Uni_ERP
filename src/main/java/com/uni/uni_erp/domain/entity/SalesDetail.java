@@ -32,10 +32,6 @@ public class SalesDetail {
     @Column(name = "unit_price", nullable = false)
     private Integer unitPrice;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private SaleStatus status;
-
     @Column(name = "order_num", insertable = false, updatable = false)
     private Integer orderNum;
 
@@ -43,16 +39,4 @@ public class SalesDetail {
     @JoinColumn(name = "order_num", referencedColumnName = "order_num", nullable = false)
     private Sales sales;
 
-    @PrePersist
-    protected void onPrePersist() {
-        if (this.status == null) {
-            this.status = SaleStatus.결제;
-        }
-    }
-
-    public enum SaleStatus {
-        결제,
-        환불,
-        취소
-    }
 }
