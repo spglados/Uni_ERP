@@ -32,4 +32,8 @@ public interface MaterialStatusRepository extends JpaRepository<MaterialStatus, 
             "AND s.id = :storeId " +
             "AND (ms.theoreticalAmount < m.alarmCycle OR ms.actualAmount < m.alarmCycle) ")
     List<MaterialStatus> findAlarmCycleMaterialDTOByStoreId(@Param("storeId") Integer storeId);
+
+    @Query("SELECT ms FROM MaterialStatus ms WHERE ms.material.id IN :materialIds")
+    List<MaterialStatus> findByMaterialIds(@Param("materialIds") List<Integer> materialIds);
+
 }

@@ -122,7 +122,10 @@ public class InventoryController {
     }
 
     @GetMapping("/month-adjustment")
-    public String monthAdjustmentPage() {
+    public String monthAdjustmentPage(Model model, HttpSession session) {
+        List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentList =
+                inventoryService.getMonthAdjustment(session);
+        model.addAttribute("monthAdjustmentList", monthAdjustmentList);
         return "/erp/inventory/month-adjustment";
     }
 

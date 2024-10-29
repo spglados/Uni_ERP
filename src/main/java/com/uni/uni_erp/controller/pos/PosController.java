@@ -196,6 +196,8 @@ public class PosController {
         List<SalesDetailDTO> salesDetail = salesService.compareQuantities(originalSalesDTO, newSalesDTO);
         System.err.println(salesDetail);
 
+        List<SalesRefundDTO> salesRefundDTOList = new ArrayList<>();
+
         if (!salesDetail.isEmpty()) {
             for (SalesDetailDTO salesDetailDTO : salesDetail) {
                 SalesRefundDTO salesRefundDTO = SalesRefundDTO.builder()
@@ -206,10 +208,11 @@ public class PosController {
                         .refundStatus(refundMethod.equals("cancel") ? String.valueOf(SalesRefund.RefundStatus.취소) : String.valueOf(SalesRefund.RefundStatus.환불))
                         .build();
 
-                // TODO 취소 품목 로직 추가
-                
+                salesRefundDTOList.add(salesRefundDTO);
+
                 salesService.saveSalesRefund(salesRefundDTO, orderNum);
             }
+            inventoryService.cancelOrder(salesRefundDTOList);
             return ResponseEntity.status(HttpStatus.OK).body(refundMethod.equals("cancel") ? "취소 완료" : "환불 완료");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");

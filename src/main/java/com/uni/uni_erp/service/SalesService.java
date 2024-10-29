@@ -200,9 +200,6 @@ public class SalesService {
                 .sales(sales)
                 .build();
 
-        // TODO 여기에 재고 수량 관리하는 코드 추가(남철햄)
-        // 근데 취소일때만 올라가고 환불일때는 안올라가야하는거 아닌가요잉
-
         salesRefundRepository.save(salesRefund);
     }
 

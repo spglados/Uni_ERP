@@ -4,6 +4,7 @@ import com.uni.uni_erp.domain.entity.erp.product.Material;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +18,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("SELECT p FROM Product p WHERE p.productCode = :productCode")
     Optional<Product> findByProductCode(Long productCode);
+
+    @Query("SELECT p FROM Product p WHERE p.productCode IN :productCodes")
+    List<Product> findAllByProductCodes(@Param("productCodes") List<Long> productCodes);
+
 }
