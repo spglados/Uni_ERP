@@ -11,30 +11,12 @@
 
     <!-- Material List Table -->
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
-        <div class="d-flex justify-content-between">
-            <div class="d-flex justify-content-between">
-                <select id="categoryFilter" class="form-control select" style="margin-right: 30px;">
-                    <option value="전체">전체</option>
-                    <option value="상품명">상품명</option>
-                    <option value="가격">가격</option>
-                    <option value="입고량">입고량</option>
-                    <option value="공급처">공급처</option>
-                    <option value="유통기한">유통기한</option>
-                    <option value="입고 날짜">입고 날짜</option>
-                    <option value="등록 날짜">등록 날짜</option>
-                    <option value="상태">상태</option>
-                </select>
-                <input id="searchInput" placeholder="내역 검색" class="form-control mr-2" style="width: 200px;">
-            </div>
-            <div>
-                <!-- Button to trigger modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerModal">입고 등록
-                </button>
-            </div>
+        <div>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerModal">입고 등록
+            </button>
         </div>
         <hr>
         <div class="table-container">
-            <!-- Material List Table -->
             <table class="table table-bordered table-striped" id="materialList">
                 <thead class="thead-dark">
                 <tr>
@@ -120,8 +102,7 @@
                     </div>
                     <div class="form-group">
                         <label for="receiptDate">입고 날짜</label>
-                        <input type="date" class="form-control" id="receiptDate" name="receiptDate"
-                               value="<fmt:formatDate value='${today}' pattern='yyyy-MM-dd'/>" required>
+                        <input type="date" class="form-control" id="receiptDate" name="receiptDate" required>
                     </div>
                     <input type="hidden" name="isUse" value="true">
                 </div>
@@ -135,6 +116,16 @@
 </div>
 
 <script>
+
+    const expirationDate = document.getElementById('expirationDate');
+    const receiveDate = document.getElementById('receiptDate');
+    const materialName = document.getElementById('materialName');
+    const price = document.getElementById('price');
+    const amount = document.getElementById('amount');
+    const materialId = document.getElementById('materialId');
+    const unit = document.getElementById('unit');
+    const supplier = document.getElementById('supplier');
+
     var materialsData = [
         <c:forEach var="material" items="${materialDTOList}" varStatus="status">
         {
@@ -153,6 +144,9 @@
         var selectedMaterialId = materialSelect.value;
 
         unitSelect.innerHTML = '';
+
+        // 입고 날짜 오늘로 기본 세팅
+        receiveDate.value = getTodayDate();
 
         var defaultOption = document.createElement('option');
         defaultOption.value = '';
@@ -180,26 +174,146 @@
         updateUnitOptions();
     });
 
+    // 유효성 검사 함수 추가
+    function validateForm() {
+        // 상품명 확인
+        if (materialName.value.trim() === '') {
+            alert('상품명을 입력해주세요.');
+            materialName.focus();
+            return false;
+        }
+
+        // 가격 확인
+        if (price.value === '' || price.value <= 0) {
+            alert('유효한 가격을 입력해주세요.');
+            price.focus();
+            return false;
+        }
+
+        // 입고량 확인
+        if (amount.value === '' || amount.value <= 0) {
+            alert('유효한 입고량을 입력해주세요.');
+            amount.focus();
+            return false;
+        }
+
+        // 자재 선택 확인
+        if (materialId.value === '') {
+            alert('자재를 선택해주세요.');
+            materialId.focus();
+            return false;
+        }
+
+        // 단위 선택 확인
+        if (unit.value === '') {
+            alert('단위를 선택해주세요.');
+            unit.focus();
+            return false;
+        }
+
+        // 공급처 확인
+        if (supplier.value.trim() === '') {
+            alert('공급처를 입력해주세요.');
+            supplier.focus();
+            return false;
+        }
+
+        // 유통기한 확인
+        if (expirationDate.value === '') {
+            alert('유통기한을 선택해주세요.');
+            expirationDate.focus();
+            return false;
+        }
+
+        // 유통기한이 오늘 이후인지 확인
+        if (!checkExpirationDate(expirationDate.value)) {
+            expirationDate.focus();
+            return false;
+        }
+
+        // 입고 날짜 확인
+        if (receiveDate.value === '') {
+            alert('입고 날짜를 선택해주세요.');
+            receiveDate.focus();
+            return false;
+        }
+
+        // 입고 날짜가 미래인지 확인
+        if (!checkReceiveDate(receiveDate.value)) {
+            receiveDate.focus();
+            return false;
+        }
+
+        return true; // 모든 검사를 통과하면 true 반환
+    }
+
     function enterMaterialOrder() {
         let form = document.querySelector('form');
         let formData = new FormData(form);
+
+        // 유효성 검사 실행
+        if (!validateForm()) {
+            return; // 유효성 검사 실패 시 함수 종료
+        }
 
         fetch('/erp/inventory/receiving', {
             method: 'POST',
             body: formData
         })
             .then(response => {
-                if(response.ok) {
+                if (response.ok) {
                     alert('성공적으로 저장되었습니다 !');
                     window.location.reload();
+                } else {
+                    alert('저장 도중 오류가 발생했습니다. \n\n\t 입고 내역을 다시 확인해주세요 !');
                 }
             })
             .catch(error => {
-               console.log('error', error);
-               alert('저장에 실패했습니다.');
+                console.log('error', error);
+                alert('저장에 실패했습니다.');
             });
 
     }
+
+    function getTodayDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+        const day = String(today.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
+    // 유통기한 검사 함수 수정
+    function checkExpirationDate(inputDateValue) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // 오늘 날짜의 시간 초기화 (자정으로 설정)
+
+        const targetDate = new Date(inputDateValue);
+        targetDate.setHours(0, 0, 0, 0); // 입력 날짜의 시간 초기화
+
+        if (targetDate <= today) {
+            alert("유통기한은 오늘 이후 날짜여야 합니다.");
+            return false;
+        }
+        return true;
+    }
+
+    // 입고 날짜 검사 함수 추가
+    function checkReceiveDate(inputDateValue) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // 오늘 날짜의 시간 초기화
+
+        const targetDate = new Date(inputDateValue);
+        targetDate.setHours(0, 0, 0, 0); // 입력 날짜의 시간 초기화
+
+        if (targetDate > today) {
+            alert("입고 날짜는 오늘 또는 이전 날짜여야 합니다.");
+            return false;
+        }
+        return true;
+    }
+
 </script>
+
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

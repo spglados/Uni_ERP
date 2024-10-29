@@ -45,17 +45,4 @@ public class Product {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ingredient> ingredients = new ArrayList<>();
 
-    public ProductDTO toProductDTO() {
-        return ProductDTO.builder()
-                .id(this.id)
-                .productCode(this.productCode)
-                .name(this.name)
-                .category(this.category)
-                .price(this.price)
-                .storeId(this.store.getId())
-                .image(null)
-                .description(this.description)
-                .build();
-    }
-
 }

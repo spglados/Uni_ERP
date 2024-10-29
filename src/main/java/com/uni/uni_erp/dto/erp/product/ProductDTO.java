@@ -48,10 +48,16 @@ public class ProductDTO {
 
     private Integer yearSales;
 
-    public String formatToPrice() {
-        // DecimalFormat을 사용하여 3자리마다 콤마를 넣고, 앞에 \를 붙임
-        DecimalFormat decimalFormat = new DecimalFormat("#,###");
-        return decimalFormat.format(this.price);
+    public ProductDTO(Product product) {
+        this.id = product.getId();
+        this.productCode = product.getProductCode();
+        this.name = product.getName();
+        this.category = product.getCategory();
+        this.price = product.getPrice();
+        this.storeId = product.getStore().getId();
+        // TODO 추후 이미지 수정
+        this.image = null;
+        this.description = product.getDescription();
     }
 
     public Product toProduct(Integer userId, Integer storeId) {
@@ -88,6 +94,30 @@ public class ProductDTO {
         private long productCode;
         private int quantity;
 
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    public static class ProductResponseDTO {
+        private int id;
+        private long productCode;
+        private String name;
+        private String category;
+        private int price;
+        private String image; // Base64 인코딩된 이미지 문자열
+        private String description;
+        private Integer todaySales;
+        private Integer yesterdaySales;
+        private Integer monthSales;
+        private Integer previousMonthSales;
+        private Integer yearSales;
+    }
+
+    public String formatToPrice() {
+        // DecimalFormat을 사용하여 3자리마다 콤마를 넣고, 앞에 \를 붙임
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        return decimalFormat.format(this.price);
     }
 
 }
