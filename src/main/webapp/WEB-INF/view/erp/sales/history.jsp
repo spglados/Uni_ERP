@@ -8,6 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<link rel="stylesheet" href="/css/sortTable.css">
 
 <div class="content">
     <div class="d-flex flex-column mb-3 align-items-start">
@@ -70,7 +71,7 @@
             <div class="text-center">
                 <h5>목표달성률(연)</h5>
                 <div style="display: inline-flex; align-items: flex-end;">
-                    <span class="target-achievement-rate-span" style="font-size: 30px; font-weight: bold; color: #007bff;"></span>
+                    <span id="targetAchievementRateSpan" class="target-achievement-rate-span" style="font-size: 30px; font-weight: bold; color: #007bff;"></span>
                 </div>
             </div>
         </div>
@@ -97,6 +98,6 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/js/erp/sales/detail.js"></script>
+<script src="/js/erp/sales/sortTable.js"></script>
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
