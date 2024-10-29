@@ -37,10 +37,13 @@ public class HrController {
     private final ScheduleService scheduleService;
     private final HttpSession session;
 
-    // 직원 엑셀 다운로드
     @GetMapping("/download/excel")
-    public void downloadExcel(HttpServletResponse response) {
-        hrService.downloadEmployeeExcel(response);
+    public void downloadExcel(HttpSession session, @RequestParam(required = false) String employeeStatus, HttpServletResponse response) {
+        // 상태값 출력 확인
+        System.out.println("Employee Status: " + employeeStatus);
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        hrService.downloadEmployeeExcel(storeId, employeeStatus, response);
     }
 
     // 직원 수정
@@ -108,9 +111,18 @@ public class HrController {
 
     // 직원 목록 조회
     @GetMapping("/employee-list")
-    public String employeeListPage(HttpSession session, Model model) {
+    public String employeeListPage(@RequestParam(required = false) String status, HttpSession session, Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        List<EmployeeDTO> employeeDTOList = hrService.getEmployeesByStoreId(storeId); // EmployeeDTO로 변경
+
+        List<EmployeeDTO> employeeDTOList;
+
+        // 상태가 있는 경우 해당 상태의 직원 목록을 스토어 ID로 필터링하여 조회
+        if (status != null && !status.isEmpty()) {
+            employeeDTOList = hrService.getEmployeesByStatusAndStoreId(status, storeId);
+        } else {
+            // 상태가 없을 경우 스토어 ID에 따른 모든 직원 목록 조회
+            employeeDTOList = hrService.getEmployeesByStoreId(storeId);
+        }
 
         // 모든 직책 목록 조회
         List<EmpPositionDTO> positionDTOList = hrService.getPositionsByStoreId(storeId);

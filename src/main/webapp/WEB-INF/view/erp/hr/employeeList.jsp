@@ -12,7 +12,17 @@
                     <th>사원번호</th>
                     <th>이름</th>
                     <th>직책</th>
-                    <th>상태</th>
+                    <th>
+                        상태
+                        <select id="employmentStatusFilter" onchange="filterEmployees()">
+                            <option value="" <c:if test="${empty param.status}">selected</c:if>>전체</option>
+                            <option value="ACTIVE" <c:if test="${param.status == 'ACTIVE'}">selected</c:if>>재직</option>
+                            <option value="INACTIVE" <c:if test="${param.status == 'INACTIVE'}">selected</c:if>>퇴사
+                            </option>
+                            <option value="ONLEAVE" <c:if test="${param.status == 'ONLEAVE'}">selected</c:if>>휴직
+                            </option>
+                        </select>
+                    </th>
                     <th>전화번호</th>
                 </tr>
                 </thead>
@@ -49,7 +59,11 @@
                         <td>${employee.phone}</td>
                     </tr>
                 </c:forEach>
-                <button onclick="location.href='/erp/hr/download/excel'">엑셀 다운로드</button>
+                <form id="excelDownloadForm" action="/erp/hr/download/excel" method="get">
+                    <input type="hidden" name="employeeStatus" id="employeeStatus" value="${param.status}"/>
+                    <button type="submit">엑셀 다운로드</button>
+                </form>
+
                 </tbody>
             </table>
         </c:if>
@@ -174,6 +188,29 @@
 
 <script>
 
+    function filterEmployees() {
+        const statusSelect = document.getElementById('employmentStatusFilter');
+        const selectedStatus = statusSelect.value;
+
+        // 엑셀 다운로드 버튼의 상태 값 업데이트
+        document.getElementById('employeeStatus').value = selectedStatus;
+
+        // 추가로 직원 필터링 함수 호출
+        // 예: fetchEmployees(selectedStatus);
+    }
+
+    function filterEmployees() {
+        var status = document.getElementById("employmentStatusFilter").value;
+        console.log("Selected status:", status); // 선택된 상태 로그 출력
+        window.location.href = "/erp/hr/employee-list?status=" + status;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const employeesData = JSON.parse('${employeesJson}'); // JSON 데이터를 파싱하여 사용
+        console.log("Employees Data:", employeesData); // 콘솔에 출력하여 데이터 확인
+    });
+
+
     const bankMapping = [
         <c:forEach items="${banks}" var="bank" varStatus="status">
         {id: "${bank.id}", name: "${bank.name}"}<c:if test="${!status.last}">, </c:if>
@@ -232,11 +269,11 @@
                     '<h2>' + name + '의 상세 정보</h2>' +
                     '<p>사원번호: ' + uniqueId + '</p>' +
                     '<p>생년월일: ' + birthday + '</p>' +
-                    '<p>성별: ' + gender + '</p>' +
+                    '<p>성별: ' + (gender === 'F' ? '여자' : '남자') + '</p>' +
                     '<p>주소: ' + address + '</p>' +
                     '<p>이메일: ' + email + '</p>' +
                     '<p>연락처: ' + phone + '</p>' +
-                    '<p>상태: ' + status + '</p>' +
+                    '<p>상태: ' + (status === 'ACTIVE' ? '재직' : (status === 'INACTIVE' ? '퇴사' : '휴직')) + '</p>' +
                     '<p>은행: ' + bank + '</p>' +
                     '<p>계좌번호: ' + account + '</p>' +
                     '<h3>문서 제출 여부</h3>' +
@@ -304,7 +341,6 @@
             document.getElementById('editEmployeeEmail').value = email.split('@')[0];
             document.getElementById('emailDomain').value = email.split('@')[1];
             document.getElementById('editEmployeePhone').value = phone;
-
 
 
             // 은행 및 직책 선택 설정
@@ -419,12 +455,11 @@
 
 
     // 선택된 도메인이 있으면 도메인 입력란의 값으로 업데이트
-        if (selectedDomain) {
-            domainInput.value = selectedDomain; // 도메인 선택 시 입력란에 도메인 업데이트
-        } else {
-            domainInput.value = ''; // 직접 입력으로 전환 시 도메인 입력란 비우기
-        }
-
+    if (selectedDomain) {
+        domainInput.value = selectedDomain; // 도메인 선택 시 입력란에 도메인 업데이트
+    } else {
+        domainInput.value = ''; // 직접 입력으로 전환 시 도메인 입력란 비우기
+    }
 
 
     function formatPhoneNumber(input) {

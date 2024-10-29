@@ -48,6 +48,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Optional<Employee> findByUniqueEmployeeNumber(Long id);
 
 
+    // 특정 상태와 스토어 ID에 따른 직원 조회
+    List<Employee> findByEmploymentStatusAndStoreId(Employee.EmploymentStatus employmentStatus, Integer storeId);
+
+
 
 }
 

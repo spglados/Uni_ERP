@@ -14,7 +14,6 @@ import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
 import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.store.StoreRepository;
-import com.uni.uni_erp.util.ExcelUtil.EmpExcelUtil;
 import com.uni.uni_erp.util.ExcelUtil.ExcelUtil;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,12 +44,40 @@ public class HrService {
     private final EmpPositionRepository empPositionRepository;
     private final ExcelUtil excelUtil;
 
-    // 엑셀 다운로드
-    public void downloadEmployeeExcel(HttpServletResponse response) {
-        // 직원 정보 리스트 가져오기
-        List<EmployeeDTO> employees = employeeRepository.findAll().stream()
-                .map(EmployeeDTO::new) // Employee를 EmployeeDTO로 변환
+    public List<EmployeeDTO> getEmployeesByStatusAndStoreId(String employeeStatus, Integer storeId) {
+        List<Employee> employees;
+
+        if (employeeStatus == null || employeeStatus.isEmpty()) {
+            // employeeStatus가 null 또는 빈 문자열이면 전체 직원 조회
+            employees = employeeRepository.findByStoreId(storeId);
+        } else {
+            // 특정 employmentStatus에 따라 직원 조회
+            Employee.EmploymentStatus employmentStatus = Employee.EmploymentStatus.valueOf(employeeStatus);
+            employees = employeeRepository.findByEmploymentStatusAndStoreId(employmentStatus, storeId);
+        }
+
+        // Employee 리스트를 EmployeeDTO 리스트로 변환
+        return employees.stream()
+                .map(EmployeeDTO::new) // EmployeeDTO 생성자를 이용한 변환
                 .collect(Collectors.toList());
+    }
+
+    // 엑셀 다운로드
+    public void downloadEmployeeExcel(Integer storeId, String employeeStatus, HttpServletResponse response) {
+        List<EmployeeDTO> employees;
+
+        // 상태가 있는 경우 해당 상태의 직원 목록을 스토어 ID로 필터링하여 조회
+        if (employeeStatus != null && !employeeStatus.isEmpty()) {
+            // 상태에 따른 직원 목록을 필터링하여 조회
+            employees = employeeRepository.findByEmploymentStatusAndStoreId(
+                            Employee.EmploymentStatus.valueOf(employeeStatus), storeId)
+                    .stream()
+                    .map(EmployeeDTO::new)
+                    .collect(Collectors.toList());
+        } else {
+            // 상태가 없을 경우 스토어 ID에 따른 모든 직원 목록 조회
+            employees = employeeRepository.findEmployeesByStoreId(storeId);
+        }
 
         // Excel DTO 리스트로 변환
         List<EmployeeExcelDTO> excelEmployees = employees.stream()
@@ -64,13 +91,12 @@ public class HrService {
         // 헤더 생성
         Row headerRow = sheet.createRow(0);
         excelUtil.createHeader(headerRow);
-        // EmpExcelUtil.createHeader(headerRow); // 유틸리티 클래스의 메서드 호출
 
         // 데이터 추가
         for (int i = 0; i < excelEmployees.size(); i++) {
             Row row = sheet.createRow(i + 1);
             EmployeeExcelDTO employeeExcelDTO = excelEmployees.get(i);
-            excelUtil.fillRow(row, employeeExcelDTO); // 유틸리티 클래스의 메서드 호출
+            excelUtil.fillRow(row, employeeExcelDTO);
         }
 
         // 응답 설정
