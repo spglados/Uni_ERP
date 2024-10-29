@@ -12,6 +12,8 @@ import com.uni.uni_erp.service.erp.hr.AttendanceService;
 import com.uni.uni_erp.service.erp.hr.HrService;
 import com.uni.uni_erp.service.erp.hr.ScheduleService;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
+import com.uni.uni_erp.util.Str.GsonUtil;
+import com.uni.uni_erp.util.define.Define_HR;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +124,7 @@ public class HrController {
             employeesJson = objectMapper.writeValueAsString(employeeDTOList);
         } catch (JsonProcessingException e) {
             e.printStackTrace(); // 예외의 상세 정보 출력
-            throw new RuntimeException("직원 목록을 JSON으로 변환하는 중 오류 발생: " + e.getMessage(), e);
+            throw new Exception500("직원 목록을 JSON으로 변환하는 중 오류 발생: ");
         }
 
         model.addAttribute("employeesJson", employeesJson); // JSON 데이터를 모델에 추가
@@ -129,6 +132,24 @@ public class HrController {
         model.addAttribute("banks", bankDTOList);
 
         return "erp/hr/employeeList"; // 직원 목록 페이지 반환
+    }
+
+    /**
+     * 근태 관리 페이지 요청
+     * @param startDate 날짜 필터
+     * @param endDate 날짜 필터
+     * @param session 현재 상점 확인용
+     * @param model 근태 리스트 추가
+     * @return jsp
+     */
+    @GetMapping("/attendance-list")
+    public String attendanceListPage(@RequestParam(name = "startDate", required = false) LocalDate startDate, @RequestParam(name = "endDate", required = false) LocalDate endDate, HttpSession session, Model model) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        List<AttendanceDTO.GridDTO> dataList = attendanceService.findAttendanceList(storeId, startDate, endDate);
+        String dataJson = GsonUtil.convertToJson(dataList);
+        System.out.println(dataJson);
+        model.addAttribute(Define_HR.DATALIST, dataJson);
+        return "erp/hr/attendanceList";
     }
 
     /**
@@ -140,9 +161,9 @@ public class HrController {
     @GetMapping("/attendance/{uniqueEmployeeNumber}")
     public ResponseEntity<?> attendanceRequest(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, HttpSession session) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        List<AttendanceDTO.ResponseDTO> resDTO = attendanceService.findEmployeeByUniqueEmployeeNumber(uniqueEmployeeNumber, storeId);
+        List<AttendanceDTO.ResponseDTO> resDTO = attendanceService.findSchedulesByUniqueEmployeeNumber(uniqueEmployeeNumber, storeId);
         Map<String, Object> response = new HashMap<>();
-        response.put("dataList", resDTO);
+        response.put(Define_HR.DATALIST, resDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -156,7 +177,7 @@ public class HrController {
     @PutMapping("/attendance/{uniqueEmployeeNumber}")
     public ResponseEntity<?> attendanceProc(@PathVariable(name = "uniqueEmployeeNumber") Long uniqueEmployeeNumber, @RequestBody AttendanceDTO.RequestDTO reqDTO, HttpSession session) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        List<AttendanceDTO.ResponseDTO> resDTO = attendanceService.updateAttendance(uniqueEmployeeNumber, storeId, reqDTO);
+        List<AttendanceDTO.ResponseDTO> resDTO = attendanceService.attendanceProc(uniqueEmployeeNumber, storeId, reqDTO);
         Map<String, Object> response = new HashMap<>();
         response.put("dataList", resDTO);
         return ResponseEntity.ok(response);

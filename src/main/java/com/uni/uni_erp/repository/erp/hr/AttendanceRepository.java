@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -31,4 +31,14 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             @Param("uniqueEmployeeNumber") Long uniqueEmployeeNumber,
             @Param("startOfDay") Timestamp startOfDay,
             @Param("endOfDay") Timestamp endOfDay);
+
+    @Query("SELECT a FROM Attendance a " +
+            "JOIN FETCH a.store s " +
+            "JOIN FETCH a.employee e " +
+            "WHERE s.id = :storeId " +
+            "AND FUNCTION('DATE', a.startTime) BETWEEN :startDate AND :endDate")
+    List<Attendance> findByStoreIdAndDateRange(
+            @Param("storeId") Integer storeId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 }
