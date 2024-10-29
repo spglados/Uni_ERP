@@ -77,11 +77,6 @@ public class ProductController {
     @GetMapping("/products/{productCode}")
     @ResponseBody
     public ResponseEntity<ProductDTO.ProductResponseDTO> getProduct(@PathVariable Long productCode) {
-        System.out.println("여기 들어옴!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("여기 들어옴!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("여기 들어옴!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("여기 들어옴!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("여기 들어옴!!!!!!!!!!!!!!!!!!!!");
         Integer storeId = (Integer) session.getAttribute("storeId");
         if (storeId == null) {
             throw new Exception401("관리하고 있는 가게가 없습니다.");
@@ -103,8 +98,7 @@ public class ProductController {
     public ResponseEntity<String> updateProduct(
             @PathVariable Long productCode,
             @ModelAttribute ProductDTO productDTO,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile) {
-
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         Integer storeId = (Integer) session.getAttribute("storeId");
         User user = (User) session.getAttribute("userSession");
         if (storeId == null || user == null) {

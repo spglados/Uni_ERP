@@ -25,8 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -292,15 +295,18 @@ public class ProductService {
         product.setCategory(dto.getCategory());
         product.setPrice(dto.getPrice());
         product.setDescription(dto.getDescription());
-
         // 이미지 처리
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
-                Blob blob = BlobProxy.generateProxy(imageFile.getInputStream(), imageFile.getSize());
+                Blob blob = new SerialBlob(imageFile.getBytes());
                 product.setImage(blob);
             } catch (IOException e) {
                 log.warn("이미지 업로드 실패: " + e.getMessage());
                 return false;
+            } catch (SerialException e) {
+                throw new RuntimeException(e);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         }
 

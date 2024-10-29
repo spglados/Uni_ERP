@@ -1,14 +1,11 @@
 package com.uni.uni_erp.controller.pos;
 
-import com.uni.uni_erp.domain.entity.Sales;
 import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
+import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.dto.sales.SalesInsertDTO;
-import com.uni.uni_erp.dto.sales.SalesRefundDTO;
-import com.uni.uni_erp.repository.sales.SalesDetailRepository;
-import com.uni.uni_erp.repository.sales.SalesRepository;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.invertory.InventoryService;
 import com.uni.uni_erp.service.pos.PosService;
@@ -16,7 +13,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,6 +59,15 @@ public class PosController {
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
         model.addAttribute("category", category);
+
+        // 유통기한 임박 자재
+        List<MaterialDTO.nearingExpirationDateDTO> nearingExpirationDateList = inventoryService.nearingExpirationDate(session);
+
+        // 재고 부족 알람 리스트
+        // TODO 반드시 알람 단위가 메인 단위와 일치해야 결과가 나옴 !! 공지 필수 !!!
+        List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycleList = inventoryService.alarmCycle(session);
+        model.addAttribute("nearingExpirationDateList", nearingExpirationDateList);
+        model.addAttribute("alarmCycleList", alarmCycleList);
 
         return "pos/posMain";  // posMain.css 화면 반환
     }
@@ -139,7 +144,12 @@ public class PosController {
 
         salesService.saveSalesDetailList(salesDetailList);
 
-        inventoryService.calcMaterialByProductSales(productSalesDTOList, session);
+        boolean checkStock = inventoryService.calcMaterialByProductSales(productSalesDTOList, session);
+
+        if(!checkStock) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body("재고 부족으로 인해 계산할 수 없습니다.");
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body("Sales inserted successfully!");
     }

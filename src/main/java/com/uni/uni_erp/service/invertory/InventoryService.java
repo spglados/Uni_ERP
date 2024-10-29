@@ -72,7 +72,7 @@ public class InventoryService {
                 .collect(Collectors.toList());
 
         // 자재 입고 내역 조회
-        List<MaterialOrder> materialOrderList = materialOrderRepository.findByMaterialId(materialIdList);
+        List<MaterialOrder> materialOrderList = materialOrderRepository.findByMaterialIdAndUseStatus(materialIdList);
         if (materialOrderList == null || materialOrderList.isEmpty()) {
             throw new Exception404("자재 입고 내역이 없습니다.");
         }
@@ -102,7 +102,7 @@ public class InventoryService {
                 ));
 
         // 자재 리스트를 순회하며 재고 관리 DTO 생성
-        List<MaterialDTO.MaterialManagementDTO> materialStatusList = materialList.stream()
+        return materialList.stream()
                 .map(material -> {
                     // 해당 자재의 입고 내역 조회
                     List<MaterialOrder> orders = ordersByMaterialId.getOrDefault(material.getId(), Collections.emptyList());
@@ -112,7 +112,7 @@ public class InventoryService {
                             .map(MaterialOrder::getReceiptDate)
                             .filter(Objects::nonNull)
                             .sorted()
-                            .collect(Collectors.toList());
+                            .toList();
 
                     // 유통기한이 있는 주문의 유통기한 날짜 리스트 정렬
                     List<LocalDate> expirationDates = orders.stream()
@@ -120,7 +120,7 @@ public class InventoryService {
                             .map(MaterialOrder::getExpirationDate)
                             .filter(Objects::nonNull)
                             .sorted()
-                            .collect(Collectors.toList());
+                            .toList();
 
                     // 마지막 입고 날짜 계산
                     LocalDate lastEnterDate = enterDates.isEmpty() ? null : enterDates.get(enterDates.size() - 1);
@@ -163,8 +163,6 @@ public class InventoryService {
                             .build();
                 })
                 .collect(Collectors.toList());
-
-        return materialStatusList;
     }
 
     /**
@@ -286,12 +284,14 @@ public class InventoryService {
     @Transactional
     public MaterialOrder saveMaterialOrder(HttpSession session, MaterialDTO.MaterialOrderDTO materialOrderDTO) {
         // 세션에서 storeId 추출
-        getStoreId(session);
+        Integer storeId = getStoreId(session);
+
+        checkStock(materialOrderDTO.getAmount(), "입고량이 0 이하 일 수 없습니다.");
 
         // DTO를 MaterialOrder 엔티티로 변환
         MaterialOrder materialOrder = materialOrderDTO.toMaterialOrder();
         // 자재 존재 여부 확인
-        Optional<Material> material = materialRepository.findById(materialOrderDTO.getMaterialId());
+        Optional<Material> material = materialRepository.findByIdAndStoreId(materialOrderDTO.getMaterialId(), storeId);
         if (material.isEmpty()) {
             throw new Exception404("입고내역 저장 중에 자재 쪽에서 문제가 발생했습니다.");
         }
@@ -317,9 +317,10 @@ public class InventoryService {
      *
      * @param productSalesDTOList 판매된 제품 정보 리스트
      * @param session             현재 사용자 세션
+     * @return 처리 성공 여부 (재고 부족 시 false 반환)
      */
     @Transactional
-    public void calcMaterialByProductSales(List<ProductDTO.ProductSalesDTO> productSalesDTOList, HttpSession session) {
+    public boolean calcMaterialByProductSales(List<ProductDTO.ProductSalesDTO> productSalesDTOList, HttpSession session) {
         // 세션에서 storeId 추출
         Integer storeId = getStoreId(session);
 
@@ -329,11 +330,41 @@ public class InventoryService {
         Map<Long, Product> productMap = productList.stream()
                 .collect(Collectors.toMap(Product::getProductCode, Function.identity()));
 
+        // 판매된 제품에서 필요한 자재 ID 추출
+        Set<Integer> requiredMaterialIds = productSalesDTOList.stream()
+                .flatMap(salesDTO -> {
+                    Product product = productMap.get(salesDTO.getProductCode());
+                    if (product != null) {
+                        return product.getIngredients().stream()
+                                .map(ingredient -> ingredient.getMaterial().getId());
+                    } else {
+                        return Stream.empty();
+                    }
+                })
+                .collect(Collectors.toSet());
+
+        // 필요한 자재 ID 리스트 생성
+        List<Integer> materialIdList = new ArrayList<>(requiredMaterialIds);
+
         // 해당 storeId의 자재 상태 리스트 조회
         List<MaterialStatus> materialStatusList = materialStatusRepository.findByStoreId(storeId);
         // 자재 ID를 키로 하는 MaterialStatus 맵 생성
         Map<Integer, MaterialStatus> materialStatusMap = materialStatusList.stream()
                 .collect(Collectors.toMap(ms -> ms.getMaterial().getId(), Function.identity()));
+
+        // 필요한 자재의 MaterialOrder를 한 번에 조회
+        List<MaterialOrder> materialOrderList = materialOrderRepository.findByMaterialIdAndUseStatus(materialIdList);
+        // MaterialCode를 키로 하는 MaterialOrder 리스트 맵 생성 (유통기한 순으로 정렬된 상태)
+        Map<Long, List<MaterialOrder>> ordersByMaterialCode = materialOrderList.stream()
+                .collect(Collectors.groupingBy(
+                        mo -> mo.getMaterial().getMaterialCode(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparing(MaterialOrder::getExpirationDate))
+                                        .collect(Collectors.toList())
+                        )
+                ));
 
         // 판매된 각 상품에 대해 처리
         for (ProductDTO.ProductSalesDTO productSalesDTO : productSalesDTOList) {
@@ -342,6 +373,8 @@ public class InventoryService {
                 log.warn("Product not found for code: " + productSalesDTO.getProductCode());
                 throw new Exception400("판매된 상품 중 존재하지 않는 상품이 있습니다: " + productSalesDTO.getProductCode());
             }
+
+            int quantity = productSalesDTO.getQuantity(); // 판매 수량
 
             // 각 제품의 자재 사용량 계산
             for (Ingredient ingredient : product.getIngredients()) {
@@ -352,22 +385,28 @@ public class InventoryService {
                     throw new Exception400("자재 상태를 찾을 수 없습니다: " + materialId);
                 }
 
-                // 단위가 동일한 경우 단순히 이론량 감소
-                if (materialStatus.getMaterial().getUnit().equals(ingredient.getUnit())) {
-                    double newSameUnitTheoreticalAmount = NumberFormatter.formatToTwoDecimal(materialStatus.getTheoreticalAmount() - ingredient.getAmount());
-                    materialStatus.setTheoreticalAmount(newSameUnitTheoreticalAmount);
-                    continue;
-                }
-
-                // 단위 변환 후 이론량 및 실제량 감소
+                // 단위 변환 후 사용량 계산
                 double usedAmount = unitConversionService.convert(
-                        ingredient.getAmount() * productSalesDTO.getQuantity(),
+                        ingredient.getAmount() * quantity,
                         ingredient.getUnit(),
                         materialStatus.getMaterial().getUnit(),
                         materialStatus.getMaterial()
                 );
+
+                // MaterialOrder에서 유통기한 순으로 사용량 차감
+                long materialCode = ingredient.getMaterial().getMaterialCode();
+                useAmountByMaterialOrderForExpirationDate(ordersByMaterialCode, materialCode, usedAmount);
+
+                // 이론량 및 실제량 감소
                 double newTheoreticalAmount = NumberFormatter.formatToTwoDecimal(materialStatus.getTheoreticalAmount() - usedAmount);
                 double newActualAmount = NumberFormatter.formatToTwoDecimal(materialStatus.getActualAmount() - usedAmount);
+
+                // 음수 여부 확인
+                if (newTheoreticalAmount < 0 || newActualAmount < 0) {
+                    // 음수인 경우 false 반환
+                    return false;
+                }
+
                 // 손실량 계산
                 materialStatus.setTheoreticalAmount(newTheoreticalAmount);
                 materialStatus.setActualAmount(newActualAmount);
@@ -377,6 +416,8 @@ public class InventoryService {
 
         // 변경된 자재 상태 저장
         materialStatusRepository.saveAll(materialStatusList);
+        // 변경된 MaterialOrder는 영속성 컨텍스트에 의해 자동으로 저장됩니다.
+        return true;
     }
 
     /**
@@ -390,6 +431,8 @@ public class InventoryService {
     public MaterialDTO.MaterialSaveDTO saveMaterial(MaterialDTO.MaterialSaveDTO materialSaveDTO, HttpSession session) {
         // 세션에서 storeId 추출
         Integer storeId = getStoreId(session);
+
+        checkStock(materialSaveDTO.getSubAmount(), "세부 단위 양을 0이하로 정할 수 없습니다.");
 
         // 세션에서 사용자 정보 추출
         User user = (User) session.getAttribute("userSession");
@@ -446,6 +489,7 @@ public class InventoryService {
         for (MaterialStatus materialStatus : materialStatusList) {
             // 요청된 ActualAmount가 있는 경우 업데이트
             Double newActualAmount = actualAmountList.get(materialStatus.getMaterial().getMaterialCode());
+            checkStock(newActualAmount, "0 이하로 재고량을 조절할 수 없습니다.");
             if (newActualAmount != null) {
                 materialStatus.setActualAmount(newActualAmount);
                 materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(newActualAmount - materialStatus.getTheoreticalAmount()));
@@ -514,6 +558,7 @@ public class InventoryService {
      *
      * @param session    현재 사용자 세션
      * @param reqDtoList 자재 폐기 요청 DTO 리스트
+     * @return 처리 성공 여부 (재고 부족 시 false 반환)
      */
     @Transactional
     public void saveDisposal(HttpSession session, MaterialDTO.DisposalSaveDTO reqDtoList) {
@@ -528,13 +573,32 @@ public class InventoryService {
                         MaterialDTO.DisposalSaveDTO.MaterialDisposalSaveDTO::getMaterialCode,
                         MaterialDTO.DisposalSaveDTO.MaterialDisposalSaveDTO::getDisposalAmount));
 
-        // 제품 폐기 요청 DTO 리스트 추출
-        List<MaterialDTO.DisposalSaveDTO.ProductDisposalSaveDTO> pDisposalList = reqDtoList.getProducts();
+        // 필요한 자재 코드 리스트 생성
+        List<Long> materialCodeList = new ArrayList<>(mDisposalMap.keySet());
 
         // 자재 코드로 해당 자재 호출하여 Map 생성 (MaterialCode -> Material)
-        List<Material> materialList = materialRepository.findByStoreId(storeId);
+        List<Material> materialList = materialRepository.findByMaterialCodes(materialCodeList);
         Map<Long, Material> materialMap = materialList.stream()
                 .collect(Collectors.toMap(Material::getMaterialCode, Function.identity()));
+
+        // 필요한 자재 ID 리스트 생성
+        List<Integer> materialIdList = materialList.stream()
+                .map(Material::getId)
+                .collect(Collectors.toList());
+
+        // 필요한 자재의 MaterialOrder를 한 번에 조회
+        List<MaterialOrder> materialOrderList = materialOrderRepository.findByMaterialIdAndUseStatus(materialIdList);
+        // MaterialCode를 키로 하는 MaterialOrder 리스트 맵 생성 (유통기한 순으로 정렬된 상태)
+        Map<Long, List<MaterialOrder>> ordersByMaterialCode = materialOrderList.stream()
+                .collect(Collectors.groupingBy(
+                        mo -> mo.getMaterial().getMaterialCode(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparing(MaterialOrder::getExpirationDate))
+                                        .collect(Collectors.toList())
+                        )
+                ));
 
         // 자재 폐기 DTO를 MaterialDisposal 엔티티로 변환 및 리스트에 추가
         List<MaterialDisposal> materialDisposalList = new ArrayList<>();
@@ -544,10 +608,62 @@ public class InventoryService {
                 throw new Exception404("자재를 찾을 수 없습니다: " + dto.getMaterialCode());
             }
             materialDisposalList.add(dto.toMaterialDisposal(material));
+
+            // MaterialOrder에서 유통기한 순으로 사용량 차감
+            useAmountByMaterialOrderForExpirationDate(ordersByMaterialCode, dto.getMaterialCode(), dto.getDisposalAmount());
         }
 
+        // 자재 상태 조회 (오늘 날짜 기준)
+        List<MaterialStatus> status = materialStatusRepository.findByMaterial(materialList, LocalDate.now());
+
+        if (status == null || status.isEmpty()) {
+            log.warn("오늘 날짜의 재고 현황 데이터가 존재하지 않습니다.");
+        }
+
+        // MaterialCode를 키로 하는 MaterialStatus 맵 생성
+        Map<Long, MaterialStatus> statusMap = status.stream()
+                .filter(ms -> ms.getMaterial() != null && ms.getMaterial().getMaterialCode() != null)
+                .collect(Collectors.toMap(
+                        ms -> ms.getMaterial().getMaterialCode(),
+                        Function.identity()
+                ));
+
+        // 자재 폐기 양만큼 이론량과 실제량 감소, 손실량 계산
+        for (MaterialStatus materialStatus : status) {
+            // 폐기 내역에 해당 자재가 없는 경우 건너뜀
+            if (!mDisposalMap.containsKey(materialStatus.getMaterial().getMaterialCode())) {
+                continue;
+            }
+
+            double disposalAmount = mDisposalMap.get(materialStatus.getMaterial().getMaterialCode());
+
+            // 이론량 감소
+            double newTheoreticalAmount = NumberFormatter.formatToTwoDecimal(
+                    materialStatus.getTheoreticalAmount() - disposalAmount
+            );
+            // 실제량 감소
+            double newActualAmount = NumberFormatter.formatToTwoDecimal(
+                    materialStatus.getActualAmount() - disposalAmount
+            );
+
+            materialStatus.setTheoreticalAmount(newTheoreticalAmount);
+            materialStatus.setActualAmount(newActualAmount);
+
+            // 손실량 계산
+            materialStatus.setLoss(
+                    NumberFormatter.formatToTwoDecimal(
+                            materialStatus.getActualAmount() - materialStatus.getTheoreticalAmount()
+                    )
+            );
+        }
+
+        // 변경된 자재 상태 저장
+        materialStatusRepository.saveAll(status);
         // 자재 폐기 내역 저장
         materialDisposalRepository.saveAll(materialDisposalList);
+
+        // 제품 폐기 요청 DTO 리스트 추출
+        List<MaterialDTO.DisposalSaveDTO.ProductDisposalSaveDTO> pDisposalList = reqDtoList.getProducts();
 
         // 제품 코드로 해당 제품 호출하여 Map 생성 (ProductCode -> Product)
         List<Product> productList =
@@ -560,6 +676,26 @@ public class InventoryService {
         Map<Long, Product> productMap = productList.stream()
                 .collect(Collectors.toMap(Product::getProductCode, Function.identity()));
 
+        // 필요한 자재 ID 추출
+        Set<Integer> requiredMaterialIds = productList.stream()
+                .flatMap(product -> product.getIngredients().stream())
+                .map(ingredient -> ingredient.getMaterial().getId())
+                .collect(Collectors.toSet());
+
+        // 필요한 자재의 MaterialOrder를 한 번에 조회
+        List<MaterialOrder> productMaterialOrders = materialOrderRepository.findByMaterialIdAndUseStatus(new ArrayList<>(requiredMaterialIds));
+        // MaterialCode를 키로 하는 MaterialOrder 리스트 맵 생성
+        Map<Long, List<MaterialOrder>> productOrdersByMaterialCode = productMaterialOrders.stream()
+                .collect(Collectors.groupingBy(
+                        mo -> mo.getMaterial().getMaterialCode(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted(Comparator.comparing(MaterialOrder::getExpirationDate))
+                                        .collect(Collectors.toList())
+                        )
+                ));
+
         // 제품 폐기 DTO를 ProductDisposal 엔티티로 변환 및 리스트에 추가
         List<ProductDisposal> productDisposalList = new ArrayList<>();
         for (MaterialDTO.DisposalSaveDTO.ProductDisposalSaveDTO dto : pDisposalList) {
@@ -568,68 +704,6 @@ public class InventoryService {
                 throw new Exception404("상품을 찾을 수 없습니다: " + dto.getProductCode());
             }
             productDisposalList.add(dto.toProductDisposal(product));
-        }
-
-        // 제품 폐기 내역 저장
-        productDisposalRepository.saveAll(productDisposalList);
-
-        // 재고 상태 조회 (오늘 날짜 기준)
-        List<MaterialStatus> status = materialStatusRepository.findByMaterial(materialList, LocalDate.now());
-
-        if (status == null || status.isEmpty()) {
-            log.warn("오늘 날짜의 재고 현황 데이터가 존재하지 않습니다.");
-            throw new Exception404("오늘 날짜의 재고 현황 데이터가 존재하지 않습니다.");
-        }
-
-        // MaterialCode를 키로 하는 MaterialStatus 맵 생성
-        Map<Long, MaterialStatus> statusMap = status.stream()
-                .filter(ms -> ms.getMaterial() != null && ms.getMaterial().getMaterialCode() != null)
-                .collect(Collectors.toMap(
-                        ms -> ms.getMaterial().getMaterialCode(),
-                        Function.identity(),
-                        (existing, replacement) -> existing // 기존 값을 유지 (첫 번째 값 우선)
-                        // 또는 (existing, replacement) -> replacement // 교체 (마지막 값 우선)
-                ));
-
-        // 자재 폐기 양만큼 이론량과 실제량 감소, 손실량 계산
-        for (MaterialStatus materialStatus : status) {
-            // 폐기 내역에 해당 자재가 없는 경우 건너뜀
-            if (!mDisposalMap.containsKey(materialStatus.getMaterial().getMaterialCode())) {
-                continue;
-            }
-
-            // 이론량 감소
-            materialStatus.setTheoreticalAmount(
-                    NumberFormatter.formatToTwoDecimal(
-                            materialStatus.getTheoreticalAmount()
-                                    - mDisposalMap.get(materialStatus.getMaterial().getMaterialCode())
-                    )
-            );
-            // 실제량 감소
-            materialStatus.setActualAmount(
-                    NumberFormatter.formatToTwoDecimal(
-                            materialStatus.getActualAmount()
-                                    - mDisposalMap.get(materialStatus.getMaterial().getMaterialCode())
-                    )
-            );
-
-            // 손실량 계산
-            materialStatus.setLoss(
-                    NumberFormatter.formatToTwoDecimal(
-                            materialStatus.getTheoreticalAmount()
-                                    - materialStatus.getActualAmount()
-                    )
-            );
-        }
-
-        // 판매된 각 상품에 대해 처리하여 자재 상태 업데이트
-        for (MaterialDTO.DisposalSaveDTO.ProductDisposalSaveDTO dto : pDisposalList) {
-
-            Product product = productMap.get(dto.getProductCode());
-            if (product == null) {
-                log.warn("Product not found for code: " + dto.getProductCode());
-                throw new Exception400("판매된 상품 중 존재하지 않는 상품이 있습니다: " + dto.getProductCode());
-            }
 
             // 각 제품의 자재 사용량 계산 및 자재 상태 업데이트
             for (Ingredient ingredient : product.getIngredients()) {
@@ -640,39 +714,42 @@ public class InventoryService {
                     throw new Exception400("자재 상태를 찾을 수 없습니다: " + materialCode);
                 }
 
-                // 단위가 동일한 경우 단순히 이론량 감소
-                if (materialStatus.getMaterial().getUnit().equals(ingredient.getUnit())) {
-                    double newSameUnitTheoreticalAmount = NumberFormatter.formatToTwoDecimal(
-                            materialStatus.getTheoreticalAmount() - ingredient.getAmount()
-                    );
-                    materialStatus.setTheoreticalAmount(newSameUnitTheoreticalAmount);
-                    continue;
-                }
-
-                // 단위 변환 후 이론량 및 실제량 감소
+                // 단위 변환 후 사용량 계산
                 double usedAmount = unitConversionService.convert(
                         ingredient.getAmount() * dto.getDisposalAmount(),
                         ingredient.getUnit(),
                         materialStatus.getMaterial().getUnit(),
                         materialStatus.getMaterial()
                 );
+
+                // MaterialOrder에서 유통기한 순으로 사용량 차감
+                useAmountByMaterialOrderForExpirationDate(productOrdersByMaterialCode, materialCode, usedAmount);
+
+                // 이론량 및 실제량 감소
                 double newTheoreticalAmount = NumberFormatter.formatToTwoDecimal(
                         materialStatus.getTheoreticalAmount() - usedAmount
                 );
                 double newActualAmount = NumberFormatter.formatToTwoDecimal(
                         materialStatus.getActualAmount() - usedAmount
                 );
-                // 손실량 계산
+
                 materialStatus.setTheoreticalAmount(newTheoreticalAmount);
                 materialStatus.setActualAmount(newActualAmount);
+
+                // 손실량 계산
                 materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(newActualAmount - newTheoreticalAmount));
             }
         }
 
         // 변경된 자재 상태 저장
         materialStatusRepository.saveAll(status);
+        // 제품 폐기 내역 저장
+        productDisposalRepository.saveAll(productDisposalList);
+        // 변경된 MaterialOrder는 영속성 컨텍스트에 의해 자동으로 저장됩니다.
 
     }
+
+
 
     private static Integer getStoreId(HttpSession session) {
         // 세션에서 storeId 추출
@@ -721,6 +798,10 @@ public class InventoryService {
      */
     @Transactional
     public boolean updateMaterial(MaterialDTO.MaterialSaveDTO materialSaveDTO) {
+
+        checkStock(materialSaveDTO.getSubAmount(), "0 이하로 재고량을 수정할 수 없습니다.");
+
+
         Optional<Material> optionalMaterial = materialRepository.findByMaterialCode(materialSaveDTO.getMaterialCode());
         if (!optionalMaterial.isPresent()) {
             return false;
@@ -747,4 +828,102 @@ public class InventoryService {
             return false;
         }
     }
+
+    private void checkStock(Double Amount, String msg) {
+        if (Amount != null) {
+            if(Amount < 0) {
+                throw new Exception400(msg);
+            }
+        }
+    }
+
+    /**
+     * 사용량에 따른 주문 내역에서 유통기한을 확인 및 상태값 변경에 필요한 메소드
+     * 유통기한 순으로 정렬된 리스트 들어가 있어야함.
+     * @param orderList
+     * @param materialCode
+     * @param amount
+     */
+    private void useAmountByMaterialOrderForExpirationDate(Map<Long, List<MaterialOrder>> orderList, long materialCode, double amount) {
+        List<MaterialOrder> materialOrderList = orderList.get(materialCode);
+        if (materialOrderList == null || materialOrderList.isEmpty()) {
+            // 처리할 주문이 없을 경우, 새로운 MaterialOrder를 생성하거나 예외 처리를 할 수 있습니다.
+            // 하지만 요구사항에 따라 여기서는 마지막 주문에 음수 사용량을 기록합니다.
+            return;
+        }
+        double calcAmount = amount;
+        int lastIndex = materialOrderList.size() - 1;
+        for (int i = 0; i <= lastIndex; i++) {
+            MaterialOrder order = materialOrderList.get(i);
+            double remainingUseAmount = order.getUseAmount() - calcAmount;
+            if (remainingUseAmount > 0) {
+                // 사용량을 차감하고 루프 종료
+                order.setUseAmount(remainingUseAmount);
+                break;
+            } else if (remainingUseAmount == 0) {
+                // 사용량이 정확히 0이 되었으므로, 사용 가능 여부를 false로 설정하고 루프 종료
+                order.setUseAmount(0.0);
+                order.setIsUse(false);
+                break;
+            } else {
+                // 사용량이 음수가 되었으므로, 현재 주문의 사용량을 0으로 설정하고 사용 가능 여부를 false로 변경
+                order.setUseAmount(0.0);
+                order.setIsUse(false);
+                calcAmount = -remainingUseAmount; // 남은 사용량을 다음 주문에서 차감하기 위해 양수로 변환
+                // 마지막 주문인지 확인
+                if (i == lastIndex) {
+                    // 더 이상 주문이 없으므로, 마지막 주문에 음수 사용량을 기록
+                    order.setUseAmount(-calcAmount);
+                    // `isUse`는 이미 false로 설정되어 있음
+                    break;
+                }
+            }
+        }
+    }
+
+    public List<MaterialDTO.nearingExpirationDateDTO> nearingExpirationDate(HttpSession session) {
+        Integer storeId = getStoreId(session);
+
+        List<Material> materialList = materialRepository.findByStoreId(storeId);
+
+        List<Integer> materialIdList = materialList.stream()
+                .map(Material::getId)
+                .toList();
+
+        List<MaterialOrder> materialOrderList = materialOrderRepository.findByMaterialIdAndUseStatusAndStoreId(materialIdList, storeId);
+
+        // 1. 오늘 날짜와 3일 후 날짜 계산
+        LocalDate today = LocalDate.now();
+        LocalDate threeDaysLater = today.plusDays(3);
+
+        // 2. materialOrderList에서 유통기한이 오늘부터 3일 후까지인 자재 필터링 및 DTO로 매핑
+        List<MaterialDTO.nearingExpirationDateDTO> nearingExpirationList = materialOrderList.stream()
+                .filter(order -> {
+                    LocalDate expirationDate = order.getExpirationDate();
+                    return !expirationDate.isBefore(today) && !expirationDate.isAfter(threeDaysLater);
+                })
+                .map(MaterialDTO.nearingExpirationDateDTO::new)
+                .toList();
+
+        return nearingExpirationList;
+    }
+
+    public List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycle(HttpSession session) {
+        Integer storeId = getStoreId(session);
+        List<MaterialStatus> statusList = materialStatusRepository.findAlarmCycleMaterialDTOByStoreId(storeId);
+        List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycleDTOList = new ArrayList<>();
+        for (MaterialStatus materialStatus : statusList) {
+            alarmCycleDTOList.add(new MaterialDTO.AlarmCycleMaterialDTO(materialStatus));
+        }
+        return alarmCycleDTOList;
+    }
+
+    public List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustment(HttpSession session) {
+        Integer storeId = getStoreId(session);
+
+        List<MaterialOrder> materialOrderList = materialOrderRepository.findByStoreId(storeId);
+
+        return null;
+    }
+
 }

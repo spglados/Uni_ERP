@@ -2,8 +2,10 @@ package com.uni.uni_erp.repository.erp.inventory;
 
 import com.uni.uni_erp.domain.entity.erp.product.Material;
 import com.uni.uni_erp.domain.entity.erp.product.MaterialStatus;
+import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,4 +23,13 @@ public interface MaterialStatusRepository extends JpaRepository<MaterialStatus, 
 
     @Query("SELECT ms FROM MaterialStatus ms WHERE ms.material IN :materials AND ms.statusDate = :today")
     List<MaterialStatus> findByMaterial(List<Material> materials, LocalDate today);
+
+    @Query("SELECT ms " +
+            "FROM MaterialStatus ms " +
+            "JOIN ms.material m " +
+            "JOIN m.store s " +
+            "WHERE m.alarmUnit = m.unit " +
+            "AND s.id = :storeId " +
+            "AND (ms.theoreticalAmount < m.alarmCycle OR ms.actualAmount < m.alarmCycle) ")
+    List<MaterialStatus> findAlarmCycleMaterialDTOByStoreId(@Param("storeId") Integer storeId);
 }

@@ -391,6 +391,8 @@
                     totalAmount = 0;
                     updateOrderSummary();
                     window.location.href = "/erp/pos/main"
+                } else if(response.status === 422) {
+                    alert('재고가 부족합니다.');
                 } else {
                     alert('결제에 실패했습니다. 다시 시도해주세요.');
                 }

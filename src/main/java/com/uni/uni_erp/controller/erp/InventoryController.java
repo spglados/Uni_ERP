@@ -6,6 +6,7 @@ import com.uni.uni_erp.service.invertory.InventoryService;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -142,7 +143,11 @@ public class InventoryController {
     }
 
     @PostMapping("/disposal")
-    public ResponseEntity<Void> saveDisposal(HttpSession session, @RequestBody MaterialDTO.DisposalSaveDTO reqDtoList) {
+    public ResponseEntity<?> saveDisposal(HttpSession session, @RequestBody MaterialDTO.DisposalSaveDTO reqDtoList) {
+
+        if(reqDtoList.getMaterials().isEmpty() && reqDtoList.getProducts().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
 
         inventoryService.saveDisposal(session, reqDtoList);
 

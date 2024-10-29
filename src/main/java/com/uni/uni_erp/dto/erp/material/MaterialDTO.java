@@ -237,6 +237,17 @@ public class MaterialDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class MaterialMonthAdjustmentDTO {
+        private long materialCode;
+        private double monthReceiveAmount;
+        private double useAmount;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class MaterialDisposalListDTO {
         private long materialCode;
         private String materialName;
@@ -345,6 +356,46 @@ public class MaterialDTO {
             this.disposalAmount = productDisposal.getAmount();
             this.unit = "개";
             this.disposalDate = productDisposal.getDisposalDate();
+        }
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class nearingExpirationDateDTO {
+        private long materialCode;
+        private String materialName;
+        private LocalDate expirationDate;
+
+        public nearingExpirationDateDTO(MaterialOrder materialOrder) {
+            this.materialCode = materialOrder.getMaterial().getMaterialCode();
+            this.materialName = materialOrder.getMaterial().getName();
+            this.expirationDate = materialOrder.getExpirationDate();
+        }
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class AlarmCycleMaterialDTO {
+        private long materialCode;
+        private String materialName;
+        private double theoreticalAmount;
+        private double actualAmount;
+        private String unit;
+
+        public AlarmCycleMaterialDTO(MaterialStatus materialStatus) {
+            this.materialCode = materialStatus.getMaterial().getMaterialCode();
+            this.materialName = materialStatus.getMaterial().getName();
+            this.theoreticalAmount = materialStatus.getTheoreticalAmount();
+            this.actualAmount = materialStatus.getActualAmount();
+            this.unit = materialStatus.getMaterial().getUnit().toString();
         }
 
     }

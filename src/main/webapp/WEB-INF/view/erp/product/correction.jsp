@@ -48,7 +48,7 @@
             <!-- 이미지 업로드 -->
             <div class="form-group">
                 <label for="image">상품 이미지</label>
-                <input type="file" class="form-control" id="image" accept="image/*" onchange="previewImage(event)" />
+                <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event)" />
             </div>
 
             <!-- 이미지 미리보기 -->
