@@ -1,7 +1,13 @@
-INSERT INTO store_tb (name, user_id)
-VALUES
-    ('기가 막히는 한정식', 1),
-    ('기가 안막히는 양식', 1);
+INSERT INTO store_tb (name, is_24_hours, is_open, user_id, created_at, allow_minutes) VALUES
+('기가 막히는 한정식', 1, 1, 1, '2023-03-15 12:30:00', 1),
+('기가 안막히는 양식', 0, 0, 1, '2023-07-22 09:45:00' ,1),
+('Store A', 1, 0, 1, '2023-11-05 14:20:00' ,1),
+('Store B', 0, 1, 1, '2024-02-18 11:15:00' ,1),
+('Store C', 1, 1, 2, '2024-09-30 08:00:00' ,1);
+
+INSERT INTO pos_tb (pos_id, store_id, amount, pos_history_id) VALUES
+(1, 1, 1000, NULL),
+(1, 2, 1000, NULL);
 
 -- 메인
 INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (1, 111, '김치찌개', '메인', 9900, 1);

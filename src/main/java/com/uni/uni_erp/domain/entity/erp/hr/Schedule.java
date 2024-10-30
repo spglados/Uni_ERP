@@ -1,9 +1,6 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
-import com.uni.uni_erp.util.Str.EnumCommonUtil;
-import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,19 +38,16 @@ public class Schedule {
     @Builder.Default
     private Status status = Status.NOT_EXECUTED;
 
+    @OneToOne(mappedBy = "schedule", fetch = FetchType.LAZY)
+    private Attendance attendance;
+
     @RequiredArgsConstructor
     @Getter
     public enum Status {
         NOT_EXECUTED("이행되지 않음"),
-        LATE("지각"),
-        LEFT_EARLY("조퇴"),
-        ATTENDED("출근");
+        COMPLETED("완료");
 
         private final String description;
     }
-
-    // 지각이나 조퇴시 얼마나 차이나는지 저장
-    @Column(nullable = true)
-    private Integer minutes;
 
 }

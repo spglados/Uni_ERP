@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/erp/inventory")
@@ -114,22 +115,30 @@ public class InventoryController {
     }
 
     @PostMapping("/day-adjustment")
-    public ResponseEntity<Void> saveDayAdjustment(HttpSession session, @RequestBody List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
+    public ResponseEntity<Map<String, Boolean>> saveDayAdjustment(
+            HttpSession session,
+            @RequestBody List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
 
-        inventoryService.saveDayAdjustmentList(session, reqDtoList);
+        boolean success = inventoryService.saveDayAdjustmentList(session, reqDtoList);
 
-        return ResponseEntity.ok().build();
+        if(!success) {
+            return ResponseEntity.ok(Map.of("fail", success));
+        }
+
+        return ResponseEntity.ok(Map.of("success", success));
     }
 
     @GetMapping("/month-adjustment")
-    public String monthAdjustmentPage() {
+    public String monthAdjustmentPage(Model model, HttpSession session) {
+        List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentList =
+                inventoryService.getMonthAdjustment(session);
+        model.addAttribute("monthAdjustmentList", monthAdjustmentList);
         return "/erp/inventory/month-adjustment";
     }
 
     @PostMapping("/month-adjustment")
     public ResponseEntity<List<MaterialDTO.DisposalHistoryDTO>> monthAdjustmentPage(HttpSession session) {
         List<MaterialDTO.DisposalHistoryDTO> disposalHistory = inventoryService.getDisposalHistory(session);
-        System.out.println(disposalHistory.toString());
         return ResponseEntity.ok(disposalHistory);
     }
 

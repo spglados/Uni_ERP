@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -25,6 +27,16 @@ public class Store {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "is_24_hours", nullable = false)
+    private Integer is24Hours;
+
+    @Column(name = "is_open", nullable = false)
+    private Integer isOpen;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Timestamp createdAt;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -37,4 +49,7 @@ public class Store {
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Material> materials;
+
+    @Column(name = "allow_minutes",nullable = false)
+    private Integer allowMinutes = 1;
 }

@@ -267,6 +267,39 @@
         </div>
         <button type="submit" class="payment-button">결제 버튼(총 금액: 0원)</button>
     </form>
+    <!--시재점검-->
+            <button onclick="inspection()">시재점검</button>
+
+            <!--금고관리-->
+            <button onclick="safe()">금고관리</button>
+            <br>
+            <!--오픈하기-->
+            <button id="openButton"
+                        onclick="confirmOpen()"
+                        ${status24 == 1 ? 'disabled' : ''}
+                        <c:choose>
+                            <c:when test="${status == 1}">
+                                disabled
+                            </c:when>
+                        </c:choose>>오픈하기</button>
+
+                <button id="closeButton"
+                        onclick="closeBusiness()"
+                        <c:choose>
+                            <c:when test="${status == 0}">
+                                disabled
+                            </c:when>
+                        </c:choose>>마감하기</button>
+            <div style="color: red;">
+                <c:choose>
+                    <c:when test="${status24 == 1}">
+                        해당 가게는 24시간 영업중이므로 오픈하기 버튼이 비활성화 됩니다.
+                    </c:when>
+                    <c:otherwise>
+                        <!-- 상태가 0일 때 아무것도 표시하지 않음 -->
+                    </c:otherwise>
+                </c:choose>
+            </div>
 </div>
 <div class="modal fade" id="previousOrderModal" tabindex="-1" aria-labelledby="previousOrderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -592,6 +625,42 @@ function handleButtonClick() {
         orderItem.id = `order-item-${index}`;
         orderItem.textContent = `${item.name} - ${item.price.toLocaleString()}원 x ${item.quantity}`;
     }
+
+    function inspection() {
+            window.open('http://localhost:8080/erp/pos/inspection', '_blank', 'width=800,height=600');
+        }
+
+        function safe() {
+            window.open('http://localhost:8080/erp/pos/safe', '_blank', 'width=800,height=600');
+        }
+
+        function closeBusiness() {
+            window.open('http://localhost:8080/erp/pos/close', '_blank', 'width=800,height=600');
+        }
+        function confirmOpen() {
+                if (confirm("오픈하시겠습니까?")) {
+                    fetch('/erp/pos/open', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({}) // 필요시 추가 데이터 전송
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        alert(data); // 성공 메시지 알림
+                        location.reload(); // 페이지 리로드하여 상태 업데이트
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+                }
+            }
 </script>
 
 </body>

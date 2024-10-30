@@ -1,24 +1,24 @@
 package com.uni.uni_erp.controller.pos;
 
-import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.SalesRefund;
+import com.uni.uni_erp.domain.entity.erp.pos.Pos;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
+import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
-import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesDetailDTO;
 import com.uni.uni_erp.dto.sales.SalesInsertDTO;
-import com.uni.uni_erp.dto.sales.SalesRefundDTO;
+import com.uni.uni_erp.dto.sales.SalesRefundInsertDTO;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.invertory.InventoryService;
 import com.uni.uni_erp.service.pos.PosService;
+import com.uni.uni_erp.service.user.StoreService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.tags.shaded.org.apache.bcel.generic.IFLT;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,10 +30,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/erp/pos")
@@ -43,6 +44,7 @@ public class PosController {
     private final PosService posService;
     private final SalesService salesService;
     private final InventoryService inventoryService;
+    private final StoreService storeService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -80,6 +82,12 @@ public class PosController {
         List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycleList = inventoryService.alarmCycle(session);
         model.addAttribute("nearingExpirationDateList", nearingExpirationDateList);
         model.addAttribute("alarmCycleList", alarmCycleList);
+
+        Store store = storeService.findById(storeId);
+        int status24 = store.getIs24Hours();
+        int status = store.getIsOpen();
+        model.addAttribute("status24", status24);
+        model.addAttribute("status", status);
 
         return "pos/posMain";  // posMain.css 화면 반환
     }
@@ -196,9 +204,11 @@ public class PosController {
         List<SalesDetailDTO> salesDetail = salesService.compareQuantities(originalSalesDTO, newSalesDTO);
         System.err.println(salesDetail);
 
+        List<SalesRefundInsertDTO> salesRefundDTOList = new ArrayList<>();
+
         if (!salesDetail.isEmpty()) {
             for (SalesDetailDTO salesDetailDTO : salesDetail) {
-                SalesRefundDTO salesRefundDTO = SalesRefundDTO.builder()
+                SalesRefundInsertDTO salesRefundInsertDTO = SalesRefundInsertDTO.builder()
                         .itemCode(salesDetailDTO.getItemCode())
                         .itemName(salesDetailDTO.getItemName())
                         .quantity(salesDetailDTO.getQuantity())
@@ -206,14 +216,162 @@ public class PosController {
                         .refundStatus(refundMethod.equals("cancel") ? String.valueOf(SalesRefund.RefundStatus.취소) : String.valueOf(SalesRefund.RefundStatus.환불))
                         .build();
 
+                salesRefundDTOList.add(salesRefundInsertDTO);
+
+
                 // TODO 취소 품목 로직 추가
-                
-                salesService.saveSalesRefund(salesRefundDTO, orderNum);
+
+
+                salesService.saveSalesRefund(salesRefundInsertDTO, orderNum);
             }
+            inventoryService.cancelOrder(salesRefundDTOList);
             return ResponseEntity.status(HttpStatus.OK).body(refundMethod.equals("cancel") ? "취소 완료" : "환불 완료");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("err");
         }
+    }
+
+    // TODO 서치원
+    // 시재점검
+    @GetMapping("/inspection")
+    public String getInspection(Model model, HttpSession session) {
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        Pos pos = posService.getPosDetail(storeId);
+        Long posNowAmount = pos.getAmount();
+        Integer posNowAmountInt = posNowAmount.intValue();
+
+
+        model.addAttribute("posNowAmount", posNowAmountInt);
+        return "/pos/inspection"; // JSP 파일 경로
+    }
+
+    @PostMapping("/inspection")
+    public ResponseEntity<?> createInspection(HttpSession session, @RequestBody Map<String, Object> request) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        Pos pos = posService.getPosDetail(storeId);
+        Long posNowAmount = pos.getAmount();
+        Integer posNowAmountInt = posNowAmount.intValue();
+
+        // 입력받은 금액을 String으로 가져오고, Integer로 변환
+        String amountStr = (String) request.get("totalAmount");
+        Integer amount;
+
+        try {
+            amount = Integer.valueOf(amountStr);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("금액 형식이 잘못되었습니다."); // 잘못된 형식 처리
+        }
+
+        if (amount.equals(posNowAmountInt)) {
+            return ResponseEntity.ok("금액이 일치합니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("금액이 일치하지 않습니다.");
+        }
+    }
+
+    // 금고관리
+    @GetMapping("/safe")
+    public String getSafe(HttpSession session, Model model) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        Pos pos = posService.getPosDetail(storeId);
+        Long posNowAmount = pos.getAmount();
+        Integer posNowAmountInt = posNowAmount.intValue();
+
+        model.addAttribute("posNowAmount", posNowAmountInt);
+        return "/pos/safe"; // JSP 파일 경로
+    }
+
+    @PostMapping("/safe")
+    public ResponseEntity<?> createSafe(HttpSession session, @RequestBody Map<String, Object> request) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        Pos pos = posService.getPosDetail(storeId);
+        Long posNowAmount = pos.getAmount();
+        Integer posNowAmountInt = posNowAmount.intValue();
+
+        // 입력받은 금액을 String으로 가져오고, Integer로 변환
+        String amountStr = (String) request.get("amount");
+        Integer amount;
+
+        try {
+            amount = Integer.valueOf(amountStr);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("금액 형식이 잘못되었습니다."); // 잘못된 형식 처리
+        }
+
+
+        if (amount.equals(posNowAmountInt)) {
+            return ResponseEntity.ok("금액이 일치합니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("금액이 일치하지 않습니다.");
+        }
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<?> withdraw(HttpSession session, @RequestBody Map<String, Object> request) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        Pos pos = posService.getPosDetail(storeId);
+        Long posNowAmount = pos.getAmount();
+        Integer posNowAmountInt = posNowAmount.intValue();
+
+        String amountStr = (String) request.get("amount");
+        Long amount;
+
+        try {
+            Integer tempAmount = Integer.valueOf(amountStr); // Convert String to Integer
+
+            if(posNowAmountInt < tempAmount) {
+                return ResponseEntity.badRequest().body("출금하려는 금액이 포스잔액보다 더 많습니다.");
+            }
+
+            amount = tempAmount.longValue();
+            posService.withdrawAmount(storeId,amount);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("출금 금액 형식이 잘못되었습니다."); // 잘못된 형식 처리
+        }
+
+
+        return ResponseEntity.ok("출금이 완료되었습니다."); // 성공 메시지
+    }
+
+    @PostMapping("/open")
+    @ResponseBody
+    public ResponseEntity<String> postClosed(HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        Store store = storeService.findById(storeId);
+        store.setIsOpen(1); // 상태를 1로 변경
+        storeService.updateStatus(store);
+        System.out.println("[open]store" + store.getId() + "번 가게를 오픈으로 변경");
+        return ResponseEntity.ok("Success"); // 성공 메시지 반환
+    }
+
+    @GetMapping("/close")
+    public String getClose(HttpSession session, Model model) {
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        Pos pos = posService.getPosDetail(storeId);
+        Long posNowAmount = pos.getAmount();
+        Integer posNowAmountInt = posNowAmount.intValue();
+
+        model.addAttribute("posNowAmount", posNowAmountInt);
+
+        return "/pos/openAndClosed"; // JSP file path
+    }
+
+    @PostMapping("/close")
+    @ResponseBody
+    public ResponseEntity<String> postClose(HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        Store store = storeService.findById(storeId);
+
+        if (store.getIs24Hours() == 1) {
+            return ResponseEntity.badRequest().body("24시간 상태에서 마감되었습니다."); // Return error message
+        }
+
+        store.setIsOpen(0);
+        storeService.updateStatus(store);
+        System.out.println("[close]store" + store.getId() + "번 가게를 마감으로 변경");
+        return ResponseEntity.ok("가게가 닫혔습니다. 마감완료"); // 성공 메시지 반환
     }
 
 }
