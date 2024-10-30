@@ -1,5 +1,6 @@
 package com.uni.uni_erp.service.erp.hr;
 
+import com.uni.uni_erp.domain.entity.erp.hr.Allowance;
 import com.uni.uni_erp.domain.entity.erp.hr.Attendance;
 import com.uni.uni_erp.domain.entity.erp.hr.Holiday;
 import com.uni.uni_erp.dto.erp.hr.PayrollDTO;
@@ -71,10 +72,6 @@ public class PayrollService {
 //            if (weeklyWorkMinutes >= 15 * 60) { // 예: 주 15시간 이상 근무 시 주휴 수당
 //                weeklyHolidayAllowance = calculateWeeklyHolidayAllowance(baseSalary);
 //            }
-
-            // 추가 수당 계산
-            Integer holidayWorkAllowance = 0;
-            Integer nightWorkAllowance = 0;
 
 //            if (options.isIncludeOvertime()) {
 //                overtimeAllowance = (int) ((totalOvertimeMinutes / 60.0) * employee.getWage() * 1.5);
