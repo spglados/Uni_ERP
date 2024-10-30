@@ -1,8 +1,6 @@
 package com.uni.uni_erp.interceptor;
 
 import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.exception.errors.Exception401;
-import com.uni.uni_erp.exception.errors.Exception404;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

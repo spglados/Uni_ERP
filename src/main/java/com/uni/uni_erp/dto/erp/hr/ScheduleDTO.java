@@ -59,7 +59,6 @@ public class ScheduleDTO {
             this.extendedProps = CustomProperty.builder()
                     .empId(schedule.getEmployee().getId())
                     .status(EnumCommonUtil.getStringFromEnum(schedule.getStatus()))
-                    .minutes(schedule.getMinutes() == null ? 0 : schedule.getMinutes())
                     .build();
             this.allDay = false;
         }
@@ -74,7 +73,6 @@ public class ScheduleDTO {
     public static class CustomProperty {
         private Integer empId; // Employee.id
         private String status; // Schedule.Status
-        private Integer minutes;
     }
 
 

@@ -1,15 +1,10 @@
 package com.uni.uni_erp.controller.pos;
 
-import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.SalesRefund;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
-import com.uni.uni_erp.dto.erp.product.ProductDTO;
-import com.uni.uni_erp.dto.sales.SalesDTO;
-import com.uni.uni_erp.dto.sales.SalesDetailDTO;
-import com.uni.uni_erp.dto.sales.SalesInsertDTO;
-import com.uni.uni_erp.dto.sales.SalesRefundInsertDTO;
+import com.uni.uni_erp.dto.sales.*;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.invertory.InventoryService;
 import com.uni.uni_erp.service.pos.PosService;

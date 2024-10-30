@@ -1,7 +1,7 @@
-INSERT INTO store_tb (name, user_id)
+INSERT INTO store_tb (name, user_id, allow_minutes)
 VALUES
-    ('기가 막히는 한정식', 1),
-    ('기가 안막히는 양식', 1);
+    ('기가 막히는 한정식', 1,1),
+    ('기가 안막히는 양식', 1,1);
 
 -- 메인
 INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUES (1, 111, '김치찌개', '메인', 9900, 1);
