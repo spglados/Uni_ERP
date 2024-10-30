@@ -8,193 +8,336 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 <link rel="stylesheet" href="/css/erp/material.css">
-<!-- Font Awesome (integrity 속성 제거) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-      crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<link rel="stylesheet" href="/css/common/agGrid.css">
+<style>
+    .modal-dialog {
+        max-width: 20%;
+    }
+
+    /* 리스트 아이템 호버 효과 */
+    .list-group-item:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+    }
+
+    /* 아이템 텍스트 스타일 */
+    .list-group-item span {
+        font-weight: bold;
+        color: #343a40;
+    }
+
+    /* 아이콘 색상 변경 */
+    .list-group-item i {
+        color: #007bff; /* 원하는 색상으로 변경 가능 */
+    }
+
+    /* ag-Grid의 드롭다운 메뉴 스타일 조정 */
+    .ag-menu {
+        max-width: 200px; /* 필요한 최대 너비로 조정 */
+        overflow: hidden;
+    }
+
+    .ag-date-picker {
+        z-index: 1000; /* 다른 요소보다 위에 표시되도록 설정 */
+    }
+
+    /* 버튼 스타일링 */
+    .btn-action {
+        padding: 5px 10px;
+        background-color: #F8F399;
+        color: black;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .btn-action:hover {
+        background-color: #E5DC92;
+    }
+
+    /* Editable cell styling */
+    .ag-theme-quartz .editable-cell {
+        background-color: #FFF3DA; /* 연한 파란색 배경 */
+        cursor: pointer; /* 커서를 포인터로 변경 */
+        border-left: 1px solid #FF2800; /* 왼쪽 테두리로 강조 */
+        border-right: 1px solid #FF2800; /* 오른쪽 테두리로 강조 */
+        border-bottom: 1px solid #FF2800; /* 아래쪽 테두리로 강조 */
+        border-top: 1px solid #FF2800; /* 위쪽 테두리로 강조 */
+    }
+
+    .ag-theme-quartz .editable-cell:hover {
+        background-color: #bae7ff; /* 호버 시 배경색 변경 */
+    }
+</style>
+
+<!-- ag-Grid JavaScript -->
+<script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
 
 <!-- 재고 관리 콘텐츠 -->
 <div class="content">
     <h1>일 재고 관리</h1>
     <hr>
-    <!-- 자재 필터 및 저장 버튼 영역 -->
-    <div class="d-flex d-flex-row-reverse" style="flex-direction: row-reverse;">
-        <!-- 카테고리 선택 필터 -->
-        <select id="categoryFilter" class="form-control select" style="margin-right: 30px;">
-            <option value="전체">전체</option>
-            <option value="냉동품">냉동품</option>
-            <option value="냉장품">냉장품</option>
-            <option value="상온품">상온품</option>
-        </select>
-    </div>
-
-    <!-- 자재 목록 테이블 -->
+    <!-- 저장 버튼 영역 -->
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
-        <div class="d-flex justify-content-between">
-            <div>
-                <h2 id="categoryTitle">전체</h2>
-            </div>
-            <div class="d-flex justify-content-between">
-                <input id="searchInput" placeholder="자재명 검색" class="form-control mr-2" style="width: 200px;">
-                <!-- 저장 버튼 추가 -->
-                <button id="saveButton" class="btn btn-primary" style="margin-right: 10px;">저장</button>
+        <div class="d-flex justify-content-end mb-2">
+            <!-- 저장 버튼 추가 -->
+            <button id="saveButton" class="btn btn-primary">저장</button>
+            <div class="refresh-btn-div">
+                <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
             </div>
         </div>
         <hr>
-        <div class="table-container">
-            <!-- 자재 목록 테이블 -->
-            <table class="table table-bordered table-striped" id="materialList">
-                <thead class="thead-dark">
-                <tr>
-                    <th>자재코드</th>
-                    <th>자재명</th>
-                    <th>분류</th>
-                    <th>이론 재고</th>
-                    <th>실 재고</th>
-                    <th>재고 손실</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach var="material" items="${materialStatusList}" varStatus="status">
-                    <tr data-index="${status.index}">
-                        <td>${material.materialCode}</td>
-                        <td>${material.name}</td>
-                        <td>${material.category}</td>
-                        <td>${material.theoreticalAmount}&nbsp;${material.unit}</td>
-                        <td>
-                            <input type="number" value="${material.actualAmount}" class="actualAmountInput">&nbsp;${material.unit}
-                        </td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${material.loss >= 0}">
-                                    +${material.loss}
-                                </c:when>
-                                <c:otherwise>
-                                    <span style="color: red;">${material.loss}</span>
-                                </c:otherwise>
-                            </c:choose>
-                            &nbsp;${material.unit}
-                        </td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
+        <!-- 자재 목록 그리드 -->
+        <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
+            <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-quartz"></div>
         </div>
     </div>
+</div>
 
-    <!-- JavaScript 섹션 -->
-    <script>
-        // materialStatusList를 JavaScript 배열로 정의
-        const materialStatusList = [
-            <c:forEach var="material" items="${materialStatusList}" varStatus="status">
-                {
-                    materialCode: '${material.materialCode}',
-                    name: '${material.name}',
-                    category: '${material.category}',
-                    theoreticalAmount: ${material.theoreticalAmount},
-                    unit: '${material.unit}',
-                    actualAmount: ${material.actualAmount},
-                    loss: ${material.loss}
-                }<c:if test="${!status.last}">,</c:if>
-            </c:forEach>
-        ];
+<!-- 상품 내역 모달 -->
+<div class="modal fade" id="ingredientModal" tabindex="-1" role="dialog" aria-labelledby="ingredientModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ingredientModalLabel">상품 내역</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="닫기">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Bootstrap List Group 적용 -->
+                <ul class="list-group" id="product-list">
+                    <!-- 상품 목록이 동적으로 삽입됩니다 -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const categoryFilter = document.getElementById('categoryFilter');
-            const categoryTitle = document.getElementById('categoryTitle');
-            const searchInput = document.getElementById('searchInput');
-            const saveButton = document.getElementById('saveButton');
+<script>
 
-            // 카테고리 선택 시 필터링 및 검색어 비우기
-            categoryFilter.addEventListener('change', function () {
-                var selectedCategory = categoryFilter.value;
-                categoryTitle.textContent = selectedCategory;
-                searchInput.value = ''; // 카테고리 변경 시 검색어 비우기
-                filterProducts();
-            });
+    // 페이지 로드 시간 기록
+    const pageLoadTime = new Date().getTime();
 
-            // 엔터 키 입력 시 필터링
-            searchInput.addEventListener('keyup', function (event) {
-                if (event.key === 'Enter') {
-                    filterProducts();
+    // 재고 현황 데이터 배열 생성
+    const materialManagementData = [
+        <c:forEach var="material" items="${materialStatusList}" varStatus="status">
+        {
+            materialCode: "${material.materialCode}",
+            name: "${material.name}",
+            category: "${material.category}",
+            theoreticalAmount: ${material.theoreticalAmount},
+            unit: "${material.unit}",
+            actualAmount: ${material.actualAmount},
+            loss: ${material.loss}
+        }<c:if test="${!status.last}">, </c:if>
+        </c:forEach>
+    ];
+
+    // ag-Grid 옵션 설정
+    const gridOptions = {
+        // 데이터 행
+        rowData: materialManagementData,
+
+        // 고유 Row ID 설정
+        getRowId: function (params) {
+            return params.data.materialCode;
+        },
+
+        // 컬럼 정의
+        columnDefs: [
+            {
+                field: "materialCode",
+                headerName: "자재코드",
+                sortable: true,
+                filter: true,
+                resizable: true,
+                suppressMovable: false,
+                editable: false
+            },
+            {
+                field: "name",
+                headerName: "자재명",
+                sortable: true,
+                filter: true,
+                resizable: true,
+                suppressMovable: false,
+                editable: false
+            },
+            {
+                field: "category",
+                headerName: "분류",
+                sortable: true,
+                filter: true,
+                resizable: true,
+                suppressMovable: false,
+                editable: false
+            },
+            {
+                field: "theoreticalAmount",
+                headerName: "이론 재고",
+                sortable: true,
+                filter: 'agNumberColumnFilter',
+                resizable: true,
+                suppressMovable: false,
+                editable: false,
+                valueFormatter: function (params) {
+                    return params.value + ' ' + params.data.unit;
                 }
-            });
-
-            searchInput.addEventListener('input', function () {
-                filterProducts();
-            });
-
-            // 상품 필터링 함수 (카테고리와 검색어 모두 적용)
-            function filterProducts() {
-                var selectedCategory = categoryFilter.value;
-                var searchKeyword = searchInput.value.toLowerCase(); // 검색어를 소문자로 변환
-
-                const productList = document.querySelectorAll('#materialList tbody tr');
-
-                productList.forEach(function (row) {
-                    var productCategoryCell = row.querySelector('td:nth-child(3)');
-                    var productNameCell = row.querySelector('td:nth-child(2)'); // 상품명 있는 열 선택
-                    if (productCategoryCell && productNameCell) {
-                        var productCategory = productCategoryCell.textContent.trim();
-                        var productName = productNameCell.textContent.trim().toLowerCase(); // 상품명 소문자로 변환
-
-                        // 카테고리와 검색어가 모두 일치해야 보이게 함
-                        var categoryMatch = selectedCategory === '전체' || productCategory === selectedCategory;
-                        var searchMatch = productName.includes(searchKeyword);
-
-                        if (categoryMatch && searchMatch) {
-                            row.style.display = ''; // 카테고리와 검색어가 일치하는 경우 보이기
-                        } else {
-                            row.style.display = 'none'; // 일치하지 않는 경우 숨기기
-                        }
+            },
+            {
+                field: "actualAmount",
+                headerName: "실 재고",
+                sortable: true,
+                filter: 'agNumberColumnFilter',
+                resizable: true,
+                suppressMovable: false,
+                editable: true, // Editable
+                valueFormatter: function (params) {
+                    return params.value + ' ' + params.data.unit;
+                },
+                cellEditor: 'agNumberCellEditor', // Number input
+                cellClass: 'editable-cell' // Add CSS class for styling
+            },
+            {
+                field: "loss",
+                headerName: "재고 손실",
+                sortable: true,
+                filter: 'agNumberColumnFilter',
+                resizable: true,
+                suppressMovable: false,
+                editable: false,
+                valueFormatter: function (params) {
+                    if (params.value >= 0) {
+                        return '+' + params.value + ' ' + params.data.unit;
+                    } else {
+                        return params.value + ' ' + params.data.unit;
                     }
-                });
+                },
+                cellStyle: function (params) {
+                    if (params.value < 0) {
+                        return {color: 'red'};
+                    } else {
+                        return {color: 'black'};
+                    }
+                }
             }
+        ],
 
-            // actualAmount 입력 필드에 이벤트 리스너 추가하여 materialStatusList 업데이트
-            const actualAmountInputs = document.querySelectorAll('.actualAmountInput');
+        // 행 높이 설정
+        rowHeight: 55,
 
-            actualAmountInputs.forEach(function(input) {
-                input.addEventListener('change', function() {
-                    const row = this.closest('tr');
-                    const index = row.getAttribute('data-index');
-                    const newValue = parseFloat(this.value);
-                    if (!isNaN(newValue)) {
-                        materialStatusList[index].actualAmount = newValue;
-                    }
-                });
-            });
+        // 기본 컬럼 정의: 모든 컬럼에 공통으로 적용될 설정
+        defaultColDef: {
+            flex: 1,
+            minWidth: 150,
+            resizable: true,
+            sortable: true,
+            filter: true
+        },
 
-            // 저장 버튼 클릭 시 변경된 데이터를 서버로 전송
-            saveButton.addEventListener('click', function() {
-                // 서버로 전송할 데이터 준비
-                const updatedData = materialStatusList.map(material => ({
-                    materialCode: material.materialCode,
-                    actualAmount: material.actualAmount
-                }));
+        // 페이징 설정
+        pagination: true,
+        paginationPageSize: 10,
 
-                // AJAX 요청을 통해 데이터 전송
-                fetch('/erp/inventory/day-adjustment', { // 실제 저장을 처리할 서버 엔드포인트로 변경 필요
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updatedData)
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('네트워크 응답이 올바르지 않습니다.');
-                    }
-                    alert("성공적으로 저장했습니다 !");
-                })
-                .catch(error => {
-                    // 오류 처리
-                    console.error('오류:', error);
-                    alert('저장 중 오류가 발생했습니다.');
-                });
+        // 행 애니메이션
+        animateRows: true,
+
+        // 행 선택 모드
+        rowSelection: 'single',
+
+        // 기타 설정
+        suppressMovableColumns: false,
+        domLayout: 'autoHeight',
+
+        // 그리드 준비 시 컬럼 사이즈 자동 조정
+        onGridReady: function (params) {
+            params.api.sizeColumnsToFit();
+        },
+
+        // 실재고 변경 시 유효성 검사
+        onCellValueChanged: function (params) {
+            if (params.colDef.field === 'actualAmount') {
+                const newValue = parseFloat(params.data.actualAmount);
+                if (isNaN(newValue) || newValue < 0) {
+                    alert('실 재고는 0 이상이어야 합니다.');
+                    params.data.actualAmount = params.oldValue;
+                    params.api.refreshCells({rowNodes: [params.node], columns: ['actualAmount']});
+                }
+            }
+        }
+    };
+
+    // ag-Grid 초기화
+    document.addEventListener('DOMContentLoaded', function () {
+        const gridDiv = document.querySelector('#myGrid');
+        new agGrid.Grid(gridDiv, gridOptions);
+
+        // 컬럼 사이즈 자동 조정
+        gridOptions.api.sizeColumnsToFit();
+    });
+
+    // 저장 버튼 클릭 시 변경된 데이터를 서버로 전송
+    document.getElementById('saveButton').addEventListener('click', function () {
+
+        const currentTime = new Date().getTime();
+        const elapsedTime = currentTime - pageLoadTime;
+
+        if (elapsedTime > 60000) { // 60,000 ms = 1 minute
+            alert('데이터 갱신이 필요합니다. 새로고침을 해주세요.');
+            return;
+        }
+
+        // 변경된 데이터를 추출
+        const updatedData = [];
+
+        gridOptions.api.forEachNode(function (node) {
+            updatedData.push({
+                materialCode: node.data.materialCode,
+                actualAmount: node.data.actualAmount
             });
         });
-    </script>
 
-</div>
+        // AJAX 요청을 통해 데이터 전송
+        fetch('/erp/inventory/day-adjustment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('네트워크 응답이 올바르지 않습니다.');
+                }
+                return response.text(); // 응답을 텍스트로 먼저 반환
+            })
+            .then(text => {
+                if (text) {
+                    return JSON.parse(text);
+                } else {
+                    throw new Error('서버 응답이 비어 있습니다.');
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    alert("성공적으로 저장했습니다!");
+                    // 필요 시 그리드 리프레시 또는 추가 동작
+                } else if (!data.success) {
+                    alert("변경된 값이 없습니다. \n\n\t 변경 후 Enter를 눌러주세요 !");
+                } else {
+                    alert("저장에 실패했습니다.");
+                }
+            })
+            .catch(error => {
+                // 오류 처리
+                console.error('오류:', error);
+                alert('저장 중 오류가 발생했습니다.');
+            });
+    });
+</script>
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

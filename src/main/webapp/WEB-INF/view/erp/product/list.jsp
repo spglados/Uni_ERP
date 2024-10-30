@@ -13,30 +13,17 @@
 <div class="content">
     <h1>상품 목록</h1>
     <hr>
-    <!-- 상품 필터 및 등록 버튼 영역 -->
-    <div class="d-flex d-flex-row-reverse" style="flex-direction: row-reverse;">
-        <!-- 새로운 등록 버튼 (별도의 페이지로 이동) -->
-        <a href="/erp/product/registration" class="btn btn-outline-info rounded-pill" style="margin-right: 20px;">등록하러 가기</a>
-    </div>
-
     <!-- 상품 목록 테이블 -->
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
-        <div class="d-flex justify-content-between">
-            <div>
-                <h2 id="categoryTitle">전체</h2>
+            <div class="d-flex d-flex-row-reverse" style="flex-direction: row-reverse;">
+                <!-- 새로운 등록 버튼 (별도의 페이지로 이동) -->
+                <div class="refresh-btn-div">
+                    <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <a href="/erp/product/registration" class="btn btn-outline-info rounded-pill" style="margin-right: 20px;">등록하러 가기</a>
             </div>
-            <div class="d-flex justify-content-between">
-                <!-- 카테고리 선택 필터 -->
-                <select id="categoryFilter" class="form-control select" style="margin-right: 30px;">
-                    <option value="전체">전체</option>
-                    <option value="메인">메인</option>
-                    <option value="사이드">사이드</option>
-                    <option value="음료">음료</option>
-                    <option value="주류">주류</option>
-                </select>
-                <input id="searchInput" placeholder="상품명 검색" style="margin-right: 10px">
-            </div>
-        </div>
         <hr>
         <div class="table-container">
             <!-- 상품 목록 테이블 -->
@@ -72,64 +59,6 @@
                     </c:forEach>
                 </tbody>
             </table>
-        </div>
-    </div>
-
-    <!-- 상품 등록 모달 -->
-    <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="registerModalLabel">상품 등록</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- 상품 등록 폼 -->
-                    <form id="registerForm" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label for="productName">상품명</label>
-                            <input type="text" class="form-control" id="productName" name="name" required value="고추장찌개">
-                        </div>
-                        <div class="form-group">
-                            <label for="category">카테고리</label>
-                            <select class="form-control" id="category" name="category">
-                                <option>메인</option>
-                                <option>사이드</option>
-                                <option>음료</option>
-                                <option>주류</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="price">가격</label>
-                            <input type="number" class="form-control" id="price" name="price" required value="8900">
-                        </div>
-
-                        <!-- 이미지 업로드 -->
-                        <div class="form-group">
-                            <label for="image">상품 이미지</label>
-                            <input type="file" class="form-control" id="image" accept="image/*" onchange="previewImage(event)">
-                        </div>
-
-                        <!-- 이미지 미리보기 -->
-                        <div class="form-group">
-                            <label>미리보기</label>
-                            <img id="imagePreview" style="max-width: 100%; height: auto;" />
-                        </div>
-
-                        <!-- 추가 정보 (예: 설명, 재고, 유통기한 등) -->
-                        <div class="form-group">
-                            <label for="description">상품 설명</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                    <button type="button" class="btn btn-primary" onclick="registerProduct()">저장</button>
-                </div>
-            </div>
         </div>
     </div>
 
