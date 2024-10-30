@@ -360,4 +360,42 @@ public class SalesService {
     public List<SalesRefundDTO> findRefundByOrderNum(List<Integer> orderNum) {
         return salesRefundRepository.findAllByOrderNumIn(orderNum);
     }
+
+    public List<SalesbyCategoryDTO> getItemSummaries() {
+        return salesDetailRepository.findItemSummaries();
+    }
+
+    public Long getTotalSalesForLastYear() {
+        LocalDateTime startDate = LocalDateTime.of(LocalDateTime.now().getYear() - 1, 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(LocalDateTime.now().getYear() - 1, 12, 31, 23, 59, 59);
+        return salesRepository.findTotalSalesPriceForLastYear(startDate, endDate);
+    }
+
+    public Long getTotalSalesForThisYear() {
+        LocalDateTime startDate = LocalDateTime.of(LocalDateTime.now().getYear(), 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(LocalDateTime.now().getYear(), 12, 31, 23, 59, 59);
+        return salesRepository.findTotalSalesPriceForThisYear(startDate, endDate);
+    }
+
+
+    // 연도별
+    public List<SalesDataDTO> getTotalPriceByYear() {
+        return salesRepository.findTotalPriceByYear();
+    }
+
+    // 월별
+    public List<SalesDataDTO> getTotalSalesForCurrentYearByMonth() {
+        int currentYear = LocalDateTime.now().getYear();
+        return salesRepository.findTotalPriceByMonth(currentYear);
+    }
+    // 일별
+    public List<SalesDataDTO> getTotalSalesForCurrentMonth() {
+        // 현재 날짜 가져오기
+        LocalDateTime now = LocalDateTime.now();
+        int currentMonth = now.getMonthValue();
+        int currentYear = now.getYear();
+
+        // 해당 월의 매출 데이터 조회
+        return salesRepository.findTotalPriceByDay(currentMonth, currentYear);
+    }
 }
