@@ -1,0 +1,57 @@
+package com.uni.uni_erp.domain.entity.payment;
+
+import com.uni.uni_erp.domain.entity.User;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Entity
+@Table(name = "payment_tb")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Payment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(nullable = false)
+    private String lastTransactionKey;
+
+    @Column(nullable = false)
+    private String paymentKey;
+
+    @Column(nullable = false)
+    private String orderId;
+
+    @Column(nullable = false)
+    private String orderName;
+
+    @Column(nullable = false)
+    private String billingKey;
+
+    @Column(nullable = false)
+    private String customerKey;
+
+    @Column(nullable = false)
+    private Integer amount;
+    private String requestedAt;
+    private String approvedAt;
+    private String cancel;
+    private Integer nowPayAmount;
+    private Integer nextPayAmount;
+    private String nextPay;
+    private String date;
+    private Integer status;
+
+    @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
+    private List<PaymentHistory> paymentHistories;
+
+}
