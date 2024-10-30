@@ -35,10 +35,13 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
     /**
      * 날짜 기반 출근 테이블 조회
+     *
+     * @param storeId 상점 필터
      */
     @Query("SELECT a FROM Attendance a " +
             "JOIN FETCH a.store s " +
             "JOIN FETCH a.employee e " +
+            "LEFT JOIN FETCH a.schedule sch " +
             "WHERE s.id = :storeId " +
             "AND FUNCTION('DATE', a.startTime) BETWEEN :startDate AND :endDate")
     List<Attendance> findByStoreIdAndDateRange(
@@ -47,7 +50,25 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             @Param("endDate") LocalDate endDate);
 
     /**
+     * 급여 계산용 근무 내역 조회
+     *
+     * @param empNo 직원 필터
+     */
+    @Query("SELECT a FROM Attendance a " +
+            "JOIN FETCH a.employee e " +
+            "WHERE e.uniqueEmployeeNumber = :empNo " +
+            "AND a.startTime BETWEEN :start AND :end " +
+            "AND a.status IN :statuses")
+    List<Attendance> findByEmployeeNoAndDateBetween(
+            @Param("empNo") Long empNo,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end,
+            @Param("statuses") List<Attendance.Status> statuses);
+
+    /**
      * 시간 기반 출근 테이블 조회
+     *
+     * @param storeId 상점 필터
      */
     @Query("SELECT a FROM Attendance a " +
             "JOIN FETCH a.store s " +
@@ -59,4 +80,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             @Param("storeId") Integer storeId,
             @Param("today") LocalDateTime today,
             @Param("tomorrow") LocalDateTime tomorrow);
+
+
 }

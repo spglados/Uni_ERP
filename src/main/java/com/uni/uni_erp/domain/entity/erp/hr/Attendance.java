@@ -13,7 +13,8 @@ import java.sql.Timestamp;
 @Builder
 @Entity
 @Table(name = "hr_attendance_tb")
-public class Attendance {
+public class
+Attendance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

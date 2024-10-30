@@ -185,6 +185,11 @@ public class AttendanceService {
         return attendanceList.stream().map(AttendanceDTO.GridDTO::new).toList();
     }
 
+    /**
+     * erp 메인 화면용 데이터 조회
+     * @param storeId 상점 필터
+     * @return 오늘 근무자 리스트, 금월 근태 불량 현황
+     */
     public AttendanceDTO.ErpMainDTO getAttendanceForMain(Integer storeId) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime today = now.withHour(6).withMinute(0);
