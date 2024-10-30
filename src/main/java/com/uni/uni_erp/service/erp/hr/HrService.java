@@ -13,7 +13,7 @@ import com.uni.uni_erp.repository.bank.BankRepository;
 import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
 import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
-import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.repository.user.StoreRepository;
 import com.uni.uni_erp.util.ExcelUtil.ExcelUtil;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -209,6 +209,11 @@ public class HrService {
     // 중복 전화번호 검사
     public boolean isPhoneDuplicated(String phone) {
         return employeeRepository.existsByPhone(phone);
+    }
+
+    // 중복 계좌번호 조회
+    public boolean isAccountNumberDuplicated(String accountNumber) {
+        return employeeRepository.existsByAccountNumber(accountNumber);
     }
 
     // 모든 직원과 은행 정보 조회

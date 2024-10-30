@@ -1,10 +1,10 @@
-INSERT INTO emp_position_tb (name, store_id, schedule_color)
-VALUES ('주방장', 1, '#FF5733'), -- 주황색
-       ('매니저', 1, '#33FF57'), -- 초록색
-       ('서빙', 1, '#3357FF'),
-       ('철방장', 2, '#FF5733'), -- 주황색
-       ('남방장', 2, '#33FF57'), -- 초록색
-       ('김방장', 2, '#3357FF');
+INSERT INTO emp_position_tb (name, store_id, schedule_color, min_required_num)
+VALUES ('주방장', 1, '#FF5733', 0), -- 주황색
+       ('매니저', 1, '#33FF57', 0), -- 초록색
+       ('서빙', 1, '#3357FF', 0),
+       ('철방장', 2, '#FF5733', 0), -- 주황색
+       ('남방장', 2, '#33FF57', 0), -- 초록색
+       ('김방장', 2, '#3357FF', 0);
 
 
 -- 직책 샘플

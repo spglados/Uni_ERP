@@ -36,16 +36,16 @@ public class Employee {
         F // 여자
     }
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String phone;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String address;
 
-    @Column(unique = true, name = "account_number", nullable = false)
+    @Column(name = "account_number", nullable = false)
     private String accountNumber;
     // 사용자 정의 직책
 
