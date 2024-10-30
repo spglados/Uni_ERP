@@ -37,11 +37,16 @@
                 <div class="toggle">
                     <span class="toggle--switch"></span>
                 </div>
-                <div class="header-icons">
+                <c:if test="${not empty sessionScope.userSession}">
+                    <a href="/myPage" class="header-icon">마이페이지&nbsp;&nbsp;</a>
+                    <i class="header-icon">/</i>
+                    <a href="/user/logout" class="header-icon">&nbsp;&nbsp;로그아웃</a>
+                </c:if>
+                <c:if test="${empty sessionScope.userSession}">
                     <a href="/user/login" class="header-icon">로그인&nbsp;&nbsp;</a>
                     <i class="header-icon">/</i>
-                    <a href="/user/join" class="header-icon">&nbsp;&nbsp;회원가입</a>
-                </div>
+                   <a href="/user/join" class="header-icon">&nbsp;&nbsp;회원가입</a>
+                </c:if>
             </ul>
         </nav>
     </div>

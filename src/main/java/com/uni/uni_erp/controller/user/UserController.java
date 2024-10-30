@@ -133,4 +133,10 @@ public class UserController {
         }
     }
 
+    @GetMapping("/logout")
+    public String logout() {
+        session.invalidate(); // 세션 무효화
+        return "redirect:/main"; // 메인 페이지로 리다이렉트
+    }
+
 }

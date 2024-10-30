@@ -177,6 +177,7 @@ public class PaymentService {
                         .customerKey(customerKey)
                         .amount(amount)
                         .totalAmount("")
+                        .method("카드")
                         .requestedAt(paymentJson.get("requestedAt").asText())
                         .approvedAt(paymentJson.get("approvedAt").asText())
                         .cancel("N")
@@ -435,5 +436,9 @@ public class PaymentService {
 
     public List<Payment> findByUserId(Integer userId) {
         return paymentRepository.findByUserId(userId);
+    }
+
+    public Integer getCountOfPaymentsWithStatusNotZero(Integer userPk) {
+        return paymentRepository.countByStatusNotZero(userPk);
     }
 }

@@ -30,8 +30,8 @@
 			<input type="hidden" id="phoneDoubleChk" />
 		</p>
 
-		<input type="text" id="basicAddress" placeholder="기본 주소" readonly> <input type="text" id="detailAddress" placeholder="상세 주소"> <input type="button"
-			class="check--btn" onclick="execDaumPostcode()" value="주소 검색"><br> <input type="hidden" id="fullAddress" name="address">
+		<input type="text" id="basicAddress" placeholder="기본 주소" readonly> <input type="text" id="detailAddress" placeholder="상세 주소">
+		<input type="button" class="check--btn" onclick="execDaumPostcode()" value="주소 검색"><br> <input type="hidden" id="fullAddress" name="address">
 		<form id="signupForm">
 			<button type="submit" id="signupButton">회원가입</button>
 		</form>
