@@ -16,8 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -161,17 +164,67 @@ public class AttendanceService {
         attendance.setWage(attendance.getEmployee().getWage());
     }
 
+    /**
+     * 근태 관리 페이지용 조회
+     * @param storeId 상점 필터
+     * @param startDate 시작 날짜 (디폴트 : 3개월 전)
+     * @param endDate 종료 날짜 (디폴트 : 오늘)
+     * @return 그리드용 DTO 반환
+     */
     public List<AttendanceDTO.GridDTO> findAttendanceList(Integer storeId, LocalDate startDate, LocalDate endDate) {
         if (startDate == null) {
             startDate = LocalDate.now().minusMonths(3);
         }
         if (endDate == null) {
-            endDate = LocalDate.now().plusDays(1);
+            endDate = LocalDate.now();
         }
         List<Attendance> attendanceList =  attendanceRepository.findByStoreIdAndDateRange(storeId, startDate, endDate);
         if (attendanceList.isEmpty()) {
             return null;
         }
         return attendanceList.stream().map(AttendanceDTO.GridDTO::new).toList();
+    }
+
+    public AttendanceDTO.ErpMainDTO getAttendanceForMain(Integer storeId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime today = now.withHour(6).withMinute(0);
+        LocalDateTime tomorrow = now.plusDays(1).withHour(6).withMinute(0);
+        if (now.getHour() < 6) {
+            today = today.minusDays(1);
+            tomorrow = tomorrow.plusDays(1);
+        }
+        List<Attendance> attendancesToday = attendanceRepository.findByStoreIdAndDateTimeRange(storeId, today, tomorrow);
+        LocalDate nowDate = LocalDate.now();
+        // 이번 달 1일
+        LocalDate firstDayOfMonth = nowDate.withDayOfMonth(1);
+
+        // 이번 달 마지막 날
+        int lastDay = YearMonth.from(nowDate).lengthOfMonth();  // 이번 달의 마지막 날짜 (예: 28, 30, 31)
+        LocalDate lastDayOfMonth = nowDate.withDayOfMonth(lastDay);
+        List<Attendance> attendancesMonth = attendanceRepository.findByStoreIdAndDateRange(storeId, firstDayOfMonth, lastDayOfMonth);
+        Map<Long, List<Attendance>> groupedByEmployee = attendancesMonth.stream()
+                .collect(Collectors.groupingBy(attendance -> attendance.getEmployee().getUniqueEmployeeNumber()));
+        List<AttendanceDTO.MonthlyAttendanceDTO> monthlyAttendanceDTOList = new ArrayList<>();
+        for (Map.Entry<Long, List<Attendance>> entry : groupedByEmployee.entrySet()) {
+            Long empId = entry.getKey();
+            List<Attendance> empAttendances = entry.getValue();
+
+            String empName = empAttendances.get(0).getEmployee().getName(); // 이름은 첫 번째 Attendance에서 가져옴
+            int lateCount = (int) empAttendances.stream()
+                    .filter(att -> att.getStatus() == Attendance.Status.LATE
+                            || att.getStatus() == Attendance.Status.LATE_AND_LEFT_EARLY)
+                    .count();
+            int earlyLeaveCount = (int) empAttendances.stream()
+                    .filter(att -> att.getStatus() == Attendance.Status.LEFT_EARLY
+                            || att.getStatus() == Attendance.Status.LATE_AND_LEFT_EARLY)
+                    .count();
+            int unauthorizedAbsentCount = (int) empAttendances.stream()
+                    .filter(att -> att.getStatus() == Attendance.Status.UNAUTHORIZED_ABSENT)
+                    .count();
+
+            // DTO 객체 생성 후 리스트에 추가
+            monthlyAttendanceDTOList.add(new AttendanceDTO.MonthlyAttendanceDTO(empId, empName, lateCount, earlyLeaveCount, unauthorizedAbsentCount));
+        }
+        return new AttendanceDTO.ErpMainDTO(attendancesToday.stream().map(AttendanceDTO.TodayAttendanceDTO::new).toList(), monthlyAttendanceDTOList);
     }
 }

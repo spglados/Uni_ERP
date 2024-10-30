@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +33,9 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             @Param("startOfDay") Timestamp startOfDay,
             @Param("endOfDay") Timestamp endOfDay);
 
+    /**
+     * 날짜 기반 출근 테이블 조회
+     */
     @Query("SELECT a FROM Attendance a " +
             "JOIN FETCH a.store s " +
             "JOIN FETCH a.employee e " +
@@ -41,4 +45,18 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             @Param("storeId") Integer storeId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    /**
+     * 시간 기반 출근 테이블 조회
+     */
+    @Query("SELECT a FROM Attendance a " +
+            "JOIN FETCH a.store s " +
+            "JOIN FETCH a.employee e " +
+            "LEFT JOIN FETCH a.schedule sch " +
+            "WHERE s.id = :storeId " +
+            "AND ((sch.startTime BETWEEN :today AND :tomorrow) OR (a.startTime BETWEEN :today AND :tomorrow))")
+    List<Attendance> findByStoreIdAndDateTimeRange(
+            @Param("storeId") Integer storeId,
+            @Param("today") LocalDateTime today,
+            @Param("tomorrow") LocalDateTime tomorrow);
 }

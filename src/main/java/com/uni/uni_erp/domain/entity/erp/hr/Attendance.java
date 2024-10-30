@@ -63,7 +63,7 @@ public class Attendance {
     public enum Status {
         NOT_EXECUTED("출근전"),
         WORKING("근무중"),
-        ATTENDED("출석"),
+        ATTENDED("정상"),
         LATE("지각"),
         LEFT_EARLY("조퇴"),
         LATE_AND_LEFT_EARLY("지각&조퇴"),
