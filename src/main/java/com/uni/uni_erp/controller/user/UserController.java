@@ -7,6 +7,7 @@ import com.uni.uni_erp.repository.payment.Sms;
 import com.uni.uni_erp.service.common.EmailService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
+import com.uni.uni_erp.util.Str.PasswordUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,12 +36,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute UserDTO.JoinDTO dto) {
-        // TODO 유효성 검사 추가
+    public String login(@ModelAttribute UserDTO.loginDTO dto) {
         User user = userService.login(dto);
         List<StoreDTO> storeList = storeService.ownedStores(user.getId());
 
-        if(storeList != null) {
+        if(storeList != null && !storeList.isEmpty()) {
             // 맨 처음 가게 아이디 추가
             session.setAttribute("storeId", storeList.get(0).getId());
             if(storeList.size() > 1) {
@@ -63,10 +63,11 @@ public class UserController {
         return "user/join";
     }
 
+    @ResponseBody
     @PostMapping("/join")
-    public String join(@ModelAttribute UserDTO.JoinDTO dto) {
+    public ResponseEntity<?> join(@RequestBody UserDTO.JoinDTO dto) {
         userService.save(dto.toUserEntity());
-        return "user/login";
+        return ResponseEntity.ok("success");
     }
 
     @GetMapping("/sendPhoneVerification")

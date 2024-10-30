@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 public class UserDTO {
 
     @Data
-    public class loginDTO {
+    public static class loginDTO {
         private String email;
         private String password;
     }
 
     @Data
-    public class JoinDTO {
+    public static class JoinDTO {
 
         private String name;
 
