@@ -53,6 +53,7 @@
                     <li><a href="/erp/hr/employee-list">직원 목록</a></li>
                     <li><a href="/erp/hr/schedule">근무 일정</a></li>
                     <li><a href="/erp/hr/attendance-list">근태 관리</a></li>
+                    <li><a href="/erp/hr/wage">급여 관리</a></li>
                 </ul>
             </li>
             <li>
