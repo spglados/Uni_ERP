@@ -92,7 +92,7 @@
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
         <div class="table-container">
             <table class="table table-bordered table-striped" id="disposalList">
-                <thead class="thead-dark">
+                <thead class="thead-light">
                 <tr>
                     <th>유형</th>
                     <th>번호</th>

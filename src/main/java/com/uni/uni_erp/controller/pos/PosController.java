@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -205,10 +207,12 @@ public class PosController {
                         .unitPrice(salesDetailDTO.getUnitPrice())
                         .refundStatus(refundMethod.equals("cancel") ? String.valueOf(SalesRefund.RefundStatus.취소) : String.valueOf(SalesRefund.RefundStatus.환불))
                         .build();
+
                 salesRefundDTOList.add(salesRefundInsertDTO);
 
 
                 // TODO 취소 품목 로직 추가
+
 
                 salesService.saveSalesRefund(salesRefundInsertDTO, orderNum);
             }
