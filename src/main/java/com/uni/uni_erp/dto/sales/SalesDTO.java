@@ -1,5 +1,7 @@
 package com.uni.uni_erp.dto.sales;
 
+import com.uni.uni_erp.domain.entity.Sales;
+import com.uni.uni_erp.domain.entity.SalesDetail;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,4 +16,5 @@ public class SalesDTO {
     private Integer orderNum;
     private Integer totalPrice;
     private LocalDateTime salesDate;
+
 }

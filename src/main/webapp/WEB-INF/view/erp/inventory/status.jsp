@@ -105,7 +105,7 @@
                                 <ul class="list-group">
                                     <c:forEach var="product" items="${material.useProduct}">
                                         <li class="list-group-item list-group-item-action d-flex align-items-center">
-                                            <a href="/erp/product/registration/${product.value}"
+                                            <a href="/erp/product/list/${product.value}"
                                                class="text-decoration-none text-dark w-100 d-flex align-items-center">
                                                 <i class="fas fa-box mr-2"></i> <!-- Font Awesome 아이콘 -->
                                                 <span>${product.value}</span>

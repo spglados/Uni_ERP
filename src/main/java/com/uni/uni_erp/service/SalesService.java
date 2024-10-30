@@ -20,10 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,10 +34,6 @@ public class SalesService {
 
     public List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
         return salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
-    }
-
-    public List<Integer> findAllSalesNumByDateBetweenAndStoreId(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
-        return salesRepository.findAllSalesNumByDateBetweenAndStoreId(startDate, endDate, storeId);
     }
 
     public List<SalesDetailDTO> findAllByOrderNumIn(List<SalesDTO> salesDTO) {
@@ -66,6 +59,23 @@ public class SalesService {
                     return new SalesSummaryDTO(
                             itemList.get(0).getItemName(), // Item name from the first item in the group
                             totalQuantity,                 // Total quantity sold
+                            itemList.get(0).getUnitPrice() // Original unit price
+                    );
+                })
+                .toList();
+    }
+
+    public List<SalesRefundDTO> groupRefundDetails(List<SalesRefundDTO> salesRefundList) {
+        return salesRefundList.stream()
+                .collect(Collectors.groupingBy(SalesRefundDTO::getItemCode))
+                .entrySet().stream()
+                .map(entry -> {
+                    List<SalesRefundDTO> itemList = entry.getValue();
+                    int totalQuantity = itemList.stream().mapToInt(SalesRefundDTO::getQuantity).sum();
+                    return new SalesRefundDTO(
+                            entry.getKey(), // Item code from the group key
+                            itemList.get(0).getItemName(), // Item name from the first item in the group
+                            totalQuantity,  // Total quantity sold
                             itemList.get(0).getUnitPrice() // Original unit price
                     );
                 })
@@ -196,7 +206,7 @@ public class SalesService {
     }
 
     @Transactional
-    public void saveSalesRefund(SalesRefundDTO salesRefundDTO, Integer orderNum) {
+    public void saveSalesRefund(SalesRefundInsertDTO salesRefundDTO, Integer orderNum) {
         Sales sales = salesRepository.findByOrderNum(orderNum);
         SalesRefund salesRefund = SalesRefund.builder()
                 .itemCode(salesRefundDTO.getItemCode())
@@ -206,9 +216,6 @@ public class SalesService {
                 .refundStatus(SalesRefund.RefundStatus.취소)
                 .sales(sales)
                 .build();
-
-        // TODO 여기에 재고 수량 관리하는 코드 추가(남철햄)
-        // 근데 취소일때만 올라가고 환불일때는 안올라가야하는거 아닌가요잉
 
         salesRefundRepository.save(salesRefund);
     }
@@ -225,11 +232,9 @@ public class SalesService {
     public List<CostPerEmployeeDTO> calculateEmployeeSales(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
         // Split the time range into 10-minute intervals
         List<LocalDateTime> timeIntervals = splitIntoIntervals(startDate, endDate, 10);
-        System.err.println("timeIntervals: " + timeIntervals);
 
         // Create a map to store total sales and order counts per employee
         Map<Integer, CostPerEmployeeDTO> employeeSalesMap = new HashMap<>();
-        System.err.println("employeeSalesMap: " + employeeSalesMap);
 
         // Loop through each 10-minute interval
         for (int i = 0; i < timeIntervals.size() - 1; i++) {
@@ -240,16 +245,13 @@ public class SalesService {
 
             // Fetch employees working in this 10-minute interval
             List<Integer> currentWorkingEmployees = attendanceRepository.findAttendanceByDateAndStoreId(startTimestamp, endTimestamp, storeId);
-            System.err.println("currentWorkingEmployees: " + currentWorkingEmployees);
 
             // Calculate sales for this 10-minute interval
             Integer salesForInterval = salesRepository.findSalesByDateAndStoreId(intervalStart, intervalEnd, storeId);
-            System.err.println("salesForInterval: " + salesForInterval);
 
             if (salesForInterval != null && !currentWorkingEmployees.isEmpty()) {
                 // Divide sales among employees who were working during this interval
                 Integer salesPerEmployee = salesForInterval / currentWorkingEmployees.size();
-                System.err.println("salesPerEmployee: " + salesPerEmployee);
 
                 for (Integer employee : currentWorkingEmployees) {
                     // Update or create CostPerEmployeeDTO for each working employee
@@ -265,16 +267,13 @@ public class SalesService {
                     CostPerEmployeeDTO dto = employeeSalesMap.get(employee);
                     dto.setCostPer(dto.getCostPer() + salesPerEmployee);
                     dto.setTotalOrders(dto.getTotalOrders() + 1);
-                    System.err.println("dto : " + dto.toString());
                 }
             }
         }
 
-        // Convert the map values to a list of CostPerEmployeeDTO objects
         return new ArrayList<>(employeeSalesMap.values());
     }
 
-    // Helper method to split time range into intervals
     private List<LocalDateTime> splitIntoIntervals(LocalDateTime startDate, LocalDateTime endDate, int intervalMinutes) {
         List<LocalDateTime> intervals = new ArrayList<>();
         LocalDateTime current = startDate;
@@ -286,4 +285,78 @@ public class SalesService {
         return intervals;
     }
 
+    public List<Integer> findAllSalesNumByDateBetweenAndStoreId(LocalDateTime startDateCurrent, LocalDateTime endDateCurrent, Integer storeId) {
+        return salesRepository.findAllSalesNumByDateBetweenAndStoreId(startDateCurrent, endDateCurrent, storeId);
+    }
+
+    public List<SalesDetailDTO> compareQuantities(List<SalesDetailDTO> salesDetails1, List<SalesDetailDTO> salesDetails2) {
+        Map<Long, Integer> quantities1 = salesDetails1.stream()
+                .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode, Collectors.summingInt(SalesDetailDTO::getQuantity)));
+        Map<Long, Integer> quantities2 = salesDetails2.stream()
+                .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode, Collectors.summingInt(SalesDetailDTO::getQuantity)));
+
+        List<SalesDetailDTO> result = new ArrayList<>();
+        for (Map.Entry<Long, Integer> entry : quantities1.entrySet()) {
+            Long itemCode = entry.getKey();
+            Integer quantity1 = entry.getValue();
+            Integer quantity2 = quantities2.get(itemCode);
+
+            if (quantity2 != null && !quantity1.equals(quantity2)) {
+                result.add(SalesDetailDTO.builder()
+                        .itemCode(itemCode)
+                        .itemName(salesDetails1.stream()
+                                .filter(d -> d.getItemCode().equals(itemCode))
+                                .findFirst()
+                                .orElseThrow()
+                                .getItemName())
+                        .quantity(quantity1 - quantity2)
+                        .unitPrice(salesDetails1.stream()
+                                .filter(d -> d.getItemCode().equals(itemCode))
+                                .findFirst()
+                                .orElseThrow()
+                                .getUnitPrice())
+                        .build());
+            }
+        }
+
+        return result;
+    }
+
+    public List<RevenuePerDTO> employeeRevenueSquash(List<CostPerEmployeeDTO> costPerEmployeeThisYear, List<CostPerEmployeeDTO> costPerEmployeeThisMonth, List<CostPerEmployeeDTO> costPerEmployeeThisWeek) {
+        List<RevenuePerDTO> employeeSalesData = new ArrayList<>();
+        Set<String> employeeNames = new HashSet<>();
+        employeeNames.addAll(costPerEmployeeThisWeek.stream().map(CostPerEmployeeDTO::getName).toList());
+        employeeNames.addAll(costPerEmployeeThisMonth.stream().map(CostPerEmployeeDTO::getName).toList());
+        employeeNames.addAll(costPerEmployeeThisYear.stream().map(CostPerEmployeeDTO::getName).toList());
+
+        for (String employeeName : employeeNames) {
+            RevenuePerDTO data = new RevenuePerDTO();
+            data.setName(employeeName);
+
+            CostPerEmployeeDTO weekly = costPerEmployeeThisWeek.stream().filter(e -> e != null && e.getName() != null && e.getName().equals(employeeName)).findFirst().orElse(null);
+            CostPerEmployeeDTO monthly = costPerEmployeeThisMonth.stream().filter(e -> e != null && e.getName() != null && e.getName().equals(employeeName)).findFirst().orElse(null);
+            CostPerEmployeeDTO yearly = costPerEmployeeThisYear.stream().filter(e -> e != null && e.getName() != null && e.getName().equals(employeeName)).findFirst().orElse(null);
+            if (weekly != null) {
+                data.setWeeklyCostPer(weekly.getCostPer());
+                data.setWeeklyTotalOrders(weekly.getTotalOrders());
+            }
+            if (monthly != null) {
+                data.setMonthlyCostPer(monthly.getCostPer());
+                data.setMonthlyTotalOrders(monthly.getTotalOrders());
+            }
+            if (yearly != null) {
+                data.setYearlyCostPer(yearly.getCostPer());
+                data.setYearlyTotalOrders(yearly.getTotalOrders());
+            }
+            // Check if the employee has any sales data
+            if (data.getWeeklyCostPer() != null || data.getMonthlyCostPer() != null || data.getYearlyCostPer() != null) {
+                employeeSalesData.add(data);
+            }
+        }
+        return employeeSalesData;
+    }
+
+    public List<SalesRefundDTO> findRefundByOrderNum(List<Integer> orderNum) {
+        return salesRefundRepository.findAllByOrderNumIn(orderNum);
+    }
 }
