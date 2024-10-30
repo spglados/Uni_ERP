@@ -1,15 +1,10 @@
 package com.uni.uni_erp.controller.pos;
 
-import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.SalesRefund;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
-import com.uni.uni_erp.dto.erp.product.ProductDTO;
-import com.uni.uni_erp.dto.sales.SalesDTO;
-import com.uni.uni_erp.dto.sales.SalesDetailDTO;
-import com.uni.uni_erp.dto.sales.SalesInsertDTO;
-import com.uni.uni_erp.dto.sales.SalesRefundInsertDTO;
+import com.uni.uni_erp.dto.sales.*;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.invertory.InventoryService;
 import com.uni.uni_erp.service.pos.PosService;
@@ -32,8 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -201,7 +194,7 @@ public class PosController {
         List<SalesDetailDTO> salesDetail = salesService.compareQuantities(originalSalesDTO, newSalesDTO);
         System.err.println(salesDetail);
 
-        List<SalesRefundDTO> salesRefundDTOList = new ArrayList<>();
+        List<SalesRefundInsertDTO> salesRefundDTOList = new ArrayList<>();
 
         if (!salesDetail.isEmpty()) {
             for (SalesDetailDTO salesDetailDTO : salesDetail) {
@@ -212,7 +205,7 @@ public class PosController {
                         .unitPrice(salesDetailDTO.getUnitPrice())
                         .refundStatus(refundMethod.equals("cancel") ? String.valueOf(SalesRefund.RefundStatus.취소) : String.valueOf(SalesRefund.RefundStatus.환불))
                         .build();
-                salesRefundDTOList.add(salesRefundDTO);
+                salesRefundDTOList.add(salesRefundInsertDTO);
 
 
                 // TODO 취소 품목 로직 추가
