@@ -1,0 +1,61 @@
+/* ERP 시스템에 어울리는 그리드 스타일링 */
+.ag-theme-quartz {
+    font-family: 'Noto Sans KR', sans-serif; /* 한글 폰트 적용 */
+    color: #333; /* 텍스트 색상 */
+}
+
+/* 그리드 헤더 스타일링 */
+.ag-header {
+    background-color: #F8F399; /* 헤더 배경색 */
+    color: #fff; /* 헤더 텍스트 색상 */
+    text-align: center;
+}
+
+/* 그리드 셀 스타일링 */
+.ag-cell {
+    padding: 8px;
+    text-align: center;
+    font-size: 130%;
+    /*font-weight: bold*/
+}
+
+/* 페이징 컨트롤 스타일링 */
+.ag-paging-panel {
+    background-color: #f8f9fa;
+}
+
+.ag-header-cell-text {
+    text-align: center;
+    width: 100%;
+    font-size: 130%;
+    font-weight: bold
+}
+
+/* ag-Grid의 드롭다운 메뉴 스타일 조정 */
+.ag-menu {
+    max-width: 200px; /* 필요한 최대 너비로 조정 */
+    overflow: hidden;
+}
+
+.ag-date-picker {
+    z-index: 1000; /* 다른 요소보다 위에 표시되도록 설정 */
+}
+
+/* 버튼 스타일링 */
+.btn-action {
+    padding: 5px 10px;
+    background-color: #F8F399;
+    color: black;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn-action:hover {
+    background-color: #E5DC92;
+}
+
+.refresh-btn-div {
+    display: flex;
+    flex-direction: row-reverse;
+}
