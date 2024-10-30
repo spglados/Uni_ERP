@@ -24,7 +24,7 @@
             <label for="storeId">가게선택</label>
             <select name="store" id="storeId">
                 <c:forEach var="store" items="${storeList}">
-                    <option value="${store.id}">${store.id} - ${store.name}</option>
+                    <option value="${store.id}" <c:if test="${storeId == store.id}">selected</c:if> >${store.id} - ${store.name}</option>
                 </c:forEach>
             </select>
         </div>
@@ -59,6 +59,30 @@
         setTimeout(() => {
             toast.hide();
         }, 5000);
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const storeSelect = document.getElementById('storeId');
+
+        storeSelect.addEventListener('change', function () {
+            const selectedValue = storeSelect.value;
+
+            // 이곳에 fetch를 사용하여 서버로 데이터를 보내는 코드를 작성하세요.
+
+            fetch('/erp/store/' + selectedValue, {
+                method: "PUT"
+            })
+                .then(response => {
+                    if(response.ok) {
+                        window.location.reload();
+                    }
+                }).catch(error => {
+                    console.log('error', error);
+                    alert('가게 변경에 실패했습니다.');
+            });
+
+            console.log(`Selected Store ID: ${selectedValue}`);
+        });
     });
 </script>
 <%@include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

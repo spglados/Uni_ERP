@@ -60,8 +60,8 @@
         {
             materialCode: "${material.materialCode}",
             name: "${material.materialName}",
-            monthReceiveAmount: ${material.monthReceiveAmount},
-            useAmount: ${material.useAmount}
+            monthReceiveAmount: "${material.monthReceiveAmount} ${material.unit}",
+            useAmount: "${material.useAmount} ${material.unit}"
         }<c:if test="${!status.last}">, </c:if>
         </c:forEach>
     ];

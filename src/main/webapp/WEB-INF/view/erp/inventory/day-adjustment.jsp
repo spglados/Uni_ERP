@@ -59,9 +59,9 @@
     .ag-theme-quartz .editable-cell {
         background-color: #FFF3DA; /* 연한 파란색 배경 */
         cursor: pointer; /* 커서를 포인터로 변경 */
+        border-radius: 5px;
         border-left: 1px solid #FF2800; /* 왼쪽 테두리로 강조 */
         border-right: 1px solid #FF2800; /* 오른쪽 테두리로 강조 */
-        border-bottom: 1px solid #FF2800; /* 아래쪽 테두리로 강조 */
         border-top: 1px solid #FF2800; /* 위쪽 테두리로 강조 */
     }
 
@@ -81,9 +81,9 @@
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
         <div class="d-flex justify-content-end mb-2">
             <!-- 저장 버튼 추가 -->
-            <button id="saveButton" class="btn btn-primary">저장</button>
+            <button id="saveButton" class="btn btn-secondary ml-2 btn-action" title="저장"><i class="fas fa-save"></i></button>
             <div class="refresh-btn-div">
-                <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()">
+                <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()" title="필터 초기화">
                     <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
