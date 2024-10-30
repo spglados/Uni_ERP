@@ -18,9 +18,10 @@ public class MaterialDTO {
     private UnitCategory unit;
     private UnitCategory subUnit;
 
-    public MaterialDTO(String name, UnitCategory unit) {
+    public MaterialDTO(String name, UnitCategory unit, UnitCategory subUnit) {
         this.name = name;
         this.unit = unit;
+        this.subUnit = subUnit;
     }
 
     public MaterialDTO(Integer id, String name, UnitCategory unit, UnitCategory subUnit) {
