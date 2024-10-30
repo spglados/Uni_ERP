@@ -82,16 +82,15 @@
         <div class="d-flex justify-content-end mb-2">
             <!-- 저장 버튼 추가 -->
             <button id="saveButton" class="btn btn-primary">저장</button>
-        </div>
-        <hr>
-        <!-- 자재 목록 그리드 -->
-        <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
             <div class="refresh-btn-div">
                 <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()">
                     <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
-            <hr>
+        </div>
+        <hr>
+        <!-- 자재 목록 그리드 -->
+        <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
             <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-quartz"></div>
         </div>
     </div>
@@ -144,7 +143,7 @@
         rowData: materialManagementData,
 
         // 고유 Row ID 설정
-        getRowId: function(params) {
+        getRowId: function (params) {
             return params.data.materialCode;
         },
 
@@ -185,7 +184,7 @@
                 resizable: true,
                 suppressMovable: false,
                 editable: false,
-                valueFormatter: function(params) {
+                valueFormatter: function (params) {
                     return params.value + ' ' + params.data.unit;
                 }
             },
@@ -197,7 +196,7 @@
                 resizable: true,
                 suppressMovable: false,
                 editable: true, // Editable
-                valueFormatter: function(params) {
+                valueFormatter: function (params) {
                     return params.value + ' ' + params.data.unit;
                 },
                 cellEditor: 'agNumberCellEditor', // Number input
@@ -211,18 +210,18 @@
                 resizable: true,
                 suppressMovable: false,
                 editable: false,
-                valueFormatter: function(params) {
+                valueFormatter: function (params) {
                     if (params.value >= 0) {
                         return '+' + params.value + ' ' + params.data.unit;
                     } else {
                         return params.value + ' ' + params.data.unit;
                     }
                 },
-                cellStyle: function(params) {
+                cellStyle: function (params) {
                     if (params.value < 0) {
-                        return { color: 'red' };
+                        return {color: 'red'};
                     } else {
-                        return { color: 'black' };
+                        return {color: 'black'};
                     }
                 }
             }
@@ -255,18 +254,18 @@
         domLayout: 'autoHeight',
 
         // 그리드 준비 시 컬럼 사이즈 자동 조정
-        onGridReady: function(params) {
+        onGridReady: function (params) {
             params.api.sizeColumnsToFit();
         },
 
         // 실재고 변경 시 유효성 검사
-        onCellValueChanged: function(params) {
+        onCellValueChanged: function (params) {
             if (params.colDef.field === 'actualAmount') {
                 const newValue = parseFloat(params.data.actualAmount);
                 if (isNaN(newValue) || newValue < 0) {
                     alert('실 재고는 0 이상이어야 합니다.');
                     params.data.actualAmount = params.oldValue;
-                    params.api.refreshCells({ rowNodes: [params.node], columns: ['actualAmount'] });
+                    params.api.refreshCells({rowNodes: [params.node], columns: ['actualAmount']});
                 }
             }
         }
@@ -282,7 +281,7 @@
     });
 
     // 저장 버튼 클릭 시 변경된 데이터를 서버로 전송
-    document.getElementById('saveButton').addEventListener('click', function() {
+    document.getElementById('saveButton').addEventListener('click', function () {
 
         const currentTime = new Date().getTime();
         const elapsedTime = currentTime - pageLoadTime;
@@ -295,7 +294,7 @@
         // 변경된 데이터를 추출
         const updatedData = [];
 
-        gridOptions.api.forEachNode(function(node) {
+        gridOptions.api.forEachNode(function (node) {
             updatedData.push({
                 materialCode: node.data.materialCode,
                 actualAmount: node.data.actualAmount
@@ -327,7 +326,7 @@
                 if (data.success) {
                     alert("성공적으로 저장했습니다!");
                     // 필요 시 그리드 리프레시 또는 추가 동작
-                } else if(!data.success) {
+                } else if (!data.success) {
                     alert("변경된 값이 없습니다. \n\n\t 변경 후 Enter를 눌러주세요 !");
                 } else {
                     alert("저장에 실패했습니다.");
