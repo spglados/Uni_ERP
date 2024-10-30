@@ -48,7 +48,6 @@
                 <button type="button" class="btn btn-success" onclick="addIngredient()">추가</button>
             </div>
         </div>
-    </div>
 </div>
 
 <!-- JavaScript Code -->

@@ -26,23 +26,27 @@
 
   <section>
     <h3>문의하기</h3>
-    <form action="/support/contact" method="post">
+    <div id="contact-container">
       <div class="form-group">
         <label for="name">이름:</label>
         <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="tel">전화번호:</label>
+        <input type="tel" id="tel" name="tel" required placeholder="하이픈(-)을 제외하고 써주세요">
       </div>
       <div class="form-group">
         <label for="email">이메일:</label>
         <input type="email" id="email" name="email" required>
       </div>
       <div class="form-group">
-        <label for="message">문의 내용:</label>
-        <textarea id="message" name="message" rows="5" required></textarea>
+        <label for="content">문의 내용:</label>
+        <textarea id="content" name="content" rows="5" required></textarea>
       </div>
-      <button type="submit">문의하기</button>
-    </form>
+      <button id="submit-btn">문의하기</button>
+    </div>
   </section>
 
 </main>
-
+<script src="/js/common/support.js"></script>
 <%@include file="/WEB-INF/view/layout/footer.jsp"%>
