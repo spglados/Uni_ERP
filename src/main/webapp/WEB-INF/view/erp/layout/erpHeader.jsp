@@ -46,6 +46,15 @@
         <ul class="sidebar-menu">
             <li>
                 <a href="javascript:void(0);" class="menu-toggle">
+                    <i class="fas fa-store"></i>
+                    <div>가게 관리<span class="arrow">▼</span></div>
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="/erp/store/correction" target='_blank'>가게 정보 수정</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0);" class="menu-toggle">
                     <i class="fas fa-user"></i>
                     <div>인사 관리 <span class="arrow">▼</span></div>
                 </a>
@@ -54,6 +63,17 @@
                     <li><a href="/erp/hr/employee-list">직원 목록</a></li>
                     <li><a href="/erp/hr/schedule">근무 일정</a></li>
                     <li><a href="/erp/hr/attendance-list">근태 관리</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0);" class="menu-toggle">
+                    <i class="fas fa-tag"></i>
+                    <div>상품 관리 <span class="arrow">▼</span></div>
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="/erp/product/list">상품 목록</a></li>
+                    <li><a href="/erp/product/registration">상품 등록</a></li>
+                    <li><a href="/erp/product/correction">상품 수정</a></li>
                 </ul>
             </li>
             <li>
@@ -98,7 +118,7 @@
             <li>
                 <a href="javascript:void(0);" class="menu-toggle">
                     <i class="fas fa-cash-register"></i>
-                    <div>가상 POS <span class="arrow">▼</span></div>
+                    <div>POS <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
                     <li><a href="/erp/pos/main" target='_blank'>POS 실행</a></li>--%>
