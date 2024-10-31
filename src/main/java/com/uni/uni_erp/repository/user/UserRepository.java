@@ -2,8 +2,10 @@ package com.uni.uni_erp.repository.user;
 
 import com.uni.uni_erp.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 
 import java.sql.Timestamp;
 
@@ -30,4 +32,20 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     public String findPasswordByEmail(String email);
 
     User findByEmail(String email);
+    @Modifying
+    @Query("UPDATE User u SET u.email = :email WHERE u.id = :userId")
+    void updateEmailByUserId(@Param("email") String email, @Param("userId") int userId);
+
+    @Modifying
+    @Query("UPDATE User u SET u.phone = :phone WHERE u.id = :userId")
+    void updatePhoneByUserId(@Param("phone") String phone, @Param("userId") int userId);
+
+    @Modifying
+    @Query("UPDATE User u SET u.address = :address WHERE u.id = :userId")
+    void updateAddressByUserId(@Param("address") String address, @Param("userId") int userId);
+
+    @Modifying
+    @Query("UPDATE User u SET u.paymentDate = :paymentDate WHERE u.id = :userId")
+    void updatePaymentDateByUserId(@Param("paymentDate") String paymentDate, @Param("userId") int userId);
+
 }

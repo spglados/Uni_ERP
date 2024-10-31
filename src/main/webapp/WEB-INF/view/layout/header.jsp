@@ -14,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
     <title>Title</title>
     <link rel="stylesheet" href="/css/common.css">
@@ -38,9 +39,15 @@
                     <span class="toggle--switch"></span>
                 </div>
                 <div class="header-icons">
-                    <a href="/user/login" class="header-icon">로그인&nbsp;&nbsp;</a>
+                <c:if test="${not empty sessionScope.userSession}">
+                    <a href="/myPage" class="header-icon">마이페이지&nbsp;&nbsp;</a>
                     <i class="header-icon">/</i>
-                    <a href="/user/join" class="header-icon">&nbsp;&nbsp;회원가입</a>
+                    <a href="/user/logout" class="header-icon">&nbsp;&nbsp;로그아웃</a>
+                </c:if>
+                <c:if test="${empty sessionScope.userSession}">
+                    <a href="/user/login" class="header-icon"><i class="fas fa-user-check" style="color: #74C0FC;"></i></a>
+                   <a href="/user/join" class="header-icon"><i class="fas fa-user-plus" style="color: #74C0FC;"></i></a>
+                </c:if>
                 </div>
             </ul>
         </nav>

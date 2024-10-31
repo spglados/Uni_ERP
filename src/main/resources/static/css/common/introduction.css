@@ -1,9 +1,42 @@
-section {
+.main-container{
     background-color: #f9f9f9;
-    padding: 60px 20px;
-    margin: 40px 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.introduce-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 600px;
+    /*border-radius: 10px;*/
+    /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
+}
+
+.introduce-content-img-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+    height: 100%;
+}
+
+.introduce-content-img-box img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.introduce-content-text-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30%;
+    height: 100%;
+}
+
+.image-box{
+    width: 60%;
+    height: 100%;
 }
 
 section h2 {
@@ -43,18 +76,4 @@ section ul li::before {
     width: 20px;
     position: absolute;
     left: 0;
-}
-
-@media (min-width: 768px) {
-    section {
-        padding: 80px 40px;
-    }
-
-    section h2 {
-        font-size: 2.5rem;
-    }
-
-    section p, section ul li {
-        font-size: 1.2rem;
-    }
 }

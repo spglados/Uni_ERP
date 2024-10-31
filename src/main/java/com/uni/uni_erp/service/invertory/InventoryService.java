@@ -626,14 +626,22 @@ public class InventoryService {
         }
 
         // 자재 상태 조회 (오늘 날짜 기준)
-        List<MaterialStatus> status = materialStatusRepository.findByMaterial(materialList, LocalDate.now());
+        List<MaterialStatus> todayStatus = materialStatusRepository.findByMaterial(materialList, LocalDate.now());
+        List<MaterialStatus> allStatus = materialStatusRepository.findAllByStoreIdAndToday(storeId, LocalDate.now());
 
-        if (status == null || status.isEmpty()) {
+        if (todayStatus == null || todayStatus.isEmpty()) {
             log.warn("오늘 날짜의 재고 현황 데이터가 존재하지 않습니다.");
         }
 
         // MaterialCode를 키로 하는 MaterialStatus 맵 생성
-        Map<Long, MaterialStatus> statusMap = status.stream()
+        Map<Long, MaterialStatus> disposalStatusMap = todayStatus.stream()
+                .filter(ms -> ms.getMaterial() != null && ms.getMaterial().getMaterialCode() != null)
+                .collect(Collectors.toMap(
+                        ms -> ms.getMaterial().getMaterialCode(),
+                        Function.identity()
+                ));
+
+        Map<Long, MaterialStatus> allStatusMap = allStatus.stream()
                 .filter(ms -> ms.getMaterial() != null && ms.getMaterial().getMaterialCode() != null)
                 .collect(Collectors.toMap(
                         ms -> ms.getMaterial().getMaterialCode(),
@@ -641,7 +649,7 @@ public class InventoryService {
                 ));
 
         // 자재 폐기 양만큼 이론량과 실제량 감소, 손실량 계산
-        for (MaterialStatus materialStatus : status) {
+        for (MaterialStatus materialStatus : todayStatus) {
             // 폐기 내역에 해당 자재가 없는 경우 건너뜀
             if (!mDisposalMap.containsKey(materialStatus.getMaterial().getMaterialCode())) {
                 continue;
@@ -671,7 +679,7 @@ public class InventoryService {
         }
 
         // 변경된 자재 상태 저장
-        materialStatusRepository.saveAll(status);
+        materialStatusRepository.saveAll(todayStatus);
         // 자재 폐기 내역 저장
         materialDisposalRepository.saveAll(materialDisposalList);
 
@@ -721,7 +729,7 @@ public class InventoryService {
             // 각 제품의 자재 사용량 계산 및 자재 상태 업데이트
             for (Ingredient ingredient : product.getIngredients()) {
                 long materialCode = ingredient.getMaterial().getMaterialCode();
-                MaterialStatus materialStatus = statusMap.get(materialCode);
+                MaterialStatus materialStatus = allStatusMap.get(materialCode);
                 if (materialStatus == null) {
                     log.warn("MaterialStatus not found for material ID: " + materialCode);
                     throw new Exception400("자재 상태를 찾을 수 없습니다: " + materialCode);
@@ -756,7 +764,7 @@ public class InventoryService {
         }
 
         // 변경된 자재 상태 저장
-        materialStatusRepository.saveAll(status);
+        materialStatusRepository.saveAll(todayStatus);
         // 제품 폐기 내역 저장
         productDisposalRepository.saveAll(productDisposalList);
         // 변경된 MaterialOrder는 영속성 컨텍스트에 의해 자동으로 저장됩니다.
