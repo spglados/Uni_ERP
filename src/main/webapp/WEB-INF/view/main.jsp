@@ -104,24 +104,32 @@
             </p>
             <br>
             <h2>상담문의 하기</h2>
-            <form class="custom-form">
-                <label for="first-name">이름</label>
-                <input type="text" id="first-name" name="first-name">
-                <label for="last-name">성</label>
-                <input type="text" id="last-name" name="last-name">
-                <label for="email">이메일*</label>
-                <input type="email" id="email" name="email" required>
-                <label for="phone">전화번호</label>
-                <input type="tel" id="phone" name="phone">
-                <label for="message">메시지를 입력하세요.</label>
-                <textarea id="message" name="message" rows="4"></textarea>
-                <button type="submit">제출</button>
-            </form>
+            <section>
+                <div id="contact-container">
+                  <div class="form-group">
+                    <label for="name">이름:</label>
+                    <input type="text" id="name" name="name" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="tel">전화번호:</label>
+                    <input type="tel" id="tel" name="tel" required placeholder="하이픈(-)을 제외하고 써주세요">
+                  </div>
+                  <div class="form-group">
+                    <label for="email">이메일:</label>
+                    <input type="email" id="email" name="email" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="content">문의 내용:</label>
+                    <textarea id="content" name="content" rows="5" required></textarea>
+                  </div>
+                  <button id="submit-btn">문의하기</button>
+                </div>
+            </section>
         </div>
     </div>
 </div>
 
-
+<script src="/js/common/support.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var overlay = document.querySelector('.overlay-content');

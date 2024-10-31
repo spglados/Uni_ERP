@@ -1,5 +1,6 @@
 package com.uni.uni_erp.controller.erp;
 
+import com.google.gson.Gson;
 import com.uni.uni_erp.dto.sales.*;
 import com.uni.uni_erp.service.SalesService;
 import jakarta.persistence.EntityManager;
@@ -112,10 +113,6 @@ public class SalesRestController {
 
             List<SalesRefundDTO> refundList = salesService.findRefundByOrderNum(orderNum);
 
-            System.err.println(salesService.groupRefundDetails(refundList));
-            System.err.println(salesService.groupRefundDetails(refundList));
-            System.err.println(salesService.groupRefundDetails(refundList));
-
             return salesService.groupRefundDetails(refundList);
         } catch (Exception e) {
             log.error("err", e);
@@ -215,6 +212,26 @@ public class SalesRestController {
         }
 
         return ResponseEntity.ok(productSalesList);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test(HttpSession session) {
+
+        session.getAttribute("storeId");
+
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate lastYear = LocalDate.now().minusYears(1);
+
+        List<SalesTargetDTO> todaySalesTargets = salesService.getSalesTargetByHour(1, today);
+        List<SalesTargetDTO> yesterdaySalesTargets = salesService.getSalesTargetByHour(1, yesterday);
+        List<SalesTargetDTO> lastYearSalesTargets = salesService.getSalesTargetByHour(1, lastYear);
+
+        List<SalesComparisonDTO> salesComparison = salesService.getSalesComparison(todaySalesTargets, yesterdaySalesTargets, lastYearSalesTargets);
+
+        Gson gson = new Gson();
+        String salesComparisonJson = gson.toJson(salesComparison);
+        return ResponseEntity.ok(salesComparisonJson);
     }
 
 

@@ -9,43 +9,20 @@
     <h1>입고 관리</h1>
     <hr>
 
-    <!-- Material List Table -->
+    <!-- Material List Grid -->
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
-        <div>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerModal">입고 등록
+        <div class="refresh-btn-div">
+            <!-- 필터 초기화 버튼 추가 -->
+            <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()" title="필터 초기화">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button type="button" class="btn btn-secondary ml-2 btn-action" data-toggle="modal" data-target="#registerModal" title="입고 내역 추가하기">
+                <i class="fas fa-plus-circle"></i>
             </button>
         </div>
         <hr>
-        <div class="table-container">
-            <table class="table table-bordered table-striped" id="materialList">
-                <thead class="thead-dark">
-                <tr>
-                    <th>상품명</th>
-                    <th>가격</th>
-                    <th>입고량</th>
-                    <th>공급처</th>
-                    <th>유통기한</th>
-                    <th>입고 날짜</th>
-                    <th>등록 날짜</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach var="materialOrder" items="${materialOrderList}">
-                    <tr>
-                        <td>${materialOrder.name}</td>
-                        <td>${materialOrder.price}원</td>
-                        <td>${materialOrder.amount}&nbsp;${materialOrder.unit}</td>
-                        <td>${materialOrder.supplier}</td>
-                        <td>${materialOrder.expirationDate}</td>
-                        <td>${materialOrder.receiptDate}</td>
-                        <td>${materialOrder.enterDate}</td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
-        </div>
+        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-quartz"></div>
     </div>
-
 </div>
 
 <!-- Include Modal for Registration -->
@@ -116,7 +93,7 @@
 </div>
 
 <script>
-
+    // DOM 요소 가져오기
     const expirationDate = document.getElementById('expirationDate');
     const receiveDate = document.getElementById('receiptDate');
     const materialName = document.getElementById('materialName');
@@ -126,6 +103,7 @@
     const unit = document.getElementById('unit');
     const supplier = document.getElementById('supplier');
 
+    // 자재 데이터 배열 생성
     var materialsData = [
         <c:forEach var="material" items="${materialDTOList}" varStatus="status">
         {
@@ -137,6 +115,154 @@
         </c:forEach>
     ];
 
+    // 입고 내역 데이터 배열 생성
+    const materialOrderData = [
+        <c:forEach var="materialOrder" items="${materialOrderList}" varStatus="status">
+        {
+            name: "${materialOrder.name}",
+            price: ${materialOrder.price},
+            amount: ${materialOrder.amount},
+            unit: "${materialOrder.unit}",
+            supplier: "${materialOrder.supplier}",
+            expirationDate: "${materialOrder.expirationDate}",
+            receiptDate: "${materialOrder.receiptDate}",
+            enterDate: "${materialOrder.enterDate}"
+        }<c:if test="${!status.last}">, </c:if>
+        </c:forEach>
+    ];
+
+    // ag-Grid 옵션 설정
+    const gridOptions = {
+        // 데이터 행
+        rowData: materialOrderData,
+
+        // 컬럼 정의
+        columnDefs: [
+            {
+                field: "name",
+                headerName: "상품명",
+                sortable: true,
+                filter: true,
+                resizable: true,
+                // 컬럼 이동 비활성화
+                suppressMovable: false,
+                // 편집 비활성화 (필요 시 true로 변경)
+                editable: false
+            },
+            {
+                field: "price",
+                headerName: "가격",
+                sortable: true,
+                filter: 'agNumberColumnFilter',
+                resizable: true,
+                // 컬럼 이동 비활성화
+                suppressMovable: false,
+                // 편집 비활성화 (필요 시 true로 변경)
+                editable: false,
+                // 값 포매터: 가격에 '원' 추가
+                valueFormatter: function(params) {
+                    return params.value + '원';
+                }
+            },
+            {
+                field: "amount",
+                headerName: "입고량",
+                sortable: true,
+                filter: 'agNumberColumnFilter',
+                resizable: true,
+                // 컬럼 이동 비활성화
+                suppressMovable: false,
+                // 편집 비활성화 (필요 시 true로 변경)
+                editable: false,
+                // 값 포매터: 입고량과 단위 결합
+                valueFormatter: function(params) {
+                    return params.value + ' ' + params.data.unit;
+                }
+            },
+            {
+                field: "supplier",
+                headerName: "공급처",
+                sortable: true,
+                filter: true,
+                resizable: true,
+                // 컬럼 이동 비활성화
+                suppressMovable: false,
+                // 편집 비활성화 (필요 시 true로 변경)
+                editable: false
+            },
+            {
+                field: "expirationDate",
+                headerName: "유통기한",
+                sortable: true,
+                filter: 'agDateColumnFilter',
+                resizable: true,
+                // 컬럼 이동 비활성화
+                suppressMovable: false,
+                // 편집 비활성화 (필요 시 true로 변경)
+                editable: false
+            },
+            {
+                field: "receiptDate",
+                headerName: "입고 날짜",
+                sortable: true,
+                filter: 'agDateColumnFilter',
+                resizable: true,
+                // 컬럼 이동 비활성화
+                suppressMovable: false,
+                // 편집 비활성화 (필요 시 true로 변경)
+                editable: false
+            },
+            {
+                field: "enterDate",
+                headerName: "등록 날짜",
+                sortable: true,
+                filter: 'agDateColumnFilter',
+                resizable: true,
+                // 컬럼 이동 비활성화
+                suppressMovable: false,
+                // 편집 비활성화 (필요 시 true로 변경)
+                editable: false
+            }
+        ],
+
+        // 행 높이 설정
+        rowHeight: 55,
+
+        // 기본 컬럼 정의: 모든 컬럼에 공통으로 적용될 설정
+        defaultColDef: {
+            flex: 1, // 가변 너비
+            minWidth: 150, // 최소 너비
+            resizable: true, // 컬럼 크기 조절 가능
+            sortable: true, // 정렬 가능
+            filter: true // 필터 가능
+        },
+
+        // 페이징 설정
+        pagination: true, // 페이징 활성화
+        paginationPageSizeSelector: [10, 20, 50],  // 원하는 페이지 수 나열
+        paginationPageSize: 10, // 한 페이지당 표시할 행 수
+
+        // 행 애니메이션
+        animateRows: true,
+
+        // 행 선택 모드
+        rowSelection: 'single', // 단일 행 선택
+
+        // 기타 설정
+        suppressMovableColumns: false, // 모든 컬럼의 이동 비활성화
+        domLayout: 'autoHeight' // 필요 시 활성화: 그리드가 콘텐츠에 맞춰 높이 조정
+    };
+
+    // ag-Grid 초기화
+    document.addEventListener('DOMContentLoaded', function () {
+        const gridDiv = document.querySelector('#myGrid');
+        new agGrid.Grid(gridDiv, gridOptions);
+
+        // 컬럼 사이즈 자동 조정
+        gridOptions.api.sizeColumnsToFit();
+    });
+
+    // 단위 옵션 업데이트 함수
     function updateUnitOptions() {
         var materialSelect = document.getElementById('materialId');
         var unitSelect = document.getElementById('unit');
@@ -145,7 +271,7 @@
 
         unitSelect.innerHTML = '';
 
-        // 입고 날짜 오늘로 기본 세팅
+        // 입고 날짜를 오늘로 기본 설정
         receiveDate.value = getTodayDate();
 
         var defaultOption = document.createElement('option');
@@ -163,97 +289,89 @@
                 unitOption.value = selectedMaterial.unit;
                 unitOption.text = selectedMaterial.unit;
                 unitSelect.appendChild(unitOption);
-
             }
         }
     }
 
+    // 자재 선택 변경 시 단위 옵션 업데이트
     document.getElementById('materialId').addEventListener('change', updateUnitOptions);
 
+    // 페이지 로드 시 단위 옵션 업데이트
     window.addEventListener('load', function () {
         updateUnitOptions();
     });
 
-    // 유효성 검사 함수 추가
+    // 유효성 검사 함수
     function validateForm() {
-        // 상품명 확인
         if (materialName.value.trim() === '') {
             alert('상품명을 입력해주세요.');
             materialName.focus();
             return false;
         }
 
-        // 가격 확인
         if (price.value === '' || price.value <= 0) {
             alert('유효한 가격을 입력해주세요.');
             price.focus();
             return false;
         }
 
-        // 입고량 확인
         if (amount.value === '' || amount.value <= 0) {
             alert('유효한 입고량을 입력해주세요.');
             amount.focus();
             return false;
         }
 
-        // 자재 선택 확인
         if (materialId.value === '') {
             alert('자재를 선택해주세요.');
             materialId.focus();
             return false;
         }
 
-        // 단위 선택 확인
         if (unit.value === '') {
             alert('단위를 선택해주세요.');
             unit.focus();
             return false;
         }
 
-        // 공급처 확인
         if (supplier.value.trim() === '') {
             alert('공급처를 입력해주세요.');
             supplier.focus();
             return false;
         }
 
-        // 유통기한 확인
         if (expirationDate.value === '') {
             alert('유통기한을 선택해주세요.');
             expirationDate.focus();
             return false;
         }
 
-        // 유통기한이 오늘 이후인지 확인
         if (!checkExpirationDate(expirationDate.value)) {
             expirationDate.focus();
             return false;
         }
 
-        // 입고 날짜 확인
         if (receiveDate.value === '') {
             alert('입고 날짜를 선택해주세요.');
             receiveDate.focus();
             return false;
         }
 
-        // 입고 날짜가 미래인지 확인
         if (!checkReceiveDate(receiveDate.value)) {
             receiveDate.focus();
             return false;
         }
 
-        return true; // 모든 검사를 통과하면 true 반환
+        return true;
     }
 
+    // 입고 등록 함수
     function enterMaterialOrder() {
         let form = document.querySelector('form');
         let formData = new FormData(form);
 
         // 유효성 검사 실행
         if (!validateForm()) {
-            return; // 유효성 검사 실패 시 함수 종료
+            return;
         }
 
         fetch('/erp/inventory/receiving', {
@@ -262,28 +380,28 @@
         })
             .then(response => {
                 if (response.ok) {
-                    alert('성공적으로 저장되었습니다 !');
+                    alert('성공적으로 저장되었습니다!');
                     window.location.reload();
                 } else {
-                    alert('저장 도중 오류가 발생했습니다. \n\n\t 입고 내역을 다시 확인해주세요 !');
+                    alert('저장 도중 오류가 발생했습니다.\n\n입고 내역을 다시 확인해주세요!');
                 }
             })
             .catch(error => {
                 console.log('error', error);
                 alert('저장에 실패했습니다.');
             });
-
     }
 
+    // 오늘 날짜 반환 함수
     function getTodayDate() {
         const today = new Date();
         const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+        const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         return year + '-' + month + '-' + day;
     }
 
-    // 유통기한 검사 함수 수정
+    // 유통기한 검사 함수
     function checkExpirationDate(inputDateValue) {
         const today = new Date();
         today.setHours(0, 0, 0, 0); // 오늘 날짜의 시간 초기화 (자정으로 설정)
@@ -298,7 +416,7 @@
         return true;
     }
 
-    // 입고 날짜 검사 함수 추가
+    // 입고 날짜 검사 함수
     function checkReceiveDate(inputDateValue) {
         const today = new Date();
         today.setHours(0, 0, 0, 0); // 오늘 날짜의 시간 초기화
@@ -313,7 +431,12 @@
         return true;
     }
 
-</script>
+    // 필터 초기화 함수
+    function resetFilters() {
+        gridOptions.api.setFilterModel(null); // 모든 필터 초기화
+        gridOptions.api.onFilterChanged(); // 필터 변경 사항 반영
+    }
 
+</script>
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
