@@ -24,6 +24,7 @@ public class PaymentDTO {
         private String billingKey;
         private Integer amount;
         private String orderName;
+        private String method;
 
         // 결제 완료 후 받아오는 값
         private String lastTransactionKey;
@@ -65,6 +66,7 @@ public class PaymentDTO {
                     .billingKey(billingKey)
                     .customerKey(customerKey)
                     .amount(amount)
+                    .method(method)
                     .requestedAt(requestedAt)
                     .approvedAt(approvedAt)
                     .cancel(cancel)
@@ -77,7 +79,7 @@ public class PaymentDTO {
         }
 
         // Refund 객체 변환
-        public Refund toRefund() {
+        public Refund toRefund(User user) {
             return Refund.builder()
                     .lastTransactionKey(lastTransactionKey)
                     .paymentKey(paymentKey)
@@ -85,7 +87,7 @@ public class PaymentDTO {
                     .requestedAt(requestedAt)
                     .approvedAt(approvedAt)
                     .cancelAmount(cancelAmount)
-                    .adminId(adminId)
+                    .user(user)
                     .build();
         }
     }

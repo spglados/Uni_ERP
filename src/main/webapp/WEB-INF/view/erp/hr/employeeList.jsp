@@ -4,26 +4,25 @@
 
 <div class="container">
     <div class="left-panel">
-        <h1>직원 목록</h1>
+        <h1 class="mb-4">직원 목록</h1>
         <c:if test="${not empty employees}">
-            <table>
+            <div class="mb-3">
+                <label for="employmentStatusFilter" class="form-label">상태</label>
+                <select id="employmentStatusFilter" class="form-select" onchange="filterEmployees()">
+                    <option value="" <c:if test="${empty param.status}">selected</c:if>>전체</option>
+                    <option value="ACTIVE" <c:if test="${param.status == 'ACTIVE'}">selected</c:if>>재직</option>
+                    <option value="INACTIVE" <c:if test="${param.status == 'INACTIVE'}">selected</c:if>>퇴사</option>
+                    <option value="ONLEAVE" <c:if test="${param.status == 'ONLEAVE'}">selected</c:if>>휴직</option>
+                </select>
+            </div>
+            <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>사원번호</th>
-                    <th>이름</th>
-                    <th>직책</th>
-                    <th>
-                        상태
-                        <select id="employmentStatusFilter" onchange="filterEmployees()">
-                            <option value="" <c:if test="${empty param.status}">selected</c:if>>전체</option>
-                            <option value="ACTIVE" <c:if test="${param.status == 'ACTIVE'}">selected</c:if>>재직</option>
-                            <option value="INACTIVE" <c:if test="${param.status == 'INACTIVE'}">selected</c:if>>퇴사
-                            </option>
-                            <option value="ONLEAVE" <c:if test="${param.status == 'ONLEAVE'}">selected</c:if>>휴직
-                            </option>
-                        </select>
-                    </th>
-                    <th>전화번호</th>
+                    <th scope="col">사원번호</th>
+                    <th scope="col">이름</th>
+                    <th scope="col">직책</th>
+                    <th scope="col">상태</th>
+                    <th scope="col">전화번호</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -60,13 +59,12 @@
                         <td>${employee.phone}</td>
                     </tr>
                 </c:forEach>
-                <form id="excelDownloadForm" action="/erp/hr/download/excel" method="get">
-                    <input type="hidden" name="employeeStatus" id="employeeStatus" value="${param.status}"/>
-                    <button type="submit">엑셀 다운로드</button>
-                </form>
-
                 </tbody>
             </table>
+            <form id="excelDownloadForm" action="/erp/hr/download/excel" method="get" class="mt-3">
+                <input type="hidden" name="employeeStatus" id="employeeStatus" value="${param.status}"/>
+                <button type="submit" class="btn btn-primary">엑셀 다운로드</button>
+            </form>
         </c:if>
         <c:if test="${empty employees}">
             <p>등록된 직원이 없습니다.</p>
@@ -184,10 +182,7 @@
             <label for="editHealthCertificateDate">보건증 발급일:</label>
             <input type="date" id="editHealthCertificateDate" name="healthCertificateDate"/>
         </div>
-
-        <button type="submit" onclick="updateEmployee()">수정하기</button>
-        <button type="button" onclick="closeModal()">취소</button>
-    </form>
+    </div>
 </div>
 
 <script>
@@ -250,10 +245,12 @@
 
     function openModal() {
         document.getElementById('editEmployeeModal').style.display = 'block';
+        document.getElementById('modalBackground').style.display = 'block'; // 모달 배경 보이기
     }
 
     function closeModal() {
         document.getElementById('editEmployeeModal').style.display = 'none';
+        document.getElementById('modalBackground').style.display = 'none'; // 모달 배경 숨기기
     }
 
     const employeesJson = '${employeesJson}'; // JSON 문자열을 올바르게 설정
@@ -391,7 +388,7 @@
 
         // TODO 우리형 공부 !! ^^
         /**
-        * 밑에 함수들은 은행 아이디로 이름을 반환하거나
+         * 밑에 함수들은 은행 아이디로 이름을 반환하거나
          * 이름으로 아이디를 반환하는 함수이다 !
          * 하지만 설계자의 문제로 bankId와 bankName 이라는 key 값으로 Json 데이터를 보내야 하나
          * bank 라는 key 값으로 은행 아이디를 value로 보냈다 !
@@ -421,7 +418,7 @@
             // FormData를 JSON 객체로 변환
             formData.forEach((value, key) => {
 
-                if(key === 'bank') {
+                if (key === 'bank') {
                     jsonData['bankId'] = value;
                     jsonData['bankName'] = getBankNameById(value);
                 } else {
@@ -528,28 +525,36 @@
 <style>
     .container {
         display: flex;
+        width: 100%;
     }
 
     .left-panel {
         flex: 1; /* 왼쪽 패널의 너비 */
         padding: 20px; /* 패딩 추가 */
+        width: 40%;
         border-right: 1px solid #ccc; /* 오른쪽 경계선 */
     }
 
     .right-panel {
         flex: 2; /* 오른쪽 패널의 너비 */
+        width: 40%;
         padding: 20px; /* 패딩 추가 */
     }
 
+    /* 모달 스타일 */
+    /* 수정된 모달 스타일 */
     #editEmployeeModal {
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 20px;
+        background-color: white; /* 흰색 배경 */
+        padding: 10px;
         border: 1px solid #ccc;
-        z-index: 1000;
+        z-index: 1000; /* 배경보다 위에 */
+        max-height: 70%; /* 최대 높이 설정 */
+        width: 40%; /* 너비 설정 */
+        overflow-y: hidden; /* 세로 스크롤 활성화 */
     }
 
     /* 모달 배경 스타일 */
@@ -561,10 +566,19 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
         display: none; /* 처음에는 보이지 않음 */
+        z-index: 999; /* 모달보다 아래에 */
+    }
+
+
+    /* 모달 본문 스크롤 */
+    .modal-body {
+        max-height: 50vh; /* 최대 높이를 viewport의 70%로 설정 */
+        overflow-y: auto; /* 세로 스크롤 활성화 */
+        padding: 0; /* 패딩 초기화 */
     }
 </style>
 
 <!-- 모달 배경 -->
-<div id="modalBackground" onclick="closeModal()"></div>
+
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
