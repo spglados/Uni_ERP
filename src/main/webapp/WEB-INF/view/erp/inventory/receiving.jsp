@@ -13,11 +13,11 @@
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
         <div class="refresh-btn-div">
             <!-- 필터 초기화 버튼 추가 -->
-            <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()">
+            <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()" title="필터 초기화">
                 <i class="fas fa-sync-alt"></i>
             </button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerModal">
-                입고 등록
+            <button type="button" class="btn btn-secondary ml-2 btn-action" data-toggle="modal" data-target="#registerModal" title="입고 내역 추가하기">
+                <i class="fas fa-plus-circle"></i>
             </button>
         </div>
         <hr>

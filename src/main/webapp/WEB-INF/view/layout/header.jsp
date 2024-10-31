@@ -39,8 +39,15 @@
                     <span class="toggle--switch"></span>
                 </div>
                 <div class="header-icons">
+                <c:if test="${not empty sessionScope.userSession}">
+                    <a href="/myPage" class="header-icon">마이페이지&nbsp;&nbsp;</a>
+                    <i class="header-icon">/</i>
+                    <a href="/user/logout" class="header-icon">&nbsp;&nbsp;로그아웃</a>
+                </c:if>
+                <c:if test="${empty sessionScope.userSession}">
                     <a href="/user/login" class="header-icon"><i class="fas fa-user-check" style="color: #74C0FC;"></i></a>
-                    <a href="/user/join" class="header-icon"><i class="fas fa-user-plus" style="color: #74C0FC;"></i></a>
+                   <a href="/user/join" class="header-icon"><i class="fas fa-user-plus" style="color: #74C0FC;"></i></a>
+                </c:if>
                 </div>
             </ul>
         </nav>

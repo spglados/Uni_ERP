@@ -1,4 +1,4 @@
-package com.uni.uni_erp.repository.store;
+package com.uni.uni_erp.repository.user;
 
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.StoreDTO;
@@ -6,11 +6,13 @@ import com.uni.uni_erp.dto.sales.StoreListDTO;
 import com.uni.uni_erp.dto.StoreDTO;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 public interface StoreRepository extends JpaRepository<Store, Integer> {
 
@@ -27,5 +29,10 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
 
     @Query("SELECT new com.uni.uni_erp.dto.sales.StoreListDTO(s.id, s.name, s.is24Hours, s.isOpen, s.createdAt, u.name) FROM Store s JOIN s.user u")
     List<StoreListDTO> findAllStoresWithUserNames();
+
+    // 가게 수정
+    @Modifying
+    @Query("UPDATE Store s SET s.name = :name, s.storeAddress = :storeAddress WHERE s.id = :id AND s.user.id = :userId")
+    void updateStore(@Param("id") Integer id, @Param("name") String name, @Param("storeAddress") String storeAddress, @Param("userId") Integer userId);
 
 }

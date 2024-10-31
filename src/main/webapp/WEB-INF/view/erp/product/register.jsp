@@ -37,7 +37,7 @@
             <!-- 이미지 미리보기 -->
             <div class="form-group">
                 <label>미리보기</label>
-                <img id="imagePreview" style="max-width: 100%; height: auto;" />
+                <img id="imagePreview" style="max-width: 100%; height: auto;"/>
             </div>
 
             <!-- 추가 정보 (예: 설명, 재고, 유통기한 등) -->
@@ -66,6 +66,7 @@
     // 상품 등록 함수
     function registerProduct() {
         const form = $('#registerForm')[0];
+        let productName = document.getElementById('productName').value;
         if (form.checkValidity()) {
             const formData = new FormData(form);
 
@@ -80,17 +81,20 @@
             fetch('/erp/product/product', {
                 method: 'POST',
                 body: formData
-            }).then(response => {
-                if (response.ok) {
-                    alert("상품이 등록되었습니다! \n\n\t 재료를 등록해야 재고가 관리됩니다 !");
-                    window.location.href = '/erp/product/list'; // 등록 후 상품 목록 페이지로 이동
-                } else {
-                    alert("상품 등록에 실패했습니다.");
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-                alert("상품 등록 중 오류가 발생했습니다." + error);
-            });
+            }).then(response => response.json()) // JSON으로 변환
+                .then(data => {
+                    if (data.success) {
+                        alert("상품이 등록되었습니다! \n\n\t 재료를 등록해야 재고가 관리됩니다 !");
+                        window.location.href = '/erp/product/list/' + productName; // 등록 후 상품 목록 페이지로 이동
+                    } else if (!data.fail) {
+                        alert("같은 이름의 상품이 존재합니다.");
+                    } else {
+                        alert("상품 등록에 실패했습니다.");
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert("상품 등록 중 오류가 발생했습니다." + error);
+                });
         } else {
             // 유효성 검사가 실패한 경우 경고창을 띄우고, 유효성 검사를 강제로 실행
             form.reportValidity();

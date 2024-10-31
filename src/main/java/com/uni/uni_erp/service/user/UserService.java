@@ -5,6 +5,8 @@ import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
+import jakarta.transaction.Transactional;
+import com.uni.uni_erp.util.Str.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
@@ -16,8 +18,10 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+
 
 
 @Service
@@ -37,19 +41,36 @@ public class UserService {
     private String fromPhoneNumber;
 
     public void save(User user) {
+        try {
+            user.setPassword(PasswordUtil.hashGenerator(user.getPassword()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         userRepository.save(user);
     }
 
-    public User login(UserDTO.JoinDTO dto) {
-        return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
+    public User login(UserDTO.loginDTO dto) {
+        try {
+            String storedSaltedHash = userRepository.findPasswordByEmail(dto.getEmail());
+            if (PasswordUtil.verify(dto.getPassword(), storedSaltedHash)) {
+                return userRepository.findByEmail(dto.getEmail());
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String findByEmail(String email) {
+        return userRepository.findPasswordByEmail(email);
     }
 
     public User findById(int id) {
         User user = userRepository.findById(id).orElseThrow(() -> new Exception404("회원정보를 찾을 수 없습니다"));
         return user;
     }
-
 
 
     public boolean checkDuplicateEmail(String email) {
@@ -104,7 +125,6 @@ public class UserService {
     }
 
 
-
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
     public void cleanUpUsers() {
         List<User> users = userRepository.findAll(); // 모든 사용자 조회
@@ -131,5 +151,51 @@ public class UserService {
 
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Transactional
+    public void updateUserEmailByUserId(String email, int userId) {
+        userRepository.updateEmailByUserId(email, userId);
+    }
+
+    @Transactional
+    public void updateUserPhoneByUserId(String phone, int userId) {
+        userRepository.updatePhoneByUserId(phone, userId);
+    }
+
+    @Transactional
+    public void updateUserAddressByUserId(String address, int userId) {
+        userRepository.updateAddressByUserId(address, userId);
+    }
+
+    @Transactional
+    public void updateUserPaymentDateByUserId(String paymentDateStr, int userId) {
+        // paymentDate를 Integer로 변환
+        int paymentDate = Integer.parseInt(paymentDateStr);
+
+        // 임시값으로 설정할 날짜
+        LocalDate now = LocalDate.now();
+        LocalDate updatedPaymentDate;
+
+        // 주어진 day가 현재 날짜의 day보다 이전인지 확인
+        if (paymentDate < now.getDayOfMonth()) {
+            // 이전일 경우 다음 달로 설정
+            updatedPaymentDate = now.plusMonths(1);
+        } else {
+            // 이후일 경우 이번 달로 설정
+            updatedPaymentDate = now;
+        }
+
+        // paymentDate를 설정하되, 유효하지 않다면 마지막 날로 설정
+        if (paymentDate > updatedPaymentDate.lengthOfMonth()) {
+            updatedPaymentDate = updatedPaymentDate.withDayOfMonth(updatedPaymentDate.lengthOfMonth());
+        } else {
+            updatedPaymentDate = updatedPaymentDate.withDayOfMonth(paymentDate);
+        }
+
+        // 날짜를 yyyy-MM-dd 형식으로 변환
+        String formattedPaymentDate = updatedPaymentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        userRepository.updatePaymentDateByUserId(formattedPaymentDate, userId);
     }
 }

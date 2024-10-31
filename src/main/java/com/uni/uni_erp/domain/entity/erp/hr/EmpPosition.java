@@ -26,4 +26,7 @@ public class EmpPosition {
 
     @Column(nullable = false)
     private String scheduleColor;
+
+    @Column(name = "min_required_num",nullable = false)
+    private Integer minRequiredNum = 0;
 }

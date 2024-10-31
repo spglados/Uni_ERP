@@ -11,7 +11,7 @@ import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.erp.inventory.*;
 import com.uni.uni_erp.repository.erp.product.ProductDisposalRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
-import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.repository.user.StoreRepository;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import com.uni.uni_erp.util.date.NumberFormatter;
 import jakarta.servlet.http.HttpSession;
@@ -219,6 +219,7 @@ public class InventoryService {
                         .actualAmount(materialStatus.getActualAmount())
                         .statusDate(LocalDate.now())
                         .loss(materialStatus.getLoss())
+                        .useTotalAmount(0.0)
                         .material(materialStatus.getMaterial())
                         .build());
             }
@@ -411,6 +412,7 @@ public class InventoryService {
                 // 손실량 계산
                 materialStatus.setTheoreticalAmount(newTheoreticalAmount);
                 materialStatus.setActualAmount(newActualAmount);
+                materialStatus.setUseTotalAmount(materialStatus.getUseTotalAmount() != null ? materialStatus.getUseTotalAmount() + usedAmount : usedAmount);
                 materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(newActualAmount - newTheoreticalAmount));
             }
         }
@@ -624,14 +626,22 @@ public class InventoryService {
         }
 
         // 자재 상태 조회 (오늘 날짜 기준)
-        List<MaterialStatus> status = materialStatusRepository.findByMaterial(materialList, LocalDate.now());
+        List<MaterialStatus> todayStatus = materialStatusRepository.findByMaterial(materialList, LocalDate.now());
+        List<MaterialStatus> allStatus = materialStatusRepository.findAllByStoreIdAndToday(storeId, LocalDate.now());
 
-        if (status == null || status.isEmpty()) {
+        if (todayStatus == null || todayStatus.isEmpty()) {
             log.warn("오늘 날짜의 재고 현황 데이터가 존재하지 않습니다.");
         }
 
         // MaterialCode를 키로 하는 MaterialStatus 맵 생성
-        Map<Long, MaterialStatus> statusMap = status.stream()
+        Map<Long, MaterialStatus> disposalStatusMap = todayStatus.stream()
+                .filter(ms -> ms.getMaterial() != null && ms.getMaterial().getMaterialCode() != null)
+                .collect(Collectors.toMap(
+                        ms -> ms.getMaterial().getMaterialCode(),
+                        Function.identity()
+                ));
+
+        Map<Long, MaterialStatus> allStatusMap = allStatus.stream()
                 .filter(ms -> ms.getMaterial() != null && ms.getMaterial().getMaterialCode() != null)
                 .collect(Collectors.toMap(
                         ms -> ms.getMaterial().getMaterialCode(),
@@ -639,7 +649,7 @@ public class InventoryService {
                 ));
 
         // 자재 폐기 양만큼 이론량과 실제량 감소, 손실량 계산
-        for (MaterialStatus materialStatus : status) {
+        for (MaterialStatus materialStatus : todayStatus) {
             // 폐기 내역에 해당 자재가 없는 경우 건너뜀
             if (!mDisposalMap.containsKey(materialStatus.getMaterial().getMaterialCode())) {
                 continue;
@@ -658,6 +668,7 @@ public class InventoryService {
 
             materialStatus.setTheoreticalAmount(newTheoreticalAmount);
             materialStatus.setActualAmount(newActualAmount);
+            materialStatus.setUseTotalAmount(materialStatus.getUseTotalAmount() != null ? materialStatus.getUseTotalAmount() + disposalAmount : disposalAmount);
 
             // 손실량 계산
             materialStatus.setLoss(
@@ -668,7 +679,7 @@ public class InventoryService {
         }
 
         // 변경된 자재 상태 저장
-        materialStatusRepository.saveAll(status);
+        materialStatusRepository.saveAll(todayStatus);
         // 자재 폐기 내역 저장
         materialDisposalRepository.saveAll(materialDisposalList);
 
@@ -718,7 +729,7 @@ public class InventoryService {
             // 각 제품의 자재 사용량 계산 및 자재 상태 업데이트
             for (Ingredient ingredient : product.getIngredients()) {
                 long materialCode = ingredient.getMaterial().getMaterialCode();
-                MaterialStatus materialStatus = statusMap.get(materialCode);
+                MaterialStatus materialStatus = allStatusMap.get(materialCode);
                 if (materialStatus == null) {
                     log.warn("MaterialStatus not found for material ID: " + materialCode);
                     throw new Exception400("자재 상태를 찾을 수 없습니다: " + materialCode);
@@ -745,6 +756,7 @@ public class InventoryService {
 
                 materialStatus.setTheoreticalAmount(newTheoreticalAmount);
                 materialStatus.setActualAmount(newActualAmount);
+                materialStatus.setUseTotalAmount(materialStatus.getUseTotalAmount() != null ? materialStatus.getUseTotalAmount() + usedAmount : usedAmount);
 
                 // 손실량 계산
                 materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(newActualAmount - newTheoreticalAmount));
@@ -752,13 +764,12 @@ public class InventoryService {
         }
 
         // 변경된 자재 상태 저장
-        materialStatusRepository.saveAll(status);
+        materialStatusRepository.saveAll(todayStatus);
         // 제품 폐기 내역 저장
         productDisposalRepository.saveAll(productDisposalList);
         // 변경된 MaterialOrder는 영속성 컨텍스트에 의해 자동으로 저장됩니다.
 
     }
-
 
 
     private static Integer getStoreId(HttpSession session) {
@@ -841,7 +852,7 @@ public class InventoryService {
 
     private void checkStock(Double Amount, String msg) {
         if (Amount != null) {
-            if(Amount < 0) {
+            if (Amount < 0) {
                 throw new Exception400(msg);
             }
         }
@@ -850,6 +861,7 @@ public class InventoryService {
     /**
      * 사용량에 따른 주문 내역에서 유통기한을 확인 및 상태값 변경에 필요한 메소드
      * 유통기한 순으로 정렬된 리스트 들어가 있어야함.
+     *
      * @param orderList
      * @param materialCode
      * @param amount
@@ -932,7 +944,6 @@ public class InventoryService {
         Integer storeId = getStoreId(session);
 
         List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentDTOList = new ArrayList<>();
-        // Map<Long, MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentMap = monthAdjustmentDTOList.stream().collect(Collectors.toMap(MaterialDTO.MaterialMonthAdjustmentDTO::getMaterialCode, Function.identity()));
 
         // 현재 연도와 월을 가져옵니다.
         int currentYear = LocalDate.now().getYear();
@@ -940,11 +951,25 @@ public class InventoryService {
 
         // Repository 메소드 호출
         List<MaterialOrder> orders = materialOrderRepository.findByEnterDateInCurrentMonthAndStoreId(currentYear, currentMonth, storeId);
+        List<Material> materialList = materialRepository.findByStoreId(storeId);
+        List<MaterialStatus> statusList = materialStatusRepository.findByCurrentMonth(currentMonth);
 
-        for(MaterialOrder order : orders) {
-            monthAdjustmentDTOList.add(new MaterialDTO.MaterialMonthAdjustmentDTO(order));
+        for (Material m : materialList) {
+            monthAdjustmentDTOList.add(new MaterialDTO.MaterialMonthAdjustmentDTO(m));
         }
 
+        Map<Long, MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentMap = monthAdjustmentDTOList.stream().collect(Collectors.toMap(MaterialDTO.MaterialMonthAdjustmentDTO::getMaterialCode, Function.identity()));
+
+        for (MaterialOrder order : orders) {
+            MaterialDTO.MaterialMonthAdjustmentDTO dto = monthAdjustmentMap.get(order.getMaterial().getMaterialCode());
+            dto.setMonthReceiveAmount(NumberFormatter.formatToTwoDecimal(dto.getMonthReceiveAmount() + order.getUseAmount()));
+        }
+
+
+        for(MaterialStatus materialStatus : statusList) {
+            MaterialDTO.MaterialMonthAdjustmentDTO dto = monthAdjustmentMap.get(materialStatus.getMaterial().getMaterialCode());
+            dto.setUseAmount(NumberFormatter.formatToTwoDecimal(dto.getUseAmount() + materialStatus.getUseTotalAmount()));
+        }
 
 
         return monthAdjustmentDTOList;
@@ -1035,7 +1060,7 @@ public class InventoryService {
 
                 materialStatus.setTheoreticalAmount(newTheoreticalAmount);
                 materialStatus.setActualAmount(newActualAmount);
-
+                materialStatus.setUseTotalAmount(materialStatus.getUseTotalAmount() != null ? materialStatus.getUseTotalAmount() + usedAmount : usedAmount);
                 // 손실량 계산
                 materialStatus.setLoss(
                         NumberFormatter.formatToTwoDecimal(

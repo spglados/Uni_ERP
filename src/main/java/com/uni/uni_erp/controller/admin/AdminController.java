@@ -2,19 +2,24 @@ package com.uni.uni_erp.controller.admin;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.dto.AdminDTO;
+import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.dto.sales.SalesDataDTO;
 import com.uni.uni_erp.dto.sales.SalesbyCategoryDTO;
 import com.uni.uni_erp.dto.sales.StoreListDTO;
+import com.uni.uni_erp.service.AdminService;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.product.ProductService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -29,9 +34,31 @@ public class AdminController {
     private final ProductService productService;
     private final SalesService salesService;
     private final StoreService storeService;
+    private final AdminService adminService;
 
 
+    @GetMapping("/login")
+    public String login() {
+        return "admin/login";
+    }
 
+    @PostMapping("/login")
+    public String login(@ModelAttribute AdminDTO.LoginDTO dto, HttpSession session) {
+
+        AdminDTO admin = adminService.login(dto);
+
+        session.setAttribute("adminSession", admin);
+
+        if (admin != null) {
+            return "redirect:/admin/main";
+        } else {
+            // Authentication failed
+            StringBuilder sb = new StringBuilder();
+            sb.append("alert('아이디 / 비밀번호가 다릅니다');");
+            sb.append("window.location.href='/admin/login';");
+            return sb.toString();
+        }
+    }
 
     // 관리자 Home 페이지
     @GetMapping("/main")

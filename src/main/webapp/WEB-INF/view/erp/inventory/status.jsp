@@ -63,7 +63,7 @@
     <!-- Material List Grid -->
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
         <div class="refresh-btn-div">
-            <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()">
+            <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()" title="필터 초기화">
                 <i class="fas fa-sync-alt"></i>
             </button>
         </div>
@@ -209,7 +209,7 @@
                     suppressMovable: false,
                     editable: false,
                     valueFormatter: function(params) {
-                        return params.value !== '-' ? params.value + '일' : 'x';
+                        return params.value !== '-' ? params.value + '일' : '-일';
                     }
                 },
                 {
@@ -229,7 +229,7 @@
                     field: "useProduct",
                     cellRenderer: function(params) {
                         const materialCode = params.data.materialCode;
-                        return '<button class="btn btn-sm btn-info" onclick="showProducts(\'' + materialCode + '\')">상품 내역</button>';
+                        return '<button class="btn btn-secondary ml-2 btn-action" onclick="showProducts(\'' + materialCode + '\')"><i class="fas fa-box"></i></button>';
                     },
                     sortable: false,
                     filter: false,
@@ -354,7 +354,7 @@
                     link.className = 'text-decoration-none text-dark w-100 d-flex align-items-center';
 
                     const icon = document.createElement('i');
-                    icon.className = 'fas fa-box mr-2'; // Font Awesome 아이콘
+                    icon.className = 'fas fa-utensils mr-2'; // Font Awesome 아이콘
 
                     const span = document.createElement('span');
                     span.textContent = product.value;
