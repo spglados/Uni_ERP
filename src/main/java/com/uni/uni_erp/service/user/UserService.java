@@ -5,6 +5,7 @@ import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
+import com.uni.uni_erp.util.Str.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
@@ -37,19 +38,36 @@ public class UserService {
     private String fromPhoneNumber;
 
     public void save(User user) {
+        try {
+            user.setPassword(PasswordUtil.hashGenerator(user.getPassword()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         userRepository.save(user);
     }
 
-    public User login(UserDTO.JoinDTO dto) {
-        return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
+    public User login(UserDTO.loginDTO dto) {
+        try {
+            String storedSaltedHash = userRepository.findPasswordByEmail(dto.getEmail());
+            if (PasswordUtil.verify(dto.getPassword(), storedSaltedHash)) {
+                return userRepository.findByEmail(dto.getEmail());
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String findByEmail(String email) {
+        return userRepository.findPasswordByEmail(email);
     }
 
     public User findById(int id) {
         User user = userRepository.findById(id).orElseThrow(() -> new Exception404("회원정보를 찾을 수 없습니다"));
         return user;
     }
-
 
 
     public boolean checkDuplicateEmail(String email) {
@@ -102,7 +120,6 @@ public class UserService {
 
         return subscriberCount;
     }
-
 
 
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행

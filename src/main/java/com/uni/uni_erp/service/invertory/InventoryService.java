@@ -11,7 +11,7 @@ import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.erp.inventory.*;
 import com.uni.uni_erp.repository.erp.product.ProductDisposalRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
-import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.repository.user.StoreRepository;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import com.uni.uni_erp.util.date.NumberFormatter;
 import jakarta.servlet.http.HttpSession;

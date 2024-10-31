@@ -26,4 +26,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             @Param("endDate") Timestamp endDate
     );
 
+    @Query("SELECT u.password FROM User u WHERE u.email = :email")
+    public String findPasswordByEmail(String email);
+
+    User findByEmail(String email);
 }
