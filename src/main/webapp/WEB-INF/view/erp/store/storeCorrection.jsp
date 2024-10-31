@@ -35,48 +35,52 @@
 <h2>포지션 목록</h2>
 <table>
     <thead>
-        <tr>
-            <th>포지션 ID</th>
-            <th>포지션 이름</th>
-            <th>최소 요구 인원 수</th>
-            <th>작업</th>
-        </tr>
+    <tr>
+        <th>포지션 ID</th>
+        <th>포지션 이름</th>
+        <th>최소 요구 인원 수</th>
+        <th>작업</th>
+    </tr>
     </thead>
     <tbody>
-        <c:forEach var="position" items="${positions}">
-            <tr>
-                <td>${position.id}</td>
-                <td>${position.name}</td>
-                <td>${position.minRequiredNum}</td>
-                <td>
-                    <form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/update" modelAttribute="storePositionDTO">
-                        <form:hidden path="id" value="${position.id}"/>
-                        <form:input path="name" value="${position.name}"/>
-                        <form:input path="minRequiredNum" value="${position.minRequiredNum}"/>
-                        <input type="submit" value="수정"/>
-                    </form:form>
-                    <form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/delete/${position.id}">
-                        <input type="submit" value="삭제" onclick="return confirm('정말 삭제하시겠습니까?');"/>
-                    </form:form>
-                </td>
-            </tr>
-        </c:forEach>
+    <c:forEach var="position" items="${positions}">
+        <tr>
+            <td>${position.id}</td>
+            <td>${position.name}</td>
+            <td>${position.minRequiredNum}</td>
+            <td>
+                <form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/update"
+                           modelAttribute="storePositionDTO">
+                    <form:hidden path="id" value="${position.id}"/>
+                    <form:input path="name" value="${position.name}"/>
+                    <form:input path="minRequiredNum" value="${position.minRequiredNum}"/>
+                    <input type="submit" value="수정"/>
+                </form:form>
+                <form:form method="post"
+                           action="${pageContext.request.contextPath}/erp/store/position/delete/${position.id}"
+                           onsubmit="console.log('Deleting position with ID:', ${position.id});">
+                    <input type="submit" value="삭제" onclick="return confirm('정말 삭제하시겠습니까?');"/>
+                </form:form>
+            </td>
+        </tr>
+    </c:forEach>
     </tbody>
 </table>
 
 <h2>포지션 등록</h2>
-<form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/create" modelAttribute="storePositionDTO">
+<form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/create"
+           modelAttribute="storePositionDTO">
     <table>
         <tr>
             <th>포지션 이름</th>
             <td>
-                <form:input path="name" />
+                <form:input path="name"/>
             </td>
         </tr>
         <tr>
             <th>최소 요구 인원 수</th>
             <td>
-                <form:input path="minRequiredNum" />
+                <form:input path="minRequiredNum"/>
             </td>
         </tr>
         <tr>
