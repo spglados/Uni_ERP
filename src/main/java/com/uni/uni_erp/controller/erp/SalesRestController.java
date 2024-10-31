@@ -206,7 +206,7 @@ public class SalesRestController {
                     .yearlySales(yearlySales) // Current year's total quantity
                     .lastYearSales(lastYearSales) // Last year's total quantity
                     .yearlyGrowthRate(yearlyGrowthRate) // Yearly growth rate calculation
-                    .profit((currentMonthData.getTotalQuantity() * currentMonthData.getUnitPrice())) // Example profit calculation
+                    .profit(currentMonthData.getTotalPrice()) // Example profit calculation
                     .build();
             productSalesList.add(productSalesDTO);
         }
