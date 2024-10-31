@@ -219,6 +219,7 @@ public class InventoryService {
                         .actualAmount(materialStatus.getActualAmount())
                         .statusDate(LocalDate.now())
                         .loss(materialStatus.getLoss())
+                        .useTotalAmount(0.0)
                         .material(materialStatus.getMaterial())
                         .build());
             }
@@ -411,6 +412,7 @@ public class InventoryService {
                 // 손실량 계산
                 materialStatus.setTheoreticalAmount(newTheoreticalAmount);
                 materialStatus.setActualAmount(newActualAmount);
+                materialStatus.setUseTotalAmount(materialStatus.getUseTotalAmount() != null ? materialStatus.getUseTotalAmount() + usedAmount : usedAmount);
                 materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(newActualAmount - newTheoreticalAmount));
             }
         }
@@ -473,7 +475,7 @@ public class InventoryService {
      * @param reqDtoList 자재 일일 조정 DTO 리스트
      */
     @Transactional
-    public void saveDayAdjustmentList(HttpSession session, List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
+    public boolean saveDayAdjustmentList(HttpSession session, List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
         // 세션에서 storeId 추출
         Integer storeId = getStoreId(session);
 
@@ -481,24 +483,33 @@ public class InventoryService {
         List<MaterialStatus> materialStatusList = materialStatusRepository.findByStoreId(storeId);
 
         // 일일 조정 요청을 Map으로 변환 (MaterialCode -> ActualAmount)
-        Map<Long, Double> actualAmountList = reqDtoList.stream().collect(Collectors.toMap(
+        Map<Long, Double> actualAmountMap = reqDtoList.stream().collect(Collectors.toMap(
                 MaterialDTO.MaterialDayAdjustmentDTO::getMaterialCode,
                 MaterialDTO.MaterialDayAdjustmentDTO::getActualAmount
         ));
 
+        boolean isUpdated = false;
+
         // 각 MaterialStatus에 대해 실제량과 손실량 업데이트
         for (MaterialStatus materialStatus : materialStatusList) {
             // 요청된 ActualAmount가 있는 경우 업데이트
-            Double newActualAmount = actualAmountList.get(materialStatus.getMaterial().getMaterialCode());
-            checkStock(newActualAmount, "0 이하로 재고량을 조절할 수 없습니다.");
-            if (newActualAmount != null) {
+            Double newActualAmount = actualAmountMap.get(materialStatus.getMaterial().getMaterialCode());
+            if (newActualAmount != null && !Objects.equals(newActualAmount, materialStatus.getActualAmount())) {
+                // 변경이 발생한 경우 isUpdated를 true로 설정
+                isUpdated = true;
                 materialStatus.setActualAmount(newActualAmount);
                 materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(newActualAmount - materialStatus.getTheoreticalAmount()));
             }
         }
-        // 변경된 MaterialStatus 저장
-        materialStatusRepository.saveAll(materialStatusList);
+
+        // 변경된 MaterialStatus가 있는 경우 저장
+        if (isUpdated) {
+            materialStatusRepository.saveAll(materialStatusList);
+        }
+
+        return isUpdated;
     }
+
 
     /**
      * 자재 폐기 목록 조회 메소드
@@ -649,6 +660,7 @@ public class InventoryService {
 
             materialStatus.setTheoreticalAmount(newTheoreticalAmount);
             materialStatus.setActualAmount(newActualAmount);
+            materialStatus.setUseTotalAmount(materialStatus.getUseTotalAmount() != null ? materialStatus.getUseTotalAmount() + disposalAmount : disposalAmount);
 
             // 손실량 계산
             materialStatus.setLoss(
@@ -736,6 +748,7 @@ public class InventoryService {
 
                 materialStatus.setTheoreticalAmount(newTheoreticalAmount);
                 materialStatus.setActualAmount(newActualAmount);
+                materialStatus.setUseTotalAmount(materialStatus.getUseTotalAmount() != null ? materialStatus.getUseTotalAmount() + usedAmount : usedAmount);
 
                 // 손실량 계산
                 materialStatus.setLoss(NumberFormatter.formatToTwoDecimal(newActualAmount - newTheoreticalAmount));
@@ -749,7 +762,6 @@ public class InventoryService {
         // 변경된 MaterialOrder는 영속성 컨텍스트에 의해 자동으로 저장됩니다.
 
     }
-
 
 
     private static Integer getStoreId(HttpSession session) {
@@ -832,7 +844,7 @@ public class InventoryService {
 
     private void checkStock(Double Amount, String msg) {
         if (Amount != null) {
-            if(Amount < 0) {
+            if (Amount < 0) {
                 throw new Exception400(msg);
             }
         }
@@ -841,6 +853,7 @@ public class InventoryService {
     /**
      * 사용량에 따른 주문 내역에서 유통기한을 확인 및 상태값 변경에 필요한 메소드
      * 유통기한 순으로 정렬된 리스트 들어가 있어야함.
+     *
      * @param orderList
      * @param materialCode
      * @param amount
@@ -923,7 +936,6 @@ public class InventoryService {
         Integer storeId = getStoreId(session);
 
         List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentDTOList = new ArrayList<>();
-        // Map<Long, MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentMap = monthAdjustmentDTOList.stream().collect(Collectors.toMap(MaterialDTO.MaterialMonthAdjustmentDTO::getMaterialCode, Function.identity()));
 
         // 현재 연도와 월을 가져옵니다.
         int currentYear = LocalDate.now().getYear();
@@ -931,11 +943,25 @@ public class InventoryService {
 
         // Repository 메소드 호출
         List<MaterialOrder> orders = materialOrderRepository.findByEnterDateInCurrentMonthAndStoreId(currentYear, currentMonth, storeId);
+        List<Material> materialList = materialRepository.findByStoreId(storeId);
+        List<MaterialStatus> statusList = materialStatusRepository.findByCurrentMonth(currentMonth);
 
-        for(MaterialOrder order : orders) {
-            monthAdjustmentDTOList.add(new MaterialDTO.MaterialMonthAdjustmentDTO(order));
+        for (Material m : materialList) {
+            monthAdjustmentDTOList.add(new MaterialDTO.MaterialMonthAdjustmentDTO(m));
         }
 
+        Map<Long, MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentMap = monthAdjustmentDTOList.stream().collect(Collectors.toMap(MaterialDTO.MaterialMonthAdjustmentDTO::getMaterialCode, Function.identity()));
+
+        for (MaterialOrder order : orders) {
+            MaterialDTO.MaterialMonthAdjustmentDTO dto = monthAdjustmentMap.get(order.getMaterial().getMaterialCode());
+            dto.setMonthReceiveAmount(NumberFormatter.formatToTwoDecimal(dto.getMonthReceiveAmount() + order.getUseAmount()));
+        }
+
+
+        for(MaterialStatus materialStatus : statusList) {
+            MaterialDTO.MaterialMonthAdjustmentDTO dto = monthAdjustmentMap.get(materialStatus.getMaterial().getMaterialCode());
+            dto.setUseAmount(NumberFormatter.formatToTwoDecimal(dto.getUseAmount() + materialStatus.getUseTotalAmount()));
+        }
 
 
         return monthAdjustmentDTOList;
@@ -1026,7 +1052,7 @@ public class InventoryService {
 
                 materialStatus.setTheoreticalAmount(newTheoreticalAmount);
                 materialStatus.setActualAmount(newActualAmount);
-
+                materialStatus.setUseTotalAmount(materialStatus.getUseTotalAmount() != null ? materialStatus.getUseTotalAmount() + usedAmount : usedAmount);
                 // 손실량 계산
                 materialStatus.setLoss(
                         NumberFormatter.formatToTwoDecimal(
