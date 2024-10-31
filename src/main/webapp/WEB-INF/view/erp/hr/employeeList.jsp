@@ -239,9 +239,24 @@
 <script>
 
     function filterEmployees() {
-        var status = document.getElementById("employmentStatusFilter").value;
-        console.log("Selected status:", status); // 선택된 상태 로그 출력
-        window.location.href = "/erp/hr/employee-list?status=" + status;
+        // 선택된 필터 값 가져오기
+        const selectedStatus = document.getElementById("employmentStatusFilter").value;
+
+        // 모든 직원 행 가져오기
+        const employeeRows = document.querySelectorAll(".employee-row");
+
+        // 각 행을 필터링
+        employeeRows.forEach(row => {
+            // 각 행의 상태 값 가져오기
+            const employeeStatus = row.getAttribute("data-status");
+
+            // 선택된 상태가 없거나(전체) 직원 상태와 일치하는 경우 행 표시, 그렇지 않으면 숨김
+            if (selectedStatus === "" || employeeStatus === selectedStatus) {
+                row.style.display = ""; // 행 표시
+            } else {
+                row.style.display = "none"; // 행 숨기기
+            }
+        });
     }
 
     document.addEventListener("DOMContentLoaded", function () {
