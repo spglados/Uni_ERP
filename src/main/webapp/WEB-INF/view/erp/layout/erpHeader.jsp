@@ -62,6 +62,7 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <li><a href="/erp/hr/employee-register">직원 등록</a></li>
                     <li><a href="/erp/hr/employee-list">직원 목록</a></li>
                     <li><a href="/erp/hr/schedule">근무 일정</a></li>
+                    <li><a href="/erp/hr/salaries">급여 관리</a></li>
                 </ul>
             </li>
             <li>
