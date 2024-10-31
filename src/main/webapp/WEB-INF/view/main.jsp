@@ -104,27 +104,7 @@
             </p>
             <br>
             <h2>상담문의 하기</h2>
-            <section>
-                <div id="contact-container">
-                  <div class="form-group">
-                    <label for="name">이름:</label>
-                    <input type="text" id="name" name="name" required>
-                  </div>
-                  <div class="form-group">
-                    <label for="tel">전화번호:</label>
-                    <input type="tel" id="tel" name="tel" required placeholder="하이픈(-)을 제외하고 써주세요">
-                  </div>
-                  <div class="form-group">
-                    <label for="email">이메일:</label>
-                    <input type="email" id="email" name="email" required>
-                  </div>
-                  <div class="form-group">
-                    <label for="content">문의 내용:</label>
-                    <textarea id="content" name="content" rows="5" required></textarea>
-                  </div>
-                  <button id="submit-btn">문의하기</button>
-                </div>
-            </section>
+            <a href="/support">!클릭!</a>
         </div>
     </div>
 </div>
