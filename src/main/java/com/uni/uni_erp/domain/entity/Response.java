@@ -1,10 +1,8 @@
 package com.uni.uni_erp.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.apache.maven.doxia.sink.Sink;
 
 @Entity
 @Table (name ="contact_response_tb")
@@ -12,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Response {
 
     @Id
@@ -21,9 +20,10 @@ public class Response {
     @Column(name = "author", nullable = false)
     private String author;
 
-    @Column(name = "author_id", nullable = false)
-    private Integer authorId;
+    @Column(name = "contact_id", nullable = false)
+    private Integer contactId;
 
     @Column(name = "content", nullable = false)
     private String content;
+
 }

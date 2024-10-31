@@ -28,16 +28,8 @@
     <h3>문의하기</h3>
     <div id="contact-container">
       <div class="form-group">
-        <label for="name">이름:</label>
-        <input type="text" id="name" name="name" required>
-      </div>
-      <div class="form-group">
-        <label for="tel">전화번호:</label>
-        <input type="tel" id="tel" name="tel" required placeholder="하이픈(-)을 제외하고 써주세요">
-      </div>
-      <div class="form-group">
-        <label for="email">이메일:</label>
-        <input type="email" id="email" name="email" required>
+        <label for="title">제목:</label>
+        <input type="text" id="title" name="title" required>
       </div>
       <div class="form-group">
         <label for="content">문의 내용:</label>

@@ -2,16 +2,15 @@ package com.uni.uni_erp.dto;
 
 import lombok.*;
 
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Getter
-@Setter
-public class ContactDTO {
+public class ResponseDTO {
 
-    private Integer id;
-    private Integer userId;
-    private String title;
+    private String author;
+    private Integer contactId;
     private String content;
 
 }
