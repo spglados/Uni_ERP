@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-
+<link rel="stylesheet" href="/css/erp/hr/employeeList.css">
 <div class="container">
     <div class="left-panel">
         <h1 class="mb-4">직원 목록</h1>
@@ -71,159 +71,172 @@
         </c:if>
     </div>
     <div class="right-panel" id="employee-details">
-        <h2>직원 상세 정보</h2>
-        <p>상세 정보를 클릭하여 확인하세요.</p>
+                <h2 class="mb-0">직원 상세 정보</h2>
+            <div class="card-body">
+                <p>직원 목록을 클릭하여 확인하세요.</p>
+                <!-- 상세 정보가 여기에 추가됩니다 -->
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- 수정 팝업 모달 -->
-<div id="editEmployeeModal" style="display: none;">
-    <h2>직원 수정</h2>
-    <form id="editEmployeeForm" onsubmit="return false;">
-        <input type="hidden" id="editEmployeeId" name="id"/>
+<div id="modalBackground" onclick="closeModal()"></div>
+<div id="editEmployeeModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="editEmployeeModalLabel"
+     aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEmployeeModalLabel">직원 수정</h5>
+                <button type="button" class="close" onclick="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editEmployeeForm" onsubmit="return false;">
+                    <input type="hidden" id="editEmployeeId" name="id"/>
 
-        <label for="editEmployeeName">이름:</label>
-        <input type="text" id="editEmployeeName" name="name" maxlength="10" required pattern="^[가-힣]{2,10}$"
-               title="이름은 한글 2~10자로 입력해야 합니다."/>
+                    <div class="mb-3">
+                        <label for="editEmployeeName" class="form-label">이름</label>
+                        <input type="text" class="form-control" id="editEmployeeName" name="name" maxlength="10"
+                               required pattern="^[가-힣]{2,10}$"
+                               title="이름은 한글 2~10자로 입력해야 합니다."/>
+                    </div>
 
-        <label for="editEmployeeBirthday">생년월일:</label>
-        <input type="date" id="editEmployeeBirthday" name="birthday" required min="1900-01-01"
-               max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"/>
+                    <div class="mb-3">
+                        <label for="editEmployeeBirthday" class="form-label">생년월일</label>
+                        <input type="date" class="form-control" id="editEmployeeBirthday" name="birthday" required
+                               min="1900-01-01"
+                               max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmpPassword">비밀번호</label>
+                        <input type="text" id="editEmpPassword" name="password" pattern="^[0-9]+$" title="숫자만 입력하세요"
+                               required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmployeeGender">성별</label>
+                        <select id="editEmployeeGender" name="gender" required>
+                            <option value="M">남성</option>
+                            <option value="F">여성</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmployeeAddress" class="form-label">주소</label>
+                        <input type="text" class="form-control" id="editEmployeeAddress" name="address" required>
+                    </div>
 
-        <label for="editEmpPassword">비밀번호: </label>
-        <input type="text" id="editEmpPassword" name="password" pattern="^[0-9]+$" title="숫자만 입력하세요" required>
+                    <div class="mb-3">
+                        <label for="editEmployeeEmail" class="form-label">이메일 아이디</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="editEmployeeEmail" name="email" required
+                                   pattern="^[A-Za-z0-9._%+-]+$"
+                                   title="유효한 이메일 형식으로 입력하세요" value=""/>
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" id="emailDomain" name="emailDomain" required
+                                   title="도메인을 입력하세요" value="">
+                            <select id="domainSelect" class="form-select" onchange="updateEmailDomain()">
+                                <option value="">직접 입력</option>
+                                <option value="naver.com">naver.com</option>
+                                <option value="daum.net">daum.net</option>
+                                <option value="gmail.com">gmail.com</option>
+                                <option value="nate.com">nate.com</option>
+                            </select>
+                        </div>
+                    </div>
 
-        <label for="editEmployeeGender">성별:</label>
-        <select id="editEmployeeGender" name="gender" required>
-            <option value="M">남성</option>
-            <option value="F">여성</option>
-        </select>
+                    <div class="mb-3">
+                        <label for="editEmployeePhone" class="form-label">전화번호</label>
+                        <input type="text" class="form-control" id="editEmployeePhone" name="phone" required
+                               oninput="formatPhoneNumber(this)" maxlength="13"
+                               placeholder="000-0000-0000"
+                               title="유효한 전화번호 형식이 아닙니다."/>
+                    </div>
 
-        <label for="editEmployeeAddress">주소:</label>
-        <input type="text" id="editEmployeeAddress" name="address" required>
+                    <!-- 은행 정보 추가 -->
+                    <div class="mb-3">
+                        <label for="bankSelect" class="form-label">은행</label>
+                        <select id="bankSelect" name="bank" class="form-select">
+                            <c:forEach items="${banks}" var="bank">
+                                <option value="${bank.id}">${bank.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
 
-        <div>
-            <label for="editEmployeeEmail">이메일 아이디:</label>
-            <input type="text" id="editEmployeeEmail" name="email" required
-                   pattern="^[A-Za-z0-9._%+-]+$"
-                   title="유효한 이메일 형식으로 입력하세요" value=""/>
-            @
-            <input type="text" id="emailDomain" name="emailDomain" required
-                   title="도메인을 입력하세요" value="">
-            <select id="domainSelect" onchange="updateEmailDomain()">
-                <option value="">직접 입력</option>
-                <option value="naver.com">naver.com</option>
-                <option value="daum.net">daum.net</option>
-                <option value="gmail.com">gmail.com</option>
-                <option value="nate.com">nate.com</option>
-            </select>
-        </div>
+                    <div class="mb-3">
+                        <label for="editEmployeeAccountNumber" class="form-label">계좌번호</label>
+                        <input type="text" class="form-control" id="editEmployeeAccountNumber" name="accountNumber"
+                               required
+                               maxlength="16"
+                               pattern="^\d{1,16}$"
+                               title="계좌번호를 1자리 이상 16자리 이하의 숫자로 입력하세요"/>
+                    </div>
 
-        <label for="editEmployeePhone">전화번호:</label>
-        <input type="text" id="editEmployeePhone" name="phone" required
-               oninput="formatPhoneNumber(this)" maxlength="13"
-               placeholder="000-0000-0000"
-               title="유효한 전화번호 형식이 아닙니다."/>
+                    <!-- 직책 정보 추가 -->
+                    <div class="mb-3">
+                        <label for="positionSelect" class="form-label">직책</label>
+                        <select id="positionSelect" name="positionId" class="form-select">
+                            <c:forEach items="${positions}" var="position">
+                                <option value="${position.id}">${position.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
 
-        <!-- 은행 정보 추가 -->
-        <label for="bankSelect">은행:</label>
-        <select id="bankSelect" name="bank">
-            <c:forEach items="${banks}" var="bank">
-                <option value="${bank.id}">${bank.name}</option>
-            </c:forEach>
-        </select>
+                    <div class="mb-3">
+                        <label for="editEmployeeStatus" class="form-label">상태</label>
+                        <select id="editEmployeeStatus" name="employmentStatus" class="form-select">
+                            <option value="ACTIVE">재직</option>
+                            <option value="INACTIVE">퇴사</option>
+                            <option value="ONLEAVE">휴직</option>
+                        </select>
+                    </div>
 
-        <label for="editEmployeeAccountNumber">계좌번호:</label>
-        <input type="text" id="editEmployeeAccountNumber" name="accountNumber" required
-               maxlength="16"
-               pattern="^\d{1,16}$"
-               title="계좌번호를 1자리 이상 16자리 이하의 숫자로 입력하세요"/>
+                    <!-- 문서 정보 추가 -->
+                    <h3>문서 제출 상태</h3>
+                    <p>문서 보관 여부를 선택해주세요.</p>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editEmploymentContract" value="true"
+                               name="employmentContract">
+                        <label class="form-check-label" for="editEmploymentContract">고용 계약서</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editHealthCertificate" value="true"
+                               name="healthCertificate">
+                        <label class="form-check-label" for="editHealthCertificate">건강증명서</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editIdentificationCopy" value="true"
+                               name="identificationCopy">
+                        <label class="form-check-label" for="editIdentificationCopy">신분증 사본</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editBankAccountCopy" value="true"
+                               name="bankAccountCopy">
+                        <label class="form-check-label" for="editBankAccountCopy">계좌 사본</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editResidentRegistration" value="true"
+                               name="residentRegistration">
+                        <label class="form-check-label" for="editResidentRegistration">주민등록증</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editHealthCertificateDate" class="form-label">보건증 발급일:</label>
+                        <input type="date" class="form-control" id="editHealthCertificateDate"
+                               name="healthCertificateDate"/>
+                    </div>
 
-        <!-- 직책 정보 추가 -->
-        <label for="positionSelect">직책:</label>
-        <select id="positionSelect" name="positionId">
-            <c:forEach items="${positions}" var="position">
-                <option value="${position.id}">${position.name}</option>
-            </c:forEach>
-        </select>
-
-        <label for="editEmployeeStatus">상태:</label>
-        <select id="editEmployeeStatus" name="employmentStatus">
-            <option value="ACTIVE">재직</option>
-            <option value="INACTIVE">퇴사</option>
-            <option value="ONLEAVE">휴직</option>
-        </select>
-
-        <!-- 문서 정보 추가 -->
-        <h3>문서 제출 상태</h3>
-        <p>문서 보관 여부를 선택해주세요.</p>
-        <br>
-        <div>
-            <label for="editEmploymentContract">고용 계약서:</label>
-            <input type="checkbox" id="editEmploymentContract" value="true" name="employmentContract">
-        </div>
-        <div>
-            <label for="editHealthCertificate">건강증명서:</label>
-            <input type="checkbox" id="editHealthCertificate" value="true" name="healthCertificate">
-        </div>
-        <div>
-            <label for="editIdentificationCopy">신분증 사본:</label>
-            <input type="checkbox" id="editIdentificationCopy" value="true" name="identificationCopy">
-        </div>
-        <div>
-            <label for="editBankAccountCopy">계좌 사본:</label>
-            <input type="checkbox" id="editBankAccountCopy" value="true" name="bankAccountCopy">
-        </div>
-        <div>
-            <label for="editResidentRegistration">주민등록증:</label>
-            <input type="checkbox" id="editResidentRegistration" value="true" name="residentRegistration">
-        </div>
-        <div>
-            <label for="editHealthCertificateDate">보건증 발급일:</label>
-            <input type="date" id="editHealthCertificateDate" name="healthCertificateDate"/>
+                    <button type="submit" class="btn btn-primary" onclick="updateEmployee()">수정하기</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
+
+<!-- Bootstrap Bundle with Popper.js (jsDelivr) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-pwhx3de1z5koq2k9n7zn8XBc/4eKD48Wn5sbzIS5QJgEN5hYhDDK1e+FvY86G/Zg" crossorigin="anonymous"></script>
 <script>
-
-    const employees = [
-        <c:forEach var="employee" items="${employees}">
-        {
-            id: "${employee.uniqueEmployeeNumber}",
-            name: "${employee.name}",
-            birthday: "${employee.birthday}",
-            gender: "${employee.gender}",
-            address: "${employee.address}",
-            email: "${employee.email.split('@')[0]}@${employee.email.split('@')[1]}",
-            phone: "${employee.phone}",
-            status: "${employee.employmentStatus}",
-            bank: "${employee.bankName != null ? employee.bankName : '정보 없음'}",
-            positionId: "${employee.empPosition.id != null ? employee.empPosition.id : '0'}",
-            account: "${employee.accountNumber}",
-            password: "${employee.password}",
-            healthCertificateDate: "${employee.healthCertificateDate}",
-            employmentContract: "${employee.empDocumentDTO.employmentContract}",
-            healthCertificate: "${employee.empDocumentDTO.healthCertificate}",
-            identificationCopy: "${employee.empDocumentDTO.identificationCopy}",
-            bankAccountCopy: "${employee.empDocumentDTO.bankAccountCopy}",
-            residentRegistration: "${employee.empDocumentDTO.residentRegistration}",
-            positionName: "${employee.empPosition.name != null ? employee.empPosition.name : '정보 없음'}",
-            statusText: "<c:choose><c:when test='${employee.employmentStatus == "ACTIVE"}'>재직</c:when><c:when test='${employee.employmentStatus == "INACTIVE"}'>퇴사</c:when><c:when test='${employee.employmentStatus == "ONLEAVE"}'>휴직</c:when></c:choose>"
-        }<c:if test="${!employee.last}">,</c:if>
-        </c:forEach>
-    ];
-
-    // function filterEmployees() {
-    //     const statusSelect = document.getElementById('employmentStatusFilter');
-    //     const selectedStatus = statusSelect.value;
-    //
-    //     // 엑셀 다운로드 버튼의 상태 값 업데이트
-    //     document.getElementById('employeeStatus').value = selectedStatus;
-    //
-    //     // 추가로 직원 필터링 함수 호출
-    //     // 예: fetchEmployees(selectedStatus);
-    // }
 
     function filterEmployees() {
         var status = document.getElementById("employmentStatusFilter").value;
@@ -244,13 +257,28 @@
     ];
 
     function openModal() {
-        document.getElementById('editEmployeeModal').style.display = 'block';
-        document.getElementById('modalBackground').style.display = 'block'; // 모달 배경 보이기
+        const modalBackground = document.getElementById('modalBackground');
+        const editEmployeeModal = document.getElementById('editEmployeeModal');
+
+        // 배경과 모달 보이기
+        modalBackground.style.display = 'block'; // 배경 보이게 하기
+        editEmployeeModal.style.display = 'block'; // 모달 보이게 하기
+
+        // z-index 조정
+        modalBackground.style.zIndex = '1000'; // 배경을 모달보다 위로
+        editEmployeeModal.style.zIndex = '1001'; // 모달이 최상단
     }
 
     function closeModal() {
-        document.getElementById('editEmployeeModal').style.display = 'none';
-        document.getElementById('modalBackground').style.display = 'none'; // 모달 배경 숨기기
+        const modalBackground = document.getElementById('modalBackground');
+        const editEmployeeModal = document.getElementById('editEmployeeModal');
+
+        // 배경과 모달 숨기기
+        modalBackground.style.display = 'none'; // 배경 숨기기
+        editEmployeeModal.style.display = 'none'; // 모달 숨기기
+
+        // z-index 원래대로
+        modalBackground.style.zIndex = '-1'; // 배경을 다시 아래로
     }
 
     const employeesJson = '${employeesJson}'; // JSON 문자열을 올바르게 설정
@@ -293,29 +321,34 @@
                 const healthCertificateDate = row.dataset.healthcertificatedate;
 
                 // 직원 상세 정보를 표시
-                const detailsDiv = document.getElementById('employee-details');
+                const detailsDiv = document.getElementById('employee-details').querySelector('.card-body');
                 detailsDiv.innerHTML =
+                    '<div class="card">' +
+                    '<div class="card-header">' +
                     '<h2>' + name + '의 상세 정보</h2>' +
-                    '<p>사원번호: ' + uniqueId + '</p>' +
-                    '<p>생년월일: ' + birthday + '</p>' +
-                    '<p>성별: ' + (gender === 'F' ? '여자' : '남자') + '</p>' +
-                    '<p>주소: ' + address + '</p>' +
-                    '<p>이메일: ' + email + '</p>' +
-                    '<p>비밀번호: ' + password + '</p>' +
-                    '<p>연락처: ' + phone + '</p>' +
-                    '<p>상태: ' + (status === 'ACTIVE' ? '재직' : (status === 'INACTIVE' ? '퇴사' : '휴직')) + '</p>' +
-                    '<p>은행: ' + bank + '</p>' +
-                    '<p>계좌번호: ' + account + '</p>' +
+                    '</div>' +
+                    '<div class="card-body">' +
+                    '<p><strong>사원번호:</strong> ' + uniqueId + '</p>' +
+                    '<p><strong>생년월일:</strong> ' + birthday + '</p>' +
+                    '<p><strong>성별:</strong> ' + (gender === 'F' ? '여자' : '남자') + '</p>' +
+                    '<p><strong>주소:</strong> ' + address + '</p>' +
+                    '<p><strong>이메일:</strong> ' + email + '</p>' +
+                    '<p><strong>비밀번호:</strong> ' + password + '</p>' +
+                    '<p><strong>연락처:</strong> ' + phone + '</p>' +
+                    '<p><strong>상태:</strong> ' + (status === 'ACTIVE' ? '재직' : (status === 'INACTIVE' ? '퇴사' : '휴직')) + '</p>' +
+                    '<p><strong>은행:</strong> ' + bank + '</p>' +
+                    '<p><strong>계좌번호:</strong> ' + account + '</p>' +
                     '<h3>문서 제출 여부</h3>' +
-                    '<ul>' +
-                    '<li>근로계약서: ' + (employmentContract ? '제출' : '미제출') + '</li>' +
-                    '<li>건강증명서: ' + (healthCertificate ? '제출' : '미제출') + '</li>' +
-                    '<li>신분증 사본: ' + (identificationCopy ? '제출' : '미제출') + '</li>' +
-                    '<li>은행 계좌 사본: ' + (bankAccountCopy ? '제출' : '미제출') + '</li>' +
-                    '<li>주민등록증: ' + (residentRegistration ? '제출' : '미제출') + '</li>' +
-                    '<li>건강증명서 발급일: ' + healthCertificateDate + '</li>' +
+                    '<ul class="list-group mb-3">' +
+                    '<li class="list-group-item">근로계약서: ' + (employmentContract ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">건강증명서: ' + (healthCertificate ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">신분증 사본: ' + (identificationCopy ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">은행 계좌 사본: ' + (bankAccountCopy ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">주민등록증: ' + (residentRegistration ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">건강증명서 발급일: ' + healthCertificateDate + '</li>' +
                     '</ul>' +
-                    '<button id="edit-button" data-id="' + uniqueId + '" class="edit-btn">수정</button>'; // 수정 버튼 추가
+                    '<button id="edit-button" data-id="' + uniqueId + '" class="btn btn-primary">수정</button>'; // 수정 버튼
+
 
 
                 // 수정 버튼 클릭 이벤트 리스너
@@ -339,7 +372,6 @@
             const bank = bankMapping.find(b => b.id === bankId);
             return bank ? bank.name : null; // 해당하는 이름 반환
         }
-
 
         function openEditModal(uniqueId, name, birthday, gender, address, email, phone, bank, account, password, status, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate) {
             // 모달 입력 필드에 데이터 세팅
@@ -386,26 +418,6 @@
             openModal(); // openModal 함수는 기존에 정의한 모달 여는 함수
         }
 
-        // TODO 우리형 공부 !! ^^
-        /**
-         * 밑에 함수들은 은행 아이디로 이름을 반환하거나
-         * 이름으로 아이디를 반환하는 함수이다 !
-         * 하지만 설계자의 문제로 bankId와 bankName 이라는 key 값으로 Json 데이터를 보내야 하나
-         * bank 라는 key 값으로 은행 아이디를 value로 보냈다 !
-         * 그럼 bankId=7, bankName=농협은행 이라는 데이터를 보내야되는 상황에서
-         * bank=7 이라는 데이터를 보내고 있으니 이게 맞을까????
-         * 그러니 반복문을 돌릴 때 만약 key 값이 bank 일 때 !!!!! 필터를 거는 것이다.
-         * 왜? 다른 key 들은 올바르게 세팅되어 있어서 값을 넣고 있는 상황을 확인했기 때문이다 !
-         * 그럼 bank=7 이라는 값을 가공을 해야되는데 그걸 밑에 2개의 함수가 처리를 해준다
-         * 왜? 우리가 가지고 있는 건 은행 아이디거든
-         * 그럼 bank=7이라는 데 k, v로 만들어서 보내주면 된다 !!! 그 코드가
-         *
-         * jsonData['bankId'] = value;
-         * jsonData['bankName'] = getBankNameById(value);
-         *
-         * 이 코드이다 !
-         */
-
         document.getElementById('editEmployeeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             // 수정 요청 처리 로직 추가
@@ -443,7 +455,7 @@
                         // 필요 시 직원 목록 새로 고침 또는 수정된 직원 정보 업데이트 로직 추가
                         closeModal();
                         location.reload();
-                    } else if(data.fail) {
+                    } else if (data.fail) {
                         alert('수정 실패: ' + data.fail);
                     }
                 })
@@ -451,6 +463,27 @@
                     console.error('수정 요청 오류:', error);
                 });
         });
+
+        // TODO 우리형 공부 !! ^^
+        /**
+         * 밑에 함수들은 은행 아이디로 이름을 반환하거나
+         * 이름으로 아이디를 반환하는 함수이다 !
+         * 하지만 설계자의 문제로 bankId와 bankName 이라는 key 값으로 Json 데이터를 보내야 하나
+         * bank 라는 key 값으로 은행 아이디를 value로 보냈다 !
+         * 그럼 bankId=7, bankName=농협은행 이라는 데이터를 보내야되는 상황에서
+         * bank=7 이라는 데이터를 보내고 있으니 이게 맞을까????
+         * 그러니 반복문을 돌릴 때 만약 key 값이 bank 일 때 !!!!! 필터를 거는 것이다.
+         * 왜? 다른 key 들은 올바르게 세팅되어 있어서 값을 넣고 있는 상황을 확인했기 때문이다 !
+         * 그럼 bank=7 이라는 값을 가공을 해야되는데 그걸 밑에 2개의 함수가 처리를 해준다
+         * 왜? 우리가 가지고 있는 건 은행 아이디거든
+         * 그럼 bank=7이라는 데 k, v로 만들어서 보내주면 된다 !!! 그 코드가
+         *
+         * jsonData['bankId'] = value;
+         * jsonData['bankName'] = getBankNameById(value);
+         *
+         * 이 코드이다 !
+         */
+
     });
 
     function updateEmailDomain() {
@@ -522,61 +555,6 @@
 </script>
 
 
-<style>
-    .container {
-        display: flex;
-        width: 100%;
-    }
-
-    .left-panel {
-        flex: 1; /* 왼쪽 패널의 너비 */
-        padding: 20px; /* 패딩 추가 */
-        width: 40%;
-        border-right: 1px solid #ccc; /* 오른쪽 경계선 */
-    }
-
-    .right-panel {
-        flex: 2; /* 오른쪽 패널의 너비 */
-        width: 40%;
-        padding: 20px; /* 패딩 추가 */
-    }
-
-    /* 모달 스타일 */
-    /* 수정된 모달 스타일 */
-    #editEmployeeModal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white; /* 흰색 배경 */
-        padding: 10px;
-        border: 1px solid #ccc;
-        z-index: 1000; /* 배경보다 위에 */
-        max-height: 70%; /* 최대 높이 설정 */
-        width: 40%; /* 너비 설정 */
-        overflow-y: hidden; /* 세로 스크롤 활성화 */
-    }
-
-    /* 모달 배경 스타일 */
-    #modalBackground {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: none; /* 처음에는 보이지 않음 */
-        z-index: 999; /* 모달보다 아래에 */
-    }
-
-
-    /* 모달 본문 스크롤 */
-    .modal-body {
-        max-height: 50vh; /* 최대 높이를 viewport의 70%로 설정 */
-        overflow-y: auto; /* 세로 스크롤 활성화 */
-        padding: 0; /* 패딩 초기화 */
-    }
-</style>
 
 <!-- 모달 배경 -->
 
