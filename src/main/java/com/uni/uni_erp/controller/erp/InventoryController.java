@@ -119,13 +119,13 @@ public class InventoryController {
             HttpSession session,
             @RequestBody List<MaterialDTO.MaterialDayAdjustmentDTO> reqDtoList) {
 
-        boolean success = inventoryService.saveDayAdjustmentList(session, reqDtoList);
+        boolean isEnter = inventoryService.saveDayAdjustmentList(session, reqDtoList);
 
-        if(!success) {
-            return ResponseEntity.ok(Map.of("fail", success));
+        if(!isEnter) {
+            return ResponseEntity.ok(Map.of("fail", isEnter));
         }
 
-        return ResponseEntity.ok(Map.of("success", success));
+        return ResponseEntity.ok(Map.of("success", isEnter));
     }
 
     @GetMapping("/month-adjustment")
@@ -163,7 +163,7 @@ public class InventoryController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/disposalHistory")
+    @GetMapping("/disposal-history")
     public String disposeHistoryPage(Model model, HttpSession session) {
         return "/erp/inventory/disposalHistory";
     }

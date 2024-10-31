@@ -32,8 +32,8 @@ public class SalesService {
     private final SalesRefundRepository salesRefundRepository;
     private final AttendanceRepository attendanceRepository;
 
-    public List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
-        return salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+    public List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId) {
+        return salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(startDate, endDate, storeId);
     }
 
     public List<SalesDetailDTO> findAllByOrderNumIn(List<SalesDTO> salesDTO) {
@@ -96,13 +96,13 @@ public class SalesService {
                     ? LocalDateTime.of(date, LocalTime.of(23, 59, 59, 999999999)).minusNanos(1)
                     : LocalDateTime.of(date, LocalTime.of(hour + 1, 0)).minusNanos(1);
 
-            List<SalesDTO> currentSales = salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+            List<SalesDTO> currentSales = salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(startDate, endDate, storeId);
             int totalSales = currentSales.stream().mapToInt(SalesDTO::getTotalPrice).sum();
             int salesCount = currentSales.size();
 
             LocalDateTime lastMonthStartDate = startDate.minusMonths(1);
             LocalDateTime lastMonthEndDate = lastMonthStartDate.plusMonths(1).minusDays(1);
-            List<SalesDTO> lastMonthSales = salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(lastMonthStartDate, lastMonthEndDate, storeId);
+            List<SalesDTO> lastMonthSales = salesRepository.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(lastMonthStartDate, lastMonthEndDate, storeId);
 
             // Calculate average sales of last month for this hour
             int lastMonthTotalSales = lastMonthSales.stream().mapToInt(SalesDTO::getTotalPrice).sum();

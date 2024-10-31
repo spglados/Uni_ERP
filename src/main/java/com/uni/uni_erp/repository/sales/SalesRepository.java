@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface SalesRepository extends JpaRepository<Sales, Integer> {
 
-    List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId);
+    List<SalesDTO> findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(LocalDateTime startDate, LocalDateTime endDate, Integer storeId);
 
     @Query("SELECT new com.uni.uni_erp.dto.sales.SalesQuantityDTO(sd.itemCode,sd.quantity,s.salesDate) " +
             "FROM Sales s JOIN SalesDetail sd ON s.orderNum = sd.orderNum " +

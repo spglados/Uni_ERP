@@ -61,6 +61,7 @@ public class SalesController {
         YearMonth thisMonth = YearMonth.from(today);
         Year thisYear = Year.from(today);
 
+
         List<CostPerEmployeeDTO> costPerEmployeeThisWeek = salesService.calculateEmployeeSales(today.with(DayOfWeek.MONDAY).minusDays(today.getDayOfWeek().getValue() - 1).atStartOfDay(), today.with(DayOfWeek.MONDAY).plusDays(6).atStartOfDay(), 1);
         for (CostPerEmployeeDTO costPerEmployeeDTO : costPerEmployeeThisWeek) {
             EmployeeDTO employee = hrService.getEmployeeById(costPerEmployeeDTO.getId());

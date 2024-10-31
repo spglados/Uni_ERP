@@ -52,4 +52,7 @@ public class Store {
 
     @Column(name = "allow_minutes",nullable = false)
     private Integer allowMinutes = 1;
+
+    @Column(name = "store_address", nullable = false)
+    private String storeAddress;
 }

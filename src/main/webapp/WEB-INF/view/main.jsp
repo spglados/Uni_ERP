@@ -109,7 +109,7 @@
     </div>
 </div>
 
-<script src="/js/common/support.js"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var overlay = document.querySelector('.overlay-content');

@@ -35,7 +35,7 @@ public class SalesRestController {
             LocalDateTime startDate = today.atStartOfDay();
             LocalDateTime endDate = today.atTime(LocalTime.MAX);
             Integer storeId = (Integer) session.getAttribute("storeId");
-            return salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+            return salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(startDate, endDate, storeId);
 
         } catch (Exception e) {
             log.error("Error searching sales records by date", e);
@@ -51,7 +51,7 @@ public class SalesRestController {
             LocalDateTime endDate = today.atTime(LocalTime.MAX);
             Integer storeId = (Integer) session.getAttribute("storeId");
             List<SalesDTO> salesList;
-            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(startDate, endDate, storeId);
             List<SalesDetailDTO> salesDetailList = salesService.findAllByOrderNumIn(salesList);
             return salesDetailList.stream()
                     .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode))
@@ -80,7 +80,7 @@ public class SalesRestController {
             LocalDateTime endDate = today.atTime(LocalTime.MAX);
             Integer storeId = (Integer) session.getAttribute("storeId");
             List<SalesDTO> salesList;
-            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(startDate, endDate, storeId);
             List<SalesDetailDTO> salesDetailList = salesService.findAllByOrderNumIn(salesList);
             return salesDetailList.stream()
                     .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode))
