@@ -17,25 +17,8 @@
         flex-direction: column; /* 수직 정렬을 위한 flex-direction 추가 */
     }
 
-    .form-section {
-        width: 100%;
-    }
 
-    .form-row {
-        display: flex;
-        flex-wrap: wrap;
-        margin-bottom: 15px;
-    }
 
-    .form-group {
-        flex: 1;
-        min-width: 200px;
-        margin-right: 10px;
-    }
-
-    .form-group:last-child {
-        margin-right: 0;
-    }
 </style>
 
 <!-- JSP에서 unitCategories를 JSON 배열로 변환하여 JavaScript 변수에 저장 -->
@@ -65,76 +48,87 @@
     <!-- 자재 등록 폼 -->
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
         <form id="materialForm" action="/erp/inventory/registration" method="post">
-            <div class="register-container">
+            <table class="register-container">
+                <thead class="blue">
+                    <tr>
+                        <td>재고 등록</td>
+                    </tr>
+                </thead>
                 <!-- 기본 정보 섹션 -->
-                <div class="form-section">
-                    <div class="form-row">
-                        <!-- 이름 -->
-                        <div class="form-group col-md-6">
-                            <label for="name">이름 <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <!-- 카테고리 -->
-                        <div class="form-group col-md-6">
-                            <label for="category">카테고리 <span class="text-danger">*</span></label>
-                            <select class="form-control" id="category" name="category" required>
-                                <option value="">선택하세요</option>
-                                <option value="냉동품">냉동품</option>
-                                <option value="냉장품">냉장품</option>
-                                <option value="상온품">상온품</option>
-                            </select>
-                        </div>
-                        <!-- 단위 -->
-                        <div class="form-group col-md-6">
-                            <label for="unit">단위 <span class="text-danger">*</span></label>
-                            <select class="form-control" id="unit" name="unit" required>
-                                <option value="">선택하세요</option>
-                                <!-- 옵션은 JavaScript로 동적으로 추가 -->
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <!-- 서브 수량 -->
-                        <div class="form-group col-md-6">
-                            <label for="subAmount">서브 수량</label>
-                            <input type="number" step="0.01" class="form-control" id="subAmount" name="subAmount"
-                                   disabled>
-                        </div>
-                        <!-- 서브 단위 -->
-                        <div class="form-group col-md-6">
-                            <label for="subUnit">서브 단위 <span class="text-danger">*</span></label>
-                            <select class="form-control" id="subUnit" name="subUnit" required>
-                                <option value="">선택하세요</option>
-                                <!-- 옵션은 JavaScript로 동적으로 추가 -->
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <!-- 알람 주기 -->
-                        <div class="form-group col-md-6">
-                            <label for="alarmCycle">알람 주기</label>
-                            <input type="number" step="0.01" class="form-control" id="alarmCycle" name="alarmCycle">
-                        </div>
-
-                        <div class="form-group col-md-6">
-                            <label for="alarmUnit">알람 단위 <span class="text-danger">*</span></label>
-                            <select class="form-control" id="alarmUnit" name="alarmUnit" required>
-                                <option value="">선택하세요</option>
-                                <!-- 옵션은 JavaScript로 동적으로 추가 -->
-                            </select>
-                        </div>
-                    </div>
-                    <!-- 제출 버튼 추가 -->
-                    <button type="submit" class="btn btn-primary">등록</button>
-<%--                    // TODO 초기화 폼 수정 예정 함수 호출 문제--%>
-                    <button type="button" class="btn btn-secondary" onclick="clearForm()">초기화</button>
-                </div>
-            </div>
+                <tr>
+                    <td>
+                        <label for="name">이름 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="category">카테고리 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <select class="form-control" id="category" name="category" required>
+                            <option value="">선택하세요</option>
+                            <option value="냉동품">냉동품</option>
+                            <option value="냉장품">냉장품</option>
+                            <option value="상온품">상온품</option>
+                        </select>
+                    </td>
+                    <td>
+                        <label for="unit">단위 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <select class="form-control" id="unit" name="unit" required>
+                            <option value="">선택하세요</option>
+                            <!-- 옵션은 JavaScript로 동적으로 추가 -->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="subAmount">서브 수량</label>
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" class="form-control" id="subAmount" name="subAmount" disabled>
+                    </td>
+                    <td>
+                        <label for="subUnit">서브 단위 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <select class="form-control" id="subUnit" name="subUnit" required>
+                            <option value="">선택하세요</option>
+                            <!-- 옵션은 JavaScript로 동적으로 추가 -->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="alarmCycle">알람 주기</label>
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" class="form-control" id="alarmCycle" name="alarmCycle">
+                    </td>
+                    <td>
+                        <label for="alarmUnit">알람 단위 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <select class="form-control" id="alarmUnit" name="alarmUnit" required>
+                            <option value="">선택하세요</option>
+                            <!-- 옵션은 JavaScript로 동적으로 추가 -->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="text-align: center;">
+                        <button type="submit" class="btn btn-primary">등록</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">초기화</button>
+                    </td>
+                </tr>
+            </table>
         </form>
     </div>
+
 
     <!-- JavaScript 코드 추가 -->
     <script>
