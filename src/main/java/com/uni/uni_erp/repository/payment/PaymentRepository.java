@@ -43,6 +43,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     void updateCancelReason(@Param("id") Integer id, @Param("cancelReason") String cancelReason);
 
 
+    @Query("SELECT p FROM Payment p WHERE p.status <> 0")
+    List<Payment> findAllWithNonZeroStatus();
 
 
     /* @Query("UPDATE User u SET u.membership = :membership WHERE u.id = :userId")

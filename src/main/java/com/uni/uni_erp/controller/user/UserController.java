@@ -101,9 +101,9 @@ public class UserController {
         } else {
             response.put("success", false);
         }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
 
     // 아이디 중복 확인

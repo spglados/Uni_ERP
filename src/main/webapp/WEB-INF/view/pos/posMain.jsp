@@ -272,6 +272,9 @@
 
             <!--금고관리-->
             <button onclick="safe()">금고관리</button>
+
+            <!--시재추가-->
+            <button onclick="deposit()">시재 추가</button>
             <br>
             <!--오픈하기-->
             <button id="openButton"
@@ -636,6 +639,9 @@ function handleButtonClick() {
 
         function closeBusiness() {
             window.open('http://localhost:8080/erp/pos/close', '_blank', 'width=800,height=600');
+        }
+        function deposit() {
+            window.open('http://localhost:8080/erp/pos/deposit', '_blank', 'width=800,height=600');
         }
         function confirmOpen() {
                 if (confirm("오픈하시겠습니까?")) {
