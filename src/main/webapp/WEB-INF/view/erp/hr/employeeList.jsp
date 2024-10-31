@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-
+<link rel="stylesheet" href="/css/erp/hr/employeeList.css">
 <div class="container">
     <div class="left-panel">
         <h1 class="mb-4">직원 목록</h1>
@@ -71,8 +71,12 @@
         </c:if>
     </div>
     <div class="right-panel" id="employee-details">
-        <h2>직원 상세 정보</h2>
-        <p>상세 정보를 클릭하여 확인하세요.</p>
+                <h2 class="mb-0">직원 상세 정보</h2>
+            <div class="card-body">
+                <p>직원 목록을 클릭하여 확인하세요.</p>
+                <!-- 상세 정보가 여기에 추가됩니다 -->
+            </div>
+        </div>
     </div>
 </div>
 
@@ -93,37 +97,37 @@
                     <input type="hidden" id="editEmployeeId" name="id"/>
 
                     <div class="mb-3">
-                        <label for="editEmployeeName" class="form-label">이름:</label>
+                        <label for="editEmployeeName" class="form-label">이름</label>
                         <input type="text" class="form-control" id="editEmployeeName" name="name" maxlength="10"
                                required pattern="^[가-힣]{2,10}$"
                                title="이름은 한글 2~10자로 입력해야 합니다."/>
                     </div>
 
                     <div class="mb-3">
-                        <label for="editEmployeeBirthday" class="form-label">생년월일:</label>
+                        <label for="editEmployeeBirthday" class="form-label">생년월일</label>
                         <input type="date" class="form-control" id="editEmployeeBirthday" name="birthday" required
                                min="1900-01-01"
                                max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"/>
                     </div>
                     <div class="mb-3">
-                        <label for="editEmpPassword">비밀번호: </label>
+                        <label for="editEmpPassword">비밀번호</label>
                         <input type="text" id="editEmpPassword" name="password" pattern="^[0-9]+$" title="숫자만 입력하세요"
                                required>
                     </div>
                     <div class="mb-3">
-                        <label for="editEmployeeGender">성별:</label>
+                        <label for="editEmployeeGender">성별</label>
                         <select id="editEmployeeGender" name="gender" required>
                             <option value="M">남성</option>
                             <option value="F">여성</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="editEmployeeAddress" class="form-label">주소:</label>
+                        <label for="editEmployeeAddress" class="form-label">주소</label>
                         <input type="text" class="form-control" id="editEmployeeAddress" name="address" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="editEmployeeEmail" class="form-label">이메일 아이디:</label>
+                        <label for="editEmployeeEmail" class="form-label">이메일 아이디</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="editEmployeeEmail" name="email" required
                                    pattern="^[A-Za-z0-9._%+-]+$"
@@ -142,7 +146,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="editEmployeePhone" class="form-label">전화번호:</label>
+                        <label for="editEmployeePhone" class="form-label">전화번호</label>
                         <input type="text" class="form-control" id="editEmployeePhone" name="phone" required
                                oninput="formatPhoneNumber(this)" maxlength="13"
                                placeholder="000-0000-0000"
@@ -151,7 +155,7 @@
 
                     <!-- 은행 정보 추가 -->
                     <div class="mb-3">
-                        <label for="bankSelect" class="form-label">은행:</label>
+                        <label for="bankSelect" class="form-label">은행</label>
                         <select id="bankSelect" name="bank" class="form-select">
                             <c:forEach items="${banks}" var="bank">
                                 <option value="${bank.id}">${bank.name}</option>
@@ -160,7 +164,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="editEmployeeAccountNumber" class="form-label">계좌번호:</label>
+                        <label for="editEmployeeAccountNumber" class="form-label">계좌번호</label>
                         <input type="text" class="form-control" id="editEmployeeAccountNumber" name="accountNumber"
                                required
                                maxlength="16"
@@ -170,7 +174,7 @@
 
                     <!-- 직책 정보 추가 -->
                     <div class="mb-3">
-                        <label for="positionSelect" class="form-label">직책:</label>
+                        <label for="positionSelect" class="form-label">직책</label>
                         <select id="positionSelect" name="positionId" class="form-select">
                             <c:forEach items="${positions}" var="position">
                                 <option value="${position.id}">${position.name}</option>
@@ -179,7 +183,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="editEmployeeStatus" class="form-label">상태:</label>
+                        <label for="editEmployeeStatus" class="form-label">상태</label>
                         <select id="editEmployeeStatus" name="employmentStatus" class="form-select">
                             <option value="ACTIVE">재직</option>
                             <option value="INACTIVE">퇴사</option>
@@ -229,6 +233,9 @@
     </div>
 </div>
 
+
+<!-- Bootstrap Bundle with Popper.js (jsDelivr) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-pwhx3de1z5koq2k9n7zn8XBc/4eKD48Wn5sbzIS5QJgEN5hYhDDK1e+FvY86G/Zg" crossorigin="anonymous"></script>
 <script>
 
     function filterEmployees() {
@@ -250,13 +257,28 @@
     ];
 
     function openModal() {
-        document.getElementById('editEmployeeModal').style.display = 'block';
-        document.getElementById('modalBackground').style.display = 'block'; // 모달 배경 보이기
+        const modalBackground = document.getElementById('modalBackground');
+        const editEmployeeModal = document.getElementById('editEmployeeModal');
+
+        // 배경과 모달 보이기
+        modalBackground.style.display = 'block'; // 배경 보이게 하기
+        editEmployeeModal.style.display = 'block'; // 모달 보이게 하기
+
+        // z-index 조정
+        modalBackground.style.zIndex = '1000'; // 배경을 모달보다 위로
+        editEmployeeModal.style.zIndex = '1001'; // 모달이 최상단
     }
 
     function closeModal() {
-        document.getElementById('editEmployeeModal').style.display = 'none';
-        document.getElementById('modalBackground').style.display = 'none'; // 모달 배경 숨기기
+        const modalBackground = document.getElementById('modalBackground');
+        const editEmployeeModal = document.getElementById('editEmployeeModal');
+
+        // 배경과 모달 숨기기
+        modalBackground.style.display = 'none'; // 배경 숨기기
+        editEmployeeModal.style.display = 'none'; // 모달 숨기기
+
+        // z-index 원래대로
+        modalBackground.style.zIndex = '-1'; // 배경을 다시 아래로
     }
 
     const employeesJson = '${employeesJson}'; // JSON 문자열을 올바르게 설정
@@ -299,29 +321,34 @@
                 const healthCertificateDate = row.dataset.healthcertificatedate;
 
                 // 직원 상세 정보를 표시
-                const detailsDiv = document.getElementById('employee-details');
+                const detailsDiv = document.getElementById('employee-details').querySelector('.card-body');
                 detailsDiv.innerHTML =
+                    '<div class="card">' +
+                    '<div class="card-header">' +
                     '<h2>' + name + '의 상세 정보</h2>' +
-                    '<p>사원번호: ' + uniqueId + '</p>' +
-                    '<p>생년월일: ' + birthday + '</p>' +
-                    '<p>성별: ' + (gender === 'F' ? '여자' : '남자') + '</p>' +
-                    '<p>주소: ' + address + '</p>' +
-                    '<p>이메일: ' + email + '</p>' +
-                    '<p>비밀번호: ' + password + '</p>' +
-                    '<p>연락처: ' + phone + '</p>' +
-                    '<p>상태: ' + (status === 'ACTIVE' ? '재직' : (status === 'INACTIVE' ? '퇴사' : '휴직')) + '</p>' +
-                    '<p>은행: ' + bank + '</p>' +
-                    '<p>계좌번호: ' + account + '</p>' +
+                    '</div>' +
+                    '<div class="card-body">' +
+                    '<p><strong>사원번호:</strong> ' + uniqueId + '</p>' +
+                    '<p><strong>생년월일:</strong> ' + birthday + '</p>' +
+                    '<p><strong>성별:</strong> ' + (gender === 'F' ? '여자' : '남자') + '</p>' +
+                    '<p><strong>주소:</strong> ' + address + '</p>' +
+                    '<p><strong>이메일:</strong> ' + email + '</p>' +
+                    '<p><strong>비밀번호:</strong> ' + password + '</p>' +
+                    '<p><strong>연락처:</strong> ' + phone + '</p>' +
+                    '<p><strong>상태:</strong> ' + (status === 'ACTIVE' ? '재직' : (status === 'INACTIVE' ? '퇴사' : '휴직')) + '</p>' +
+                    '<p><strong>은행:</strong> ' + bank + '</p>' +
+                    '<p><strong>계좌번호:</strong> ' + account + '</p>' +
                     '<h3>문서 제출 여부</h3>' +
-                    '<ul>' +
-                    '<li>근로계약서: ' + (employmentContract ? '제출' : '미제출') + '</li>' +
-                    '<li>건강증명서: ' + (healthCertificate ? '제출' : '미제출') + '</li>' +
-                    '<li>신분증 사본: ' + (identificationCopy ? '제출' : '미제출') + '</li>' +
-                    '<li>은행 계좌 사본: ' + (bankAccountCopy ? '제출' : '미제출') + '</li>' +
-                    '<li>주민등록증: ' + (residentRegistration ? '제출' : '미제출') + '</li>' +
-                    '<li>건강증명서 발급일: ' + healthCertificateDate + '</li>' +
+                    '<ul class="list-group mb-3">' +
+                    '<li class="list-group-item">근로계약서: ' + (employmentContract ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">건강증명서: ' + (healthCertificate ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">신분증 사본: ' + (identificationCopy ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">은행 계좌 사본: ' + (bankAccountCopy ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">주민등록증: ' + (residentRegistration ? '제출' : '미제출') + '</li>' +
+                    '<li class="list-group-item">건강증명서 발급일: ' + healthCertificateDate + '</li>' +
                     '</ul>' +
-                    '<button id="edit-button" data-id="' + uniqueId + '" class="edit-btn">수정</button>'; // 수정 버튼 추가
+                    '<button id="edit-button" data-id="' + uniqueId + '" class="btn btn-primary">수정</button>'; // 수정 버튼
+
 
 
                 // 수정 버튼 클릭 이벤트 리스너
@@ -421,14 +448,15 @@
                 },
                 body: JSON.stringify(jsonData)
             })
-                .then(response => {
-                    if (response.ok) {
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
                         alert('직원 정보가 수정되었습니다.');
                         // 필요 시 직원 목록 새로 고침 또는 수정된 직원 정보 업데이트 로직 추가
                         closeModal();
                         location.reload();
-                    } else {
-                        alert('직원 정보 수정에 실패했습니다. 다시 시도해주세요.: ' + response.statusText);
+                    } else if (data.fail) {
+                        alert('수정 실패: ' + data.fail);
                     }
                 })
                 .catch(error => {
@@ -456,50 +484,6 @@
          * 이 코드이다 !
          */
 
-        document.getElementById('editEmployeeForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            // 수정 요청 처리 로직 추가
-            const formData = new FormData(event.target);
-            console.log('event.target', event.target);
-            console.log('formData', formData);
-            // const formData = new FormData(this); // 폼 데이터 가져오기
-            const jsonData = {}; // JSON 객체 초기화
-
-            // FormData를 JSON 객체로 변환
-            formData.forEach((value, key) => {
-
-                if (key === 'bank') {
-                    jsonData['bankId'] = value;
-                    jsonData['bankName'] = getBankNameById(value);
-                } else {
-                    jsonData[key] = value;
-                }
-            });
-            console.log('jsonData', jsonData);
-            const employeeId = jsonData.id;
-
-            // 예시: 수정된 직원 정보를 서버에 전송
-            fetch('/erp/hr/employees/' + employeeId, {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(jsonData)
-            })
-                .then(response => {
-                    if (response.ok) {
-                        alert('직원 정보가 수정되었습니다.');
-                        // 필요 시 직원 목록 새로 고침 또는 수정된 직원 정보 업데이트 로직 추가
-                        closeModal();
-                        location.reload();
-                    } else {
-                        alert('수정 실패: ' + response.statusText);
-                    }
-                })
-                .catch(error => {
-                    console.error('수정 요청 오류:', error);
-                });
-        });
     });
 
     function updateEmailDomain() {
@@ -571,61 +555,6 @@
 </script>
 
 
-<style>
-    .container {
-        display: flex;
-        width: 100%;
-    }
-
-    .left-panel {
-        flex: 1; /* 왼쪽 패널의 너비 */
-        padding: 20px; /* 패딩 추가 */
-        width: 40%;
-        border-right: 1px solid #ccc; /* 오른쪽 경계선 */
-    }
-
-    .right-panel {
-        flex: 2; /* 오른쪽 패널의 너비 */
-        width: 40%;
-        padding: 20px; /* 패딩 추가 */
-    }
-
-    /* 모달 스타일 */
-    /* 수정된 모달 스타일 */
-    #editEmployeeModal {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white; /* 흰색 배경 */
-        padding: 10px;
-        border: 1px solid #ccc;
-        z-index: 1000; /* 배경보다 위에 */
-        max-height: 70%; /* 최대 높이 설정 */
-        width: 40%; /* 너비 설정 */
-        overflow-y: hidden; /* 세로 스크롤 활성화 */
-    }
-
-    /* 모달 배경 스타일 */
-    #modalBackground {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: none; /* 처음에는 보이지 않음 */
-        z-index: 999; /* 모달보다 아래에 */
-    }
-
-
-    /* 모달 본문 스크롤 */
-    .modal-body {
-        max-height: 50vh; /* 최대 높이를 viewport의 70%로 설정 */
-        overflow-y: auto; /* 세로 스크롤 활성화 */
-        padding: 0; /* 패딩 초기화 */
-    }
-</style>
 
 <!-- 모달 배경 -->
 
