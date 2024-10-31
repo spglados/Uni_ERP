@@ -4,13 +4,13 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.repository.payment.Sms;
-import com.uni.uni_erp.service.common.EmailService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,12 +35,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute UserDTO.JoinDTO dto) {
-        // TODO 유효성 검사 추가
+    public String login(@ModelAttribute UserDTO.loginDTO dto) {
         User user = userService.login(dto);
         List<StoreDTO> storeList = storeService.ownedStores(user.getId());
 
-        if(storeList != null) {
+        if(storeList != null && !storeList.isEmpty()) {
             // 맨 처음 가게 아이디 추가
             session.setAttribute("storeId", storeList.get(0).getId());
             if(storeList.size() > 1) {
@@ -63,10 +62,11 @@ public class UserController {
         return "user/join";
     }
 
+    @ResponseBody
     @PostMapping("/join")
-    public String join(@ModelAttribute UserDTO.JoinDTO dto) {
+    public ResponseEntity<?> join(@RequestBody UserDTO.JoinDTO dto) {
         userService.save(dto.toUserEntity());
-        return "user/login";
+        return ResponseEntity.ok("success");
     }
 
     @GetMapping("/sendPhoneVerification")
@@ -99,9 +99,9 @@ public class UserController {
         } else {
             response.put("success", false);
         }
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
 
     // 아이디 중복 확인
@@ -131,12 +131,13 @@ public class UserController {
             response.put("message", "사용 가능한 번호입니다.");
             return ResponseEntity.ok(response);
         }
+
+        @GetMapping("/logout")
+        public String logout() {
+            session.invalidate(); // 세션 무효화
+            return "redirect:/main"; // 메인 페이지로 리다이렉트
+        }
     }
 
-    @GetMapping("/logout")
-    public String logout() {
-        session.invalidate(); // 세션 무효화
-        return "redirect:/main"; // 메인 페이지로 리다이렉트
-    }
 
-}
+

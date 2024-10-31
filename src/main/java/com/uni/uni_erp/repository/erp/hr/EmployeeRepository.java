@@ -40,6 +40,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     // 전화번호로 직원 존재 여부 체크
     boolean existsByPhone(String phone);
 
+    boolean existsByAccountNumber(String accountNumber);
+
+    Optional<Employee> findByAccountNumber(String accountNumber);
     // 이메일 찾기
     Optional<Employee> findByEmail(String email);
     // 전화번호 찾기

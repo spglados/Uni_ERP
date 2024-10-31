@@ -1,9 +1,5 @@
 package com.uni.uni_erp.controller.erp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.repository.user.UserRepository;
 import jakarta.servlet.http.HttpSession;
@@ -11,11 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,38 +33,11 @@ public class ErpController {
             model.addAttribute("storeList", storeList);
         }
 
-        List<Map<String, Object>> test = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", "123");
-        map.put("name", "장건우");
-
-        Map<String, Object> map2 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        Map<String, Object> map3 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        Map<String, Object> map4 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        Map<String, Object> map5 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        Map<String, Object> map6 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        test.add(map);
-        test.add(map2);
-        test.add(map3);
-        test.add(map4);
-        test.add(map5);
-        test.add(map6);
-        try {
-            model.addAttribute("test", new ObjectMapper().writeValueAsString(test));
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        if (storeId != null) {
+            model.addAttribute("storeId", storeId);
         }
+
         return "erp/main";
     }
 
@@ -86,7 +52,14 @@ public class ErpController {
         return "erp/storeSelect";
     }
 
+    @PutMapping("/store/{storeId}")
+    public ResponseEntity<?> changeStoreId(@PathVariable(name = "storeId") Integer storeId, HttpSession session, Model model) {
 
+        // 기존 storeId 변경
+        session.setAttribute("storeId", storeId);
+        model.addAttribute("storeId", storeId);
+        return ResponseEntity.ok().build();
+    }
 
     // 모든 사용자 데이터를 반환하는 REST 엔드포인트
     @GetMapping("/api/users")

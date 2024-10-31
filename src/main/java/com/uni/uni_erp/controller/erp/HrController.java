@@ -94,6 +94,13 @@ public class HrController {
         }
     }
 
+    public ResponseEntity<Map<String, Object>> checkAccountNumber(@RequestParam String accountNumber) {
+        Map<String, Object> response = new HashMap<>();
+        boolean isDuplicate = hrService.isAccountNumberDuplicated(accountNumber);
+        response.put("isDuplicate", isDuplicate);
+        return ResponseEntity.ok(response);
+    }
+
     // 중복 이메일 검사
     @GetMapping("/check-email")
     public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
@@ -132,12 +139,6 @@ public class HrController {
 
         // 모든 은행 목록 조회
         List<BankDTO> bankDTOList = hrService.getAllBankDTOs();
-
-
-        // 직원 목록의 내용 확인
-//        for (EmployeeDTO dto : employeeDTOList) {
-//            System.out.println("EmployeeDTO: " + dto); // 각 DTO 출력
-//        }
 
         model.addAttribute("employees", employeeDTOList); // 직원 목록을 모델에 추가
 

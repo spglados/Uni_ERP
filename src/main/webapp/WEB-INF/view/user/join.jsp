@@ -30,8 +30,7 @@
 			<input type="hidden" id="phoneDoubleChk" />
 		</p>
 
-		<input type="text" id="basicAddress" placeholder="기본 주소" readonly> <input type="text" id="detailAddress" placeholder="상세 주소">
-		<input type="button" class="check--btn" onclick="execDaumPostcode()" value="주소 검색"><br> <input type="hidden" id="fullAddress" name="address">
+		<input type="text" id="basicAddress" onclick="execDaumPostcode()" placeholder="기본 주소" readonly> <input type="text" id="detailAddress" placeholder="상세 주소">
 		<form id="signupForm">
 			<button type="submit" id="signupButton">회원가입</button>
 		</form>
@@ -307,9 +306,10 @@ function validateName() {
     //}
 
     // 폼 데이터 수집
+    const passwordInput = document.getElementById("password");
     const formData = {
       name: document.getElementById("name").value,
-      password: document.getElementById("password").value,
+      password: passwordInput.value,
       email: document.getElementById("email").value,
       phone: document.getElementById("phone").value,
       address: fullAddress,
@@ -327,11 +327,11 @@ function validateName() {
     })
     .then(response => {
       if (!response.ok) {
-        return response.json().then(data => {
-          throw new Error(data.message || '회원가입 중 오류가 발생했습니다.');
+        return response.text().then(data => {
+          throw new Error(data || '회원가입 중 오류가 발생했습니다.');
         });
       }
-      return response.json(); // JSON 응답으로 변환
+      return response.text();
     })
     .then(data => {
       alert('회원가입이 완료되었습니다!'); // 성공 메시지 표시

@@ -61,17 +61,6 @@
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <a class="navbar-brand" href="/admin/main">
-                        <img class="img--logo" src="/images/logo/logo.png" style="height: 60px;">
-                    </a>
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item"><a class="nav-link logout-btn" href="/user/logout"><i class="fas fa-sign-out-alt"></i> <span>로그아웃</span></a></li>
-                    </ul>
-                </nav>
-                <!-- End of Topbar -->
-
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Page Heading -->
@@ -115,7 +104,7 @@
                             </div>
                         </div>
                         <!-- Sales Chart -->
-                        <div class="col-xl-8 col-lg-8">
+                        <div class="col-xl-6 col-lg-6">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-primary">전체 가게 매출 평균</h6>

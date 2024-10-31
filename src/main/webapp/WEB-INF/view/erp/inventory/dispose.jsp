@@ -407,7 +407,9 @@
                 })
                     .then(response => {
                         if (response.ok) {
-                            alert('폐기 등록이 완료되었습니다.');
+                            if(confirm('폐기 등록이 완료되었습니다. \n\n\t 폐기 내역으로 이동하시겠습니까?')) {
+                                window.location.href = '/erp/inventory/disposal-history'
+                            }
                             disposalList.innerHTML = ''; // 테이블 초기화
                             // 로딩 스피너 숨김
                             loadingSpinner.style.display = 'none';

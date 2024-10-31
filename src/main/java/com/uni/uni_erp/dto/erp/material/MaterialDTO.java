@@ -244,12 +244,14 @@ public class MaterialDTO {
         private String materialName;
         private double monthReceiveAmount;
         private double useAmount;
+        private String unit;
 
-        public MaterialMonthAdjustmentDTO(MaterialOrder order) {
-            this.materialCode = order.getMaterial().getMaterialCode();
-            this.materialName = order.getMaterial().getName();
+        public MaterialMonthAdjustmentDTO(Material material) {
+            this.materialCode = material.getMaterialCode();
+            this.materialName = material.getName();
             this.monthReceiveAmount = 0.0;
             this.useAmount = 0.0;
+            this.unit = material.getUnit().toString();
         }
     }
 

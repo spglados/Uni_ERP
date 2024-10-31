@@ -3,45 +3,6 @@ let ingredients = null;
 let canSubmit = true;  // 요청이 가능한지 여부를 확인하는 플래그
 const submissionTerm = 2000;  // 2초(2000ms) 동안 재요청 차단
 
-function showIngredients(productId) {
-    document.getElementById('modalProductId').value = productId;
-    fetch('/erp/product/ingredient/' + productId)
-        .then(response => {
-            if(response.status === 404) {
-                return alert('재료 정보를 조회할 수 없습니다.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            ingredients = data;
-            let ingredientList = document.getElementById('ingredientList');
-            ingredientList.innerHTML = '';
-            ingredients.forEach(function(ingredient, index) {
-                let li = document.createElement('li');
-                li.innerHTML =
-                    '<div class="ingredient-item" id="ingredient-' + ingredient.id + '">' +
-                    '<input type="hidden" name="productId" value="'+ productId +'">' +
-                    '<input type="text" class="ingredient-name form-control d-inline-block" value="' + ingredient.name + '" name="name" disabled>' +
-                    '<input type="number" class="ingredient-amount form-control d-inline-block" value="' + ingredient.amount + '" name="amount" disabled>' +
-                    '<select class="ingredient-unit form-control d-inline-block" name="unit" disabled>' +
-                    '<option value="g" ' + (ingredient.unit.toUpperCase() === 'G' ? 'selected' : '') + '>g</option>' +
-                    '<option value="kg" ' + (ingredient.unit.toUpperCase() === 'KG' ? 'selected' : '') + '>kg</option>' +
-                    '<option value="ml" ' + (ingredient.unit.toUpperCase() === 'ML' ? 'selected' : '') + '>ml</option>' +
-                    '<option value="L" ' + (ingredient.unit.toUpperCase() === 'L' ? 'selected' : '') + '>L</option>' +
-                    '<option value="EA" ' + (ingredient.unit.toUpperCase() === 'EA' ? 'selected' : '') + '>EA</option>' +
-                    '<option value="box" ' + (ingredient.unit.toUpperCase() === 'BOX' ? 'selected' : '') + '>box</option>' +
-                    '</select>' +
-                    '<button class="custom-btn edit-btn" onclick="editIngredient(' + ingredient.id + ')">수정</button>' +
-                    '<button class="custom-btn delete-btn" onclick="deleteIngredient(' + ingredient.id + ')">삭제</button>' +
-                    '</div>';
-                ingredientList.appendChild(li);
-            });
-        })
-        .catch(error => {
-            console.log('error', error);
-        });
-}
-
 // 재료 보기 모달을 닫는 함수
 function saveIngredientModal() {
     let unsavedChanges = false;

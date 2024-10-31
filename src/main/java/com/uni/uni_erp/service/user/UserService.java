@@ -6,6 +6,7 @@ import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
+import com.uni.uni_erp.util.Str.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+
 
 
 @Service
@@ -39,12 +41,30 @@ public class UserService {
     private String fromPhoneNumber;
 
     public void save(User user) {
+        try {
+            user.setPassword(PasswordUtil.hashGenerator(user.getPassword()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         userRepository.save(user);
     }
 
-    public User login(UserDTO.JoinDTO dto) {
-        return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
+    public User login(UserDTO.loginDTO dto) {
+        try {
+            String storedSaltedHash = userRepository.findPasswordByEmail(dto.getEmail());
+            if (PasswordUtil.verify(dto.getPassword(), storedSaltedHash)) {
+                return userRepository.findByEmail(dto.getEmail());
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String findByEmail(String email) {
+        return userRepository.findPasswordByEmail(email);
     }
 
     public User findById(int id) {

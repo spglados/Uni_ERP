@@ -13,7 +13,7 @@ import com.uni.uni_erp.repository.bank.BankRepository;
 import com.uni.uni_erp.repository.erp.hr.EmpDocumentRepository;
 import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
-import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.repository.user.StoreRepository;
 import com.uni.uni_erp.util.ExcelUtil.ExcelUtil;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -186,6 +186,8 @@ public class HrService {
         employee = employeeRepository.save(employee);
 
         EmpDocument empDocument = buildEmpDocument(employeeDTO.getEmpDocumentDTO(), employee);
+
+
         empDocumentRepository.save(empDocument);
 
         return employee;
@@ -207,6 +209,11 @@ public class HrService {
     // 중복 전화번호 검사
     public boolean isPhoneDuplicated(String phone) {
         return employeeRepository.existsByPhone(phone);
+    }
+
+    // 중복 계좌번호 조회
+    public boolean isAccountNumberDuplicated(String accountNumber) {
+        return employeeRepository.existsByAccountNumber(accountNumber);
     }
 
     // 모든 직원과 은행 정보 조회
@@ -264,15 +271,28 @@ public class HrService {
     }
 
     private EmpDocument buildEmpDocument(EmpDocumentDTO empDocumentDTO, Employee employee) {
+        if (empDocumentDTO == null) {
+            // empDocumentDTO가 null인 경우 기본값으로 EmpDocument 생성
+            return EmpDocument.builder()
+                    .employee(employee)
+                    .employmentContract(false) // 기본값으로 false 설정
+                    .healthCertificate(false)
+                    .healthCertificateDate(null)
+                    .identificationCopy(false)
+                    .bankAccountCopy(false)
+                    .residentRegistration(false)
+                    .build();
+        }
+
         return EmpDocument.builder()
                 .employee(employee)
-                .employmentContract(empDocumentDTO.getEmploymentContract() != null && empDocumentDTO.getEmploymentContract()) // 수정
-                .healthCertificate(empDocumentDTO.getHealthCertificate() != null && empDocumentDTO.getHealthCertificate()) // 수정
+                .employmentContract(empDocumentDTO.getEmploymentContract() != null && empDocumentDTO.getEmploymentContract())
+                .healthCertificate(empDocumentDTO.getHealthCertificate() != null && empDocumentDTO.getHealthCertificate())
                 .healthCertificateDate(empDocumentDTO.getHealthCertificateDate() != null
                         ? Timestamp.valueOf(empDocumentDTO.getHealthCertificateDate()) : null)
-                .identificationCopy(empDocumentDTO.getIdentificationCopy() != null && empDocumentDTO.getIdentificationCopy()) // 수정
-                .bankAccountCopy(empDocumentDTO.getBankAccountCopy() != null && empDocumentDTO.getBankAccountCopy()) // 수정
-                .residentRegistration(empDocumentDTO.getResidentRegistration() != null && empDocumentDTO.getResidentRegistration()) // 수정
+                .identificationCopy(empDocumentDTO.getIdentificationCopy() != null && empDocumentDTO.getIdentificationCopy())
+                .bankAccountCopy(empDocumentDTO.getBankAccountCopy() != null && empDocumentDTO.getBankAccountCopy())
+                .residentRegistration(empDocumentDTO.getResidentRegistration() != null && empDocumentDTO.getResidentRegistration())
                 .build();
     }
 
