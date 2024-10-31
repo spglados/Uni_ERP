@@ -2,131 +2,122 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <!-- 메인 컨텐츠 -->
-<div class="content">
-    <h1>직원 등록입니다.</h1>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">직원 등록</h1>
 
     <c:if test="${not empty errorMessage}">
-        <div style="color: red;">
-                ${errorMessage}
+        <div class="alert alert-danger">
+            ${errorMessage}
         </div>
     </c:if>
 
     <form action="${pageContext.request.contextPath}/erp/hr/registerEmployee" method="post" id="employeeRegisterForm"
-          onsubmit="return validateForm()">
-        <div>
-            <label for="name">이름 (최대 10자, 한글만):</label>
+          onsubmit="return validateForm()" class="border rounded p-4 shadow-sm">
+        <div class="mb-3">
+            <label for="name" class="form-label">이름 (최대 10자, 한글만):</label>
             <input type="text" id="name" name="name" required maxlength="10"
-                   pattern="^[가-힣]{1,10}$"
+                   pattern="^[가-힣]{1,10}$" class="form-control"
                    title="한글로 최대 10자 입력하세요" value="${employeeDTO.name}">
         </div>
-        <div>
-            <label for="birthday">생년월일:</label>
-            <input type="date" id="birthday" name="birthday" required
+        <div class="mb-3">
+            <label for="birthday" class="form-label">생년월일:</label>
+            <input type="date" id="birthday" name="birthday" required class="form-control"
                    min="1900-01-01"
                    max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"
                    title="1900년 1월 1일부터 오늘까지의 날짜를 선택하세요" value="${employeeDTO.birthday}">
         </div>
-        <div>
-            <label for="gender">성별:</label>
-            <select id="gender" name="gender" required>
+        <div class="mb-3">
+            <label for="gender" class="form-label">성별:</label>
+            <select id="gender" name="gender" required class="form-select">
                 <option value="M" <c:if test="${employeeDTO.gender == 'M'}">selected</c:if>>남자</option>
                 <option value="F" <c:if test="${employeeDTO.gender == 'F'}">selected</c:if>>여자</option>
             </select>
         </div>
-        <div>
-            <label for="email">이메일:</label>
-            <input type="text" id="email" name="email" required
-                   pattern="^[A-Za-z0-9._%+-]+$"
-                   title="유효한 이메일 형식으로 입력하세요" value="${employeeDTO.email.split('@')[0]}">
-            @
-            <input type="text" id="emailDomain" name="emailDomain" required
-                   title="도메인을 입력하세요" value="${employeeDTO.email.split('@')[1]}">
-            <select id="domainSelect" onchange="updateDomain()">
-                <option value="">직접 입력</option>
-                <option value="naver.com" <c:if test="${employeeDTO.emailDomain == 'naver.com'}">selected</c:if>>
-                    naver.com
-                </option>
-                <option value="daum.net" <c:if test="${employeeDTO.emailDomain == 'daum.net'}">selected</c:if>>
-                    daum.net
-                </option>
-                <option value="gmail.com" <c:if test="${employeeDTO.emailDomain == 'gmail.com'}">selected</c:if>>
-                    gmail.com
-                </option>
-                <option value="nate.com" <c:if test="${employeeDTO.emailDomain == 'nate.com'}">selected</c:if>>
-                    nate.com
-                </option>
-            </select>
-            <button type="button" onclick="checkEmail()">중복 확인</button>
-            <span id="emailCheckResult" style="color: red;"></span> <!-- 이메일 중복 검사 결과 표시 -->
+        <div class="mb-3">
+            <label for="email" class="form-label">이메일:</label>
+            <div class="input-group">
+                <input type="text" id="email" name="email" required
+                       pattern="^[A-Za-z0-9._%+-]+$" class="form-control"
+                       title="유효한 이메일 형식으로 입력하세요" value="${employeeDTO.email.split('@')[0]}">
+                <span class="input-group-text">@</span>
+                <input type="text" id="emailDomain" name="emailDomain" required class="form-control"
+                       title="도메인을 입력하세요" value="${employeeDTO.email.split('@')[1]}">
+                <select id="domainSelect" onchange="updateDomain()" class="form-select">
+                    <option value="">직접 입력</option>
+                    <option value="naver.com" <c:if test="${employeeDTO.emailDomain == 'naver.com'}">selected</c:if>>naver.com</option>
+                    <option value="daum.net" <c:if test="${employeeDTO.emailDomain == 'daum.net'}">selected</c:if>>daum.net</option>
+                    <option value="gmail.com" <c:if test="${employeeDTO.emailDomain == 'gmail.com'}">selected</c:if>>gmail.com</option>
+                    <option value="nate.com" <c:if test="${employeeDTO.emailDomain == 'nate.com'}">selected</c:if>>nate.com</option>
+                </select>
+                <button type="button" onclick="checkEmail()" class="btn btn-outline-secondary">중복 확인</button>
+            </div>
+            <small id="emailCheckResult" class="form-text text-danger"></small>
         </div>
-        <div>
-            <label for="phone">전화번호 (형식: 000-0000-0000):</label>
-            <input type="text" id="phone" name="phone" required
-                   oninput="formatPhoneNumber(this)" maxlength="13"
-                   title="전화번호를 000-0000-0000 형식으로 입력하세요" placeholder="000-0000-0000" value="${employeeDTO.phone}">
-            <button type="button" onclick="checkPhone()">중복 확인</button>
-            <span id="phoneCheckResult" style="color: red;"></span> <!-- 전화번호 중복 검사 결과 표시 -->
+        <div class="mb-3">
+            <label for="phone" class="form-label">전화번호 (형식: 000-0000-0000):</label>
+            <div class="input-group">
+                <input type="text" id="phone" name="phone" required class="form-control"
+                       oninput="formatPhoneNumber(this)" maxlength="13"
+                       title="전화번호를 000-0000-0000 형식으로 입력하세요" placeholder="000-0000-0000" value="${employeeDTO.phone}">
+                <button type="button" onclick="checkPhone()" class="btn btn-outline-secondary">중복 확인</button>
+            </div>
+            <small id="phoneCheckResult" class="form-text text-danger"></small>
         </div>
-        <div>
-            <label for="address">주소:</label>
-            <input type="text" id="address" name="address" required value="${employeeDTO.address}">
+        <div class="mb-3">
+            <label for="address" class="form-label">주소:</label>
+            <input type="text" id="address" name="address" required class="form-control" value="${employeeDTO.address}">
         </div>
-        <div>
-            <label for="accountNumber">계좌번호 (최대 16자리, 숫자만):</label>
-            <input type="text" id="accountNumber" name="accountNumber" required maxlength="16"
-                   pattern="^\d{1,16}$"
-                   title="계좌번호를 1자리 이상 16자리 이하의 숫자로 입력하세요" value="${employeeDTO.accountNumber}">
+        <div class="mb-3">
+            <label for="accountNumber" class="form-label">계좌번호 (최대 16자리, 숫자만):</label>
+            <input type="text" id="accountNumber" name="accountNumber" required maxlength="16" class="form-control"
+                   pattern="^\d{1,16}$" title="계좌번호를 1자리 이상 16자리 이하의 숫자로 입력하세요" value="${employeeDTO.accountNumber}">
         </div>
-        <div>
-            <label for="position">직책:</label>
-            <select id="position" name="empPosition.id" required>
+        <div class="mb-3">
+            <label for="position" class="form-label">직책:</label>
+            <select id="position" name="empPosition.id" required class="form-select">
                 <c:forEach var="position" items="${positionsList}">
-                    <option value="${position.id}"
-                            <c:if test="${position.id == employeeDTO.empPosition.id}">selected</c:if>>${position.name}</option>
+                    <option value="${position.id}" <c:if test="${position.id == employeeDTO.empPosition.id}">selected</c:if>>${position.name}</option>
                 </c:forEach>
             </select>
         </div>
-        <div>
-            <label for="bankId">은행:</label>
-            <select id="bankId" name="bankId" required>
+        <div class="mb-3">
+            <label for="bankId" class="form-label">은행:</label>
+            <select id="bankId" name="bankId" required class="form-select">
                 <c:forEach var="bank" items="${bankList}">
-                    <option value="${bank.id}"
-                            <c:if test="${bank.id == employeeDTO.bankId}">selected</c:if>>${bank.name}</option>
+                    <option value="${bank.id}" <c:if test="${bank.id == employeeDTO.bankId}">selected</c:if>>${bank.name}</option>
                 </c:forEach>
             </select>
         </div>
-        <h3>문서 관련 정보</h3>
+
+        <h3 class="mt-4">문서 관련 정보</h3>
         <p>문서 보관 여부를 선택해주세요.</p>
-        <br>
-        <div>
-            <label for="employmentContract">고용 계약서:</label>
-            <input type="checkbox" id="employmentContract" name="empDocumentDTO.employmentContract"
-                   <c:if test="${employeeDTO.empDocumentDTO.employmentContract}">checked</c:if>>
+        <div class="form-check mb-2">
+            <input type="checkbox" id="employmentContract" name="empDocumentDTO.employmentContract" class="form-check-input" <c:if test="${employeeDTO.empDocumentDTO.employmentContract}">checked</c:if>>
+            <label for="employmentContract" class="form-check-label">고용 계약서</label>
         </div>
-        <div>
-            <label for="healthCertificate">건강증명서:</label>
-            <input type="checkbox" id="healthCertificate" name="empDocumentDTO.healthCertificate"
-                   <c:if test="${employeeDTO.empDocumentDTO.healthCertificate}">checked</c:if>>
+        <div class="form-check mb-2">
+            <input type="checkbox" id="healthCertificate" name="empDocumentDTO.healthCertificate" class="form-check-input" <c:if test="${employeeDTO.empDocumentDTO.healthCertificate}">checked</c:if>>
+            <label for="healthCertificate" class="form-check-label">건강증명서</label>
         </div>
-        <div>
-            <label for="identificationCopy">신분증 사본:</label>
-            <input type="checkbox" id="identificationCopy" name="empDocumentDTO.identificationCopy"
-                   <c:if test="${employeeDTO.empDocumentDTO.identificationCopy}">checked</c:if>>
+        <div class="form-check mb-2">
+            <input type="checkbox" id="identificationCopy" name="empDocumentDTO.identificationCopy" class="form-check-input" <c:if test="${employeeDTO.empDocumentDTO.identificationCopy}">checked</c:if>>
+            <label for="identificationCopy" class="form-check-label">신분증 사본</label>
         </div>
-        <div>
-            <label for="bankAccountCopy">계좌 사본:</label>
-            <input type="checkbox" id="bankAccountCopy" name="empDocumentDTO.bankAccountCopy"
-                   <c:if test="${employeeDTO.empDocumentDTO.bankAccountCopy}">checked</c:if>>
+        <div class="form-check mb-2">
+            <input type="checkbox" id="bankAccountCopy" name="empDocumentDTO.bankAccountCopy" class="form-check-input" <c:if test="${employeeDTO.empDocumentDTO.bankAccountCopy}">checked</c:if>>
+            <label for="bankAccountCopy" class="form-check-label">계좌 사본</label>
         </div>
-        <div>
-            <label for="residentRegistration">주민등록증:</label>
-            <input type="checkbox" id="residentRegistration" name="empDocumentDTO.residentRegistration"
-                   <c:if test="${employeeDTO.empDocumentDTO.residentRegistration}">checked</c:if>>
+        <div class="form-check mb-2">
+            <input type="checkbox" id="residentRegistration" name="empDocumentDTO.residentRegistration" class="form-check-input" <c:if test="${employeeDTO.empDocumentDTO.residentRegistration}">checked</c:if>>
+            <label for="residentRegistration" class="form-check-label">주민등록증</label>
         </div>
-        <div>
-            <input type="hidden" name="storeId" value="${storeId}">
-            <button type="submit" id="submitButton" disabled>직원 등록</button>
+
+        <input type="hidden" name="storeId" value="${storeId}">
+        <div class="text-center mt-4">
+            <button type="submit" id="submitButton" class="btn btn-primary" disabled>직원 등록</button>
         </div>
     </form>
 </div>

@@ -10,6 +10,5 @@ import lombok.*;
 public class SalesSummaryDTO {
     private String itemName;
     private Integer totalQuantity;
-    private Integer unitPrice; // Original unit price
-
+    private Long totalPrice;
 }

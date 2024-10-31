@@ -23,6 +23,6 @@ public class ProductSalesDTO {
     private Double yearlyGrowthRate;
 
     // Profit for the product
-    private Integer profit;
+    private Long profit;
 
 }

@@ -7,14 +7,12 @@
 <main class="main-container">
 
   <section class="premium-section">
-    <h2>프리미엄 정액제 구독</h2>
-    <p>첫 결제는 50,000원, 이후부터는 매달 30,000원으로 프리미엄 서비스를 마음껏 이용하세요. 고급스럽고 편리한 기능을 통해 더 나은 경험을 제공합니다.</p>
+    <h2>서비스 이용하기</h2>
+    <p>첫 가게는 50,000원, 이후부터는 가게당 매달 30,000원으로 프리미엄 서비스를 마음껏 이용하세요. 고급스럽고 편리한 기능을 통해 더 나은 경험을 제공합니다.</p>
     <p>주의사항: 모든 결제를 취소하면 다음 결제 시 첫 결제는 50,000원으로 시작하며, 이후 매달 30,000원이 청구됩니다.</p>
   </section>
 
   <section class="payment-details">
-
-
     <div class="form-group">
       <label for="desiredDay">다음 결제일:</label>
           <select id="desiredDay" name="desiredDay" required>

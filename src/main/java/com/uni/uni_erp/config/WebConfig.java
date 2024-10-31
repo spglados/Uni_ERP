@@ -20,7 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 특정 경로에 인터셉터를 등록
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/erp/**");  // /erp 경로 하위 요청을 인터셉터로 검사
+                .addPathPatterns("/erp/**")  // /erp 경로 하위 요청을 인터셉터로 검사
+                .addPathPatterns("/admin/**") // /admin 경로 하위 요청
+                .excludePathPatterns("/admin/login");
     }
 
 }
