@@ -50,6 +50,8 @@ public class Payment {
     private String nextPay;
     private String date;
     private Integer status;
+    private String method;
+    private String cancelReason;
 
     @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
     private List<PaymentHistory> paymentHistories;

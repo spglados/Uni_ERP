@@ -4,10 +4,8 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.repository.payment.Sms;
-import com.uni.uni_erp.service.common.EmailService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
-import com.uni.uni_erp.util.Str.PasswordUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -133,7 +131,6 @@ public class UserController {
             response.put("message", "사용 가능한 번호입니다.");
             return ResponseEntity.ok(response);
         }
-
 
     }
 
