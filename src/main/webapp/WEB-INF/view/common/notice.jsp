@@ -32,7 +32,7 @@
                     </tr>
                 </c:forEach>
             </tbody>
-        </table>z
+        </table>
 
         <div class="pagination">
             <c:if test="${notices.hasPrevious()}">
