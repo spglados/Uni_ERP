@@ -187,6 +187,33 @@
 
 <script>
 
+    const employees = [
+        <c:forEach var="employee" items="${employees}">
+        {
+            id: "${employee.uniqueEmployeeNumber}",
+            name: "${employee.name}",
+            birthday: "${employee.birthday}",
+            gender: "${employee.gender}",
+            address: "${employee.address}",
+            email: "${employee.email.split('@')[0]}@${employee.email.split('@')[1]}",
+            phone: "${employee.phone}",
+            status: "${employee.employmentStatus}",
+            bank: "${employee.bankName != null ? employee.bankName : '정보 없음'}",
+            positionId: "${employee.empPosition.id != null ? employee.empPosition.id : '0'}",
+            account: "${employee.accountNumber}",
+            password: "${employee.password}",
+            healthCertificateDate: "${employee.healthCertificateDate}",
+            employmentContract: "${employee.empDocumentDTO.employmentContract}",
+            healthCertificate: "${employee.empDocumentDTO.healthCertificate}",
+            identificationCopy: "${employee.empDocumentDTO.identificationCopy}",
+            bankAccountCopy: "${employee.empDocumentDTO.bankAccountCopy}",
+            residentRegistration: "${employee.empDocumentDTO.residentRegistration}",
+            positionName: "${employee.empPosition.name != null ? employee.empPosition.name : '정보 없음'}",
+            statusText: "<c:choose><c:when test='${employee.employmentStatus == "ACTIVE"}'>재직</c:when><c:when test='${employee.employmentStatus == "INACTIVE"}'>퇴사</c:when><c:when test='${employee.employmentStatus == "ONLEAVE"}'>휴직</c:when></c:choose>"
+        }<c:if test="${!employee.last}">,</c:if>
+        </c:forEach>
+    ];
+
     // function filterEmployees() {
     //     const statusSelect = document.getElementById('employmentStatusFilter');
     //     const selectedStatus = statusSelect.value;
