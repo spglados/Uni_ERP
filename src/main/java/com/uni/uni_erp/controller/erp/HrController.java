@@ -51,11 +51,13 @@ public class HrController {
     // 직원 수정
     @PutMapping("/employees/{id}")
     public ResponseEntity<?> updateEmployee(@PathVariable("id") Long id, @RequestBody EmployeeUpdateDTO employeeDTO) {
-        System.out.println("id :" + id);
-        System.out.println("Received DTO: " + employeeDTO);
         try {
-            hrService.updateEmployee(id, employeeDTO);
-            return ResponseEntity.ok("직원 정보 수정완료");
+            EmployeeDTO dto = hrService.updateEmployee(id, employeeDTO);
+            if(dto != null) {
+                return ResponseEntity.ok(Map.of("success", "직원 정보 수정완료"));
+            } else {
+                return ResponseEntity.ok(Map.of("fail", "중복된 정보가 있습니다."));
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("수정 중 오류 발생: " + e.getMessage());
         }
@@ -139,12 +141,6 @@ public class HrController {
 
         // 모든 은행 목록 조회
         List<BankDTO> bankDTOList = hrService.getAllBankDTOs();
-
-
-        // 직원 목록의 내용 확인
-//        for (EmployeeDTO dto : employeeDTOList) {
-//            System.out.println("EmployeeDTO: " + dto); // 각 DTO 출력
-//        }
 
         model.addAttribute("employees", employeeDTOList); // 직원 목록을 모델에 추가
 

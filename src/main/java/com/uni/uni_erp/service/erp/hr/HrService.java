@@ -30,6 +30,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -123,6 +124,11 @@ public class HrService {
             EmpDocument empDocumentEntity = empDocumentRepository.findByEmployeeId(employeeEntity.getId())
                     .orElseThrow(() -> new RuntimeException("Employee not found"));
 
+            // 핸드폰 번호, 이메일, 계좌번호 중복 체크
+            if(!duplicateCheck(employeeEntity.getStore().getId(), employeeDTO.getPhone(), employeeDTO.getEmail(), employeeDTO.getAccountNumber(), employeeEntity.getUniqueEmployeeNumber())) {
+                return null;
+            }
+
             // 수정할 필드 업데이트
             employeeEntity.setName(employeeDTO.getName());
             employeeEntity.setBirthday(employeeDTO.getBirthday());
@@ -133,6 +139,7 @@ public class HrService {
             employeeEntity.setPhone(employeeDTO.getPhone());
             employeeEntity.setAddress(employeeDTO.getAddress());
             employeeEntity.setAccountNumber(employeeDTO.getAccountNumber());
+            employeeEntity.setPassword(employeeDTO.getPassword());
             employeeEntity.setEmploymentStatus(EnumCommonUtil.getEnumFromString(Employee.EmploymentStatus.class, employeeDTO.getEmploymentStatus()));
             employeeEntity.setEmpPosition(empPositionRepository.findById(employeeDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Employee not found")));
             employeeEntity.setBank(bankRepository.findById(employeeDTO.getBankId()).orElseThrow(() -> new RuntimeException("Bank not found")));
@@ -181,6 +188,10 @@ public class HrService {
         Bank bank = getBankById(employeeDTO.getBankId());
         Integer newStoreEmployeeNumber = getNewStoreEmployeeNumber(storeId);
 
+        // 핸드폰 번호, 이메일, 계좌번호 중복 체크
+        if(!duplicateCheck(storeId, employeeDTO.getPhone(), employeeDTO.getEmail(), employeeDTO.getAccountNumber(), employeeDTO.getUniqueEmployeeNumber())) {
+            return null;
+        }
 
         Employee employee = buildEmployee(employeeDTO, sessionUserId, store, bank, newStoreEmployeeNumber);
         employee = employeeRepository.save(employee);
@@ -319,5 +330,21 @@ public class HrService {
 
         return employeeDTO; // employeeDTO 반환
     }
+
+    private boolean duplicateCheck(Integer storeId, String phone, String email, String accountNumber, long empUniqueId) {
+        List<Employee> checkData = employeeRepository.findByStoreIdAndPhoneOrEmailOrAccountNumber(storeId, phone, email, accountNumber);
+
+        // Iterator 사용
+        Iterator<Employee> iterator = checkData.iterator();
+        while (iterator.hasNext()) {
+            Employee employee = iterator.next();
+            if (employee.getUniqueEmployeeNumber().equals(empUniqueId)) {
+                iterator.remove(); // 안전하게 요소 제거
+            }
+        }
+
+        return checkData.isEmpty();
+    }
+
 }
 

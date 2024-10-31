@@ -325,7 +325,7 @@
             .then(data => {
                 if (data.success) {
                     alert("성공적으로 저장했습니다!");
-                    // 필요 시 그리드 리프레시 또는 추가 동작
+                    window.location.href = '/erp/inventory/situation';
                 } else if (!data.success) {
                     alert("변경된 값이 없습니다. \n\n\t 변경 후 Enter를 눌러주세요 !");
                 } else {

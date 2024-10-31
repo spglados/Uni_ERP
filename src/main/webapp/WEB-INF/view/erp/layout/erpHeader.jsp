@@ -31,6 +31,7 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
     <link rel="stylesheet" href="/css/erp/erpMain.css">
     <link rel="stylesheet" href="/css/common/agGrid.css">
 
+
 </head>
 <body>
 <div class="erp-container">
@@ -88,7 +89,7 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <li><a href="/erp/inventory/day-adjustment">일 재고 현황</a></li>
                     <li><a href="/erp/inventory/month-adjustment">월 재고 현황</a></li>
                     <li><a href="/erp/inventory/disposal">폐기 등록</a></li>
-                    <li><a href="/erp/inventory/disposalHistory">폐기 내역</a></li>
+                    <li><a href="/erp/inventory/disposal-history">폐기 내역</a></li>
                 </ul>
             </li>
             <li>
@@ -97,7 +98,6 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <div>매출 관리 <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/sales/record">매출 입력</a></li>
                     <li><a href="/erp/sales/history">매출 기록</a></li>
                     <li><a href="/erp/sales/statistics">매출 통계</a></li>
                 </ul>

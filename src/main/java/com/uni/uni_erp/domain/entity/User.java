@@ -3,6 +3,7 @@ package com.uni.uni_erp.domain.entity;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.PaymentHistory;
+import com.uni.uni_erp.domain.entity.payment.Refund;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -65,6 +66,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<PaymentHistory> paymentHistories;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Refund> refunds; // Refund와의 관계 추가
 
     // 엔티티가 저장되기 전 실행되는 메서드
     @PrePersist
