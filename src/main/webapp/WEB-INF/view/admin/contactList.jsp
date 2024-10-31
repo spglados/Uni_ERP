@@ -67,37 +67,64 @@
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">가게 관리</h1>
+                        <h1 class="h3 mb-0 text-gray-800">A!</h1>
                     </div>
 
-                    <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>번호</th>
-                                            <th>가게이름</th>
-                                            <th>사장님</th>
-                                            <th>24시간</th>
-                                            <th>상태</th>
-                                            <th>등록일</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach var="store" items="${storeList}">
+                    <div class="col-xl-10 col-lg-8">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">문의 목록</h6>
+                            </div>
+                            <div>
+                                <section>
+                                    <table class="table table-striped">
+                                        <thead>
                                             <tr>
-                                                <td>${store.id}</td>
-                                                <td><a href="#" onclick="openStoreDetails(${store.id})">${store.name}</a></td>
-                                                <td>${store.userName}</td>
-                                                <td>${store.is24Hours == 1 ? 'O' : store.is24Hours == 0 ? 'X' : '비활성화'}</td>
-                                                <td>${store.is24Hours == 1 ? 'Open' : store.is24Hours == 0 ? 'Close' : '비활성화'}</td>
-                                                <td>${store.createdAt}</td>
+                                                <th>Id</th>
+                                                <th>사용자 Id</th>
+                                                <th style="width: 60%;">제목</th>
+                                                <th>작업</th> <!-- Column header for action buttons -->
                                             </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <c:choose>
+                                                <c:when test="${contacts == null}">
+                                                    <tr>
+                                                        <td colspan="4">문의가 없습니다</td>
+                                                    </tr>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:forEach var="contact" items="${contacts.content}" varStatus="status">
+                                                        <tr>
+                                                            <td>${contact.id}</td>
+                                                            <td>${contact.userId}</td>
+                                                            <td>${contact.title}</td>
+                                                            <td>
+                                                                <button class="btn btn-success btn-sm" onclick="navigateToAnswer(${contact.id})">답변하기</button>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </tbody>
+                                    </table>
+
+                                    <!-- Pagination and Write Button, Centered -->
+                                    <div class="d-flex flex-column align-items-center mt-4">
+                                        <!-- Pagination -->
+                                        <div class="pagination mb-3">
+                                            <c:if test="${contacts.hasPrevious()}">
+                                                <a href="/admin/contactList?page=${currentPage - 2}&size=${pageSize}" class="btn btn-primary">&laquo; 이전</a>
+                                            </c:if>
+                                            <c:forEach begin="1" end="${contacts.totalPages}" var="i">
+                                                <a href="/admin/contactList?page=${i - 1}&size=${pageSize}" class="btn ${i == currentPage ? 'btn-secondary active' : 'btn-light'}">${i}</a>
+                                            </c:forEach>
+                                            <c:if test="${contacts.hasNext()}">
+                                                <a href="/admin/contactList?page=${currentPage}&size=${pageSize}" class="btn btn-primary">다음 &raquo;</a>
+                                            </c:if>
+                                        </div>
+                                    </div>
+                                </section>
                             </div>
                         </div>
                     </div>
@@ -115,14 +142,11 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
         <script src="/js/sb-admin-2.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            function navigateToAnswer(contactId) {
+                window.location.href = "/admin/contact/" + contactId;
+            }
+        </script>
     </div>
-
-    <script>
-        function openStoreDetails(storeId) {
-            window.open(`/admin/store/details/${storeId}`, '_blank', 'width=600,height=400');
-        }
-    </script>
 </body>
-
 </html>

@@ -38,18 +38,20 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Items -->
-            <li class="nav-item"><a class="nav-link" href="/admin/main"><i class="fas fa-fw fa-tachometer-alt"></i> <span>대시보드</span></a></li>
-            <li class="nav-item active"><a class="nav-link" href="/admin/userManagement"><i class="fas fa-fw fa-table"></i> <span>유저 관리</span></a></li>
+            <li class="nav-item active"><a class="nav-link" href="/admin/main"><i class="fas fa-fw fa-tachometer-alt"></i> <span>대시보드</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/userManagement"><i class="fas fa-fw fa-table"></i> <span>유저 관리</span></a></li>
             <li class="nav-item"><a class="nav-link" href="/admin/storeManagement"><i class="fas fa-fw fa-table"></i> <span>가게 관리</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/admin/salesManagement"><i class="fas fa-fw fa-table"></i> <span>매출 관리</span></a></li>
             <li class="nav-item"><a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"><i class="fas fa-fw fa-cog"></i> <span>고객 지원</span></a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="/support/faq">FAQ 관리</a>
-                        <a class="collapse-item" href="/support/qna">1:1 문의 관리</a>
+                        <a class="collapse-item" href="/admin/noticeList">공지사항</a>
+                        <a class="collapse-item" href="/admin/contactList">1:1 문의 관리</a>
+                        <a class="collapse-item" href="/admin/refund">환불요청 처리</a>
                     </div>
                 </div>
             </li>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item"><a class="nav-link" href="/admin/logout"><i class="fas fa-fw fa-table"></i> <span>로그아웃</span></a></li>
             <hr class="sidebar-divider">
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -61,17 +63,6 @@
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <a class="navbar-brand" href="/admin/main">
-                        <img class="img--logo" src="/images/logo/logo.png" style="height: 60px;">
-                    </a>
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item"><a class="nav-link logout-btn" href="/user/logout"><i class="fas fa-sign-out-alt"></i> <span>로그아웃</span></a></li>
-                    </ul>
-                </nav>
-                <!-- End of Topbar -->
-
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Page Heading -->

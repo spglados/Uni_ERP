@@ -56,14 +56,19 @@ public class SalesService {
                 .map(entry -> {
                     List<SalesDetailDTO> itemList = entry.getValue();
                     int totalQuantity = itemList.stream().mapToInt(SalesDetailDTO::getQuantity).sum();
+                    long totalProfit = itemList.stream()
+                            .mapToLong(detail -> (long) detail.getQuantity() * detail.getUnitPrice())
+                            .sum(); // Calculate total profit for each item as a long
+
                     return new SalesSummaryDTO(
                             itemList.get(0).getItemName(),
                             totalQuantity,
-                            itemList.get(0).getUnitPrice()
+                            totalProfit // Pass total profit to SalesSummaryDTO
                     );
                 })
                 .toList();
     }
+
 
 
     public List<SalesRefundDTO> groupRefundDetails(List<SalesRefundDTO> salesRefundList) {

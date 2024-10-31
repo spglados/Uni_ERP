@@ -438,6 +438,15 @@ public class PaymentService {
         return paymentRepository.findByUserId(userId);
     }
 
+    public Long findAllSumAmount() {
+        return paymentRepository.findAllSumAmount() != null ? paymentRepository.findAllSumAmount() : 0;
+    }
+
+    public Long findAllSumRefund() {
+        return refundRepository.findAllSumRefund() != null ? refundRepository.findAllSumRefund() : 0;
+    }
+
+
     public Integer getCountOfPaymentsWithStatusNotZero(Integer userPk) {
         return paymentRepository.countByStatusNotZero(userPk);
     }

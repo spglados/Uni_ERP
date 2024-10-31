@@ -16,9 +16,8 @@ public class Contact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String name;
-    private String email;
-    private String tel;
+    private Integer userId;
+    private String title;
     private String content;
 
     @Enumerated(EnumType.STRING)
