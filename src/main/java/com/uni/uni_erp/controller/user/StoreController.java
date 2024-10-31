@@ -1,16 +1,21 @@
 package com.uni.uni_erp.controller.user;
 
+import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.dto.store.StorePositionDTO;
 import com.uni.uni_erp.dto.store.StoreUpdateDTO;
 import com.uni.uni_erp.service.user.StoreService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/erp/store")
@@ -59,14 +64,10 @@ public class StoreController {
 
     // 포지션 등록
     @PostMapping("/position/create")
-    public String createPosition(@ModelAttribute StorePositionDTO storePositionDTO, RedirectAttributes redirectAttributes) {
-        try {
-            storeService.createPosition(storePositionDTO); // 포지션 생성 서비스 호출
-            redirectAttributes.addFlashAttribute("message", "포지션 등록 완료");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "등록 중 오류 발생: " + e.getMessage());
-        }
-        return "redirect:/erp/store/correction"; // 수정 페이지로 리다이렉트
+    public ResponseEntity<?> createPosition(@RequestBody StorePositionDTO storePositionDTO, HttpSession session) {
+        System.out.println("Received Store PositionDTO: " + storePositionDTO.toString());
+            StorePositionDTO dto = storeService.createPosition(storePositionDTO, session); // 포지션 생성 서비스 호출
+        return ResponseEntity.ok(dto); // 수정 페이지로 리다이렉트
     }
 
     // 포지션 수정
@@ -81,15 +82,16 @@ public class StoreController {
         return "redirect:/erp/store/correction"; // 수정 페이지로 리다이렉트
     }
 
-    @PostMapping("/position/delete/{positionId}")
-    public String deletePosition(@PathVariable("positionId") Integer positionId, RedirectAttributes redirectAttributes) {
-        try {
-            storeService.deletePosition(positionId); // 포지션 삭제 서비스 호출
-            redirectAttributes.addFlashAttribute("message", "포지션 삭제 완료");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "삭제 중 오류 발생: " + e.getMessage());
+    @Transactional
+    @DeleteMapping("/position/{positionId}")
+    public ResponseEntity<Map<String, Boolean>> deletePosition(@PathVariable("positionId") Integer positionId, HttpSession session) {
+        boolean deletePosition = storeService.deletePosition(positionId, session);
+
+        if (!deletePosition) {
+            return ResponseEntity.ok(Map.of("fail", deletePosition));
         }
-        return "redirect:/erp/store/correction"; // 수정 페이지로 리다이렉트
+
+        return ResponseEntity.ok(Map.of("success", deletePosition)); // 수정 페이지로 리다이렉트
     }
 }
 

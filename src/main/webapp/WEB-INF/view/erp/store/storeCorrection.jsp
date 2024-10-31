@@ -48,48 +48,47 @@
             <td>${position.id}</td>
             <td>${position.name}</td>
             <td>${position.minRequiredNum}</td>
-            <td>
-                <form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/update"
-                           modelAttribute="storePositionDTO">
+             <td>
+            <c:if test="${position.name != '미정'}">
+                <!-- 일반 직책에 대해서만 수정과 삭제 버튼을 보여줍니다. -->
+                <form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/update" modelAttribute="storePositionDTO">
                     <form:hidden path="id" value="${position.id}"/>
                     <form:input path="name" value="${position.name}"/>
                     <form:input path="minRequiredNum" value="${position.minRequiredNum}"/>
                     <input type="submit" value="수정"/>
                 </form:form>
-                <form:form method="post"
-                           action="${pageContext.request.contextPath}/erp/store/position/delete/${position.id}"
-                           onsubmit="console.log('Deleting position with ID:', ${position.id});">
-                    <input type="submit" value="삭제" onclick="return confirm('정말 삭제하시겠습니까?');"/>
-                </form:form>
-            </td>
+                   <button onclick="deletePosition(${position.id})">삭제</button>
+            </c:if>
+            <c:if test="${position.name == '미정'}">
+                <!-- "미정" 직책은 수정 및 삭제 버튼이 비활성화 됩니다. -->
+                <span>미정 (수정 및 삭제 불가)</span>
+            </c:if>
+        </td>
         </tr>
     </c:forEach>
     </tbody>
 </table>
 
 <h2>포지션 등록</h2>
-<form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/create"
-           modelAttribute="storePositionDTO">
-    <table>
-        <tr>
-            <th>포지션 이름</th>
-            <td>
-                <form:input path="name"/>
-            </td>
-        </tr>
-        <tr>
-            <th>최소 요구 인원 수</th>
-            <td>
-                <form:input path="minRequiredNum"/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="포지션 등록"/>
-            </td>
-        </tr>
-    </table>
-</form:form>
+<table>
+<thead>
+<tr>
+<th>직책 이름</th>
+<th>최소 요구인원 수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<input type="text" id="newPosition" placeholder="직책 이름" required>
+<input type="number" id="minRequire" placeholder="최소요구 인원 수" required>
+</td>
+<td><button onclick="createPosition()">등록</button></td>
+</tr>
+</tbody>
+</table>
+
+</table>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -126,6 +125,69 @@
         $("#cancelButton").hide();
         $("#submitButton").hide();
     }
+
+    function deletePosition(positionId) {
+
+        if(!confirm('정말 삭제하시겠습니까?')) {
+            return;
+        }
+
+        fetch('/erp/store/position/' + positionId, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert('삭제되었습니다.');
+                window.location.reload();
+            } else if(!data.fail) {
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        })
+        .catch(error => {
+            console.log('error', error);
+        });
+
+    }
+
+  function createPosition() {
+    let newPosition = document.getElementById('newPosition').value;
+    let minRequire = document.getElementById('minRequire').value;
+
+    if (newPosition === '' || minRequire === '') {
+        alert('값이 비어있습니다.');
+        return;
+    }
+
+    // 요청 본문을 JSON 문자열로 변환
+    const requestBody = JSON.stringify({
+        name: newPosition,
+        minRequiredNum: parseInt(minRequire) // 숫자로 변환
+    });
+
+    fetch('/erp/store/position/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: requestBody // 수정된 부분
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('data', data);
+        alert('등록 성공');
+        window.location.reload(); // 페이지 새로 고침 추가
+    })
+    .catch(error => {
+        console.log('error', error);
+        alert('등록 실패: ' + error.message);
+    });
+}
 </script>
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
