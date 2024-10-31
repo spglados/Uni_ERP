@@ -77,6 +77,17 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
             </li>
             <li>
                 <a href="javascript:void(0);" class="menu-toggle">
+                    <i class="fas fa-tag"></i>
+                    <div>상품 관리 <span class="arrow">▼</span></div>
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="/erp/product/list">상품 목록</a></li>
+                    <li><a href="/erp/product/registration">상품 등록</a></li>
+                    <li><a href="/erp/product/correction">상품 수정</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0);" class="menu-toggle">
                     <i class="fas fa-box"></i>
                     <div>재고 관리 <span class="arrow">▼</span></div>
                 </a>

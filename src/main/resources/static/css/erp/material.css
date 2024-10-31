@@ -1,3 +1,4 @@
+.register-container {
 .content h1{
     text-align: center;
 }
@@ -55,126 +56,40 @@ table {
     width: 100%;
     border-collapse: collapse;
 }
-thead th {
-    position: sticky;
-    top: 0;
-    background-color: #343a40;
+
+.register-container td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.blue {
+    background-color: #007bff;
     color: white;
     text-align: center;
-    z-index: 1;
-}
-th, td {
-    width: 160px;
-    text-align: center;
+    font-weight: bold;
 }
 
-.ingredient-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+.equal-width td {
+    width: 25%;
 }
-.ingredient-name {
-    width: 22%;
-    margin-right: 10px;
+
+.btn {
+    padding: 10px 20px;
+    margin: 5px;
 }
-.ingredient-amount {
-    width: 19%;
-    margin-right: 10px;
-}
-.ingredient-unit {
-    width: 19%;
-    margin-right: 10px;
-}
-.edit-btn, .delete-btn {
-    margin-right: 10px;
-}
-.custom-btn {
-    padding: 8px 12px;
-    max-width: 12%;
-    border: none;
-    color: #ffffff;
-    background-color: #6c757d;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-.custom-btn:hover {
-    background-color: #5a6268;
-}
-.custom-btn-warning {
-    background-color: #ffc107;
-}
-.custom-btn-warning:hover {
-    background-color: #e0a800;
-}
-.custom-btn-success {
-    background-color: #28a745;
-}
-.custom-btn-success:hover {
-    background-color: #218838;
-}
-.close-btn {
-    padding: 8px 12px;
-    border: none;
-    color: #ffffff;
-    background-color: #6c757d;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-.close-btn:hover {
-    background-color: #5a6268;
-}
-.add-btn {
-    margin-top: 15px;
-    padding: 8px 12px;
-    border: none;
-    color: #ffffff;
+
+.btn-primary {
     background-color: #007bff;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-.add-btn:hover {
-    background-color: #0056b3;
+    color: white;
+    border: none;
 }
 
-.custom-col {
-    width: 22%; /* 원하는 비율로 설정 */
-    padding: 10px;
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
 }
 
-/* 부모 요소에 상대적 위치 지정 */
-.ingredient-item {
-    position: relative;
-}
-
-/* 드롭다운 스타일 */
-.dropdown-menu {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: calc(100% - 460px);
-    border: 1px solid #ccc;
-    max-height: 150px;
-    overflow-y: auto;
-    position: absolute;
-    top: 104%;
-    left: 0;
-    background-color: white;
-    z-index: 1000;
-    display: none;
-}
-
-.dropdown-menu li {
-    padding: 8px;
-    cursor: pointer;
-}
-
-.dropdown-menu li:hover {
-    background-color: #f1f1f1;
+.text-danger {
+    color: red;
 }
