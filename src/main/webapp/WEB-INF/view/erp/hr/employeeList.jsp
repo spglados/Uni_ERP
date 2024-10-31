@@ -40,6 +40,7 @@
                         data-bank="${employee.bankName != null ? employee.bankName : '정보 없음'}"
                         data-position="${employee.empPosition.id != null ? employee.empPosition.id : '0'}"
                         data-account="${employee.accountNumber}"
+                        data-password="${employee.password}"
                         data-healthcertificatedate="${employee.healthCertificateDate}"
                         data-employmentcontract="${employee.empDocumentDTO.employmentContract}"
                         data-healthcertificate="${employee.empDocumentDTO.healthCertificate}"
@@ -90,6 +91,9 @@
         <label for="editEmployeeBirthday">생년월일:</label>
         <input type="date" id="editEmployeeBirthday" name="birthday" required min="1900-01-01"
                max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"/>
+
+        <label for="editEmpPassword">비밀번호: </label>
+        <input type="text" id="editEmpPassword" name="password" pattern="^[0-9]+$" title="숫자만 입력하세요" required>
 
         <label for="editEmployeeGender">성별:</label>
         <select id="editEmployeeGender" name="gender" required>
@@ -188,6 +192,33 @@
 
 <script>
 
+    const employees = [
+        <c:forEach var="employee" items="${employees}">
+        {
+            id: "${employee.uniqueEmployeeNumber}",
+            name: "${employee.name}",
+            birthday: "${employee.birthday}",
+            gender: "${employee.gender}",
+            address: "${employee.address}",
+            email: "${employee.email.split('@')[0]}@${employee.email.split('@')[1]}",
+            phone: "${employee.phone}",
+            status: "${employee.employmentStatus}",
+            bank: "${employee.bankName != null ? employee.bankName : '정보 없음'}",
+            positionId: "${employee.empPosition.id != null ? employee.empPosition.id : '0'}",
+            account: "${employee.accountNumber}",
+            password: "${employee.password}",
+            healthCertificateDate: "${employee.healthCertificateDate}",
+            employmentContract: "${employee.empDocumentDTO.employmentContract}",
+            healthCertificate: "${employee.empDocumentDTO.healthCertificate}",
+            identificationCopy: "${employee.empDocumentDTO.identificationCopy}",
+            bankAccountCopy: "${employee.empDocumentDTO.bankAccountCopy}",
+            residentRegistration: "${employee.empDocumentDTO.residentRegistration}",
+            positionName: "${employee.empPosition.name != null ? employee.empPosition.name : '정보 없음'}",
+            statusText: "<c:choose><c:when test='${employee.employmentStatus == "ACTIVE"}'>재직</c:when><c:when test='${employee.employmentStatus == "INACTIVE"}'>퇴사</c:when><c:when test='${employee.employmentStatus == "ONLEAVE"}'>휴직</c:when></c:choose>"
+        }<c:if test="${!employee.last}">,</c:if>
+        </c:forEach>
+    ];
+
     // function filterEmployees() {
     //     const statusSelect = document.getElementById('employmentStatusFilter');
     //     const selectedStatus = statusSelect.value;
@@ -253,6 +284,7 @@
                 const status = row.dataset.status;
                 const bank = row.dataset.bank;
                 const account = row.dataset.account;
+                const password = row.dataset.password;
                 const position = row.dataset.position;
 
                 // 문서 정보 추가
@@ -272,6 +304,7 @@
                     '<p>성별: ' + (gender === 'F' ? '여자' : '남자') + '</p>' +
                     '<p>주소: ' + address + '</p>' +
                     '<p>이메일: ' + email + '</p>' +
+                    '<p>비밀번호: ' + password + '</p>' +
                     '<p>연락처: ' + phone + '</p>' +
                     '<p>상태: ' + (status === 'ACTIVE' ? '재직' : (status === 'INACTIVE' ? '퇴사' : '휴직')) + '</p>' +
                     '<p>은행: ' + bank + '</p>' +
@@ -291,7 +324,7 @@
                 // 수정 버튼 클릭 이벤트 리스너
                 document.getElementById('edit-button').addEventListener('click', function () {
                     // 콘솔 로그로 변수 값 확인
-                    openEditModal(uniqueId, name, birthday, gender, address, email, phone, bank, account, status, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate);
+                    openEditModal(uniqueId, name, birthday, gender, address, email, phone, bank, account, password, status, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate);
                 });
             }
         });
@@ -311,12 +344,13 @@
         }
 
 
-        function openEditModal(uniqueId, name, birthday, gender, address, email, phone, bank, account, status, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate) {
+        function openEditModal(uniqueId, name, birthday, gender, address, email, phone, bank, account, password, status, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate) {
             // 모달 입력 필드에 데이터 세팅
             document.getElementById('editEmployeeId').value = uniqueId;
             document.getElementById('editEmployeeName').value = name;
             document.getElementById('editEmployeeBirthday').value = birthday;
             document.getElementById('editEmployeeGender').value = gender;
+            document.getElementById('editEmpPassword').value = password;
             document.getElementById('editEmployeeAddress').value = address;
             document.getElementById('editEmployeeEmail').value = email.split('@')[0];
             document.getElementById('emailDomain').value = email.split('@')[1];
@@ -405,14 +439,15 @@
                 },
                 body: JSON.stringify(jsonData)
             })
-                .then(response => {
-                    if (response.ok) {
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
                         alert('직원 정보가 수정되었습니다.');
                         // 필요 시 직원 목록 새로 고침 또는 수정된 직원 정보 업데이트 로직 추가
                         closeModal();
                         location.reload();
-                    } else {
-                        alert('수정 실패: ' + response.statusText);
+                    } else if(data.fail) {
+                        alert('수정 실패: ' + data.fail);
                     }
                 })
                 .catch(error => {

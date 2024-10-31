@@ -11,6 +11,7 @@ public class EmployeeUpdateDTO {
     private String name;
     private String birthday;
     private String address;
+    private String password;
     private String phone;
     private Integer bankId;
     private String bankName;

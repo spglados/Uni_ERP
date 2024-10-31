@@ -67,7 +67,7 @@ public class PosController {
         LocalDateTime todayStart = LocalDateTime.now().with(LocalTime.MIN);
         LocalDateTime todayEnd = LocalDateTime.now().with(LocalTime.MAX);
 
-        List<SalesDTO> previousOrders = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(todayStart, todayEnd, storeId);
+        List<SalesDTO> previousOrders = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(todayStart, todayEnd, storeId);
         Page<Product> productListByCategory = posService.getProductsByStoreIdAndCategory(storeId, category, page - 1, size);
         model.addAttribute("productList", productListByCategory);
         model.addAttribute("totalPages", productListByCategory.getTotalPages());
@@ -204,7 +204,6 @@ public class PosController {
         }
 
         List<SalesDetailDTO> salesDetail = salesService.compareQuantities(originalSalesDTO, newSalesDTO);
-        System.err.println(salesDetail);
 
         List<SalesRefundInsertDTO> salesRefundDTOList = new ArrayList<>();
 
@@ -219,10 +218,6 @@ public class PosController {
                         .build();
 
                 salesRefundDTOList.add(salesRefundInsertDTO);
-
-
-                // TODO 취소 품목 로직 추가
-
 
                 salesService.saveSalesRefund(salesRefundInsertDTO, orderNum);
             }

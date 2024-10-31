@@ -53,7 +53,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     // 특정 상태와 스토어 ID에 따른 직원 조회
     List<Employee> findByEmploymentStatusAndStoreId(Employee.EmploymentStatus employmentStatus, Integer storeId);
 
-
+    @Query("SELECT e FROM Employee e WHERE e.store.id = :storeId And (e.phone = :phone OR e.email = :email OR e.accountNumber = :accountNumber)")
+    List<Employee> findByStoreIdAndPhoneOrEmailOrAccountNumber(Integer storeId, String phone, String email, String accountNumber);
 
 }
 
