@@ -9,5 +9,7 @@ public class PayrollDTO {
         private boolean includeOvertime;
         private boolean includeHolidayWork;
         private boolean includeNightWork;
+        private boolean includeSundayWork;
     }
+
 }

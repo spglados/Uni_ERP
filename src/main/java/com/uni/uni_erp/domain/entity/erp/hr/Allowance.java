@@ -35,7 +35,8 @@ public class Allowance {
     public enum AllowanceType {
         OVERTIME,       // 연장 근무
         HOLIDAY_WORK,   // 휴일 근무
-        NIGHT_WORK      // 야간 근무
+        NIGHT_WORK,     // 야간 근무
+        WEEKLY_REST,    // 주휴 수당
     }
 
 }

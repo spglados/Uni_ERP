@@ -35,6 +35,6 @@ public class Store {
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Material> materials;
 
-    @Column(name = "allow_minutes",nullable = false)
+    @Column(name = "allow_minutes", nullable = false)
     private Integer allowMinutes = 1;
 }

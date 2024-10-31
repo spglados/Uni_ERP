@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.DayOfWeek;
@@ -51,6 +50,7 @@ public class HolidayService {
         }
     }
 
+    @Transactional
     public Integer setSunday(LocalDate localDate) {
         List<LocalDate> sundays = new ArrayList<>();
         // 해당 월의 첫 번째 일요일 찾기
