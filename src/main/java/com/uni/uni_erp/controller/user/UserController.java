@@ -4,6 +4,7 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.repository.payment.Sms;
+import com.uni.uni_erp.service.common.EmailService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
 import jakarta.servlet.http.HttpSession;

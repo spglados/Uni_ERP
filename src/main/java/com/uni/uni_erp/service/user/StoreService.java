@@ -4,8 +4,6 @@ import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.sales.StoreListDTO;
-import com.uni.uni_erp.repository.store.StoreRepository;
-import com.uni.uni_erp.dto.sales.StoreListDTO;
 import com.uni.uni_erp.dto.store.StorePositionDTO;
 import com.uni.uni_erp.dto.store.StoreUpdateDTO;
 import com.uni.uni_erp.repository.user.StorePositionRepository;
