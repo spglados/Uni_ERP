@@ -79,7 +79,7 @@ public class PaymentDTO {
         }
 
         // Refund 객체 변환
-        public Refund toRefund() {
+        public Refund toRefund(User user) {
             return Refund.builder()
                     .lastTransactionKey(lastTransactionKey)
                     .paymentKey(paymentKey)
@@ -87,7 +87,7 @@ public class PaymentDTO {
                     .requestedAt(requestedAt)
                     .approvedAt(approvedAt)
                     .cancelAmount(cancelAmount)
-                    .adminId(adminId)
+                    .user(user)
                     .build();
         }
     }

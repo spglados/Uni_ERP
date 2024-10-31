@@ -301,7 +301,7 @@ public class PaymentService {
                         .cancelAmount(String.valueOf(cancelAmount))
                         .build();
 
-                refundRepository.save(paymentDTO.toRefund());
+                refundRepository.save(paymentDTO.toRefund(user));
                 paymentRepository.updateCancel(payPkint); // payment_tb에 cancel 유무 업데이트
 
                 totalCancelAmount += cancelAmount; // 총 환불 금액에 추가
@@ -440,5 +440,14 @@ public class PaymentService {
 
     public Integer getCountOfPaymentsWithStatusNotZero(Integer userPk) {
         return paymentRepository.countByStatusNotZero(userPk);
+    }
+
+    @Transactional
+    public void updatePaymentCancelReason(Integer paymentId, String cancelReason) {
+        paymentRepository.updateCancelReason(paymentId, cancelReason);
+    }
+
+    public List<Payment> findAll(){
+        return paymentRepository.findAll();
     }
 }

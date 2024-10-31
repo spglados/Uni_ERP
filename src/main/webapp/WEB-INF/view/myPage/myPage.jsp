@@ -50,7 +50,7 @@
         <a href="/myPage">회원 정보 및 수정</a>
         <a href="#">가게 등록</a>
         <a href="/myPage/paymentHistory">결제 내역</a>
-        <a href="#">환불 내역</a>
+        <a href="/myPage/refundHistory">환불 내역</a>
         <a href="#">내 문의 내역</a>
     </div>
 

@@ -2,7 +2,9 @@ package com.uni.uni_erp.controller.myPage;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.payment.Payment;
+import com.uni.uni_erp.domain.entity.payment.Refund;
 import com.uni.uni_erp.service.payment.PaymentService;
+import com.uni.uni_erp.service.refund.RefundService;
 import com.uni.uni_erp.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ public class myPageController {
 
     private final UserService userService;
     private final PaymentService paymentService;
+    private final RefundService refundService;
 
     @GetMapping("")
     public String myPage(@SessionAttribute(value = "userSession") User principal, Model model) {
@@ -83,14 +86,26 @@ public class myPageController {
     @PostMapping("/cancelPayment")
     public ResponseEntity<?> cancelPayment(@RequestBody Map<String, String> request) {
         String paymentId = request.get("paymentId");
+        int payPk = Integer.valueOf(paymentId);
         String cancelReason = request.get("cancelReason");
-
-        // 환불 요청 처리 로직 (예: DB 업데이트 등)
-
-        // 성공적인 응답 반환
+        paymentService.updatePaymentCancelReason(payPk,cancelReason);
         return ResponseEntity.ok().body(Map.of("success", true));
     }
 
+    @GetMapping("/refundHistory")
+    public String refundHistoryPage(Model model, @SessionAttribute(value = "userSession") User principal) {
+        int userPk = principal.getId();
+        List<Refund> refund = refundService.getRefundById(userPk);
+        model.addAttribute("refund",refund);
+        return "/myPage/refundHistory";
+    }
+
+    @GetMapping("/refund")
+    public String refund(Model model){
+        List<Payment> payments = paymentService.findAll();
+        model.addAttribute("payments",payments);
+        return "/myPage/refund";
+    }
 
 
 }

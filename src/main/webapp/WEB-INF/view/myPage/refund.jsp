@@ -33,8 +33,7 @@
         <a href="#">환불 내역</a>
         <a href="#">내 문의 내역</a>
     </div>
-<h1>결제 내역</h1>
-<c:if test="${count != 0}">
+<h1>환불 승인</h1>
     <table>
         <thead>
             <tr>
@@ -51,52 +50,44 @@
         </thead>
         <tbody>
             <c:forEach var="payment" items="${payments}">
-                <tr>
-                    <td><input type="checkbox" class="payment-checkbox" value="${payment.id}" /></td>
-                    <td>${payment.orderName}</td>
-                    <td>${payment.amount}</td>
-                    <td>${payment.nowPayAmount}</td>
-                    <td>${payment.nextPayAmount}</td>
-                    <td>${payment.date}</td>
-                    <td>${payment.method}</td>
-                    <td>
-                        <select id="cancelReason">
-                            <option value="" disabled selected>취소사유</option>
-                            <option value="simple">단순변심</option>
-                            <option value="cancelSubscribe">가게폐점</option>
-                            <option value="doublePay">중복결제</option>
-                        </select>
-                    </td>
-                    <td>
-                        <button onclick="cancelPayments(${payment.id})">환불 요청</button>
-                        <input type="hidden" class="payment-key" value="${payment.paymentKey}" />
-                    </td>
-                </tr>
+                <c:if test="${not empty payment.cancelReason}">
+                    <tr>
+                        <td><input type="checkbox" class="payment-checkbox" value="${payment.id}" /></td>
+                        <td>${payment.orderName}</td>
+                        <td>${payment.amount}</td>
+                        <td>${payment.nowPayAmount}</td>
+                        <td>${payment.nextPayAmount}</td>
+                        <td>${payment.date}</td>
+                        <td>${payment.method}</td>
+                        <td>${payment.cancelReason}</td>
+                        <td>
+                            <c:if test="${payment.cancel != 'Y'}">
+                                <button onclick="cancelPayments('${payment.cancelReason}', '${payment.id}')">환불 승인</button>
+                            </c:if>
+                            <c:if test="${payment.cancel == 'Y'}">
+                                <button disabled>승인 완료</button>
+                            </c:if>
+                            <input type="hidden" class="payment-key" value="${payment.paymentKey}" />
+                        </td>
+                    </tr>
+                </c:if>
             </c:forEach>
         </tbody>
-    </table>
-</c:if>
 
-<c:if test="${count == 0}">
-    <p>결제된 내역이 없습니다.</p>
-</c:if>
+
+    </table>
+
 
 
 <script>
-function cancelPayments() {
-    const cancelReason = document.getElementById("cancelReason").value;
+function cancelPayments(cancelReason, paymentId) {
     const selectedPayments = document.querySelectorAll('.payment-checkbox:checked');
-
-    if (selectedPayments.length === 0) {
-        alert('환불할 결제를 선택해주세요.');
-        return;
-    }
 
     const paymentRequests = Array.from(selectedPayments).map(checkbox => {
         const paymentKey = checkbox.closest('tr').querySelector('.payment-key').value;
         return {
             paymentKey: paymentKey,
-            cancelReason: cancelReason,
+            cancelReason: cancelReason, // 매개변수를 그대로 사용
             payPk: checkbox.value // payment.id를 payPk로 사용
         };
     });
@@ -110,7 +101,7 @@ function cancelPayments() {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = '/main'; // 성공 시 리다이렉트
+            alert('승인완료');
         } else {
             console.error('Error canceling payments');
             // 에러 처리 추가 가능

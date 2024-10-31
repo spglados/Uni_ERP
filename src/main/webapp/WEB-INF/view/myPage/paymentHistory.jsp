@@ -33,11 +33,11 @@
     <a href="/myPage">회원 정보 및 수정</a>
     <a href="#">가게 등록</a>
     <a href="/myPage/paymentHistory">결제 내역</a>
-    <a href="#">환불 내역</a>
+    <a href="/myPage/refundHistory">환불 내역</a>
     <a href="#">내 문의 내역</a>
 </div>
 <h1>결제 내역</h1>
-<c:if test="${count != 0}">
+
     <table>
         <thead>
             <tr>
@@ -62,21 +62,34 @@
                     <td>${payment.date}</td>
                     <td>${payment.method}</td>
                     <td>
-                        <select class="cancel-reason">
+                        <select class="cancel-reason" <c:if test="${not empty payment.cancelReason}">disabled</c:if>>
                             <option value="" disabled selected>취소사유</option>
                             <option value="simple">단순변심</option>
                             <option value="cancelSubscribe">가게폐점</option>
                             <option value="doublePay">중복결제</option>
                         </select>
                     </td>
+                    <td>
+                        <c:if test="${not empty payment.cancelReason}">
+                            <c:if test="${payment.cancel == 'N'}">
+                                <button disabled>환불 요청중</button>
+                            </c:if>
+                            <c:if test="${payment.cancel == 'Y'}">
+                                <button disabled>승인 완료</button>
+                            </c:if>
+                        </c:if>
+                        <c:if test="${empty payment.cancelReason}">
+                        <button onclick="cancelPayment()">환불 요청하기</button>
+                        </c:if>
+                        <input type="hidden" class="payment-key" value="${payment.paymentKey}" />
+                    </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
-    <button onclick="cancelPayment()">환불 요청</button>
-</c:if>
 
-<c:if test="${count == 0}">
+
+<c:if test="${empty payments}">
     <p>결제된 내역이 없습니다.</p>
 </c:if>
 
@@ -90,7 +103,7 @@ function selectPayment(paymentId, row) {
 
 function cancelPayment() {
     const selectedRadio = document.querySelector('input[name="paymentId"]:checked');
-    const selectedReason = document.querySelector('.cancel-reason:checked');
+    const selectedReason = document.querySelector('select.cancel-reason option:checked');
 
     if (!selectedRadio) {
         alert("환불 요청할 결제를 선택해 주세요.");
@@ -106,7 +119,7 @@ function cancelPayment() {
     }
 
     // POST 요청을 위한 fetch
-    fetch('/api/cancelPayment', {
+    fetch('/myPage/cancelPayment', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

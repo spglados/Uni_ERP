@@ -35,6 +35,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     @Query("SELECT COUNT(p) FROM Payment p WHERE p.status <> 0 AND p.user.id = :userPk")
     Integer countByStatusNotZero(@Param("userPk") Integer userPk);
 
+    @Modifying
+    @Query("UPDATE Payment p SET p.cancelReason = :cancelReason WHERE p.id = :id")
+    void updateCancelReason(@Param("id") Integer id, @Param("cancelReason") String cancelReason);
+
 
 
 
