@@ -18,4 +18,9 @@ public class StorePositionDTO {
         this.minRequiredNum = minRequiredNum;
         this.storeId = storeId;
     }
+
+    public StorePositionDTO(String name, Integer minRequiredNum) {
+        this.name = name;
+        this.minRequiredNum = minRequiredNum;
+    }
 }

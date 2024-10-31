@@ -25,6 +25,10 @@ public class EmployeeDTO {
     private Integer bankId; // 은행 ID
     private String bankName; // 은행명
     private String accountNumber;
+    
+    // 비밀번호 추가
+    private String password;
+    
     @JsonIgnore
     private EmpPosition empPosition;
     private String empPositionName; // 직책 이름 추가
@@ -33,6 +37,8 @@ public class EmployeeDTO {
     private long uniqueEmployeeNumber; // 유니크 사원 번호
 
     private Employee.EmploymentStatus employmentStatus;
+    // EmpDocumentDTO를 설정하는 메서드
+    @Setter
     @JsonIgnore
     private EmpDocumentDTO empDocumentDTO; // 문서 정보 DTO
 
@@ -62,6 +68,7 @@ public class EmployeeDTO {
         }
         this.empPositionName = employee.getEmpPosition() != null ? employee.getEmpPosition().getName() : null; // 직책 이름 추가
         this.accountNumber = employee.getAccountNumber();
+        this.password = employee.getPassword();
         this.empPosition = employee.getEmpPosition();
         this.storeId = employee.getStore() != null ? employee.getStore().getId() : null;
         this.storeEmployeeNumber = employee.getStoreEmployeeNumber();
@@ -83,11 +90,6 @@ public class EmployeeDTO {
             this.bankAccountCopy = this.empDocumentDTO.getBankAccountCopy();
             this.residentRegistration = this.empDocumentDTO.getResidentRegistration();
         }
-    }
-
-    // EmpDocumentDTO를 설정하는 메서드
-    public void setEmpDocumentDTO(EmpDocumentDTO empDocumentDTO) {
-        this.empDocumentDTO = empDocumentDTO;
     }
 
 }

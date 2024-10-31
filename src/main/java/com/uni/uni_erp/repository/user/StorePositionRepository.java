@@ -37,4 +37,15 @@ public interface StorePositionRepository extends JpaRepository<EmpPosition, Inte
     @Query("DELETE FROM EmpPosition ep WHERE ep.id = :id")
     void deletePosition(@Param("id") Integer id);
 
+    @Query("SELECT ep FROM EmpPosition ep WHERE ep.name = :name AND ep.store.id = :storeId")
+    Optional<EmpPosition> findByNameAndStoreId(@Param("name") String name, @Param("storeId") Integer storeId);
+
+
+    @Query("SELECT ep FROM EmpPosition ep WHERE ep.id = :id AND ep.store.id = :storeId")
+    Optional<EmpPosition> findByIdAndStoreId(Integer id, Integer storeId);
+
+    @Query("SELECT ep FROM EmpPosition ep WHERE ep.name = :name AND ep.store.id = :storeId")
+    Optional<EmpPosition> findByName(String name, Integer storeId);
 }
+
+
