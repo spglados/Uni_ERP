@@ -25,18 +25,6 @@
           </select>
     </div>
     <button id="card_button" onclick="Pay()"style="display: block; margin-bottom: 10px;">결제하기</button>
-
-      <div>
-          <button type="button">가게 추가하기</button>
-          <c:if test="${count > 0}">
-              <c:forEach var="i" begin="0" end="${count - 1}">
-                  <button type="button">가게 추가하기</button>
-              </c:forEach>
-          </c:if>
-          <c:if test="${count == 0}">
-              <p>가게를 추가할 수 있는 수가 없습니다.</p>
-          </c:if>
-      </div>
   </section>
 
 </main>

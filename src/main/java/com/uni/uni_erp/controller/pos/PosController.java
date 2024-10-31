@@ -374,4 +374,49 @@ public class PosController {
         return ResponseEntity.ok("가게가 닫혔습니다. 마감완료"); // 성공 메시지 반환
     }
 
+    @GetMapping("/deposit")
+    public String getdeposit(HttpSession session, Model model) {
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        Pos pos = posService.getPosDetail(storeId);
+        Long posNowAmount = pos.getAmount();
+        Integer posNowAmountInt = posNowAmount.intValue();
+
+        model.addAttribute("posNowAmount", posNowAmountInt);
+
+        return "/pos/deposit"; // JSP file path
+    }
+
+    @PostMapping("/deposit")
+    public ResponseEntity<?> addAmount(HttpSession session, @RequestBody Map<String, Object> request) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+
+        String amountStr = (String) request.get("amount");
+        if (amountStr == null || amountStr.isEmpty()) {
+            return ResponseEntity.badRequest().body("금액을 입력해 주세요.");
+        }
+
+        try {
+            Integer tempAmount = Integer.valueOf(amountStr);
+            Long amount = tempAmount.longValue();
+
+            // 금액이 음수인 경우 처리
+            if (amount < 0) {
+                return ResponseEntity.badRequest().body("입금 금액은 양수여야 합니다.");
+            }
+
+            // 서비스 호출
+            posService.addAmount(storeId, amount);
+
+            // 성공 응답 반환
+            return ResponseEntity.ok("입금이 완료되었습니다.");
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("유효한 금액을 입력해 주세요.");
+        } catch (Exception e) {
+            // 기타 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
+        }
+    }
+
+
 }

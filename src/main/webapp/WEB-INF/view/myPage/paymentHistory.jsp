@@ -31,13 +31,13 @@
 <div class="sidebar">
     <h3>내 정보</h3>
     <a href="/myPage">회원 정보 및 수정</a>
-    <a href="#">가게 등록</a>
+    <a href="/myPage/storeList">가게 등록</a>
     <a href="/myPage/paymentHistory">결제 내역</a>
     <a href="/myPage/refundHistory">환불 내역</a>
-    <a href="#">내 문의 내역</a>
+    <a href="/myPage/contact">내 문의 내역</a>
 </div>
 <h1>결제 내역</h1>
-
+    <c:if test="${not empty payments}">
     <table>
         <thead>
             <tr>
@@ -87,6 +87,8 @@
             </c:forEach>
         </tbody>
     </table>
+    </c:if>
+
 
 
 <c:if test="${empty payments}">
@@ -133,7 +135,7 @@ function cancelPayment() {
     .then(data => {
         if (data.success) {
             alert("환불 요청이 성공적으로 전송되었습니다.");
-            // 페이지를 새로 고치거나 결제 내역을 업데이트하는 로직 추가
+            window.location.reload(); // 페이지 새로 고침
         } else {
             alert("환불 요청에 실패했습니다: " + data.message);
         }

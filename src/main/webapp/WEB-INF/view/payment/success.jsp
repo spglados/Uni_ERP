@@ -10,7 +10,7 @@
 <body>
     <img width="100px" src="https://static.toss.im/illusts/check-blue-spot-ending-frame.png" />
     <h2>결제를 완료했어요</h2>
-    <div id="countdown">3초 후에 메인으로 이동합니다...</div>
+    <div id="countdown">3초 후에 가게 등록 페이지로 이동합니다...</div>
     <a href="/main">메인으로 이동</a>
     <script>
         let countdown = 3;
@@ -18,11 +18,11 @@
 
                 const timer = setInterval(function() {
                     countdown--;
-                    countdownElement.textContent = countdown + "초 후에 메인으로 이동합니다...";
+                    countdownElement.textContent = countdown + "초 후에 가게 등록 페이지으로 이동합니다...";
 
                     if (countdown <= 0) {
                         clearInterval(timer);
-                        window.location.href = "/main"; // 3초 후 메인 페이지로 이동
+                        window.location.href = "/myPage/storeList";
                     }
                 }, 1000); // 1초마다 실행
     </script>

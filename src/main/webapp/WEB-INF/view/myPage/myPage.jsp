@@ -48,10 +48,10 @@
     <div class="sidebar">
         <h3>내 정보</h3>
         <a href="/myPage">회원 정보 및 수정</a>
-        <a href="#">가게 등록</a>
+        <a href="/myPage/storeList">가게 등록</a>
         <a href="/myPage/paymentHistory">결제 내역</a>
         <a href="/myPage/refundHistory">환불 내역</a>
-        <a href="#">내 문의 내역</a>
+        <a href="/myPage/contact">내 문의 내역</a>
     </div>
 
     <h1>마이페이지</h1>
@@ -160,9 +160,13 @@
           document.getElementById('editAddressButton').style.visibility = 'hidden'; // 수정하기 버튼 숨기기
           document.getElementById('searchAddressButton').style.display = 'inline-block'; // 주소 검색 버튼 보이기
 
+           const fullAddress = '${user.address}';
+           const addressParts = fullAddress.split(',');
+
+
           // 기존 주소와 상세 주소를 입력 필드에 설정
-          document.getElementById('newAddress').value = '';
-          document.getElementById('newDetailAddress').value = ''; // 상세 주소는 빈칸으로 초기화 (필요에 따라 조정)
+          document.getElementById('newAddress').value = addressParts[0].trim();;
+          document.getElementById('newDetailAddress').value = addressParts.length > 1 ? addressParts[1].trim() : ''; // 상세 주소는 빈칸으로 초기화 (필요에 따라 조정)
 
            document.getElementById('newAddress').disabled = true;
       }
@@ -185,7 +189,7 @@
                   }
 
                // 주소와 상세 주소를 합칩니다.
-               const fullAddress = newAddress + ' ' + newDetailAddress;
+               const fullAddress = newAddress + ' ,' + newDetailAddress;
 
               if (confirm('주소를 변경하시겠습니까?')) {
                   fetch('/myPage/updateAddress', {

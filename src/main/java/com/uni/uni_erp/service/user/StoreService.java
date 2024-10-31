@@ -1,15 +1,16 @@
 package com.uni.uni_erp.service.user;
 
+import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.sales.StoreListDTO;
-import com.uni.uni_erp.repository.store.StoreRepository;
-import com.uni.uni_erp.dto.sales.StoreListDTO;
 import com.uni.uni_erp.dto.store.StorePositionDTO;
+import com.uni.uni_erp.dto.store.StoreSaveDTO;
 import com.uni.uni_erp.dto.store.StoreUpdateDTO;
 import com.uni.uni_erp.repository.user.StorePositionRepository;
 import com.uni.uni_erp.repository.user.StoreRepository;
+import com.uni.uni_erp.repository.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final StorePositionRepository storePositionRepository;
+    private final UserRepository userRepository;
 
     // 특정 사용자가 소유한 스토어 목록 조회
     public List<StoreDTO> ownedStores(Integer userId) {
@@ -116,5 +118,23 @@ public class StoreService {
 
         // 변경된 가게 정보를 저장
         storeRepository.save(store);
+    }
+
+    @Transactional
+    public Store registerStore(StoreSaveDTO storeSaveDTO) {
+        User user = userRepository.findById(storeSaveDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Store store = storeSaveDTO.toStore(user);
+
+        return storeRepository.save(store);
+    }
+
+    public List<Store> findAllById(Integer userid){
+        return storeRepository.findByUserId(userid);
+    }
+
+    public Integer getStoreCountByUserId(Integer userId) {
+        return storeRepository.countByUserId(userId);
     }
 }
