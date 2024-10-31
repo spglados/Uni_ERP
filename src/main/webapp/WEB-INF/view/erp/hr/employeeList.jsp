@@ -4,26 +4,25 @@
 
 <div class="container">
     <div class="left-panel">
-        <h1>직원 목록</h1>
+        <h1 class="mb-4">직원 목록</h1>
         <c:if test="${not empty employees}">
-            <table>
+            <div class="mb-3">
+                <label for="employmentStatusFilter" class="form-label">상태</label>
+                <select id="employmentStatusFilter" class="form-select" onchange="filterEmployees()">
+                    <option value="" <c:if test="${empty param.status}">selected</c:if>>전체</option>
+                    <option value="ACTIVE" <c:if test="${param.status == 'ACTIVE'}">selected</c:if>>재직</option>
+                    <option value="INACTIVE" <c:if test="${param.status == 'INACTIVE'}">selected</c:if>>퇴사</option>
+                    <option value="ONLEAVE" <c:if test="${param.status == 'ONLEAVE'}">selected</c:if>>휴직</option>
+                </select>
+            </div>
+            <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>사원번호</th>
-                    <th>이름</th>
-                    <th>직책</th>
-                    <th>
-                        상태
-                        <select id="employmentStatusFilter" onchange="filterEmployees()">
-                            <option value="" <c:if test="${empty param.status}">selected</c:if>>전체</option>
-                            <option value="ACTIVE" <c:if test="${param.status == 'ACTIVE'}">selected</c:if>>재직</option>
-                            <option value="INACTIVE" <c:if test="${param.status == 'INACTIVE'}">selected</c:if>>퇴사
-                            </option>
-                            <option value="ONLEAVE" <c:if test="${param.status == 'ONLEAVE'}">selected</c:if>>휴직
-                            </option>
-                        </select>
-                    </th>
-                    <th>전화번호</th>
+                    <th scope="col">사원번호</th>
+                    <th scope="col">이름</th>
+                    <th scope="col">직책</th>
+                    <th scope="col">상태</th>
+                    <th scope="col">전화번호</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -59,13 +58,12 @@
                         <td>${employee.phone}</td>
                     </tr>
                 </c:forEach>
-                <form id="excelDownloadForm" action="/erp/hr/download/excel" method="get">
-                    <input type="hidden" name="employeeStatus" id="employeeStatus" value="${param.status}"/>
-                    <button type="submit">엑셀 다운로드</button>
-                </form>
-
                 </tbody>
             </table>
+            <form id="excelDownloadForm" action="/erp/hr/download/excel" method="get" class="mt-3">
+                <input type="hidden" name="employeeStatus" id="employeeStatus" value="${param.status}"/>
+                <button type="submit" class="btn btn-primary">엑셀 다운로드</button>
+            </form>
         </c:if>
         <c:if test="${empty employees}">
             <p>등록된 직원이 없습니다.</p>
@@ -78,112 +76,153 @@
 </div>
 
 <!-- 수정 팝업 모달 -->
-<div id="editEmployeeModal" style="display: none;">
-    <h2>직원 수정</h2>
-    <form id="editEmployeeForm" onsubmit="return false;">
-        <input type="hidden" id="editEmployeeId" name="id"/>
+<div id="modalBackground" onclick="closeModal()"></div>
+<div id="editEmployeeModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="editEmployeeModalLabel"
+     aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEmployeeModalLabel">직원 수정</h5>
+                <button type="button" class="close" onclick="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editEmployeeForm" onsubmit="return false;">
+                    <input type="hidden" id="editEmployeeId" name="id"/>
 
-        <label for="editEmployeeName">이름:</label>
-        <input type="text" id="editEmployeeName" name="name" maxlength="10" required pattern="^[가-힣]{2,10}$"
-               title="이름은 한글 2~10자로 입력해야 합니다."/>
+                    <div class="mb-3">
+                        <label for="editEmployeeName" class="form-label">이름:</label>
+                        <input type="text" class="form-control" id="editEmployeeName" name="name" maxlength="10"
+                               required pattern="^[가-힣]{2,10}$"
+                               title="이름은 한글 2~10자로 입력해야 합니다."/>
+                    </div>
 
-        <label for="editEmployeeBirthday">생년월일:</label>
-        <input type="date" id="editEmployeeBirthday" name="birthday" required min="1900-01-01"
-               max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"/>
+                    <div class="mb-3">
+                        <label for="editEmployeeBirthday" class="form-label">생년월일:</label>
+                        <input type="date" class="form-control" id="editEmployeeBirthday" name="birthday" required
+                               min="1900-01-01"
+                               max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"/>
+                    </div>
 
-        <label for="editEmployeeGender">성별:</label>
-        <select id="editEmployeeGender" name="gender" required>
-            <option value="M">남성</option>
-            <option value="F">여성</option>
-        </select>
+                    <div class="mb-3">
+                        <label for="editEmployeeGender" class="form-label">성별:</label>
+                        <select id="editEmployeeGender" name="gender" class="form-select" required>
+                            <option value="M">남성</option>
+                            <option value="F">여성</option>
+                        </select>
+                    </div>
 
-        <label for="editEmployeeAddress">주소:</label>
-        <input type="text" id="editEmployeeAddress" name="address" required>
+                    <div class="mb-3">
+                        <label for="editEmployeeAddress" class="form-label">주소:</label>
+                        <input type="text" class="form-control" id="editEmployeeAddress" name="address" required>
+                    </div>
 
-        <div>
-            <label for="editEmployeeEmail">이메일 아이디:</label>
-            <input type="text" id="editEmployeeEmail" name="email" required
-                   pattern="^[A-Za-z0-9._%+-]+$"
-                   title="유효한 이메일 형식으로 입력하세요" value=""/>
-            @
-            <input type="text" id="emailDomain" name="emailDomain" required
-                   title="도메인을 입력하세요" value="">
-            <select id="domainSelect" onchange="updateEmailDomain()">
-                <option value="">직접 입력</option>
-                <option value="naver.com">naver.com</option>
-                <option value="daum.net">daum.net</option>
-                <option value="gmail.com">gmail.com</option>
-                <option value="nate.com">nate.com</option>
-            </select>
+                    <div class="mb-3">
+                        <label for="editEmployeeEmail" class="form-label">이메일 아이디:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="editEmployeeEmail" name="email" required
+                                   pattern="^[A-Za-z0-9._%+-]+$"
+                                   title="유효한 이메일 형식으로 입력하세요" value=""/>
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" id="emailDomain" name="emailDomain" required
+                                   title="도메인을 입력하세요" value="">
+                            <select id="domainSelect" class="form-select" onchange="updateEmailDomain()">
+                                <option value="">직접 입력</option>
+                                <option value="naver.com">naver.com</option>
+                                <option value="daum.net">daum.net</option>
+                                <option value="gmail.com">gmail.com</option>
+                                <option value="nate.com">nate.com</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editEmployeePhone" class="form-label">전화번호:</label>
+                        <input type="text" class="form-control" id="editEmployeePhone" name="phone" required
+                               oninput="formatPhoneNumber(this)" maxlength="13"
+                               placeholder="000-0000-0000"
+                               title="유효한 전화번호 형식이 아닙니다."/>
+                    </div>
+
+                    <!-- 은행 정보 추가 -->
+                    <div class="mb-3">
+                        <label for="bankSelect" class="form-label">은행:</label>
+                        <select id="bankSelect" name="bank" class="form-select">
+                            <c:forEach items="${banks}" var="bank">
+                                <option value="${bank.id}">${bank.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editEmployeeAccountNumber" class="form-label">계좌번호:</label>
+                        <input type="text" class="form-control" id="editEmployeeAccountNumber" name="accountNumber"
+                               required
+                               maxlength="16"
+                               pattern="^\d{1,16}$"
+                               title="계좌번호를 1자리 이상 16자리 이하의 숫자로 입력하세요"/>
+                    </div>
+
+                    <!-- 직책 정보 추가 -->
+                    <div class="mb-3">
+                        <label for="positionSelect" class="form-label">직책:</label>
+                        <select id="positionSelect" name="positionId" class="form-select">
+                            <c:forEach items="${positions}" var="position">
+                                <option value="${position.id}">${position.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editEmployeeStatus" class="form-label">상태:</label>
+                        <select id="editEmployeeStatus" name="employmentStatus" class="form-select">
+                            <option value="ACTIVE">재직</option>
+                            <option value="INACTIVE">퇴사</option>
+                            <option value="ONLEAVE">휴직</option>
+                        </select>
+                    </div>
+
+                    <!-- 문서 정보 추가 -->
+                    <h3>문서 제출 상태</h3>
+                    <p>문서 보관 여부를 선택해주세요.</p>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editEmploymentContract" value="true"
+                               name="employmentContract">
+                        <label class="form-check-label" for="editEmploymentContract">고용 계약서</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editHealthCertificate" value="true"
+                               name="healthCertificate">
+                        <label class="form-check-label" for="editHealthCertificate">건강증명서</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editIdentificationCopy" value="true"
+                               name="identificationCopy">
+                        <label class="form-check-label" for="editIdentificationCopy">신분증 사본</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editBankAccountCopy" value="true"
+                               name="bankAccountCopy">
+                        <label class="form-check-label" for="editBankAccountCopy">계좌 사본</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editResidentRegistration" value="true"
+                               name="residentRegistration">
+                        <label class="form-check-label" for="editResidentRegistration">주민등록증</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editHealthCertificateDate" class="form-label">보건증 발급일:</label>
+                        <input type="date" class="form-control" id="editHealthCertificateDate"
+                               name="healthCertificateDate"/>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" onclick="updateEmployee()">수정하기</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
+                </form>
+            </div>
         </div>
-
-        <label for="editEmployeePhone">전화번호:</label>
-        <input type="text" id="editEmployeePhone" name="phone" required
-               oninput="formatPhoneNumber(this)" maxlength="13"
-               placeholder="000-0000-0000"
-               title="유효한 전화번호 형식이 아닙니다."/>
-
-        <!-- 은행 정보 추가 -->
-        <label for="bankSelect">은행:</label>
-        <select id="bankSelect" name="bank">
-            <c:forEach items="${banks}" var="bank">
-                <option value="${bank.id}">${bank.name}</option>
-            </c:forEach>
-        </select>
-
-        <label for="editEmployeeAccountNumber">계좌번호:</label>
-        <input type="text" id="editEmployeeAccountNumber" name="accountNumber" required
-               maxlength="16"
-               pattern="^\d{1,16}$"
-               title="계좌번호를 1자리 이상 16자리 이하의 숫자로 입력하세요"/>
-
-        <!-- 직책 정보 추가 -->
-        <label for="positionSelect">직책:</label>
-        <select id="positionSelect" name="positionId">
-            <c:forEach items="${positions}" var="position">
-                <option value="${position.id}">${position.name}</option>
-            </c:forEach>
-        </select>
-
-        <label for="editEmployeeStatus">상태:</label>
-        <select id="editEmployeeStatus" name="employmentStatus">
-            <option value="ACTIVE">재직</option>
-            <option value="INACTIVE">퇴사</option>
-            <option value="ONLEAVE">휴직</option>
-        </select>
-
-        <!-- 문서 정보 추가 -->
-        <h3>문서 제출 상태</h3>
-        <p>문서 보관 여부를 선택해주세요.</p>
-        <br>
-        <div>
-            <label for="editEmploymentContract">고용 계약서:</label>
-            <input type="checkbox" id="editEmploymentContract" value="true" name="employmentContract">
-        </div>
-        <div>
-            <label for="editHealthCertificate">건강증명서:</label>
-            <input type="checkbox" id="editHealthCertificate" value="true" name="healthCertificate">
-        </div>
-        <div>
-            <label for="editIdentificationCopy">신분증 사본:</label>
-            <input type="checkbox" id="editIdentificationCopy" value="true" name="identificationCopy">
-        </div>
-        <div>
-            <label for="editBankAccountCopy">계좌 사본:</label>
-            <input type="checkbox" id="editBankAccountCopy" value="true" name="bankAccountCopy">
-        </div>
-        <div>
-            <label for="editResidentRegistration">주민등록증:</label>
-            <input type="checkbox" id="editResidentRegistration" value="true" name="residentRegistration">
-        </div>
-        <div>
-            <label for="editHealthCertificateDate">보건증 발급일:</label>
-            <input type="date" id="editHealthCertificateDate" name="healthCertificateDate"/>
-        </div>
-
-        <button type="submit" onclick="updateEmployee()">수정하기</button>
-        <button type="button" onclick="closeModal()">취소</button>
-    </form>
+    </div>
 </div>
 
 <script>
@@ -219,10 +258,12 @@
 
     function openModal() {
         document.getElementById('editEmployeeModal').style.display = 'block';
+        document.getElementById('modalBackground').style.display = 'block'; // 모달 배경 보이기
     }
 
     function closeModal() {
         document.getElementById('editEmployeeModal').style.display = 'none';
+        document.getElementById('modalBackground').style.display = 'none'; // 모달 배경 숨기기
     }
 
     const employeesJson = '${employeesJson}'; // JSON 문자열을 올바르게 설정
@@ -357,7 +398,7 @@
 
         // TODO 우리형 공부 !! ^^
         /**
-        * 밑에 함수들은 은행 아이디로 이름을 반환하거나
+         * 밑에 함수들은 은행 아이디로 이름을 반환하거나
          * 이름으로 아이디를 반환하는 함수이다 !
          * 하지만 설계자의 문제로 bankId와 bankName 이라는 key 값으로 Json 데이터를 보내야 하나
          * bank 라는 key 값으로 은행 아이디를 value로 보냈다 !
@@ -387,7 +428,7 @@
             // FormData를 JSON 객체로 변환
             formData.forEach((value, key) => {
 
-                if(key === 'bank') {
+                if (key === 'bank') {
                     jsonData['bankId'] = value;
                     jsonData['bankName'] = getBankNameById(value);
                 } else {
@@ -493,28 +534,36 @@
 <style>
     .container {
         display: flex;
+        width: 100%;
     }
 
     .left-panel {
         flex: 1; /* 왼쪽 패널의 너비 */
         padding: 20px; /* 패딩 추가 */
+        width: 40%;
         border-right: 1px solid #ccc; /* 오른쪽 경계선 */
     }
 
     .right-panel {
         flex: 2; /* 오른쪽 패널의 너비 */
+        width: 40%;
         padding: 20px; /* 패딩 추가 */
     }
 
+    /* 모달 스타일 */
+    /* 수정된 모달 스타일 */
     #editEmployeeModal {
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 20px;
+        background-color: white; /* 흰색 배경 */
+        padding: 10px;
         border: 1px solid #ccc;
-        z-index: 1000;
+        z-index: 1000; /* 배경보다 위에 */
+        max-height: 70%; /* 최대 높이 설정 */
+        width: 40%; /* 너비 설정 */
+        overflow-y: hidden; /* 세로 스크롤 활성화 */
     }
 
     /* 모달 배경 스타일 */
@@ -526,10 +575,19 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
         display: none; /* 처음에는 보이지 않음 */
+        z-index: 999; /* 모달보다 아래에 */
+    }
+
+
+    /* 모달 본문 스크롤 */
+    .modal-body {
+        max-height: 50vh; /* 최대 높이를 viewport의 70%로 설정 */
+        overflow-y: auto; /* 세로 스크롤 활성화 */
+        padding: 0; /* 패딩 초기화 */
     }
 </style>
 
 <!-- 모달 배경 -->
-<div id="modalBackground" onclick="closeModal()"></div>
+
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
