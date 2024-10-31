@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/erp/product")
@@ -58,12 +59,13 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public ResponseEntity<ProductDTO> saveProduct(@ModelAttribute ProductDTO productDTO) {
-        Integer storeId = (Integer) session.getAttribute("storeId");
-        User user = (User) session.getAttribute("userSession");
-        productService.saveProduct(productDTO, storeId, user.getId());
+    public ResponseEntity<Map<String, Boolean>> saveProduct(@ModelAttribute ProductDTO productDTO, HttpSession session) {
+        boolean isEnter = productService.saveProduct(productDTO, session);
+        if(!isEnter) {
+            return ResponseEntity.ok(Map.of("fail", isEnter));
+        }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("success", isEnter));
     }
 
     @GetMapping("/correction")

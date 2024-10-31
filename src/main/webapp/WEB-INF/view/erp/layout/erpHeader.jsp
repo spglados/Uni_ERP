@@ -88,7 +88,7 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <li><a href="/erp/inventory/day-adjustment">일 재고 현황</a></li>
                     <li><a href="/erp/inventory/month-adjustment">월 재고 현황</a></li>
                     <li><a href="/erp/inventory/disposal">폐기 등록</a></li>
-                    <li><a href="/erp/inventory/disposalHistory">폐기 내역</a></li>
+                    <li><a href="/erp/inventory/disposal-history">폐기 내역</a></li>
                 </ul>
             </li>
             <li>
