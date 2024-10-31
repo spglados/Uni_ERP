@@ -1,5 +1,6 @@
 package com.uni.uni_erp.domain.entity.payment;
 
+import com.uni.uni_erp.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,5 +27,9 @@ public class Refund {
     private String approvedAt;
     private String cancelAmount;
     private Integer adminId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

@@ -4,14 +4,13 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.repository.payment.Sms;
-import com.uni.uni_erp.service.common.EmailService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
-import com.uni.uni_erp.util.Str.PasswordUtil;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,9 +99,9 @@ public class UserController {
         } else {
             response.put("success", false);
         }
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
 
     // 아이디 중복 확인
@@ -132,6 +131,13 @@ public class UserController {
             response.put("message", "사용 가능한 번호입니다.");
             return ResponseEntity.ok(response);
         }
+
+        @GetMapping("/logout")
+        public String logout() {
+            session.invalidate(); // 세션 무효화
+            return "redirect:/main"; // 메인 페이지로 리다이렉트
+        }
     }
 
-}
+
+
