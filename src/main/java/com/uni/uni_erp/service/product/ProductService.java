@@ -1,26 +1,23 @@
 package com.uni.uni_erp.service.product;
 
-import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.erp.product.Ingredient;
 import com.uni.uni_erp.domain.entity.erp.product.Material;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.erp.product.IngredientDTO;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
-import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesQuantityDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.erp.inventory.MaterialRepository;
 import com.uni.uni_erp.repository.erp.product.IngredientsRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
 import com.uni.uni_erp.repository.sales.SalesRepository;
-import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.repository.user.StoreRepository;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;

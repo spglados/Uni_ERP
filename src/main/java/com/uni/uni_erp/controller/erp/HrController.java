@@ -94,6 +94,13 @@ public class HrController {
         }
     }
 
+    public ResponseEntity<Map<String, Object>> checkAccountNumber(@RequestParam String accountNumber) {
+        Map<String, Object> response = new HashMap<>();
+        boolean isDuplicate = hrService.isAccountNumberDuplicated(accountNumber);
+        response.put("isDuplicate", isDuplicate);
+        return ResponseEntity.ok(response);
+    }
+
     // 중복 이메일 검사
     @GetMapping("/check-email")
     public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
