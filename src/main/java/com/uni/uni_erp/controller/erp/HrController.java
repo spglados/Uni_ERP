@@ -133,12 +133,6 @@ public class HrController {
         // 모든 은행 목록 조회
         List<BankDTO> bankDTOList = hrService.getAllBankDTOs();
 
-
-        // 직원 목록의 내용 확인
-//        for (EmployeeDTO dto : employeeDTOList) {
-//            System.out.println("EmployeeDTO: " + dto); // 각 DTO 출력
-//        }
-
         model.addAttribute("employees", employeeDTOList); // 직원 목록을 모델에 추가
 
         // DTO 리스트를 JSON으로 변환
