@@ -692,6 +692,7 @@ nav{
     color: #000000;
     font-size: 1.2rem;
     text-decoration: none;
+    margin-left: 30px;
 }
 
 .header-icon:hover{

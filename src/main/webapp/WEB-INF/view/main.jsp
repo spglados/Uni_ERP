@@ -103,18 +103,8 @@
                 이건 부탁이 아니라, 명령 입니다.
             </p>
             <br>
-            <h2>상담문의 하기</h2>
-            <form class="custom-form">
-                <label for="name">이름</label>
-                <input type="text" id="name" name="name">
-                <label for="email">이메일*</label>
-                <input type="email" id="email" name="email" required>
-                <label for="phone">전화번호</label>
-                <input type="tel" id="phone" name="phone">
-                <label for="message">메시지를 입력하세요.</label>
-                <textarea id="message" name="message" rows="4"></textarea>
-                <button type="submit">제출</button>
-            </form>
+            <h2>상담문의</h2>
+            <button>문의</button>
         </div>
     </div>
 </div>

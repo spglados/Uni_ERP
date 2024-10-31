@@ -12,7 +12,7 @@
 <main class="main-container">
 
     <section>
-        <h2>공지사항 목록</h2>
+        <h1>공지사항 목록</h1>
         <table>
             <thead>
                 <tr>
