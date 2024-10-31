@@ -436,4 +436,13 @@ public class PaymentService {
     public List<Payment> findByUserId(Integer userId) {
         return paymentRepository.findByUserId(userId);
     }
+
+    public Long findAllSumAmount() {
+        return paymentRepository.findAllSumAmount() != null ? paymentRepository.findAllSumAmount() : 0;
+    }
+
+    public Long findAllSumRefund() {
+        return refundRepository.findAllSumRefund() != null ? refundRepository.findAllSumRefund() : 0;
+    }
+
 }

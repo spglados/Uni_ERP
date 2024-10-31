@@ -32,6 +32,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     @Query("SELECT COUNT(p) FROM Payment p WHERE p.cancel = 'N'")
     Integer countByCancelN(Integer userPk);
 
+    @Query("SELECT SUM(p.nowPayAmount) FROM Payment p")
+    Long findAllSumAmount();
+
 
 
 
