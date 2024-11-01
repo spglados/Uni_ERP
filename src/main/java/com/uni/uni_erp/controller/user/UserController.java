@@ -44,7 +44,7 @@ public class UserController {
         if(storeList != null && !storeList.isEmpty()) {
             // 맨 처음 가게 아이디 추가
             session.setAttribute("storeId", storeList.get(0).getId());
-            if (storeList.size() > 1) {
+            if (storeList.size() >= 1) {
                 session.setAttribute("storeList", storeList);
             }
         }
