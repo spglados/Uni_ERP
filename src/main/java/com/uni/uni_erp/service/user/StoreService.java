@@ -5,8 +5,6 @@ import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.StoreDTO;
-import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.sales.StoreListDTO;
 import com.uni.uni_erp.dto.store.StorePositionDTO;
 import com.uni.uni_erp.dto.store.StoreSaveDTO;
@@ -172,4 +170,10 @@ public class StoreService {
     public Optional<EmpPosition> findPositionById(Integer positionId) {
         return storePositionRepository.findById(positionId);
     }
+
+    public void deleteByStoreId(Integer storeId){
+        storeRepository.deleteById(storeId);
+    }
+
+
 }

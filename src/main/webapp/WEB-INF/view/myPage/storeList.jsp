@@ -58,9 +58,12 @@
 
 
     <c:if test="${not empty store}">
-    <p>현재 보유중인 가게 수: ${storeCount}</p>
-            <p>결제한 수: ${count}</p>
-            <p>가게 등록가능한 수: ${count - storeCount}</p>
+    <p>현재 보유중인 가게 수: ${storeCount} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 등록가능한 가게 수: ${count - storeCount}</p>
+
+    <c:if test="${count - storeCount == 0}">
+        <p class="no-refund">더 이상 가게를 등록할 수 없습니다.</p>
+        <p>가게를 등록하시려면 결제를 진행해주세요. <button onclick="payment()">결제하러가기</button></p>
+    </c:if>
     <table>
         <thead>
             <tr>
@@ -70,6 +73,7 @@
                 <th>운영 상태</th>
                 <th>주소</th>
                 <th>등록일</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -81,6 +85,9 @@
                     <td>${store.isOpen == 1 ? '열림' : '닫힘'}</td>
                     <td>${store.storeAddress}</td>
                     <td><fmt:formatDate value="${store.createdAt}" pattern="yyyy-MM-dd HH:mm" /></td>
+                    <td>
+                        <button onclick="deleteStore(${store.id})">가게 삭제</button>
+                    </td>
                 </tr>
             </c:forEach>
         </tbody>
@@ -100,5 +107,29 @@
     function payment() {
         window.location.href = '/payment';
     }
+
+   function deleteStore(storeId) {
+       if (confirm("정말 이 가게를 삭제하시겠습니까?")) {
+           fetch(`/myPage/deleteStore/${storeId}`, {
+               method: 'POST', // POST 메서드 사용
+               headers: {
+                   'Content-Type': 'application/json',
+               },
+               body: JSON.stringify({ storeId: storeId })
+           })
+           .then(response => {
+               if (response.ok) {
+                   alert("가게가 삭제되었습니다.");
+                   window.location.reload();
+               } else {
+                   alert("가게 삭제에 실패했습니다.");
+               }
+           })
+           .catch(error => {
+               console.error("Error:", error);
+               alert("삭제 요청 중 오류가 발생했습니다.");
+           });
+       }
+   }
 </script>
 

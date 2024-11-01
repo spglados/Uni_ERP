@@ -22,4 +22,12 @@ public class ResponseService {
                 .build();
         responseRepository.save(response);
     }
+
+    public ResponseDTO findByContactId(Integer contactId) {
+        Response response = responseRepository.findByContactId(contactId);
+        if (response == null) {
+            return null;
+        }
+        return ResponseDTO.builder().author(response.getAuthor()).contactId(response.getContactId()).content(response.getContent()).build();
+    }
 }
