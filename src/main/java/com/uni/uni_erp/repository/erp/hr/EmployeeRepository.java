@@ -35,12 +35,12 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     Integer findMaxStoreEmployeeNumberByStoreId(@Param("storeId") Integer storeId);
 
     // 이메일로 직원 존재 여부 체크
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndStoreId(String email, Integer storeId);
 
     // 전화번호로 직원 존재 여부 체크
-    boolean existsByPhone(String phone);
+    boolean existsByPhoneAndStoreId(String phone, Integer storeId);
 
-    boolean existsByAccountNumber(String accountNumber);
+    boolean existsByAccountNumberAndStoreId(String accountNumber, Integer storeId);
 
     Optional<Employee> findByAccountNumber(String accountNumber);
     // 이메일 찾기
@@ -55,6 +55,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     @Query("SELECT e FROM Employee e WHERE e.store.id = :storeId And (e.phone = :phone OR e.email = :email OR e.accountNumber = :accountNumber)")
     List<Employee> findByStoreIdAndPhoneOrEmailOrAccountNumber(Integer storeId, String phone, String email, String accountNumber);
+
+    Optional<Employee> findByStoreIdAndPhone(Integer storeId, String phone);
 
 }
 
