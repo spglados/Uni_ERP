@@ -9,9 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,11 +36,18 @@ public class ErpController {
             model.addAttribute("storeList", storeList);
         }
         Integer storeId = (Integer) session.getAttribute("storeId");
+        if (storeId != null) {
+            model.addAttribute("storeId", storeId);
+        }
         AttendanceDTO.ErpMainDTO attDTO = attendanceService.getAttendanceForMain(storeId);
         System.out.println("---------------------------------------------------");
         System.out.println(attDTO);
         System.out.println("---------------------------------------------------");
         model.addAttribute("attDTO", attDTO);
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        
+
         return "erp/main";
     }
 
@@ -57,7 +62,14 @@ public class ErpController {
         return "erp/storeSelect";
     }
 
+    @PutMapping("/store/{storeId}")
+    public ResponseEntity<?> changeStoreId(@PathVariable(name = "storeId") Integer storeId, HttpSession session, Model model) {
 
+        // 기존 storeId 변경
+        session.setAttribute("storeId", storeId);
+        model.addAttribute("storeId", storeId);
+        return ResponseEntity.ok().build();
+    }
 
     // 모든 사용자 데이터를 반환하는 REST 엔드포인트
     @GetMapping("/api/users")

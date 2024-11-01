@@ -40,6 +40,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     // 전화번호로 직원 존재 여부 체크
     boolean existsByPhone(String phone);
 
+    boolean existsByAccountNumber(String accountNumber);
+
+    Optional<Employee> findByAccountNumber(String accountNumber);
     // 이메일 찾기
     Optional<Employee> findByEmail(String email);
     // 전화번호 찾기
@@ -50,7 +53,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     // 특정 상태와 스토어 ID에 따른 직원 조회
     List<Employee> findByEmploymentStatusAndStoreId(Employee.EmploymentStatus employmentStatus, Integer storeId);
 
-
+    @Query("SELECT e FROM Employee e WHERE e.store.id = :storeId And (e.phone = :phone OR e.email = :email OR e.accountNumber = :accountNumber)")
+    List<Employee> findByStoreIdAndPhoneOrEmailOrAccountNumber(Integer storeId, String phone, String email, String accountNumber);
 
 }
 

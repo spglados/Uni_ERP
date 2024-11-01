@@ -4,7 +4,9 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -13,6 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Store {
 
     @Id
@@ -21,6 +24,16 @@ public class Store {
 
     @Column(nullable = false)
     private String name;
+
+    @Column(name = "is_24_hours", nullable = false)
+    private Integer is24Hours;
+
+    @Column(name = "is_open", nullable = false)
+    private Integer isOpen;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Timestamp createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -37,4 +50,7 @@ public class Store {
 
     @Column(name = "allow_minutes", nullable = false)
     private Integer allowMinutes = 1;
+
+    @Column(name = "store_address", nullable = false)
+    private String storeAddress;
 }

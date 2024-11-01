@@ -1,26 +1,26 @@
 package com.uni.uni_erp.service.product;
 
 import com.uni.uni_erp.domain.entity.SalesDetail;
+import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.Ingredient;
 import com.uni.uni_erp.domain.entity.erp.product.Material;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
 import com.uni.uni_erp.dto.erp.product.IngredientDTO;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
-import com.uni.uni_erp.dto.sales.SalesDTO;
 import com.uni.uni_erp.dto.sales.SalesQuantityDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.erp.inventory.MaterialRepository;
 import com.uni.uni_erp.repository.erp.product.IngredientsRepository;
 import com.uni.uni_erp.repository.erp.product.ProductRepository;
 import com.uni.uni_erp.repository.sales.SalesRepository;
-import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.repository.user.StoreRepository;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -182,26 +182,32 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDTO saveProduct(ProductDTO dto, Integer storeId, Integer userId) {
+    public boolean saveProduct(ProductDTO dto, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        // TODO 유저 DTO 변환
+        User user = (User) session.getAttribute("userSession");
         dto.setStoreId(storeId);
-        dto.setUserId(userId);
+        dto.setUserId(user.getId());
 
-        // TODO 이름 유효성 검사 추가
+        Product checkProduct = productRepository.findByNameAndStoreId(dto.getName(), storeId);
+        if(checkProduct != null) {
+            return false;
+        }
 
         // ProductDTO를 Product 엔티티로 변환 (id는 아직 없음)
-        Product product = dto.toProduct(userId, storeId);
+        Product product = dto.toProduct(user.getId(), storeId);
         product.setStore(storeRepository.findById(storeId).orElse(null));
 
         // 스토어가 없는 경우 처리
         if (product.getStore() == null) {
-            return null;
+            return false;
         }
 
         // 먼저 Product를 저장해서 id를 생성
         productRepository.save(product);
 
         // 저장된 후 id가 생성된 상태에서 productCode 계산
-        String productCodeStr = userId.toString() + storeId.toString() + product.getId().toString(); // id는 이제 저장 후에 사용할 수 있음
+        String productCodeStr = user.getId().toString() + storeId.toString() + product.getId().toString(); // id는 이제 저장 후에 사용할 수 있음
         Long productCode = Long.parseLong(productCodeStr);
         product.setProductCode(productCode);
 
@@ -210,7 +216,7 @@ public class ProductService {
         productRepository.save(product);
 
         // 저장 후 DTO로 변환해서 반환
-        return new ProductDTO(product);
+        return true;
     }
 
     /**

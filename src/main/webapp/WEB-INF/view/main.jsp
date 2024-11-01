@@ -104,19 +104,7 @@
             </p>
             <br>
             <h2>상담문의 하기</h2>
-            <form class="custom-form">
-                <label for="first-name">이름</label>
-                <input type="text" id="first-name" name="first-name">
-                <label for="last-name">성</label>
-                <input type="text" id="last-name" name="last-name">
-                <label for="email">이메일*</label>
-                <input type="email" id="email" name="email" required>
-                <label for="phone">전화번호</label>
-                <input type="tel" id="phone" name="phone">
-                <label for="message">메시지를 입력하세요.</label>
-                <textarea id="message" name="message" rows="4"></textarea>
-                <button type="submit">제출</button>
-            </form>
+            <a href="/support">!클릭!</a>
         </div>
     </div>
 </div>

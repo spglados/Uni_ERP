@@ -1,12 +1,15 @@
 package com.uni.uni_erp.domain.entity;
 
-import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.domain.entity.payment.Payment;
+import com.uni.uni_erp.domain.entity.payment.PaymentHistory;
+import com.uni.uni_erp.domain.entity.payment.Refund;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -45,8 +48,27 @@ public class User {
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
 
+    @Column(name = "payment_date")
+    private String paymentDate;
+
+    // 멤버십 상태 변경 날짜
+    @Column(name = "previous_membership")
+    private String previousMembership; // 이전 멤버십 상태
+
+    @Column(name = "premium_to_common_date")
+    private LocalDateTime premiumToCommonDate; // Premium에서 Common으로 변경된 날짜
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Store> stores;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Payment> payments;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<PaymentHistory> paymentHistories;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Refund> refunds; // Refund와의 관계 추가
 
     // 엔티티가 저장되기 전 실행되는 메서드
     @PrePersist
@@ -60,5 +82,19 @@ public class User {
     public enum Membership {
         COMMON,
         PREMIUM
+    }
+
+    public void setMembership(Membership membership) {
+        this.membership = membership;
+        // Premium에서 Common으로 변경될 때 날짜 기록
+        if (Membership.COMMON.equals(membership)) {
+            this.premiumToCommonDate = LocalDateTime.now();
+        }
+    }
+
+    public boolean isWithinWeekOfCommon() {
+        // 이넘 타입으로 비교
+        return Membership.COMMON.equals(membership) && premiumToCommonDate != null &&
+                premiumToCommonDate.isAfter(LocalDateTime.now().minusWeeks(7));
     }
 }

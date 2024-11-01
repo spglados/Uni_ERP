@@ -1,9 +1,9 @@
 <%--
-  Created by IntelliJ IDEA.
-  User: namch
-  Date: 24. 10. 10.
-  Time: 오후 3:30
-  Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 추가)
+Created by IntelliJ IDEA.
+User: namch
+Date: 24. 10. 10.
+Time: 오후 3:30
+Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 추가)
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="/css/erp/erpMain.css">
     <link rel="stylesheet" href="/css/common/agGrid.css">
 
+
 </head>
 <body>
 <div class="erp-container">
@@ -45,6 +46,15 @@
         <ul class="sidebar-menu">
             <li>
                 <a href="javascript:void(0);" class="menu-toggle">
+                    <i class="fas fa-store"></i>
+                    <div>가게 관리<span class="arrow">▼</span></div>
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="/erp/store/correction" target='_blank'>가게 정보 수정</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0);" class="menu-toggle">
                     <i class="fas fa-user"></i>
                     <div>인사 관리 <span class="arrow">▼</span></div>
                 </a>
@@ -53,7 +63,18 @@
                     <li><a href="/erp/hr/employee-list">직원 목록</a></li>
                     <li><a href="/erp/hr/schedule">근무 일정</a></li>
                     <li><a href="/erp/hr/attendance-list">근태 관리</a></li>
-                    <li><a href="/erp/hr/wage">급여 관리</a></li>
+                    <li><a href="/erp/hr/salaries">급여 관리</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:void(0);" class="menu-toggle">
+                    <i class="fas fa-tag"></i>
+                    <div>상품 관리 <span class="arrow">▼</span></div>
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="/erp/product/list">상품 목록</a></li>
+                    <li><a href="/erp/product/registration">상품 등록</a></li>
+                    <li><a href="/erp/product/correction">상품 수정</a></li>
                 </ul>
             </li>
             <li>
@@ -70,7 +91,7 @@
                     <li><a href="/erp/inventory/day-adjustment">일 재고 현황</a></li>
                     <li><a href="/erp/inventory/month-adjustment">월 재고 현황</a></li>
                     <li><a href="/erp/inventory/disposal">폐기 등록</a></li>
-                    <li><a href="/erp/inventory/disposalHistory">폐기 내역</a></li>
+                    <li><a href="/erp/inventory/disposal-history">폐기 내역</a></li>
                 </ul>
             </li>
             <li>
@@ -79,26 +100,14 @@
                     <div>매출 관리 <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/sales/record">매출 입력</a></li>
                     <li><a href="/erp/sales/history">매출 기록</a></li>
                     <li><a href="/erp/sales/statistics">매출 통계</a></li>
                 </ul>
             </li>
             <li>
                 <a href="javascript:void(0);" class="menu-toggle">
-                    <i class="fas fa-tag"></i>
-                    <div>상품 관리 <span class="arrow">▼</span></div>
-                </a>
-                <ul class="sub-menu">
-                    <li><a href="/erp/product/list">상품 목록</a></li>
-                    <li><a href="/erp/product/registration">상품 등록</a></li>
-                    <li><a href="/erp/product/correction">상품 수정</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="javascript:void(0);" class="menu-toggle">
                     <i class="fas fa-cash-register"></i>
-                    <div>가상 POS <span class="arrow">▼</span></div>
+                    <div>POS <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
                     <li><a href="/erp/pos/main" target='_blank'>POS 실행</a></li>--%>
@@ -106,3 +115,4 @@
             </li>
         </ul>
     </nav>
+

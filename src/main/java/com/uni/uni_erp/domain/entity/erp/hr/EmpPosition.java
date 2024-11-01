@@ -24,6 +24,16 @@ public class EmpPosition {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @Column(nullable = false)
     private String scheduleColor;
+
+    @Column(name = "min_required_num",nullable = false)
+    private Integer minRequiredNum = 0;
+
+    @PrePersist
+    public void setDefaultValues() {
+        if (this.name == null || this.name.isEmpty()) {
+            this.name = "미정"; // 기본 값 설정
+        }
+    }
+
 }
