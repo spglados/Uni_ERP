@@ -5,6 +5,7 @@ import com.uni.uni_erp.dto.erp.hr.HolidayParsingDTO;
 import com.uni.uni_erp.exception.errorsRest.RestException500;
 import com.uni.uni_erp.repository.erp.hr.HolidayRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HolidayService {
 
+    @Value("${api.key.data_kkh}")
+    private String serviceKey;
+
     private final HolidayRepository holidayRepository;
 
     /**
@@ -31,7 +35,6 @@ public class HolidayService {
     @Transactional
     public Integer setHolidayByParsing(LocalDate localDate) {
         try {
-            String serviceKey = "";
             RestTemplate restTemplate = new RestTemplate();
             String url = UriComponentsBuilder.fromHttpUrl("https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo")
                     .queryParam("serviceKey", serviceKey)

@@ -10,6 +10,7 @@ import com.uni.uni_erp.dto.erp.hr.*;
 import com.uni.uni_erp.exception.errors.Exception500;
 import com.uni.uni_erp.service.erp.hr.AttendanceService;
 import com.uni.uni_erp.service.erp.hr.HrService;
+import com.uni.uni_erp.service.erp.hr.PayrollService;
 import com.uni.uni_erp.service.erp.hr.ScheduleService;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
 import com.uni.uni_erp.util.Str.GsonUtil;
@@ -37,6 +38,7 @@ public class HrController {
     private final HrService hrService;
     private final ScheduleService scheduleService;
     private final AttendanceService attendanceService;
+    private final PayrollService payrollService;
     private final HttpSession session;
 
     @GetMapping("/download/excel")
@@ -62,48 +64,6 @@ public class HrController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("수정 중 오류 발생: " + e.getMessage());
         }
     }
-
-    @GetMapping("/salaries")
-    public String empSalaryPage(Integer employeeId, String yearMonth, Model model) {
-        List<SalaryDTO> employeeList = getSampleEmployees();
-        model.addAttribute("employeeList", employeeList);
-
-        // 기본값 설정 (현재 월)
-        YearMonth currentYearMonth = (yearMonth != null && !yearMonth.isEmpty()) ? YearMonth.parse(yearMonth) : YearMonth.now();
-        model.addAttribute("currentYearMonth", currentYearMonth.toString());
-
-        // 선택된 직원 ID가 없으면 첫 번째 직원 선택
-        if (employeeId == null && !employeeList.isEmpty()) {
-            employeeId = employeeList.get(0).getId();
-        }
-
-        // 선택된 직원 찾기
-        // 람다 사용하려면 간접적 파이널 혹은 파이널 변수 써야됨.
-        Integer finalEmployeeId = employeeId;
-        Optional<SalaryDTO> selectedEmployeeOpt = employeeList.stream()
-                .filter(emp -> emp.getId().equals(finalEmployeeId))
-                .findFirst();
-
-        if (selectedEmployeeOpt.isPresent()) {
-            SalaryDTO selectedEmployee = selectedEmployeeOpt.get();
-            // 해당 월의 급여 상세 찾기
-            Optional<SalaryDTO.SalaryDetail> salaryDetailOpt = selectedEmployee.getSalaryDetails().getYear() == currentYearMonth.getYear() &&
-                    selectedEmployee.getSalaryDetails().getMonth() == currentYearMonth.getMonthValue()
-                    ? Optional.of(selectedEmployee.getSalaryDetails())
-                    : Optional.empty();
-
-            SalaryDTO.SalaryDetail salaryDetail = salaryDetailOpt.orElse(new SalaryDTO.SalaryDetail());
-
-            model.addAttribute("selectedEmployee", selectedEmployee);
-            model.addAttribute("salaryDetail", salaryDetail);
-        } else {
-            model.addAttribute("selectedEmployee", new SalaryDTO());
-            model.addAttribute("salaryDetail", new SalaryDTO.SalaryDetail());
-        }
-
-        return "/erp/hr/salaries";
-    }
-
 
     // 직원 등록 페이지 이동
     @GetMapping("/employee-register")
@@ -343,6 +303,67 @@ public class HrController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
+    /**
+     * 급여 산출 페이지
+     * @param model 직원 정보 저장
+     * @return 급여 산출 페이지
+     */
+    @GetMapping("/salaries-calculator")
+    public String salaryCalculatorPage(HttpSession session, Model model) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        List<EmployeeDTO> employees = hrService.getEmployeesByStoreId(storeId);
+        model.addAttribute("employees", employees);
+        return "/erp/hr/salariesCalculator";
+    }
+
+    @GetMapping("/salaries-calculator/employee")
+    public ResponseEntity<?> salaryCalculate(@ModelAttribute PayrollDTO.CalculateDTO reqDTO) {
+        List<PayrollDTO.CalculateResultDTO> resDTO = payrollService.calculateGrossSalary(reqDTO.getEmpNos(), reqDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(resDTO);
+    }
+
+    @GetMapping("/salaries-history")
+    public String empSalaryPage(Integer employeeId, String yearMonth, Model model) {
+        List<SalaryDTO> employeeList = getSampleEmployees();
+        model.addAttribute("employeeList", employeeList);
+
+        // 기본값 설정 (현재 월)
+        YearMonth currentYearMonth = (yearMonth != null && !yearMonth.isEmpty()) ? YearMonth.parse(yearMonth) : YearMonth.now();
+        model.addAttribute("currentYearMonth", currentYearMonth.toString());
+
+        // 선택된 직원 ID가 없으면 첫 번째 직원 선택
+        if (employeeId == null && !employeeList.isEmpty()) {
+            employeeId = employeeList.get(0).getId();
+        }
+
+        // 선택된 직원 찾기
+        // 람다 사용하려면 간접적 파이널 혹은 파이널 변수 써야됨.
+        Integer finalEmployeeId = employeeId;
+        Optional<SalaryDTO> selectedEmployeeOpt = employeeList.stream()
+                .filter(emp -> emp.getId().equals(finalEmployeeId))
+                .findFirst();
+
+        if (selectedEmployeeOpt.isPresent()) {
+            SalaryDTO selectedEmployee = selectedEmployeeOpt.get();
+            // 해당 월의 급여 상세 찾기
+            Optional<SalaryDTO.SalaryDetail> salaryDetailOpt = selectedEmployee.getSalaryDetails().getYear() == currentYearMonth.getYear() &&
+                    selectedEmployee.getSalaryDetails().getMonth() == currentYearMonth.getMonthValue()
+                    ? Optional.of(selectedEmployee.getSalaryDetails())
+                    : Optional.empty();
+
+            SalaryDTO.SalaryDetail salaryDetail = salaryDetailOpt.orElse(new SalaryDTO.SalaryDetail());
+
+            model.addAttribute("selectedEmployee", selectedEmployee);
+            model.addAttribute("salaryDetail", salaryDetail);
+        } else {
+            model.addAttribute("selectedEmployee", new SalaryDTO());
+            model.addAttribute("salaryDetail", new SalaryDTO.SalaryDetail());
+        }
+
+        return "/erp/hr/salariesHistory";
+    }
+
 
 
     public static List<SalaryDTO> getSampleEmployees() {

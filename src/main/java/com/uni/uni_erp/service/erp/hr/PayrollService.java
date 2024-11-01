@@ -1,13 +1,10 @@
 package com.uni.uni_erp.service.erp.hr;
 
-import com.uni.uni_erp.domain.entity.erp.hr.Allowance;
 import com.uni.uni_erp.domain.entity.erp.hr.Attendance;
 import com.uni.uni_erp.domain.entity.erp.hr.Holiday;
 import com.uni.uni_erp.dto.erp.hr.PayrollDTO;
-import com.uni.uni_erp.repository.erp.hr.AllowanceRepository;
-import com.uni.uni_erp.repository.erp.hr.AttendanceRepository;
-import com.uni.uni_erp.repository.erp.hr.HolidayRepository;
-import com.uni.uni_erp.repository.erp.hr.PayrollRepository;
+import com.uni.uni_erp.repository.erp.hr.*;
+import com.uni.uni_erp.util.date.NumberFormatter;
 import com.uni.uni_erp.util.define.Define_HR;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,15 +21,16 @@ public class PayrollService {
     private final AttendanceRepository attendanceRepository;
     private final PayrollRepository payrollRepository;
     private final AllowanceRepository allowanceRepository;
+    private final EmployeeRepository employeeRepository;
     private final HolidayService holidayService;
     private final HolidayRepository holidayRepository;
 
     @Transactional
-    public void calculateGrossSalary(List<Long> employeeNos, PayrollDTO.CalculateDTO options) {
+    public List<PayrollDTO.CalculateResultDTO> calculateGrossSalary(List<Long> employeeNos, PayrollDTO.CalculateDTO options) {
         YearMonth previousMonth = YearMonth.now().minusMonths(1);
         LocalDate periodStart = previousMonth.atDay(1);
         LocalDate periodEnd = previousMonth.atEndOfMonth();
-
+        List<PayrollDTO.CalculateResultDTO> resDTO = new ArrayList<>();
         for (Long empNo : employeeNos) {
             // 출근 기록 조회
             List<Attendance.Status> statuses = new ArrayList<>();
@@ -44,48 +42,41 @@ public class PayrollService {
             List<Attendance> attendances = attendanceRepository.findByEmployeeNoAndDateBetween(empNo, periodStart, periodEnd, statuses);
 
             // 근무 시간 계산
-            int totalWorkMinutes = 0;
+            int totalWorkAllowance = 0;
 
             for (Attendance attendance : attendances) {
                 if (attendance.getWorkTime() != null) {
-                    totalWorkMinutes += attendance.getWorkTime();
+                    totalWorkAllowance += attendance.getWorkTime() * (attendance.getWage() / 60);
                 }
             }
-            // 초과 근무 시간 (연장 근무 수당 산출 용)
-            int overtimeAllowance = 0;
-            int totalHolidayWorkMinutes = 0;
-            int totalNightWorkMinutes = 0;
+            // 수당 계산
+            int totalOverWorkAllowance = 0;
+            int totalHolidayWorkAllowance = 0;
+            int totalNightWorkAllowance = 0;
+            int totalWeeklyHolidayAllowance = 0;
             if (options.isIncludeOvertime()) {
-                overtimeAllowance = (int) (calculateOvertime(empNo, periodStart, periodEnd, statuses) * 0.5);
+                totalOverWorkAllowance = (int) (calculateOvertime(empNo, periodStart, periodEnd, statuses) * 0.5);
             }
             if (options.isIncludeHolidayWork()) {
-                totalHolidayWorkMinutes = calculateHolidayWork(empNo, periodStart, periodEnd, statuses, options.isIncludeSundayWork());
+                totalHolidayWorkAllowance = (int) (calculateHolidayWork(empNo, periodStart, periodEnd, statuses, options.isIncludeSundayWork()) * 0.5);
             }
             if (options.isIncludeNightWork()) {
-                totalNightWorkMinutes = calculateNightWork(empNo, periodStart, periodEnd, statuses);
+                totalNightWorkAllowance = (int) (calculateNightWork(empNo, periodStart, periodEnd, statuses) * 0.5);
             }
-
-//            // 주휴 수당 계산
-//            int numberOfWeeks = previousMonth.lengthOfMonth() / 7 + 1;
-//            int weeklyWorkMinutes = totalWorkMinutes / numberOfWeeks;
-//            Integer weeklyHolidayAllowance = 0;
-//            if (weeklyWorkMinutes >= 15 * 60) { // 예: 주 15시간 이상 근무 시 주휴 수당
-//                weeklyHolidayAllowance = calculateWeeklyHolidayAllowance(baseSalary);
-//            }
-
-//            if (options.isIncludeOvertime()) {
-//                overtimeAllowance = (int) ((totalOvertimeMinutes / 60.0) * employee.getWage() * 1.5);
-//            }
-//            if (options.isIncludeHolidayWork()) {
-//                holidayWorkAllowance = (int) ((totalHolidayWorkMinutes / 60.0) * employee.getWage() * 1.5);
-//            }
-//            if (options.isIncludeNightWork()) {
-//                nightWorkAllowance = (int) ((totalNightWorkMinutes / 60.0) * employee.getWage() * 1.5);
-//            }
-
-            // 세전 급여 계산
-
+            if (options.isIncludeWeeklyHoliday()) {
+                totalWeeklyHolidayAllowance = calculateWeeklyHolidayAllowance(empNo, periodStart, periodEnd, statuses);
+            }
+            resDTO.add(PayrollDTO.CalculateResultDTO.builder()
+                            .empNo(empNo)
+                            .name(attendances.get(0).getEmployee().getName())
+                            .workSalary(NumberFormatter.formatToPrice(totalWorkAllowance))
+                            .overWorkAllowance(NumberFormatter.formatToPrice(totalOverWorkAllowance))
+                            .holidayWorkAllowance(NumberFormatter.formatToPrice(totalHolidayWorkAllowance))
+                            .nightWorkAllowance(NumberFormatter.formatToPrice(totalNightWorkAllowance))
+                            .weeklyHolidayAllowance(NumberFormatter.formatToPrice(totalWeeklyHolidayAllowance))
+                    .build());
         }
+        return resDTO;
     }
 
     /**
@@ -95,7 +86,7 @@ public class PayrollService {
      * @param firstOfMonth 해당 달의 첫날
      * @param lastOfMonth  해당 달의 마지막 날
      * @param statuses     출근 상태 리스트
-     * @return 초과 근무 수당
+     * @return 초과 근무 수당 (100%) --> 비율 처리 필요
      */
     private int calculateOvertime(Long empNo, LocalDate firstOfMonth, LocalDate lastOfMonth, List<Attendance.Status> statuses) {
         // 주간 초과 근무 측정을 위해 전달의 마지막주 데이터까지 포함 시킴
@@ -141,7 +132,7 @@ public class PayrollService {
      * @param lastOfMonth  해당 달의 마지막 날
      * @param statuses     출근 상태 리스트
      * @param sunday       일요일 포함 여부
-     * @return 휴일 근무 시간 (분)
+     * @return 휴일 수당 (100%) --> 비율 처리 필요
      */
     private int calculateHolidayWork(Long empNo, LocalDate firstOfMonth, LocalDate lastOfMonth, List<Attendance.Status> statuses, boolean sunday) {
         List<Holiday> holidayList = holidayRepository.findByDateBetween(firstOfMonth, lastOfMonth);
@@ -170,7 +161,7 @@ public class PayrollService {
      * @param firstOfMonth 해당 달의 첫날
      * @param lastOfMonth  해당 달의 마지막 날
      * @param statuses     출근 상태 리스트
-     * @return 야간 근무 시간 (분)
+     * @return 야간 수당 (100%) --> 비율 처리 필요
      */
     private int calculateNightWork(Long empNo, LocalDate firstOfMonth, LocalDate lastOfMonth, List<Attendance.Status> statuses) {
         List<Attendance> attendanceList = attendanceRepository.findByEmployeeNoAndDateBetween(empNo, firstOfMonth, lastOfMonth, statuses);
@@ -223,12 +214,75 @@ public class PayrollService {
         return (int) Duration.between(overlapStart, overlapEnd).toMinutes();
     }
 
-    private Integer calculateWeeklyHolidayAllowance(Integer baseSalary) {
-        // 주휴 수당 계산 로직
-        // 예: 기본 시급의 일정 비율로 주휴 수당 계산
-        // 예: 주휴 수당 = 기본 시급 * 8시간
-        // 실제 계산 로직은 법정 기준에 따름
-        return (int) (baseSalary / 160.0 * 8); // 예시: 월 160시간 기준
+    /**
+     * 주휴 수당 계산 기능
+     *
+     * @param empNo        사번
+     * @param firstOfMonth 해당 달의 첫날
+     * @param lastOfMonth  해당 달의 마지막 날
+     * @param statuses     출근 상태 리스트
+     * @return 주휴 수당 (100%) --> 비율 처리 필요
+     */
+    private int calculateWeeklyHolidayAllowance(Long empNo, LocalDate firstOfMonth, LocalDate lastOfMonth, List<Attendance.Status> statuses) {
+        // 주간 초과 근무 측정을 위해 전달의 마지막주 데이터까지 포함 시킴
+        LocalDate start = firstOfMonth.with(DayOfWeek.SUNDAY);
+        if (start.isAfter(firstOfMonth)) {
+            start = start.minusWeeks(1);
+        }
+        // 주휴수당 미지급을 위해 결근 상태 확인
+        statuses.add(Attendance.Status.UNAUTHORIZED_ABSENT);
+        statuses.add(Attendance.Status.PERSONAL_ABSENT);
+        int weeklyHolidayAllowance = 0;
+        // 이달의 범위까지만
+        while (!start.isAfter(lastOfMonth)) {
+            // 일주일 범위 지정
+            LocalDate end = start.plusDays(6);
+            // 이달의 범위까지만
+            if (end.isAfter(lastOfMonth)) {
+                end = lastOfMonth;
+            }
+            // 일주일동안의 근무 내역 조회
+            List<Attendance> attendances = attendanceRepository.findByEmployeeNoAndDateBetween(empNo, start, end, statuses);
+            int weeklyTotalMinutesThisMonth = 0;
+            int weeklyTotalMinutesLastMonth = 0;
+            int weeklyCountThisMonth = 0;
+            int weeklyCountLastMonth = 0;
+            int weeklyTotalMinutes;
+            int weeklyTotalCount;
+            for (Attendance attendance : attendances) {
+
+                // 주간 총 근무 시간 합계 - 전달과 이번달 분리
+                if (attendance.getStartTime().toLocalDateTime().toLocalDate().isBefore(firstOfMonth)) {
+                    weeklyTotalMinutesLastMonth += attendance.getWorkTime();
+                    weeklyCountLastMonth++;
+                } else {
+                    weeklyTotalMinutesThisMonth += attendance.getWorkTime();
+                    weeklyCountThisMonth++;
+                    // 만약 무단 결근이나 개인사정 결근이 있을 경우 주휴수당 지급하지 않음
+                    if (attendance.getStatus().equals(Attendance.Status.UNAUTHORIZED_ABSENT) || attendance.getStatus().equals(Attendance.Status.PERSONAL_ABSENT)) {
+                        weeklyTotalMinutesThisMonth = 0;
+                        weeklyTotalMinutesLastMonth = 0;
+                        weeklyCountThisMonth = 0;
+                        weeklyCountLastMonth = 0;
+                        break;
+                    }
+                }
+            }
+            // 지난달의 근무 시간이 15시간이 넘는다면 지난달에 주휴수당을 지급했기때문에 이번달에 포함하지않음
+            if (weeklyTotalMinutesLastMonth >= Define_HR.WEEKLY_HOLIDAY_MINUTES) {
+                weeklyTotalMinutesLastMonth = 0;
+                weeklyCountLastMonth = 0;
+            }
+            weeklyTotalMinutes = weeklyTotalMinutesThisMonth + weeklyTotalMinutesLastMonth;
+            weeklyTotalCount = weeklyCountLastMonth + weeklyCountThisMonth;
+            // 주간 일한 시간 / 일한 일수 --> 하루치 일한 시간
+            if (weeklyTotalCount != 0) {
+                weeklyHolidayAllowance += (weeklyTotalMinutes / weeklyTotalCount) * (attendances.get(attendances.size() - 1).getWage() / 60);
+            }
+            start = start.plusDays(7);
+
+        }
+        return weeklyHolidayAllowance;
     }
 
 }

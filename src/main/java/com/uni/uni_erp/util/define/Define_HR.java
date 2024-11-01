@@ -7,4 +7,5 @@ public class Define_HR {
     // 초과 근무 시간 기준
     public static final int WEEK_OVER_MINUTES = 40 * 60;
     public static final int DAY_OVER_MINUTES = 8 * 60;
+    public static final int WEEKLY_HOLIDAY_MINUTES = 15 * 60;
 }

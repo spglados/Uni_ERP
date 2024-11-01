@@ -57,7 +57,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     @Query("SELECT a FROM Attendance a " +
             "JOIN FETCH a.employee e " +
             "WHERE e.uniqueEmployeeNumber = :empNo " +
-            "AND a.startTime BETWEEN :start AND :end " +
+            "AND FUNCTION('DATE', a.startTime) BETWEEN :start AND :end " +
             "AND a.status IN :statuses")
     List<Attendance> findByEmployeeNoAndDateBetween(
             @Param("empNo") Long empNo,
