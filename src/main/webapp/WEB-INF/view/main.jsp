@@ -103,8 +103,8 @@
                 이건 부탁이 아니라, 명령 입니다.
             </p>
             <br>
-            <h2>상담문의</h2>
-            <button>문의</button>
+            <h2>상담문의 하기</h2>
+            <a href="/support">!클릭!</a>
         </div>
     </div>
 </div>

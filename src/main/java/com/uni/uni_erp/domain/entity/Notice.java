@@ -5,11 +5,13 @@ import java.text.SimpleDateFormat;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.jmx.export.annotation.ManagedMetric;
 
 @Entity
 @Table(name = "notice_tb")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Notice {

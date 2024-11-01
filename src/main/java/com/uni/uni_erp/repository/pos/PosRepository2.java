@@ -11,4 +11,8 @@ public interface PosRepository2 extends JpaRepository<Pos, Integer> {
      @Query("UPDATE Pos p SET p.amount = p.amount - :withdrawalAmount WHERE p.id = :posId AND p.amount >= :withdrawalAmount")
      int withdrawAmount(Integer posId, Long withdrawalAmount);
 
+
+     @Modifying
+     @Query("UPDATE Pos p SET p.amount = p.amount + :depositAmount WHERE p.id = :posId")
+     int addAmount(Integer posId, Long depositAmount);
 }

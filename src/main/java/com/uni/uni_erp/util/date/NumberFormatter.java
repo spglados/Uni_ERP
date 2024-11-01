@@ -16,6 +16,10 @@ public class NumberFormatter {
         return decimalFormat.format(price);
     }
 
+    public static Integer parseToPrice(String price) {
+        return Integer.parseInt(price.replace(",", ""));
+    }
+
     public static String formatToDouble(double v) {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         return decimalFormat.format(v);

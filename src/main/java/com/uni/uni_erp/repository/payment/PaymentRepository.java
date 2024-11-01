@@ -32,6 +32,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     @Query("SELECT COUNT(p) FROM Payment p WHERE p.cancel = 'N'")
     Integer countByCancelN(Integer userPk);
 
+    @Query("SELECT SUM(p.nowPayAmount) FROM Payment p")
+    Long findAllSumAmount();
+
     @Query("SELECT COUNT(p) FROM Payment p WHERE p.status <> 0 AND p.user.id = :userPk")
     Integer countByStatusNotZero(@Param("userPk") Integer userPk);
 
@@ -40,6 +43,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     void updateCancelReason(@Param("id") Integer id, @Param("cancelReason") String cancelReason);
 
 
+    @Query("SELECT p FROM Payment p WHERE p.status <> 0")
+    List<Payment> findAllWithNonZeroStatus();
 
 
     /* @Query("UPDATE User u SET u.membership = :membership WHERE u.id = :userId")

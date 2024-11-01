@@ -1,6 +1,7 @@
 package com.uni.uni_erp.controller.common;
 
 import com.uni.uni_erp.domain.entity.Notice;
+import com.uni.uni_erp.dto.NoticeDTO;
 import com.uni.uni_erp.service.common.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ public class NoticeController {
     public String noticePage(@RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "10") int size,
                              Model model) {
-        Page<Notice> notices = noticeService.getNotices(page, size);
+        Page<NoticeDTO> notices = noticeService.getNotices(page, size);
 
         model.addAttribute("notices", notices);
         model.addAttribute("currentPage", page + 1);

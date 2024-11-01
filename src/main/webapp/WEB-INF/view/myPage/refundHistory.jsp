@@ -3,10 +3,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/view/layout/header.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
+    <title>환불 내역</title>
     <style>
         .sidebar {
             width: 200px;
@@ -39,10 +41,10 @@
     <div class="sidebar">
         <h3>내 정보</h3>
         <a href="/myPage">회원 정보 및 수정</a>
-        <a href="#">가게 등록</a>
+        <a href="/myPage/storeList">가게 등록</a>
         <a href="/myPage/paymentHistory">결제 내역</a>
         <a href="/myPage/refundHistory">환불 내역</a>
-        <a href="#">내 문의 내역</a>
+        <a href="/myPage/contact">내 문의 내역</a>
     </div>
 
     <h1>환불 내역</h1>
@@ -66,8 +68,17 @@
                     <tr>
                         <td>${refund.id}</td> <!-- refund 객체의 ID -->
                         <td>${refund.cancelAmount}</td> <!-- refund 객체의 ID -->
-                        <td>${refund.cancelReason}</td>
-                        <td>${refund.approvedAt}</td>
+                        <td>
+                                    <c:choose>
+                                        <c:when test="${refund.cancelReason == 'simple'}">단순변심</c:when>
+                                        <c:when test="${refund.cancelReason == 'cancelSubscribe'}">가게폐점</c:when>
+                                        <c:when test="${refund.cancelReason == 'doublePay'}">중복결제</c:when>
+                                        <c:otherwise>기타</c:otherwise>
+                                    </c:choose>
+                                </td>
+                        <td id="date-${refund.id}"> <!-- 날짜 출력 ID 설정 -->
+                                                    ${refund.approvedAt} <!-- 원본 날짜 문자열 출력 -->
+                                                </td>
                     </tr>
                 </c:forEach>
             </tbody>
@@ -77,3 +88,14 @@
 <%@ include file="/WEB-INF/view/layout/footer.jsp" %>
 </body>
 </html>
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const refundRows = document.querySelectorAll("tbody tr");
+            refundRows.forEach(row => {
+                const dateCell = row.querySelector("td[id^='date-']");
+                const dateString = dateCell.innerText; // 승인 날짜 문자열 가져오기
+                const dateParts = dateString.split("T"); // T 기준으로 분리
+                dateCell.innerText = dateParts[0]; // 날짜 부분만 출력
+            });
+        });
+    </script>

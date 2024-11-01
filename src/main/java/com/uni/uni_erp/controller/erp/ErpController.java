@@ -2,11 +2,13 @@ package com.uni.uni_erp.controller.erp;
 
 import com.google.gson.Gson;
 import com.uni.uni_erp.dto.StoreDTO;
+import com.uni.uni_erp.dto.erp.hr.AttendanceDTO;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.sales.MostProductSaleQuantityDTO;
 import com.uni.uni_erp.repository.user.UserRepository;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.invertory.InventoryService;
+import com.uni.uni_erp.service.erp.hr.AttendanceService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ErpController {
 
+    private final UserRepository userRepository;
+    private final AttendanceService attendanceService;
     private final InventoryService inventoryService;
     private final SalesService salesService;
     private final Gson gson;
@@ -43,6 +47,11 @@ public class ErpController {
         if (storeId != null) {
             model.addAttribute("storeId", storeId);
         }
+        AttendanceDTO.ErpMainDTO attDTO = attendanceService.getAttendanceForMain(storeId);
+        System.out.println("---------------------------------------------------");
+        System.out.println(attDTO);
+        System.out.println("---------------------------------------------------");
+        model.addAttribute("attDTO", attDTO);
 
         // 오늘 날짜 재고 현황 최신화
         inventoryService.getMaterialStatus(session);

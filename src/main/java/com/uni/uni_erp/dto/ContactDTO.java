@@ -10,9 +10,8 @@ import lombok.*;
 public class ContactDTO {
 
     private Integer id;
-    private String name;
-    private String email;
-    private String tel;
+    private Integer userId;
+    private String title;
     private String content;
 
 }

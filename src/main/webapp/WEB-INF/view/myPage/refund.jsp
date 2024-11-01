@@ -3,37 +3,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!-- header.jsp  -->
 <%@include file="/WEB-INF/view/layout/header.jsp"%>
-<style>
-        .sidebar {
-            width: 200px;
-            float: left;
-            margin-right: 20px;
-            border-right: 1px solid #ccc;
-            padding: 10px;
-        }
-        .sidebar a {
-            display: block;
-            margin: 10px 0;
-            text-decoration: none;
-            color: #333;
-        }
-        .sidebar a:hover {
-            color: #007bff;
-        }
-        .profile-info {
-            overflow: hidden;
-        }
-    </style>
 </head>
-    <div class="sidebar">
-        <h3>내 정보</h3>
-        <a href="/myPage">회원 정보 및 수정</a>
-        <a href="#">가게 등록</a>
-        <a href="/myPage/paymentHistory">결제 내역</a>
-        <a href="#">환불 내역</a>
-        <a href="#">내 문의 내역</a>
-    </div>
-<h1>환불 승인</h1>
+<body>
+
     <table>
         <thead>
             <tr>
@@ -52,14 +24,21 @@
             <c:forEach var="payment" items="${payments}">
                 <c:if test="${not empty payment.cancelReason}">
                     <tr>
-                        <td><input type="checkbox" class="payment-checkbox" value="${payment.id}" /></td>
+                        <td><input type="radio" class="payment-radio" name="selectedPayment" value="${payment.id}" /></td>
                         <td>${payment.orderName}</td>
                         <td>${payment.amount}</td>
                         <td>${payment.nowPayAmount}</td>
                         <td>${payment.nextPayAmount}</td>
                         <td>${payment.date}</td>
                         <td>${payment.method}</td>
-                        <td>${payment.cancelReason}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${refund.cancelReason == 'simple'}">단순변심</c:when>
+                                <c:when test="${refund.cancelReason == 'cancelSubscribe'}">가게폐점</c:when>
+                                <c:when test="${refund.cancelReason == 'doublePay'}">중복결제</c:when>
+                                <c:otherwise>기타</c:otherwise>
+                            </c:choose>
+                        </td>
                         <td>
                             <c:if test="${payment.cancel != 'Y'}">
                                 <button onclick="cancelPayments('${payment.cancelReason}', '${payment.id}')">환불 승인</button>
@@ -73,44 +52,44 @@
                 </c:if>
             </c:forEach>
         </tbody>
-
-
     </table>
 
+    <script>
+    function cancelPayments(cancelReason) {
+        const selectedPayment = document.querySelector('.payment-radio:checked');
 
-
-<script>
-function cancelPayments(cancelReason, paymentId) {
-    const selectedPayments = document.querySelectorAll('.payment-checkbox:checked');
-
-    const paymentRequests = Array.from(selectedPayments).map(checkbox => {
-        const paymentKey = checkbox.closest('tr').querySelector('.payment-key').value;
-        return {
-            paymentKey: paymentKey,
-            cancelReason: cancelReason, // 매개변수를 그대로 사용
-            payPk: checkbox.value // payment.id를 payPk로 사용
-        };
-    });
-
-    fetch('/payment/refund', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(paymentRequests) // 리스트 형태로 전송
-    })
-    .then(response => {
-        if (response.ok) {
-            alert('승인완료');
-        } else {
-            console.error('Error canceling payments');
-            // 에러 처리 추가 가능
+        if (!selectedPayment) {
+            alert('환불할 결제를 선택해주세요.');
+            return;
         }
-    })
-    .catch(error => console.error('Fetch error:', error));
-}
-</script>
 
+        const paymentKey = selectedPayment.closest('tr').querySelector('.payment-key').value;
+        const paymentRequest = {
+            paymentKey: paymentKey,
+            cancelReason: cancelReason,
+            payPk: selectedPayment.value // payment.id를 payPk로 사용
+        };
 
-<!-- footer.jsp  -->
-<%@include file="/WEB-INF/view/layout/footer.jsp"%>
+        fetch('/payment/refund', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(paymentRequest) // 단일 객체로 전송
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('승인 완료');
+                location.reload(); // 페이지를 리로드합니다.
+            } else {
+                console.error('Error canceling payments');
+            }
+        })
+        .catch(error => console.error('Fetch error:', error));
+    }
+    </script>
+
+    <!-- footer.jsp  -->
+    <%@include file="/WEB-INF/view/layout/footer.jsp"%>
+</body>
+</html>
