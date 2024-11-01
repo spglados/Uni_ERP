@@ -40,7 +40,9 @@ public class myPageController {
     public String myPage(@SessionAttribute(value = "userSession") User principal, Model model) {
         Integer userPk = principal.getId();
         User user = userService.findById(userPk);
+        Integer paymentCount = paymentService.getCountOfPaymentsWithStatusNotZero(userPk);
         model.addAttribute("user", user);
+        model.addAttribute("paymentCount",paymentCount);
         return "/myPage/myPage";
     }
 
@@ -48,12 +50,18 @@ public class myPageController {
     public String refundPage(Model model, @SessionAttribute(value = "userSession") User principal) {
         int userPk = principal.getId();
         List<Payment> payments = paymentService.findByUserId(userPk);
-        Integer count = paymentService.getCountOfPaymentsWithStatusNotZero(userPk);
-
-        model.addAttribute("count", count); // "payments"라는 키로 List<Payment> 추가
+        Integer paymentCount = paymentService.getCountOfPaymentsWithStatusNotZero(userPk);
+        Integer storeCount = storeService.getStoreCountByUserId(userPk);
+        model.addAttribute("paymentCount", paymentCount); // "payments"라는 키로 List<Payment> 추가
+        model.addAttribute("storeCount", storeCount); // "payments"라는 키로 List<Payment> 추가
         model.addAttribute("payments", payments); // "payments"라는 키로 List<Payment> 추가
-
         return "/myPage/paymentHistory";
+    }
+
+    @PostMapping("/deleteStore/{storeId}")
+    public ResponseEntity<?> deleteStore(@PathVariable Integer storeId) {
+        storeService.deleteByStoreId(storeId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/updateEmail")
