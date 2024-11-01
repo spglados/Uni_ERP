@@ -45,9 +45,6 @@ public class ErpController {
         System.out.println("---------------------------------------------------");
         model.addAttribute("attDTO", attDTO);
 
-        Integer storeId = (Integer) session.getAttribute("storeId");
-        
-
         return "erp/main";
     }
 
