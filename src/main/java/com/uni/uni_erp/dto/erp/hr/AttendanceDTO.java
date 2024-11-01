@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class AttendanceDTO {
 
@@ -59,19 +60,19 @@ public class AttendanceDTO {
     @Data
     @NoArgsConstructor
     public static class GridDTO {
-        Long empNo;
-        String name;
-        LocalDate date;
-        LocalDateTime attendanceTime;
-        LocalDateTime leaveTime;
-        Integer breakTime; // 분단위
-        Integer workTime; // 분단위
-        Integer overedTime; // 분단위
-        Integer missedTime; // 분단위
-        Integer wage; // 시급
-        String status; // 상태
-        LocalDateTime startTime; // 근무 일정 상 출근 시간
-        LocalDateTime endTime; // 근무 일정 상 퇴근 시간
+        private Long empNo;
+        private String name;
+        private LocalDate date;
+        private LocalDateTime attendanceTime;
+        private LocalDateTime leaveTime;
+        private Integer breakTime; // 분단위
+        private Integer workTime; // 분단위
+        private Integer overedTime; // 분단위
+        private Integer missedTime; // 분단위
+        private Integer wage; // 시급
+        private String status; // 상태
+        private LocalDateTime startTime; // 근무 일정 상 출근 시간
+        private LocalDateTime endTime; // 근무 일정 상 퇴근 시간
 
         public GridDTO(Attendance attendance) {
             this.empNo = attendance.getEmployee().getUniqueEmployeeNumber();
@@ -90,6 +91,52 @@ public class AttendanceDTO {
                 this.endTime = DateFormatter.toLocalDateTime(attendance.getSchedule().getEndTime());
             }
         }
+    }
+
+    /**
+     * erp 메인 용 오늘 출근 예정자 리스트 DTO
+     */
+    @Data
+    @NoArgsConstructor
+    public static class TodayAttendanceDTO {
+        private Long empNo;       // 사번
+        private String name;      // 이름
+        private String startTime; // 출근 예정 시간 - 예정 외 근무는 "예정 외"
+        private String status;    // 출근전 --> 근무중 --> 퇴근
+
+        public TodayAttendanceDTO(Attendance attendance) {
+            this.empNo = attendance.getEmployee().getUniqueEmployeeNumber();
+            this.name = attendance.getEmployee().getName();
+            if (attendance.getSchedule() != null) {
+                this.startTime = DateFormatter.toTimeHourAndMinute(attendance.getSchedule().getStartTime());
+            } else {
+                this.startTime = "예정 외";
+            }
+            this.status = attendance.getStatus().getDescription();
+            if (status.equals("정상") || status.equals("예정 외")) status = "퇴근";
+        }
+    }
+
+    /**
+     * erp 메인 용 이번 달 근태 불량 수치 리스트 DTO
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MonthlyAttendanceDTO {
+        private Long empNo;                 // 사번
+        private String name;                // 이름
+        private Integer late;               // 지각
+        private Integer earlyLeave;         // 조퇴
+        private Integer unauthorizedAbsent; // 무단 결근
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ErpMainDTO {
+        private List<TodayAttendanceDTO> todayAttendanceList;
+        private List<MonthlyAttendanceDTO> monthlyAttendanceList;
     }
 
 }
