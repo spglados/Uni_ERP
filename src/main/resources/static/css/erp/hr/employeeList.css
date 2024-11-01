@@ -1,0 +1,51 @@
+/* left-panel과 right-panel이 화면 너비의 50%씩 차지하도록 */
+.container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 50px;
+}
+
+.left-panel, .right-panel {
+    width: 50%;
+    padding: 20px;
+}
+
+.left-panel {
+    border-right: 1px solid #ddd;
+    margin-right: 50px;
+}
+
+/* 모달 백그라운드 및 콘텐츠 스타일 */
+#modalBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -2; /* 기본적으로 숨김 */
+    display: none;
+}
+
+#editEmployeeModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1; /* 기본적으로 숨김 */
+    display: none;
+}
+
+/* 모달이 활성화될 때 스타일 */
+.show-modal #modalBackground,
+.show-modal #editEmployeeModal {
+    z-index: 1050;
+    display: block;
+}
+
+.modal-body {
+    max-height: 70vh; /* 최대 높이를 viewport의 70%로 설정 */
+    overflow-y: auto; /* 세로 스크롤 활성화 */
+    padding: 10px; /* 패딩 추가 */
+}
