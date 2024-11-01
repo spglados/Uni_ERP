@@ -2,7 +2,6 @@
     background-color: #f9f9f9;
 }
 
-
 .introduce-container {
     display: flex;
     flex-direction: row;
@@ -76,4 +75,76 @@ section ul li::before {
     width: 20px;
     position: absolute;
     left: 0;
+}
+
+/* 초기 상태 클래스 */
+.hidden {
+    opacity: 0;
+    transform: translateX(0);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* show 클래스가 추가되면 애니메이션을 실행 */
+.fadeInLeft.show {
+    animation: fadeInLeft 1s forwards;
+}
+
+.fadeInRight.show {
+    animation: fadeInRight 1s forwards;
+}
+
+/* fadeInLeft 애니메이션 클래스 */
+.fadeInLeft {
+    /* 초기 상태는 .hidden 클래스로 설정됨 */
+}
+
+/* fadeInRight 애니메이션 클래스 */
+.fadeInRight {
+    /* 초기 상태는 .hidden 클래스로 설정됨 */
+}
+
+/* 키프레임 정의 */
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* (선택사항) 벤더 프리픽스 추가 */
+@-webkit-keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        -webkit-transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+    }
+}
+
+@-webkit-keyframes fadeInRight {
+    from {
+        opacity: 0;
+        -webkit-transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+    }
 }

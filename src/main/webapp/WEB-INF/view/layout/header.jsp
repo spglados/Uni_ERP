@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <title>Title</title>
     <link rel="stylesheet" href="/css/common.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,17 +41,32 @@
                 </div>
                 <div class="header-icons">
                 <c:if test="${not empty sessionScope.userSession}">
-                    <a href="/myPage" class="header-icon">마이페이지&nbsp;&nbsp;</a>
-                    <i class="header-icon">/</i>
-                    <a href="/user/logout" class="header-icon">&nbsp;&nbsp;로그아웃</a>
+                    <a href="/myPage" class="header-icon"><i class="fa-solid fa-user-gear icon-hover-text" style="color: #74C0FC;" id="icon1" data-text="마이페이지"></i></a>
+                    <a href="/user/logout" class="header-icon"><i class="fa-solid fa-right-from-bracket icon-hover-text" style="color: #74C0FC;" id="icon2" data-text="로그아웃"></i></a>
                 </c:if>
                 <c:if test="${empty sessionScope.userSession}">
-                    <a href="/user/login" class="header-icon"><i class="fas fa-user-check" style="color: #74C0FC;"></i></a>
-                   <a href="/user/join" class="header-icon"><i class="fas fa-user-plus" style="color: #74C0FC;"></i></a>
+                    <a href="/user/login" class="header-icon"><i class="fa-solid fa-right-to-bracket icon-hover-text" style="color: #74C0FC;" id="icon3" data-text="로그인"></i></a>
+                   <a href="/user/join" class="header-icon"><i class="fas fa-user-plus icon-hover-text" style="color: #74C0FC;" id="icon4" data-text="회원가입"></i></a>
                 </c:if>
                 </div>
             </ul>
         </nav>
     </div>
 </header>
+<script>
+    // 모든 아이콘 요소를 선택합니다.
+    const icons = document.querySelectorAll('.icon-hover-text');
 
+    icons.forEach(icon => {
+        icon.addEventListener('mouseenter', () => {
+            if (!icon.classList.contains('show-text')) {
+                icon.classList.add('show-text');
+
+                // 애니메이션이 완료된 후에 클래스 제거
+                setTimeout(() => {
+                    icon.classList.remove('show-text');
+                }, 300);
+            }
+        });
+    });
+</script>
