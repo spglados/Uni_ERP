@@ -31,7 +31,7 @@
 
                     const timer = setInterval(function() {
                         countdown--;
-                        countdownElement.textContent = countdown + "초 후에 메인으로 이동합니다...";
+                        countdownElement.textContent = countdown + "초 후에 가게 등록 페이지으로 이동합니다...";
 
                         if (countdown <= 0) {
                             clearInterval(timer);

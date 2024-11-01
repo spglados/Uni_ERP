@@ -49,7 +49,7 @@ public class UserController {
             }
         }
 
-        session.setAttribute("userSession", user);
+        session.setAttribute("principal", user);
         if (user != null) {
             session.setAttribute("userSession", user);
             System.out.println("User logged in: " + user.getId());
@@ -101,9 +101,9 @@ public class UserController {
         } else {
             response.put("success", false);
         }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
 
     // 아이디 중복 확인

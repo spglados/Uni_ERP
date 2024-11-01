@@ -3,10 +3,7 @@ package com.uni.uni_erp.domain.entity.erp.product;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -18,6 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Store {
 
     @Id
@@ -50,7 +48,7 @@ public class Store {
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Material> materials;
 
-    @Column(name = "allow_minutes",nullable = false)
+    @Column(name = "allow_minutes", nullable = false)
     private Integer allowMinutes = 1;
 
     @Column(name = "store_address", nullable = false)

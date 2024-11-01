@@ -37,4 +37,8 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
     @Query("UPDATE Store s SET s.name = :name, s.storeAddress = :storeAddress WHERE s.id = :id AND s.user.id = :userId")
     void updateStore(@Param("id") Integer id, @Param("name") String name, @Param("storeAddress") String storeAddress, @Param("userId") Integer userId);
 
+    List<Store> findByUserId(Integer userId);
+
+    @Query("SELECT COUNT(s) FROM Store s WHERE s.user.id = :userId")
+    Integer countByUserId(@Param("userId") Integer userId);
 }
