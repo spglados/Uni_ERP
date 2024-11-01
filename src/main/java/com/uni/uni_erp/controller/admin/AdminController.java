@@ -17,6 +17,7 @@ import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.common.ContactService;
 import com.uni.uni_erp.service.common.NoticeService;
 import com.uni.uni_erp.service.common.ResponseService;
+import com.uni.uni_erp.service.common.SubscribeDurationService;
 import com.uni.uni_erp.service.payment.PaymentService;
 import com.uni.uni_erp.service.product.ProductService;
 import com.uni.uni_erp.service.user.StoreService;
@@ -52,6 +53,7 @@ public class AdminController {
     private final ResponseService responseService;
     private final ContactService contactService;
     private final PaymentService paymentService;
+    private final SubscribeDurationService subscribeDurationService;
 
     @GetMapping("/login")
     public String login() {
@@ -89,6 +91,9 @@ public class AdminController {
         NumberFormat formatter = new DecimalFormat("#,###");
         String netProfitFormatted = formatter.format(totalNetProfit / 10000);
 
+        // 구독 유지기간 평균
+        Double averageSubscribeDuration = subscribeDurationService.findAverageSubscribeDuration();
+
         // 회원수
         Long totalUserCount = userService.countUsers();
         // 구독자 수
@@ -107,6 +112,7 @@ public class AdminController {
         model.addAttribute("totalUserCount", totalUserCount);
         model.addAttribute("subscriptionRateDouble", subscriptionRateDouble);
         model.addAttribute("netProfitFormatted", netProfitFormatted);
+        model.addAttribute("averageSubscribeDuration", averageSubscribeDuration);
         model.addAttribute("subscribeUserCount", subscribeUserCount);
         model.addAttribute("percentOfSubscribeUserCount", percentOfSubscribeUserCount);
         model.addAttribute("percentageOfSubscribeUser", (int) Math.round(percentageOfSubscribeUser));
