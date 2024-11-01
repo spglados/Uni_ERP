@@ -37,8 +37,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -189,19 +192,24 @@ public class AdminController {
         return "/admin/storeManagement";
     }
 
+    @ResponseBody
     @GetMapping("/store/details/{id}")
-    public String getStoreDetails(@PathVariable("id") Integer id, Model model) {
+    public ResponseEntity<Map<String, Object>> getStoreDetails(@PathVariable("id") Integer id) {
         // StoreService를 통해 가게 정보를 조회
         Store store = storeService.findById(id);
-
-
         if (store == null) {
             // 가게가 존재하지 않을 경우 404 페이지로 리다이렉트하거나 에러 처리
-            return "error/404"; // 예시: 에러 페이지 경로
+            return ResponseEntity.notFound().build();
         }
 
-        model.addAttribute("store", store);
-        return "/admin/storeDetails"; // 뷰의 이름 (storeDetails.jsp)
+        Map<String, Object> storeMap = new HashMap<>();
+        storeMap.put("id", store.getId());
+        storeMap.put("name", store.getName());
+        storeMap.put("is24Hours", store.getIs24Hours());
+        storeMap.put("isOpen", store.getIsOpen());
+        storeMap.put("createdAt", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(store.getCreatedAt()));
+
+        return ResponseEntity.ok(storeMap);
     }
 
     @GetMapping("/noticeList")

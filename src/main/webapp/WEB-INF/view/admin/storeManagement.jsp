@@ -106,7 +106,54 @@
             </div>
         </div>
         <!-- End of Content Wrapper -->
-
+        <!-- Modal -->
+        <div class="modal fade" id="storeDetailsModal" tabindex="-1" role="dialog" aria-labelledby="storeDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="storeDetailsModalLabel">Store Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="storeDetailsModalBody">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>ID</th>
+                                    <td id="storeId"></td>
+                                </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <td id="storeName"></td>
+                                </tr>
+                                <tr>
+                                    <th>24 Hours</th>
+                                    <td id="storeIs24Hours"></td>
+                                </tr>
+                                <tr>
+                                    <th>Open</th>
+                                    <td id="storeIsOpen"></td>
+                                </tr>
+                                <tr>
+                                    <th>Created At</th>
+                                    <td id="storeCreatedAt"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Scroll to Top Button -->
         <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
 
@@ -120,7 +167,17 @@
 
     <script>
         function openStoreDetails(storeId) {
-            window.open('/admin/store/details/' + storeId, '_blank', 'width=800,height=600');
+            fetch('/admin/store/details/' + storeId)
+                .then(response => response.json())
+                .then(data => {
+                    $('#storeId').text(data.id);
+                    $('#storeName').text(data.name);
+                    $('#storeIs24Hours').text(data.is24Hours === 1 ? 'Yes' : 'No');
+                    $('#storeIsOpen').text(data.isOpen === 1 ? 'Yes' : 'No');
+                    $('#storeCreatedAt').text(data.createdAt);
+                    $('#storeDetailsModal').modal('show');
+                })
+                .catch(error => console.error('Error:', error));
         }
     </script>
 </body>
