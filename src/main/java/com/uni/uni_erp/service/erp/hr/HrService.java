@@ -17,6 +17,7 @@ import com.uni.uni_erp.repository.user.StoreRepository;
 import com.uni.uni_erp.util.ExcelUtil.ExcelUtil;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
@@ -213,18 +214,18 @@ public class HrService {
     }
 
     // 중복 이메일 검사
-    public boolean isEmailDuplicated(String email) {
-        return employeeRepository.existsByEmail(email);
+    public boolean isEmailDuplicated(String email, Integer storeId) {
+        return employeeRepository.existsByEmailAndStoreId(email, storeId);
     }
 
     // 중복 전화번호 검사
-    public boolean isPhoneDuplicated(String phone) {
-        return employeeRepository.existsByPhone(phone);
+    public boolean isPhoneDuplicated(String phone, Integer storeId) {
+        return employeeRepository.existsByPhoneAndStoreId(phone, storeId);
     }
 
     // 중복 계좌번호 조회
-    public boolean isAccountNumberDuplicated(String accountNumber) {
-        return employeeRepository.existsByAccountNumber(accountNumber);
+    public boolean isAccountNumberDuplicated(String accountNumber, Integer storeId) {
+        return employeeRepository.existsByAccountNumberAndStoreId(accountNumber, storeId);
     }
 
 //    // 모든 직원과 은행 정보 조회
