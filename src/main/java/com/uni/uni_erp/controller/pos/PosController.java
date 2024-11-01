@@ -74,15 +74,6 @@ public class PosController {
         model.addAttribute("category", category);
         model.addAttribute("previousOrders", previousOrders);
 
-        // 유통기한 임박 자재
-        List<MaterialDTO.nearingExpirationDateDTO> nearingExpirationDateList = inventoryService.nearingExpirationDate(session);
-
-        // 재고 부족 알람 리스트
-        // TODO 반드시 알람 단위가 메인 단위와 일치해야 결과가 나옴 !! 공지 필수 !!!
-        List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycleList = inventoryService.alarmCycle(session);
-        model.addAttribute("nearingExpirationDateList", nearingExpirationDateList);
-        model.addAttribute("alarmCycleList", alarmCycleList);
-
         Store store = storeService.findById(storeId);
         int status24 = store.getIs24Hours();
         int status = store.getIsOpen();

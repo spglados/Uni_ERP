@@ -1,7 +1,10 @@
 package com.uni.uni_erp.controller.erp;
 
+import com.google.gson.Gson;
 import com.uni.uni_erp.dto.StoreDTO;
+import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.repository.user.UserRepository;
+import com.uni.uni_erp.service.invertory.InventoryService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +21,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ErpController {
 
-    private final UserRepository userRepository;
+    private final InventoryService inventoryService;
+    private final Gson gson;
 
     /**
      * 메인페이지 요청
@@ -37,6 +41,14 @@ public class ErpController {
         if (storeId != null) {
             model.addAttribute("storeId", storeId);
         }
+
+        // TODO 반드시 알람 단위가 메인 단위와 일치해야 결과가 나옴 !! 공지 필수 !!!
+        // 유통기한 임박 자재
+        List<MaterialDTO.nearingExpirationDateDTO> nearingExpirationDateList = inventoryService.nearingExpirationDate(session);
+        // 재고 부족 알람 리스트
+        List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycleList = inventoryService.alarmCycle(session);
+        model.addAttribute("nearingExpirationDateJson", gson.toJson(nearingExpirationDateList));
+        model.addAttribute("alarmCycleJson", gson.toJson(alarmCycleList));
 
         return "erp/main";
     }

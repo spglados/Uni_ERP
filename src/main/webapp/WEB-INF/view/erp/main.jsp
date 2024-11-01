@@ -20,7 +20,7 @@
     </header>
     <c:if test="${storeList != null}">
         <div class="user-information">
-            <div class="name-welcome">최예나님 환영합니다!</div>
+            <div class="name-welcome">000님 환영합니다!</div>
             <label for="storeId">가게선택</label>
             <select name="store" id="storeId">
                 <c:forEach var="store" items="${storeList}">
@@ -33,7 +33,7 @@
             <div id="welcomeToast" class="toast align-items-center text-bg-primary" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
-                        최예나님,
+                        000님, 환영합니다.
                     </div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
@@ -50,6 +50,12 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/js/statistics.js"></script>
 <script>
+
+    const expirationDate = ${nearingExpirationDateJson};
+    const alarmCycle = ${alarmCycleJson};
+    console.log('expirationDate', expirationDate);
+    console.log('alarmCycle', alarmCycle);
+
     $(document).ready(function () {
         const toastElement = document.getElementById('welcomeToast');
         const toast = new bootstrap.Toast(toastElement, { autohide: false });
