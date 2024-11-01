@@ -1,10 +1,13 @@
 package com.uni.uni_erp.controller.myPage;
 
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.Refund;
+import com.uni.uni_erp.dto.store.StoreSaveDTO;
 import com.uni.uni_erp.service.payment.PaymentService;
 import com.uni.uni_erp.service.refund.RefundService;
+import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,7 @@ public class myPageController {
     private final UserService userService;
     private final PaymentService paymentService;
     private final RefundService refundService;
+    private final StoreService storeService;
 
     @GetMapping("")
     public String myPage(@SessionAttribute(value = "userSession") User principal, Model model) {
@@ -88,7 +92,7 @@ public class myPageController {
         String paymentId = request.get("paymentId");
         int payPk = Integer.valueOf(paymentId);
         String cancelReason = request.get("cancelReason");
-        paymentService.updatePaymentCancelReason(payPk,cancelReason);
+        paymentService.updatePaymentCancelReason(payPk, cancelReason);
         return ResponseEntity.ok().body(Map.of("success", true));
     }
 
@@ -96,17 +100,57 @@ public class myPageController {
     public String refundHistoryPage(Model model, @SessionAttribute(value = "userSession") User principal) {
         int userPk = principal.getId();
         List<Refund> refund = refundService.getRefundById(userPk);
-        model.addAttribute("refund",refund);
+        model.addAttribute("refund", refund);
         return "/myPage/refundHistory";
     }
 
     @GetMapping("/refund")
-    public String refund(Model model){
+    public String refund(Model model) {
         List<Payment> payments = paymentService.findAll();
-        model.addAttribute("payments",payments);
+        model.addAttribute("payments", payments);
         return "/myPage/refund";
     }
 
+    @GetMapping("/contact")
+    public String contactPage(Model model,@SessionAttribute(value = "userSession") User principal) {
+        //TODO 병합후 합치기
+        //List<Contact> contact = contactService.findAllById(principal.getId());
+        //model.addAttribute("contact",contact);
+        return "/myPage/contact";
+    }
 
+    @GetMapping("/contactDetail/{id}")
+    public String contactDetailPage(Model model,@SessionAttribute(value = "userSession") User principal) {
+        //Contact contact = contactService.findById(principal.getId());
+        //model.addAttribute("contact",contact);
+        return "/myPage/contactDetail";
+    }
+
+    @GetMapping("/storeList")
+    public String storeListPage(Model model,@SessionAttribute(value = "userSession") User principal){
+        List<Store> store= storeService.findAllById(principal.getId());
+
+        Integer paymentCount = paymentService.getCountOfPaymentsWithStatusNotZero(principal.getId());
+        Integer storeCount = storeService.getStoreCountByUserId(principal.getId());
+        model.addAttribute("storeCount",storeCount);
+        model.addAttribute("store",store);
+        model.addAttribute("count",paymentCount);
+        return "/myPage/storeList";
+    }
+
+
+    @GetMapping("/saveStore")
+    public String saveStorePage() {
+        return "/myPage/saveStore";
+    }
+
+    @PostMapping("/saveStore")
+    public ResponseEntity<String> registerStore(@RequestBody StoreSaveDTO storeSaveDTO, @SessionAttribute(value = "userSession") User principal) {
+        System.out.println(storeSaveDTO);
+        storeSaveDTO.setUserId(principal.getId());
+
+        storeService.registerStore(storeSaveDTO); // 가게 등록
+        return ResponseEntity.ok("가게가 등록되었습니다!"); // 문자열 응답
+    }
 }
 

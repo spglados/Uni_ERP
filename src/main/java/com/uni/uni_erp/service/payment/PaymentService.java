@@ -128,6 +128,10 @@ public class PaymentService {
                             }
                         }
                         user.setPaymentDate(nextDate);
+                    } else if (day == currentDay) {
+                        // 현재 날짜와 결제일이 같을 경우
+                        nowPayAmount = initialAmount; // 5만 원 결제
+                        user.setPaymentDate(nextDate);
                     } else {
                         // 이번 달의 비례 금액만 계산
                         int maxDaysInMonth = today.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -155,6 +159,10 @@ public class PaymentService {
                                 nowPayAmount = Math.floor(remainingAmount) + initialAmount; // 이번 달 결제 + 다음 달 결제 금액
                             }
                         }
+                        user.setPaymentDate(nextDate);
+                    } else if (day == currentDay) {
+                        // 현재 날짜와 결제일이 같을 경우
+                        nowPayAmount = initialAmount; // 3만 원 결제
                         user.setPaymentDate(nextDate);
                     } else {
                         // 이번 달의 비례 금액만 계산
@@ -438,6 +446,15 @@ public class PaymentService {
         return paymentRepository.findByUserId(userId);
     }
 
+    public Long findAllSumAmount() {
+        return paymentRepository.findAllSumAmount() != null ? paymentRepository.findAllSumAmount() : 0;
+    }
+
+    public Long findAllSumRefund() {
+        return refundRepository.findAllSumRefund() != null ? refundRepository.findAllSumRefund() : 0;
+    }
+
+
     public Integer getCountOfPaymentsWithStatusNotZero(Integer userPk) {
         return paymentRepository.countByStatusNotZero(userPk);
     }
@@ -449,5 +466,9 @@ public class PaymentService {
 
     public List<Payment> findAll(){
         return paymentRepository.findAll();
+    }
+
+    public List<Payment> findAllWithNonZeroStatus(){
+        return paymentRepository.findAllWithNonZeroStatus();
     }
 }

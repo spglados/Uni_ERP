@@ -106,8 +106,7 @@ public class UserService {
 
     // 구독자 수
     public int getPremiumUserCount() {
-        Integer subscribeUserCount = userRepository.countByMembership(User.Membership.PREMIUM);
-        return subscribeUserCount;
+        return userRepository.countByMembership(User.Membership.PREMIUM);
     }
 
     // 작년 구독자수
@@ -197,5 +196,9 @@ public class UserService {
         String formattedPaymentDate = updatedPaymentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         userRepository.updatePaymentDateByUserId(formattedPaymentDate, userId);
+    }
+
+    public Long countUsers() {
+        return userRepository.count();
     }
 }

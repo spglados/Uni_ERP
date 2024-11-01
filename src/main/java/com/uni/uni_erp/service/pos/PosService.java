@@ -36,7 +36,12 @@ public class PosService {
 
     @Transactional
     public void withdrawAmount(Integer posId, Long withdrawalAmount) {
-        int affectedRows = posRepository2.withdrawAmount(posId, withdrawalAmount);
+        posRepository2.withdrawAmount(posId, withdrawalAmount);
+    }
+
+    @Transactional
+    public void addAmount(Integer posId, Long depositAmount) {
+        posRepository2.addAmount(posId, depositAmount);
     }
 
 

@@ -41,15 +41,17 @@
             <li class="nav-item active"><a class="nav-link" href="/admin/main"><i class="fas fa-fw fa-tachometer-alt"></i> <span>대시보드</span></a></li>
             <li class="nav-item"><a class="nav-link" href="/admin/userManagement"><i class="fas fa-fw fa-table"></i> <span>유저 관리</span></a></li>
             <li class="nav-item"><a class="nav-link" href="/admin/storeManagement"><i class="fas fa-fw fa-table"></i> <span>가게 관리</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/admin/salesManagement"><i class="fas fa-fw fa-table"></i> <span>매출 관리</span></a></li>
             <li class="nav-item"><a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"><i class="fas fa-fw fa-cog"></i> <span>고객 지원</span></a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="/support/faq">FAQ 관리</a>
-                        <a class="collapse-item" href="/support/qna">1:1 문의 관리</a>
+                        <a class="collapse-item" href="/admin/noticeList">공지사항</a>
+                        <a class="collapse-item" href="/admin/contactList">1:1 문의 관리</a>
+                        <a class="collapse-item" href="/admin/refund">환불요청 처리</a>
                     </div>
                 </div>
             </li>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item"><a class="nav-link" href="/admin/logout"><i class="fas fa-fw fa-table"></i> <span>로그아웃</span></a></li>
             <hr class="sidebar-divider">
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -65,44 +67,10 @@
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"></h1>
+                        <h1 class="h3 mb-0 text-gray-800">ㅎㄱㅁㅇ?</h1>
                     </div>
 
-                    <!-- Content Row -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">추가</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="row">
-
-                        <div class="col-xl-4 col-lg-5">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">상품 카테고리별 매출</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-                                    <div class="mt-4 text-center small">
-                                        <c:forEach var="category" items="${productList}">
-                                            <span class="mr-2"><i class="fas fa-circle text-success"></i>${category}</span>
-                                        </c:forEach>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <!-- Sales Chart -->
                         <div class="col-xl-6 col-lg-6">
                             <div class="card shadow mb-4">
@@ -110,7 +78,6 @@
                                     <h6 class="m-0 font-weight-bold text-primary">전체 가게 매출 평균</h6>
                                 </div>
                                 <div>
-                                    <button onclick="updateChart('daily')" onchange="filterStore()">일별</button>
                                     <button onclick="updateChart('monthly')" onchange="filterStore()">월별</button>
                                     <button onclick="updateChart('yearly')" onchange="filterStore()">연별</button>
                                     * 오늘 날짜를 기준으로 해당하는 월, 연도별 전체 가게 매출을 보여줍니다
@@ -119,18 +86,97 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-xl-6 col-lg-6">
+                            <div class="container">
+                                <table width="100%">
+                                    <tr>
+                                        <th colspan="4">사이트 운영현황</th>
+                                    </tr>
+                                    <tr>
+                                        <th>운영 항목</th>
+                                        <th>현황</th>
+                                        <th>운영현황</th>
+                                    </tr>
+                                        <td>유저 수</td>
+                                        <td>${totalUserCount}명</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${totalUserCount >= 1000}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                                <c:when test="${totalUserCount >= 750}"><span class="status-icon icon-cloud">☁️</span></c:when>
+                                                <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    <tr>
+                                    </tr>
+                                        <td>구독자 수</td>
+                                        <td>${subscribeUserCount}명</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${subscribeUserCount >= 100}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                                <c:when test="${subscribeUserCount >= 75}"><span class="status-icon icon-cloud">☁️</span></c:when>
+                                                <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    <tr>
+                                    </tr>
+                                        <td>구독한 유저 비율</td>
+                                        <td>${subscriptionRateDouble}%</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${subscriptionRate >= 100}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                                <c:when test="${subscriptionRate >= 75}"><span class="status-icon icon-cloud">☁️</span></c:when>
+                                                <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    <tr>
+                                    </tr>
+                                        <td>전체 가게 수</td>
+                                        <td>${storeCount}개</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${storeCount >= 500}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                                <c:when test="${storeCount >= 375}"><span class="status-icon icon-cloud">☁️</span></c:when>
+                                                <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    <tr>
+                                    </tr>
+                                        <td>가게별 평균 유지기간</td>
+                                        <td>${Placeholder}개월</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${percentageOfSubscribeUser >= 100}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                                <c:when test="${percentageOfSubscribeUser >= 75}"><span class="status-icon icon-cloud">☁️</span></c:when>
+                                                <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    <tr>
+                                    </tr>
+                                        <td>사이트 총 이익</td>
+                                        <td>${netProfitFormatted}만원</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${percentageOfSubscribeUser >= 1000}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                                <c:when test="${percentageOfSubscribeUser >= 750}"><span class="status-icon icon-cloud">☁️</span></c:when>
+                                                <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    <tr>
+                                </table>
+                            </div>
+                        </div>
 
                         <!-- Operational Status Table -->
                         <div class="container">
                             <table width="100%">
                                 <tr>
-                                    <th colspan="4">사이트 운영현황</th>
+                                    <th colspan="4">사이트 목표 달성률</th>
                                 </tr>
                                 <tr>
                                     <th>운영 항목</th>
                                     <th>달성 / 목표</th>
                                     <th>달성률</th>
-                                    <th>운영현황</th>
+                                    <th>달성현황</th>
                                 </tr>
                                 <tr>
                                     <td>구독자수</td>
@@ -139,6 +185,7 @@
                                     <td>
                                         <c:choose>
                                             <c:when test="${percentageOfSubscribeUser >= 100}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                            <c:when test="${percentageOfSubscribeUser >= 75}"><span class="status-icon icon-cloud">☁️</span></c:when>
                                             <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
                                         </c:choose>
                                     </td>
@@ -149,7 +196,8 @@
                                     <td>${percentageOfSalesAmount}%</td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${percentageOfSalesAmount >= 100}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                            <c:when test="${percentageOfSubscribeUser >= 100}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                            <c:when test="${percentageOfSubscribeUser >= 75}"><span class="status-icon icon-cloud">☁️</span></c:when>
                                             <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
                                         </c:choose>
                                     </td>
@@ -160,14 +208,13 @@
                                     <td>${percentageOfStoreCount}%</td>
                                     <td>
                                         <c:choose>
-                                            <c:when test="${percentageOfStoreCount >= 100}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                            <c:when test="${percentageOfSubscribeUser >= 100}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                            <c:when test="${percentageOfSubscribeUser >= 75}"><span class="status-icon icon-cloud">☁️</span></c:when>
                                             <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                 </tr>
                             </table>
-
-                            <!-- Category Sales Chart -->
                         </div>
                     </div>
                 </div>
@@ -203,40 +250,9 @@
             percentageSales.push(${percentage});
         </c:forEach>
 
-        var ctx = document.getElementById("myPieChart");
-        var myPieChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: productLabels,
-                datasets: [{
-                    data: percentageSales,
-                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
-                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#f6b93e', '#e74c3c'],
-                    hoverBorderColor: "rgba(234, 236, 244, 1)",
-                }],
-            },
-            options: {
-                maintainAspectRatio: false,
-                tooltips: {
-                    backgroundColor: "rgb(255,255,255)",
-                    bodyFontColor: "#858796",
-                    borderColor: '#dddfeb',
-                    borderWidth: 1,
-                    xPadding: 15,
-                    yPadding: 15,
-                    displayColors: false,
-                    caretPadding: 10,
-                },
-                legend: {
-                    display: false
-                },
-                cutoutPercentage: 80,
-            },
-        });
-
         var ctxLine = document.getElementById('myChart').getContext('2d');
         var myChart;
-        var currentPeriod = 'daily';
+        var currentPeriod = 'monthly';
 
         var salesYear = /*[[${salesYear}]]*/ [];
         var salesYearTotalPrice = /*[[${salesYearTotalPrice}]]*/ [];
@@ -271,9 +287,7 @@
         function updateChart(period) {
             currentPeriod = period;
             var data = {};
-            if (period === 'daily') {
-                data = { labels: salesDays, values: salesTotalPrice };
-            } else if (period === 'monthly') {
+            if (period === 'monthly') {
                 data = { labels: salesMonth, values: salesMonthTotalPrice };
             } else if (period === 'yearly') {
                 data = { labels: salesYear, values: salesYearTotalPrice };
@@ -300,7 +314,7 @@
                 options: {
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: false
                         }
                     }
                 }
@@ -311,7 +325,7 @@
             updateChart(currentPeriod);
         }
 
-        updateChart('daily');
+        updateChart('monthly');
     </script>
 </body>
 
