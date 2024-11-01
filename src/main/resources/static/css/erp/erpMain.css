@@ -1,4 +1,4 @@
-html{
+html, body{
     height: 100%;
 }
 
@@ -13,14 +13,16 @@ html{
 /* 사이드바 스타일 */
 .sidebar {
     width: 250px;
-    height: 100%;
+    height: 100vh; /* 뷰포트 높이에 맞춤 */
     background-color: #F5F5DC;
     padding: 20px;
     color: #fff;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* 중앙 정렬에서 왼쪽 정렬로 변경 */
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 
 .sidebar h2 {
@@ -40,6 +42,7 @@ html{
 }
 .sidebar-menu li {
     margin: 15px 0;
+    width: 100%; /* 리스트 아이템도 전체 너비 사용 */
 }
 
 .sidebar-menu a {
@@ -51,7 +54,9 @@ html{
     transition: background-color 0.3s, color 0.3s;
     padding: 10px;
     border-radius: 5px;
+    width: 100%; /* 전체 너비 사용 */
 }
+
 
 .sidebar-menu a:hover {
     background-color: #fff;
@@ -74,6 +79,7 @@ html{
     transform: translateY(-10px);
     overflow: hidden;
     transition: max-height 0.3s ease-out, opacity 0.3s ease-out, transform 0.3s ease-out;
+    width: 100%; /* 전체 너비 사용 */
 }
 
 .sub-menu li {
@@ -253,24 +259,6 @@ html{
     display: block;
 }
 
-/* 반응형 디자인 */
-@media screen and (max-width:1023px) {
-    .sidebar {
-        width: 60px;
-    }
-    .sidebar-menu a div {
-        display: none; /* 축소 시 텍스트 숨김 */
-    }
-}
-
-@media screen and (max-width:560px) {
-    .sidebar {
-        width: 60px;
-    }
-    .sidebar-menu a div {
-        display: none;
-    }
-}
 
 /* 추가된 팝아웃 호버 효과 */
 .sidebar-menu li a.menu-toggle {
