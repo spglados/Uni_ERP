@@ -2,10 +2,12 @@ package com.uni.uni_erp.service.payment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uni.uni_erp.domain.entity.SubscribeDuration;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.PaymentHistory;
 import com.uni.uni_erp.dto.PaymentDTO;
+import com.uni.uni_erp.repository.common.SubscribeDurationRepository;
 import com.uni.uni_erp.repository.payment.PaymentHistoryRepository;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.refund.RefundRepository;
@@ -21,7 +23,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.List;
@@ -37,6 +41,7 @@ public class PaymentService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final RefundRepository refundRepository;
+    private final SubscribeDurationRepository subscribeDurationRepository;
 
     @Value("${payment.secretKey}")
     private String secretKey;
@@ -213,6 +218,14 @@ public class PaymentService {
 
                 // PaymentHistory 저장
                 paymentHistoryRepository.save(paymentHistory);
+
+                // SubscribeDuration 저장
+                SubscribeDuration subscribeDuration = SubscribeDuration.builder()
+                        .start(Timestamp.valueOf(LocalDateTime.now()))
+                        .userId(userPk)
+                        .build();
+
+                subscribeDurationRepository.save(subscribeDuration);
 
                 return paymentJson.toPrettyString();
             } else {
