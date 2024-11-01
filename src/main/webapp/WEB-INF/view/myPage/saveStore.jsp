@@ -23,13 +23,18 @@
         </select><br>
 
         <label for="storeAddress">가게 주소:</label>
-        <input type="text" id="storeAddress" name="storeAddress" required /> <button><br>
+        <input type="hidden" id="storeAddress">
+        <input type="text" id="address" name="storeAddress" onclick="execDaumPostcode()" required />
+        <input type="text" id="storeDetailAddress" placeholder="상세 주소"/><br>
 
         <button type="submit">등록</button>
     </form>
 </body>
 </html>
-    <title>가게 등록</title>
+
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
     <script>
       function registerStore(event) {
           event.preventDefault(); // 기본 폼 제출 방지
@@ -40,6 +45,11 @@
           formData.forEach((value, key) => {
               storeData[key] = value.trim(); // 값의 앞뒤 공백 제거
           });
+
+          // 주소 결합
+          const address = storeData.storeAddress; // 선택한 주소
+          const detailAddress = document.getElementById("storeDetailAddress").value.trim();
+          storeData.storeAddress = address + ' , '+detailAddress ;
 
           storeData.is24Hours = parseInt(storeData.is24Hours, 10);
           storeData.isOpen = parseInt(storeData.isOpen, 10);
@@ -70,11 +80,15 @@
           });
       }
 
+
+
+
+
 function execDaumPostcode() {
        new daum.Postcode({
            oncomplete: function(data) {
                var addr = data.address;
-               document.getElementById("newAddress").value = addr; // 선택한 주소를 newAddress 필드에 넣기
+               document.getElementById("address").value = addr; // 선택한 주소를 newAddress 필드에 넣기
            }
        }).open();
    }

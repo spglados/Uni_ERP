@@ -92,8 +92,8 @@ INSERT INTO product_tb (id, product_code, name, category, price, store_id) VALUE
 
 INSERT INTO material_tb (name, material_code, category, unit, sub_amount, sub_unit, enter_date, store_id, alarm_cycle, alarm_unit)
 VALUES
-    ('소금', 111, '상온품', 'KG', 0, 'G', '2024-10-01', 1, 100, 'G'),
-    ('김치', 112, '냉장품', 'KG', 0, 'G', '2024-10-02', 1, 1, 'KG'),
+    ('소금', 111, '상온품', 'KG', 0, 'G', '2024-10-01', 1, 1.1, 'KG'),
+    ('김치', 112, '냉장품', 'KG', 0, 'G', '2024-10-02', 1, 2, 'KG'),
     ('돼지고기', 113, '냉동품', 'KG', 0, 'G', '2024-10-03', 1, 0.5, 'KG'),
     ('두부', 114, '냉장품', 'EA', 500.0, 'G', '2024-10-04', 1, 1, 'EA'),
     ('고춧가루', 115, '상온품', 'KG', 0, 'G', '2024-10-05', 1, 100, 'G'),

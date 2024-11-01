@@ -89,7 +89,9 @@
         </div>
         <div class="mb-3">
             <label for="address" class="form-label">주소:</label>
-            <input type="text" id="address" name="address" required class="form-control" value="${employeeDTO.address}">
+            <input type="hidden" id="fullAddress" name="address">
+            <input type="text" id="address" required class="form-control" value="${employeeDTO.address}" onclick = "execDaumPostcode()">
+            <input type="text" id="detailAddress" required class="form-control" placeholder="상세 주소">
         </div>
         <div class="mb-3">
             <label for="accountNumber" class="form-label">계좌번호 (최대 16자리, 숫자만):</label>
@@ -153,6 +155,9 @@
     </form>
 </div>
 
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
 <script>
     let isEmailChecked = false;
     let isPhoneChecked = false;
@@ -179,6 +184,21 @@
         emailDomainInput.value = domainSelect.value;
     }
 
+    function execDaumPostcode() {
+        new daum.Postcode({
+          oncomplete: function(data) {
+            var addr = data.address;
+            document.getElementById("address").value = addr;
+          }
+        }).open();
+    }
+
+    function validateForm() {
+            const address = document.getElementById("address").value;
+            const detailAddress = document.getElementById("detailAddress").value;
+            document.getElementById("fullAddress").value = address + ' , ' + detailAddress;
+            return true;
+        }
 
     function formatPhoneNumber(input) {
         const value = input.value.replace(/\D/g, '');

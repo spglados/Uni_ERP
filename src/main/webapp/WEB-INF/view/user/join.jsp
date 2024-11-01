@@ -76,7 +76,7 @@
       var basicAddress = document.getElementById("basicAddress").value;
       var detailAddress = document.getElementById("detailAddress").value;
 
-      var fullAddress = basicAddress + " " + detailAddress;
+      var fullAddress = basicAddress + " , " + detailAddress;
       document.getElementById("fullAddress").value = fullAddress;
 
       return true;

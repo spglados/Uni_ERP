@@ -3,6 +3,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/WEB-INF/view/layout/header.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,13 +70,7 @@
             <tr>
                 <td>이메일</td>
                 <td>
-                    <span id="emailDisplay">${user.email}</span>
-                    <span id="emailEdit" class="hidden">
-                        <input type="text" id="newEmail" value="${user.email}" />
-                        <button onclick="confirmEdit()">확인</button>
-                        <button onclick="cancelEdit()">취소</button>
-                    </span>
-                    <button id="editButton" onclick="editEmail()">수정하기</button>
+                    <span>${user.email}</span>
                 </td>
             </tr>
             <tr>
@@ -98,11 +94,11 @@
                 <td>
                     <span id="addressDisplay">${user.address}</span>
                     <span id="addressEdit" class="hidden">
-                        <input type="text" id="newAddress" value="${user.address}" style="width: 300px;" placeholder="주소 입력" /><br>
+                        <input type="text" id="newAddress" value="${user.address}" style="width: 300px;" placeholder="주소 입력" onclick="execDaumPostcode()" /><br>
                         <input type="text" id="newDetailAddress" value="" placeholder="상세 주소 입력" />
                         <button onclick="confirmAddressEdit()">확인</button>
                         <button onclick="cancelAddressEdit()">취소</button>
-                        <input type="button" class="check--btn" onclick="execDaumPostcode()" value="주소 검색" style="display: none;" id="searchAddressButton">
+                        <input type="hidden" class="check--btn" onclick="execDaumPostcode()" style="display: none;" id="searchAddressButton">
                     </span>
                     <button id="editAddressButton" onclick="editAddress()">수정하기</button>
                 </td>
@@ -117,11 +113,17 @@
                 <td>
                     <c:choose>
                         <c:when test="${not empty user.paymentDate}">
-                            <span id="paymentDateDisplay">${user.paymentDate}</span>
+                            <c:set var="day" value="${fn:substring(user.paymentDate, 8, 10)}" />
+                            <c:set var="dayValue" value="${fn:trim(fn:replace(day, '0', ''))}" />
+
+                            <span id="paymentDateDisplay">
+                                ${dayValue}일
+                            </span>
+
                             <span id="paymentDateEdit" class="hidden">
                                 <select id="newPaymentDate">
                                     <c:forEach var="day" begin="1" end="31">
-                                        <option value="${day}" >${day}</option>
+                                        <option value="${day}">${day}일</option>
                                     </c:forEach>
                                 </select>
                                 <button onclick="confirmPaymentDateEdit()">확인</button>
@@ -168,7 +170,6 @@
           document.getElementById('newAddress').value = addressParts[0].trim();;
           document.getElementById('newDetailAddress').value = addressParts.length > 1 ? addressParts[1].trim() : ''; // 상세 주소는 빈칸으로 초기화 (필요에 따라 조정)
 
-           document.getElementById('newAddress').disabled = true;
       }
 
       function cancelAddressEdit() {
@@ -214,56 +215,6 @@
               }
           }
 
-
-
-
-    function editEmail() {
-        document.getElementById('emailDisplay').classList.add('hidden');
-        document.getElementById('emailEdit').classList.remove('hidden');
-        document.getElementById('editButton').style.visibility = 'hidden'; // 수정하기 버튼 숨기기
-    }
-
-
-
-        function confirmEdit() {
-            const newEmail = document.getElementById('newEmail').value;
-
-            // 이메일 유효성 검사 (한글 포함 불가)
-            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailPattern.test(newEmail)) {
-                alert('유효한 이메일 형식을 입력하세요. (한글은 포함할 수 없습니다.)');
-                return;
-            }
-
-            if (confirm('이메일을 변경하시겠습니까?')) {
-                fetch('/myPage/updateEmail', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email: newEmail })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        document.getElementById('emailDisplay').innerText = newEmail;
-                        cancelEdit(); // 수정 후에는 취소 버튼으로 돌아갑니다.
-                    } else {
-                        alert('이메일 업데이트에 실패했습니다.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('서버 오류가 발생했습니다.');
-                });
-            }
-        }
-
-    function cancelEdit() {
-        document.getElementById('emailDisplay').classList.remove('hidden');
-        document.getElementById('emailEdit').classList.add('hidden');
-        document.getElementById('editButton').style.visibility = 'visible'; // 수정하기 버튼 다시 보이기
-    }
-
     function editPhone() {
         document.getElementById('phoneDisplay').classList.add('hidden');
         document.getElementById('phoneEdit').classList.remove('hidden');
@@ -293,7 +244,7 @@
                    document.getElementById('phoneDisplay').innerText = newPhone;
                    cancelPhoneEdit(); // 수정 후에는 취소 버튼으로 돌아갑니다.
                } else {
-                   alert('전화번호 업데이트에 실패했습니다.');
+                   alert('중복된 전화번호 입니다.');
                }
            })
            .catch(error => {
