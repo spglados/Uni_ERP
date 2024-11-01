@@ -21,7 +21,7 @@
         가게를 추가하고 UNI-ERP 서비스를 시작해보세요!
     </h1>
     <br>
-    <div id="countdown">5초 후에 메인으로 이동합니다...</div>
+    <div id="countdown">5초 후에 가게 등록 페이지로 이동합니다...</div>
     <br>
     <a href="/main">메인으로 이동</a>
 </div>
@@ -35,7 +35,7 @@
 
                         if (countdown <= 0) {
                             clearInterval(timer);
-                            window.location.href = "/main"; // 5초 후 메인 페이지로 이동
+                            window.location.href = "/myPage/storeList"; // 5초 후 메인 페이지로 이동
                         }
                     }, 1000); // 1초마다 실행
         </script>

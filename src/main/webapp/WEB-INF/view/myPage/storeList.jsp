@@ -58,9 +58,12 @@
 
 
     <c:if test="${not empty store}">
-    <p>현재 보유중인 가게 수: ${storeCount}</p>
-            <p>결제한 수: ${count}</p>
-            <p>가게 등록가능한 수: ${count - storeCount}</p>
+    <p>현재 보유중인 가게 수: ${storeCount} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 등록가능한 가게 수: ${count - storeCount}</p>
+
+    <c:if test="${count - storeCount == 0}">
+        <p class="no-refund">더 이상 가게를 등록할 수 없습니다.</p>
+        <p>가게를 등록하시려면 결제를 진행해주세요. <button onclick="payment()">결제하러가기</button></p>
+    </c:if>
     <table>
         <thead>
             <tr>

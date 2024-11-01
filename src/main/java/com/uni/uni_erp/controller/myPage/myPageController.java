@@ -4,11 +4,17 @@ import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.Refund;
+import com.uni.uni_erp.dto.ContactDTO;
+import com.uni.uni_erp.dto.ResponseDTO;
+import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.store.StoreSaveDTO;
+import com.uni.uni_erp.service.common.ContactService;
+import com.uni.uni_erp.service.common.ResponseService;
 import com.uni.uni_erp.service.payment.PaymentService;
 import com.uni.uni_erp.service.refund.RefundService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,6 +33,8 @@ public class myPageController {
     private final PaymentService paymentService;
     private final RefundService refundService;
     private final StoreService storeService;
+    private final ContactService contactService;
+    private final ResponseService responseService;
 
     @GetMapping("")
     public String myPage(@SessionAttribute(value = "userSession") User principal, Model model) {
@@ -62,6 +70,10 @@ public class myPageController {
                                          @SessionAttribute(value = "userSession") User principal) {
         String phone = request.get("phone"); // JSON에서 전화번호 추출
         int userPk = principal.getId();
+        if (userService.checkDuplicatePhone(phone)) {
+            return ResponseEntity.badRequest().build(); // 중복일 경우 에러 응답
+        }
+
         userService.updateUserPhoneByUserId(phone, userPk); // 전화번호 업데이트 서비스 호출
         return ResponseEntity.ok().build(); // 성공 응답
     }
@@ -104,25 +116,19 @@ public class myPageController {
         return "/myPage/refundHistory";
     }
 
-    @GetMapping("/refund")
-    public String refund(Model model) {
-        List<Payment> payments = paymentService.findAll();
-        model.addAttribute("payments", payments);
-        return "/myPage/refund";
-    }
-
     @GetMapping("/contact")
     public String contactPage(Model model,@SessionAttribute(value = "userSession") User principal) {
-        //TODO 병합후 합치기
-        //List<Contact> contact = contactService.findAllById(principal.getId());
-        //model.addAttribute("contact",contact);
+        List<ContactDTO> contact = contactService.findByUserId(principal.getId());
+        model.addAttribute("contact",contact);
         return "/myPage/contact";
     }
 
     @GetMapping("/contactDetail/{id}")
-    public String contactDetailPage(Model model,@SessionAttribute(value = "userSession") User principal) {
-        //Contact contact = contactService.findById(principal.getId());
-        //model.addAttribute("contact",contact);
+    public String contactDetailPage(Model model,@PathVariable Integer id) {
+        ContactDTO contact = contactService.findById(id);
+        model.addAttribute("contact",contact);
+        ResponseDTO response = responseService.findByContactId(id);
+        model.addAttribute("response",response);
         return "/myPage/contactDetail";
     }
 
@@ -145,11 +151,19 @@ public class myPageController {
     }
 
     @PostMapping("/saveStore")
-    public ResponseEntity<String> registerStore(@RequestBody StoreSaveDTO storeSaveDTO, @SessionAttribute(value = "userSession") User principal) {
-        System.out.println(storeSaveDTO);
+    public ResponseEntity<String> registerStore(@RequestBody StoreSaveDTO storeSaveDTO, @SessionAttribute(value = "userSession") User principal, HttpSession session) {
         storeSaveDTO.setUserId(principal.getId());
 
         storeService.registerStore(storeSaveDTO); // 가게 등록
+        List<StoreDTO> storeList = storeService.ownedStores(principal.getId());
+
+        if(storeList != null && !storeList.isEmpty()) {
+            // 맨 처음 가게 아이디 추가
+            session.setAttribute("storeId", storeList.get(0).getId());
+            if (storeList.size() >= 1) {
+                session.setAttribute("storeList", storeList);
+            }
+        }
         return ResponseEntity.ok("가게가 등록되었습니다!"); // 문자열 응답
     }
 }

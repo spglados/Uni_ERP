@@ -106,7 +106,6 @@ public class PaymentService {
                 int desiredPaymentDay = Integer.parseInt(desiredPayDate);
 
                 int status = 1;
-                String odername = null;
 
                 if (user.getMembership() == User.Membership.COMMON) {
                     initialAmount = 50000;
@@ -197,6 +196,7 @@ public class PaymentService {
                         .build();
 
                 user.setMembership(User.Membership.PREMIUM);
+                user.setPremiumToCommonDate(null);
                 // 결제 정보 저장
                 paymentRepository.save(paymentDTO.toPayment(user));
 

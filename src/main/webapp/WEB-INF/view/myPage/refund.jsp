@@ -70,12 +70,15 @@
             payPk: selectedPayment.value // payment.id를 payPk로 사용
         };
 
+        // 요청이 배열 형식으로 전송되도록 만듭니다.
+        const paymentRequests = [paymentRequest];
+
         fetch('/payment/refund', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(paymentRequest) // 단일 객체로 전송
+            body: JSON.stringify(paymentRequests) // 배열로 전송
         })
         .then(response => {
             if (response.ok) {
