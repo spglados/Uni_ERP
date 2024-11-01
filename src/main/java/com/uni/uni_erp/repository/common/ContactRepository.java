@@ -6,10 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface ContactRepository extends JpaRepository<Contact, Integer> {
 
     @Query("SELECT c FROM Contact c WHERE c.status = 'OPEN'")
     Page<Contact> findAllByStatus(Pageable pageable);
+
+    List<Contact> findByUserId(Integer userId);
 }

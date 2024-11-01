@@ -123,7 +123,9 @@
                     </div>
                     <div class="mb-3">
                         <label for="editEmployeeAddress" class="form-label">주소</label>
-                        <input type="text" class="form-control" id="editEmployeeAddress" name="address" required>
+                        <input type="hidden" id="fullAddress" name="address">
+                        <input type="text" class="form-control" id="editEmployeeAddress" onclick ="execDaumPostcode()" required>
+                        <input type="text" class="form-control" id="editEmployeeDetailAddress">
                     </div>
 
                     <div class="mb-3">
@@ -236,7 +238,18 @@
 
 <!-- Bootstrap Bundle with Popper.js (jsDelivr) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-pwhx3de1z5koq2k9n7zn8XBc/4eKD48Wn5sbzIS5QJgEN5hYhDDK1e+FvY86G/Zg" crossorigin="anonymous"></script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
 <script>
+
+    function execDaumPostcode() {
+        new daum.Postcode({
+          oncomplete: function(data) {
+            var addr = data.address;
+            document.getElementById("editEmployeeAddress").value = addr;
+          }
+        }).open();
+    }
 
     function filterEmployees() {
         // 선택된 필터 값 가져오기
@@ -319,6 +332,7 @@
                 const birthday = row.dataset.birthday;
                 const gender = row.dataset.gender;
                 const address = row.dataset.address;
+                const addressParts = address.split(',');
                 const email = row.dataset.email;
                 const phone = row.dataset.phone;
                 const status = row.dataset.status;
@@ -390,12 +404,14 @@
 
         function openEditModal(uniqueId, name, birthday, gender, address, email, phone, bank, account, password, status, position, employmentContract, healthCertificate, identificationCopy, bankAccountCopy, residentRegistration, healthCertificateDate) {
             // 모달 입력 필드에 데이터 세팅
+            const addressParts = address.split(',');
             document.getElementById('editEmployeeId').value = uniqueId;
             document.getElementById('editEmployeeName').value = name;
             document.getElementById('editEmployeeBirthday').value = birthday;
             document.getElementById('editEmployeeGender').value = gender;
             document.getElementById('editEmpPassword').value = password;
-            document.getElementById('editEmployeeAddress').value = address;
+            document.getElementById('editEmployeeAddress').value = addressParts[0];
+            document.getElementById('editEmployeeDetailAddress').value = addressParts[1];
             document.getElementById('editEmployeeEmail').value = email.split('@')[0];
             document.getElementById('emailDomain').value = email.split('@')[1];
             document.getElementById('editEmployeePhone').value = phone;
@@ -448,6 +464,14 @@
                 if (key === 'bank') {
                     jsonData['bankId'] = value;
                     jsonData['bankName'] = getBankNameById(value);
+                } else {
+                    jsonData[key] = value;
+                }
+
+                if (key === 'address') {
+                    const mainAddress = document.getElementById('editEmployeeAddress').value;
+                    const detailAddress = document.getElementById('editEmployeeDetailAddress').value;
+                    jsonData[key] = mainAddress +" , "+ detailAddress;
                 } else {
                     jsonData[key] = value;
                 }

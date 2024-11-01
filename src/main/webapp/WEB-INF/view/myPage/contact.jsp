@@ -49,28 +49,36 @@
 
     <h1>내 문의 내역</h1>
 
- <table>
-        <thead>
-            <tr>
-                <th>문의 제목</th>
-                <th>문의 날짜</th>
-                <th>상태</th>
-            </tr>
-        </thead>
-        <tbody>
-            <c:forEach var="contact" items="${contacts}">
-                <td>
-                    <a onclick="openContactDetail(${contact.id})">${contact.title}</a>
-                </td>
-                <td>${contact.createAt}</td>
-                <td>${contact.status}</td>
-            </c:forEach>
-        </tbody>
- </table>
+ <c:if test="${not empty contact}">
+     <table>
+         <thead>
+             <tr>
+                 <th>문의 제목</th>
+                 <th>상태</th>
+             </tr>
+         </thead>
+         <tbody>
+             <c:forEach var="contact" items="${contact}">
+                 <tr>
+                     <td>
+                         <a href="javascript:void(0);" onclick="openContactDetail(${contact.id})">${contact.title}</a>
+                     </td>
+                     <td>${contact.status.name() == 'OPEN' ? '답변 미완료' : '답변 완료'}</td>
+                 </tr>
+             </c:forEach>
+         </tbody>
+     </table>
+ </c:if>
+
+ <c:if test="${empty contact}">
+     <div class="no-refund">문의하신 사항이 없습니다.</div>
+ </c:if>
+
 
  <script>
  function openContactDetail(id) {
-     const url = `/contactDetail/${id}`;
+     const url = '/myPage/contactDetail/'+ id;
+         console.log(url); // 생성된 URL 확인
      window.open(url, '_blank', 'width=800,height=600');
  }
  </script>
