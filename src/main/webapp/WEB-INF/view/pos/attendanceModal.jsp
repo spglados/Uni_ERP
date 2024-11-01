@@ -173,8 +173,9 @@
             })
             .then(response => {
                 attendancesData = response.dataList;
+                console.log('attendancesData', attendancesData);
                 const data = attendancesData[0];
-                if (data.status === "UNPLANNED_WORK") {
+                if (data.status === "UNPLANNED") {
                     attendancesData = [];
                     displayAttendanceOptions(attendancesData);
                     showToast("계획된 근무가 없습니다.");
@@ -185,7 +186,6 @@
                 }
                 showToast("조회되었습니다.");
                 displayAttendanceOptions(attendancesData);
-                selectAttendance(data);
             })
             .catch(error => {
                 // 오류 발생 시 처리
@@ -226,11 +226,12 @@
             }
             option.value = curIndex; // 인덱스를 값으로 사용
             option.setAttribute('data-id', attendance.id);
-            // index가 0일 경우 해당 옵션을 선택된 상태로 설정
+            // curIndex가 0일 경우 해당 옵션을 선택된 상태로 설정
             if (curIndex === 0) {
                 option.selected = true;
             }
             index = curIndex + 1;
+            console.log('index', index);
             attendanceList.appendChild(option);
         });
         // 반복문이 끝난 후 "예정에 없는 근무" 항목 추가
@@ -258,7 +259,7 @@
     function handleAttendanceChange() {
         const attendanceList = document.getElementById('attendanceList');
         const selectedIndex = attendanceList.value;
-
+        console.log('selectedIndex', selectedIndex);
         // 유효한 선택이었는지 확인
         if (selectedIndex !== '') {
             const selectedAttendance = attendancesData[selectedIndex]; // 이전에 불러온 데이터에서 가져옴
@@ -268,6 +269,7 @@
 
     // 근무 선택시 값 변경
     function selectAttendance(attendance) {
+        console.log('attendance', attendance);
         if (attendance.name) {
             document.getElementById('employeeName').value = attendance.name;
         }
@@ -277,8 +279,33 @@
             document.getElementById('clockOutButton').style.display = 'none';
         } else if (attendance.status === 'WORKING') {
             // 이미 출근한 상태라면 퇴근 버튼만 표시
+            // 단, 출근 한지 30분이 지나지 않았다면 퇴근 버튼 활성화 되지않음
+            const now = new Date();
+            console.log('now', now);
+            const [hours, minutes] = attendance.attendanceTime.split(":").map(Number);
+            const nowHour = now.getHours();
+            const nowMinute = now.getMinutes();
+            let compareHour = hours;
+            let compareMinute = minutes + 30;
+            if (compareMinute >= 60) {
+                compareHour += 1;
+                compareMinute -= 60;
+            }
+            // 자정 넘어가는 경우 처리
+            if (nowHour < hours || (nowHour === hours && nowMinute < minutes)) {
+                // 자정 넘김을 의미 -> 출근 시간에 24시간을 더해 비교
+                compareHour -= 24;
+            }
+            // 현재 시각을 24시간 형식으로 변환
+            const currentTotalMinutes = nowHour * 60 + nowMinute;
+            const compareTotalMinutes = compareHour * 60 + compareMinute;
+            console.log(now, nowHour, nowMinute, compareHour, compareMinute, currentTotalMinutes, compareTotalMinutes);
+            if (currentTotalMinutes >= compareTotalMinutes) {
+                document.getElementById('clockOutButton').style.display = 'flex';
+            } else {
+                document.getElementById('clockOutButton').style.display = 'none';
+            }
             document.getElementById('clockInButton').style.display = 'none';
-            document.getElementById('clockOutButton').style.display = 'flex';
         } else {
             // 이외 모든 상황에서 버튼 없앰
             document.getElementById('clockInButton').style.display = 'none';

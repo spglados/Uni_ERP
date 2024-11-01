@@ -1,7 +1,9 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.uni.uni_erp.dto.StoreDTO;
+import com.uni.uni_erp.dto.erp.hr.AttendanceDTO;
 import com.uni.uni_erp.repository.user.UserRepository;
+import com.uni.uni_erp.service.erp.hr.AttendanceService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.Map;
 public class ErpController {
 
     private final UserRepository userRepository;
+    private final AttendanceService attendanceService;
 
     /**
      * 메인페이지 요청
@@ -32,11 +35,18 @@ public class ErpController {
         if(storeList != null) {
             model.addAttribute("storeList", storeList);
         }
-
         Integer storeId = (Integer) session.getAttribute("storeId");
         if (storeId != null) {
             model.addAttribute("storeId", storeId);
         }
+        AttendanceDTO.ErpMainDTO attDTO = attendanceService.getAttendanceForMain(storeId);
+        System.out.println("---------------------------------------------------");
+        System.out.println(attDTO);
+        System.out.println("---------------------------------------------------");
+        model.addAttribute("attDTO", attDTO);
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        
 
         return "erp/main";
     }

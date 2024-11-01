@@ -2,17 +2,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 
-<!-- Includes all JS & CSS for the JavaScript Data Grid -->
-<script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
-
-<div id="myGrid" style="width: 100%; height: 100%" class="ag-theme-alpine"></div>
+<div id="myGrid" style="width: 100%" class="ag-theme-quartz"></div>
 
 <script type="application/javascript">
-    const dataList = JSON.parse('${dataList}');
-    console.log('dataList', dataList);
-    console.log('typeof(dataList)', typeof(dataList));
+    const attendanceList = JSON.parse('${dataList}');
+    console.log('dataList', attendanceList);
+    console.log('typeof(dataList)', typeof(attendanceList));
 </script>
 <%-- ag-grid 랜더링 스크립트 --%>
 <script src="/js/erp/hr/attendance.js"></script>
