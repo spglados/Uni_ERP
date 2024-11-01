@@ -932,7 +932,10 @@ public class InventoryService {
 
     public List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycle(HttpSession session) {
         Integer storeId = getStoreId(session);
-        List<MaterialStatus> statusList = materialStatusRepository.findAlarmCycleMaterialDTOByStoreId(storeId);
+        List<MaterialStatus> statusList = materialStatusRepository.findAlarmCycleMaterialDTOByStoreId(storeId, LocalDate.now());
+        if(statusList.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycleDTOList = new ArrayList<>();
         for (MaterialStatus materialStatus : statusList) {
             alarmCycleDTOList.add(new MaterialDTO.AlarmCycleMaterialDTO(materialStatus));
