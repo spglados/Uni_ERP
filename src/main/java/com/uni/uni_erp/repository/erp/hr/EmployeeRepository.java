@@ -56,6 +56,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT e FROM Employee e WHERE e.store.id = :storeId And (e.phone = :phone OR e.email = :email OR e.accountNumber = :accountNumber)")
     List<Employee> findByStoreIdAndPhoneOrEmailOrAccountNumber(Integer storeId, String phone, String email, String accountNumber);
 
+    Optional<Employee> findByStoreIdAndPhone(Integer storeId, String phone);
+
 }
 
 

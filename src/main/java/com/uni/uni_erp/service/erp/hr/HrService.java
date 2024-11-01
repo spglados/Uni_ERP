@@ -124,9 +124,9 @@ public class HrService {
                     .orElseThrow(() -> new RuntimeException("Employee not found"));
             EmpDocument empDocumentEntity = empDocumentRepository.findByEmployeeId(employeeEntity.getId())
                     .orElseThrow(() -> new RuntimeException("Employee not found"));
-
+            String fullEmail = employeeDTO.getEmail() + "@" + employeeDTO.getEmailDomain();
             // 핸드폰 번호, 이메일, 계좌번호 중복 체크
-            if(!duplicateCheck(employeeEntity.getStore().getId(), employeeDTO.getPhone(), employeeDTO.getEmail(), employeeDTO.getAccountNumber(), employeeEntity.getUniqueEmployeeNumber())) {
+            if(!duplicateCheck(employeeEntity.getStore().getId(), employeeDTO.getPhone(), fullEmail, employeeDTO.getAccountNumber(), employeeEntity.getUniqueEmployeeNumber())) {
                 return null;
             }
 
@@ -135,7 +135,6 @@ public class HrService {
             employeeEntity.setBirthday(employeeDTO.getBirthday());
             employeeEntity.setGender(EnumCommonUtil.getEnumFromString(Employee.Gender.class, employeeDTO.getGender()));
             // 이메일 아이디와 도메인을 조합하여 이메일 설정
-            String fullEmail = employeeDTO.getEmail() + "@" + employeeDTO.getEmailDomain();
             employeeEntity.setEmail(fullEmail);
             employeeEntity.setPhone(employeeDTO.getPhone());
             employeeEntity.setAddress(employeeDTO.getAddress());
