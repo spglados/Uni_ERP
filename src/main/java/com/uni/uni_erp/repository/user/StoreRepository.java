@@ -43,4 +43,7 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
     Integer countByUserId(@Param("userId") Integer userId);
 
     void deleteByUserId(Integer userId);
+
+    void deleteById(Integer storeId);
+
 }

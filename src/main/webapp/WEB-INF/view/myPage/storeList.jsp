@@ -73,6 +73,7 @@
                 <th>운영 상태</th>
                 <th>주소</th>
                 <th>등록일</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -84,6 +85,9 @@
                     <td>${store.isOpen == 1 ? '열림' : '닫힘'}</td>
                     <td>${store.storeAddress}</td>
                     <td><fmt:formatDate value="${store.createdAt}" pattern="yyyy-MM-dd HH:mm" /></td>
+                    <td>
+                        <button onclick="deleteStore(${store.id})">가게 삭제</button>
+                    </td>
                 </tr>
             </c:forEach>
         </tbody>
@@ -103,5 +107,29 @@
     function payment() {
         window.location.href = '/payment';
     }
+
+   function deleteStore(storeId) {
+       if (confirm("정말 이 가게를 삭제하시겠습니까?")) {
+           fetch(`/myPage/deleteStore/${storeId}`, {
+               method: 'POST', // POST 메서드 사용
+               headers: {
+                   'Content-Type': 'application/json',
+               },
+               body: JSON.stringify({ storeId: storeId })
+           })
+           .then(response => {
+               if (response.ok) {
+                   alert("가게가 삭제되었습니다.");
+                   window.location.reload();
+               } else {
+                   alert("가게 삭제에 실패했습니다.");
+               }
+           })
+           .catch(error => {
+               console.error("Error:", error);
+               alert("삭제 요청 중 오류가 발생했습니다.");
+           });
+       }
+   }
 </script>
 
