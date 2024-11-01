@@ -11,6 +11,7 @@ import com.uni.uni_erp.dto.sales.StoreListDTO;
 import com.uni.uni_erp.dto.store.StorePositionDTO;
 import com.uni.uni_erp.dto.store.StoreSaveDTO;
 import com.uni.uni_erp.dto.store.StoreUpdateDTO;
+import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.user.StorePositionRepository;
 import com.uni.uni_erp.repository.user.StoreRepository;
@@ -34,6 +35,7 @@ public class StoreService {
     private final StorePositionRepository storePositionRepository;
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
+    private final EmpPositionRepository empPositionRepository;
 
 
     // 특정 사용자가 소유한 스토어 목록 조회
@@ -158,8 +160,11 @@ public class StoreService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Store store = storeSaveDTO.toStore(user);
-
-        return storeRepository.save(store);
+        store = storeRepository.save(store);
+        empPositionRepository.save(EmpPosition.builder()
+                .store(store)
+                .build());
+        return store;
     }
 
     public List<Store> findAllById(Integer userid){

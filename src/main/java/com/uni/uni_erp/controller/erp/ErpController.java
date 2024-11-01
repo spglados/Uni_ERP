@@ -54,7 +54,7 @@ public class ErpController {
         model.addAttribute("attDTO", attDTO);
 
         // 오늘 날짜 재고 현황 최신화
-        inventoryService.getMaterialStatus(session);
+       // inventoryService.getMaterialStatus(session);
 
         // TODO 반드시 알람 단위가 메인 단위와 일치해야 결과가 나옴 !! 공지 필수 !!!
         // 유통기한 임박 자재
