@@ -24,6 +24,15 @@
                 <form:input path="storeAddress" readonly="true" id="storeAddress" class="form-control"/>
             </div>
         </div>
+        <div class="mb-3 row">
+            <label for="is24Hours" class="col-sm-3 col-form-label">24시간 운영 여부</label>
+            <div class="col-sm-9">
+                <form:select path="is24Hours" id="is24Hours" class="form-control">
+                    <option value="0">아니요</option>
+                    <option value="1">네</option>
+                </form:select>
+            </div>
+        </div>
         <div class="text-center">
             <button type="button" id="editButton" onclick="enableEdit()" class="btn btn-primary">수정</button>
             <input type="submit" id="submitButton" value="수정 완료" class="btn btn-success d-none"/>
@@ -35,31 +44,31 @@
     <h2 class="mt-5">포지션 목록</h2>
     <table class="table table-hover table-bordered">
         <thead class="table-light">
-            <tr>
-                <th>포지션 이름</th>
-                <th>최소 요구 인원 수</th>
-                <th>작업</th>
-            </tr>
+        <tr>
+            <th>포지션 이름</th>
+            <th>최소 요구 인원 수</th>
+            <th>작업</th>
+        </tr>
         </thead>
         <tbody>
-            <c:forEach var="position" items="${positions}">
-                <c:if test="${position.name != '미정'}">
-                    <tr>
-                        <td>${position.name}</td>
-                        <td>${position.minRequiredNum}</td>
-                        <td>
-                            <form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/update"
-                                       modelAttribute="storePositionDTO" class="d-inline">
-                                <form:hidden path="id" value="${position.id}"/>
-                                <form:input path="name" value="${position.name}" class="form-control"/>
-                                <form:input path="minRequiredNum" value="${position.minRequiredNum}" class="form-control"/>
-                                <input type="submit" value="수정" class="btn btn-warning btn-sm"/>
-                            </form:form>
-                            <button onclick="deletePosition(${position.id})" class="btn btn-danger btn-sm">삭제</button>
-                        </td>
-                    </tr>
-                </c:if>
-            </c:forEach>
+        <c:forEach var="position" items="${positions}">
+            <c:if test="${position.name != '미정'}">
+                <tr>
+                    <td>${position.name}</td>
+                    <td>${position.minRequiredNum}</td>
+                    <td>
+                        <form:form method="post" action="${pageContext.request.contextPath}/erp/store/position/update"
+                                   modelAttribute="storePositionDTO" class="d-inline">
+                            <form:hidden path="id" value="${position.id}"/>
+                            <form:input path="name" value="${position.name}" class="form-control"/>
+                            <form:input path="minRequiredNum" value="${position.minRequiredNum}" class="form-control"/>
+                            <input type="submit" value="수정" class="btn btn-warning btn-sm"/>
+                        </form:form>
+                        <button onclick="deletePosition(${position.id})" class="btn btn-danger btn-sm">삭제</button>
+                    </td>
+                </tr>
+            </c:if>
+        </c:forEach>
         </tbody>
     </table>
 
@@ -95,19 +104,21 @@
 
     function enableEdit() {
         $("#storeName, #storeAddress").prop("readonly", false);
+        $("#is24Hours").prop("disabled", false);
         $("#editButton").addClass("d-none");
-        $("#cancelButton, #submitButton").removeClass("d-none");
+        $("#cancelButton, #submitButton").removeClass("d-none").prop("disabled", false);
     }
 
     function cancelEdit() {
         $("#storeName, #storeAddress").prop("readonly", true);
+        $("#is24Hours").prop("disabled", true);
         $("#editButton").removeClass("d-none");
-        $("#cancelButton, #submitButton").addClass("d-none");
+        $("#cancelButton, #submitButton").addClass("d-none").prop("disabled", true);
     }
 
     function deletePosition(positionId) {
         if (!confirm('정말 삭제하시겠습니까?')) return;
-        fetch('/erp/store/position/' + positionId, { method: 'DELETE' })
+        fetch('/erp/store/position/' + positionId, {method: 'DELETE'})
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -141,19 +152,19 @@
             },
             body: requestBody
         })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            console.log('data', data);
-            alert('등록 성공');
-            window.location.reload();
-        })
-        .catch(error => {
-            console.log('error', error);
-            alert('등록 실패: ' + error.message);
-        });
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                console.log('data', data);
+                alert('등록 성공');
+                window.location.reload();
+            })
+            .catch(error => {
+                console.log('error', error);
+                alert('등록 실패: ' + error.message);
+            });
     }
 </script>
 
