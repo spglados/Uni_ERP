@@ -110,8 +110,8 @@ public class UserService {
     // 작년 구독자수
     public int getPremiumUserCountForLastYear() {
         LocalDate now = LocalDate.now();
-        LocalDate startDate = now.minusYears(1).withDayOfMonth(1).withMonth(1); // 작년 1월 1일
-        LocalDate endDate = now.minusYears(1).withDayOfMonth(31).withMonth(12); // 작년 12월 31일
+        LocalDate startDate = now.minusYears(1).withMonth(1).withDayOfMonth(1); // 작년 1월 1일
+        LocalDate endDate = now.minusYears(1).withMonth(12).withDayOfMonth(31); // 작년 12월 31일
 
         Timestamp startTimestamp = Timestamp.valueOf(startDate.atStartOfDay());
         Timestamp endTimestamp = Timestamp.valueOf(endDate.plusDays(1).atStartOfDay().minusNanos(1)); // 12월 31일의 마지막 순간

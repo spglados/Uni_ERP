@@ -1,11 +1,13 @@
 package com.uni.uni_erp.schedule;
 
 import com.uni.uni_erp.domain.entity.payment.Payment;
+import com.uni.uni_erp.service.common.SubscribeDurationService;
 import com.uni.uni_erp.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import java.util.List;
 public class PaymentScheduler {
 
     private final PaymentService paymentService;
+    private final SubscribeDurationService subscribeDurationService;
 
 
     @Scheduled(cron = "0 0 0 * * ?")
@@ -38,6 +41,10 @@ public class PaymentScheduler {
                             payment.getUser().getId(),
                             day
                     );
+
+
+                    subscribeDurationService.updateEndTimeByUserId(payment.getUser().getId());
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
