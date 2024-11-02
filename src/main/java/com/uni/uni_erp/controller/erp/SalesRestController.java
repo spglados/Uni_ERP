@@ -1,5 +1,6 @@
 package com.uni.uni_erp.controller.erp;
 
+import com.google.gson.Gson;
 import com.uni.uni_erp.dto.sales.*;
 import com.uni.uni_erp.service.SalesService;
 import jakarta.persistence.EntityManager;
@@ -34,7 +35,7 @@ public class SalesRestController {
             LocalDateTime startDate = today.atStartOfDay();
             LocalDateTime endDate = today.atTime(LocalTime.MAX);
             Integer storeId = (Integer) session.getAttribute("storeId");
-            return salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+            return salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(startDate, endDate, storeId);
 
         } catch (Exception e) {
             log.error("Error searching sales records by date", e);
@@ -50,7 +51,7 @@ public class SalesRestController {
             LocalDateTime endDate = today.atTime(LocalTime.MAX);
             Integer storeId = (Integer) session.getAttribute("storeId");
             List<SalesDTO> salesList;
-            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(startDate, endDate, storeId);
             List<SalesDetailDTO> salesDetailList = salesService.findAllByOrderNumIn(salesList);
             return salesDetailList.stream()
                     .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode))
@@ -79,7 +80,7 @@ public class SalesRestController {
             LocalDateTime endDate = today.atTime(LocalTime.MAX);
             Integer storeId = (Integer) session.getAttribute("storeId");
             List<SalesDTO> salesList;
-            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateAsc(startDate, endDate, storeId);
+            salesList = salesService.findAllBySalesDateBetweenAndStoreIdOrderBySalesDateDesc(startDate, endDate, storeId);
             List<SalesDetailDTO> salesDetailList = salesService.findAllByOrderNumIn(salesList);
             return salesDetailList.stream()
                     .collect(Collectors.groupingBy(SalesDetailDTO::getItemCode))
@@ -100,10 +101,29 @@ public class SalesRestController {
         }
     }
 
+    @GetMapping("/refund-data")
+    public List<SalesRefundDTO> getItemRefunds(HttpSession session) {
+        try {
+            int year = LocalDate.now().getYear();
+            LocalDateTime startDateCurrentYear = LocalDateTime.of(year, 1, 1, 0, 0);
+            LocalDateTime endDateCurrentYear = LocalDateTime.of(year, 12, 31, 23, 59, 59);
+            Integer storeId = (Integer) session.getAttribute("storeId");
+
+            List<Integer> orderNum = salesService.findAllSalesNumByDateBetweenAndStoreId(startDateCurrentYear, endDateCurrentYear, storeId);
+
+            List<SalesRefundDTO> refundList = salesService.findRefundByOrderNum(orderNum);
+
+            return salesService.groupRefundDetails(refundList);
+        } catch (Exception e) {
+            log.error("err", e);
+            return Collections.emptyList();
+        }
+    }
+
     @GetMapping("/details")
     public ResponseEntity<List<ProductSalesDTO>> getDetails(@RequestParam Integer year,
-                                                   @RequestParam Integer month,
-                                                   HttpSession session) {
+                                                            @RequestParam Integer month,
+                                                            HttpSession session) {
 
         // Selected Month
         LocalDateTime startDateCurrent = LocalDateTime.of(year, month, 1, 0, 0);
@@ -186,13 +206,32 @@ public class SalesRestController {
                     .yearlySales(yearlySales) // Current year's total quantity
                     .lastYearSales(lastYearSales) // Last year's total quantity
                     .yearlyGrowthRate(yearlyGrowthRate) // Yearly growth rate calculation
-                    .profit((currentMonthData.getTotalQuantity() * currentMonthData.getUnitPrice())) // Example profit calculation
+                    .profit(currentMonthData.getTotalPrice()) // Example profit calculation
                     .build();
             productSalesList.add(productSalesDTO);
         }
 
-        System.err.println(productSalesList);
         return ResponseEntity.ok(productSalesList);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test(HttpSession session) {
+
+        session.getAttribute("storeId");
+
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDate lastYear = LocalDate.now().minusYears(1);
+
+        List<SalesTargetDTO> todaySalesTargets = salesService.getSalesTargetByHour(1, today);
+        List<SalesTargetDTO> yesterdaySalesTargets = salesService.getSalesTargetByHour(1, yesterday);
+        List<SalesTargetDTO> lastYearSalesTargets = salesService.getSalesTargetByHour(1, lastYear);
+
+        List<SalesComparisonDTO> salesComparison = salesService.getSalesComparison(todaySalesTargets, yesterdaySalesTargets, lastYearSalesTargets);
+
+        Gson gson = new Gson();
+        String salesComparisonJson = gson.toJson(salesComparison);
+        return ResponseEntity.ok(salesComparisonJson);
     }
 
 

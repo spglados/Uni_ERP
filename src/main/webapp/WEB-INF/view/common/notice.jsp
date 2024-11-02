@@ -12,7 +12,7 @@
 <main class="main-container">
 
     <section>
-        <h2>공지사항 목록</h2>
+        <h1>공지사항 목록</h1>
         <table>
             <thead>
                 <tr>
@@ -32,17 +32,17 @@
                     </tr>
                 </c:forEach>
             </tbody>
-        </table>z
+        </table>
 
         <div class="pagination">
             <c:if test="${notices.hasPrevious()}">
-                <a href="/notice?page=${currentPage - 1}&size=${pageSize}">&laquo; 이전</a>
+                <a href="/notice?page=${currentPage - 1}&size=${pageSize}" class="btnPush">&laquo; 이전</a>
             </c:if>
             <c:forEach begin="1" end="${notices.totalPages}" var="i">
-                <a href="/notice?page=${i - 1}&size=${pageSize}" class="${i == currentPage ? 'active' : ''}">${i}</a>
+                <a href="/notice?page=${i - 1}&size=${pageSize}" class="${i == currentPage ? 'active btnPush' : 'btnPush'}">${i}</a>
             </c:forEach>
             <c:if test="${notices.hasNext()}">
-                <a href="/notice?page=${currentPage}&size=${pageSize}">다음 &raquo;</a>
+                <a href="/notice?page=${currentPage}&size=${pageSize}" class="btnPush">다음 &raquo;</a>
             </c:if>
         </div>
     </section>

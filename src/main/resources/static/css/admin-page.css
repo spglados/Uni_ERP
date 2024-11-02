@@ -1,0 +1,185 @@
+@charset "UTF-8";
+
+body {
+	font-family: Arial, sans-serif;
+	background-color: #f4f4f4;
+	margin: 0;
+	padding: 0;
+}
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th, td {
+	padding: 8px;
+	border: 1px solid #ddd;
+}
+/* 기본 행 스타일 */
+tbody tr {
+	transition: background-color 0.3s ease;
+}
+/* hover 스타일 */
+tbody tr:hover {
+	background-color: #99CCFF;
+}
+
+.btn-point {
+	display: inline-block;
+	padding: 10px 20px;
+	background-color: #4CAF50; /* Green background */
+	color: white; /* White text */
+	text-align: center; /* Centered text */
+	text-decoration: none; /* Remove underline */
+	border-radius: 5px; /* Rounded corners */
+	font-size: 16px; /* Font size */
+	transition: background-color 0.3s, transform 0.3s;
+	/* Transition effects */
+}
+
+.btn-point:hover {
+	background-color: #45a049; /* Darker green on hover */
+	transform: scale(1.05); /* Slightly increase size */
+}
+
+.logout-btn {
+	background-color: #007bff; /* 파란색 배경 */
+	color: white !important; /* 흰색 글자 */
+	font-weight: bold; /* 진한 글자 */
+	border-radius: 5px; /* 모서리 둥글게 */
+	padding: 10px 15px; /* 여백 추가 */
+	width: 150%; /* 가로 1.5배 확장 */
+	text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+.logout-btn:hover {
+	background-color: #0056b3; /* hover 시 더 진한 파란색 */
+}
+
+.registration-form {
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.registration-form h1 {
+	margin: 0;
+	font-size: 2.5em;
+	color: #333;
+}
+
+.registration-form label {
+	display: block;
+	margin: 10px 0 5px;
+	font-weight: bold;
+}
+
+.registration-form input, .registration-form textarea,
+	.registration-form select {
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+.registration-form button {
+	display: inline-block;
+	padding: 10px 20px;
+	color: #fff;
+	background-color: #007bff;
+	border: none;
+	border-radius: 5px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.registration-form button:hover {
+	background-color: #0056b3;
+}
+
+.book-detail {
+	background: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.book-detail h1 {
+	margin: 0;
+	font-size: 2.5em;
+	color: #333;
+}
+
+.book-detail p {
+	margin: 10px 0;
+	line-height: 1.6;
+}
+
+.book-detail strong {
+	color: #555;
+}
+
+.book-detail img {
+	max-width: 200px;
+	height: auto;
+	border-radius: 8px;
+	margin: 20px 0;
+}
+
+.book-detail a {
+	display: inline-block;
+	padding: 10px 20px;
+	color: #fff;
+	background-color: #007bff;
+	text-decoration: none;
+	border-radius: 5px;
+	font-weight: bold;
+}
+
+.book-detail a:hover {
+	background-color: #0056b3;
+}
+
+.book-detail .edit-link {
+	display: inline-block;
+	padding: 10px 20px;
+	color: #fff;
+	background-color: #007bff; /* Blue for edit */
+	text-decoration: none;
+	border-radius: 5px;
+	font-weight: bold;
+}
+
+.book-detail .edit-link:hover {
+	background-color: #0056b3; /* Darker blue on hover */
+}
+
+.book-detail .delete-link {
+	display: inline-block;
+	padding: 10px 20px;
+	color: #fff;
+	background-color: #dc3545; /* Red for delete */
+	text-decoration: none;
+	border-radius: 5px;
+	font-weight: bold;
+}
+
+.book-detail .delete-link:hover {
+	background-color: #c82333; /* Darker red on hover */
+}
+
+.book-detail .section-header {
+	margin-top: 20px;
+	padding-bottom: 10px;
+	border-bottom: 2px solid #eee;
+	color: #007bff;
+}

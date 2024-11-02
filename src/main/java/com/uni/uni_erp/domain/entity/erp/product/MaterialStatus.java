@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class MaterialStatus {
 
     @Id
@@ -28,7 +29,20 @@ public class MaterialStatus {
 
     private Double loss;  // 이론 재고와 실제 재고의 차이
 
+    private Double useTotalAmount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Material material;
+
+    @PrePersist
+    protected void onCreate() {
+        if(statusDate == null) {
+            statusDate = LocalDate.now();
+        }
+
+        if(useTotalAmount == null) {
+            useTotalAmount = 0.0;
+        }
+    }
 
 }

@@ -25,14 +25,30 @@ repositories {
 }
 
 dependencies {
+    // 엑셀 라이브러리
+    implementation 'org.apache.poi:poi:5.2.3'
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+    implementation 'org.apache.xmlbeans:xmlbeans:5.0.2'
+
     implementation 'org.json:json:20220924'
     // JSP 사용을 위한 톰캣 Jasper 의존성
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
     implementation group: 'org.glassfish.web', name: 'jakarta.servlet.jsp.jstl', version: '3.0.0'
-    providedRuntime 'javax.servlet:javax.servlet-api:4.0.1'
+    providedRuntime 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 
     // Json 데이터를 가공하기 위한 GSON 의존성 추가
     implementation 'com.google.code.gson:gson:2.10.1'
+
+    // 이메일 인증
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // 휴대폰 인증
+    implementation group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+
+    // qr 생성을 위한 라이브러리
+    implementation 'com.google.zxing:core:3.4.1'
+    implementation 'com.google.zxing:javase:3.4.1'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'

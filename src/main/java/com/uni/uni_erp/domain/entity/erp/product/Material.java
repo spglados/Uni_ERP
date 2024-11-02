@@ -2,10 +2,7 @@ package com.uni.uni_erp.domain.entity.erp.product;
 
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Material {
 
     @Id
@@ -52,12 +50,23 @@ public class Material {
     private List<MaterialOrder> orders;
 
     @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MaterialAdjustment> statusHistory;
+    private List<MaterialAdjustment> adjustmentHistory;
 
     @PrePersist
-    protected void onCreate() {
+    protected void prePersist() {
         if (enterDate == null) {
             enterDate = LocalDate.now();
+        }
+
+        // 표준 단위 변환 설정
+        if (unit == UnitCategory.KG && subUnit == UnitCategory.G) {
+            subAmount = 1000.0;
+        } else if (unit == UnitCategory.G && subUnit == UnitCategory.KG) {
+            subAmount = 0.001;
+        } else if (unit == UnitCategory.L && subUnit == UnitCategory.ML) {
+            subAmount = 1000.0;
+        } else if (unit == UnitCategory.ML && subUnit == UnitCategory.L) {
+            subAmount = 0.001;
         }
     }
 

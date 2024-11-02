@@ -2,14 +2,11 @@ package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.Bank;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.dto.EmployeeDTO;
-import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,22 +36,27 @@ public class Employee {
         F // 여자
     }
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String phone;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String address;
 
-    @Column(unique = true, name = "account_number", nullable = false)
+    @Column(name = "account_number", nullable = false)
     private String accountNumber;
     // 사용자 정의 직책
 
-    @Column(nullable = true)
-    private String position;
+   // @Column(nullable = true)
+    //private String position;
     // 외래 키 설정: Employee는 하나의 Store에 속함
+   // 사용자 정의 직책 (EmpPosition 추가)
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "emp_position_id") // EmpPosition의 ID를 참조
+   private EmpPosition empPosition;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
@@ -71,8 +73,11 @@ public class Employee {
     private Integer storeEmployeeNumber;  // 각 가게별로 증가하는 직원 번호
 
     @Column(unique = true, nullable = false)  // 고유한 사원번호, Not Null, 유니크 설정
-    private String uniqueEmployeeNumber;
+    private Long uniqueEmployeeNumber;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private String password = "0000";
 
     public enum EmploymentStatus {
         ACTIVE, // 재직중
@@ -92,6 +97,10 @@ public class Employee {
     @Column(name = "hired_at", nullable = true)
     private Timestamp hiredAt;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer wage = 9860;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank; // 은행 정보를 참조 필드
@@ -107,36 +116,6 @@ public class Employee {
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = Timestamp.from(Instant.now());
-    }
-
-
-    public EmployeeDTO toEmployeeDTO() {
-        return EmployeeDTO.builder()
-                .id(this.id)
-                .storeId(this.store.getId())
-                .storeEmployeeNumber(storeEmployeeNumber)
-                .name(this.name)
-                .birthday(this.birthday)
-                .gender(this.gender)
-                .email(this.email)
-                .phone(this.phone)
-                .address(this.address)
-                .accountNumber(this.accountNumber)
-                .position(this.position)
-                .bankId(this.bank.getId())
-                .bankName(this.bank.getName())
-                .uniqueEmployeeNumber(this.uniqueEmployeeNumber)
-                .employmentStatus(this.employmentStatus)
-                .hiredAt(Timestamp.from(Instant.now()))
-                .employmentContract(this.empDocument.getEmploymentContract())
-                .healthCertificate(this.empDocument.getHealthCertificate())
-                .healthCertificateDate(this.empDocument != null && this.empDocument.getHealthCertificateDate() != null
-                        ? DateFormatter.toDate(this.empDocument.getHealthCertificateDate())
-                        : "보건증 갱신일을 입력해주세요") // 보건증 갱신일이 null일 경우 메시지 설정
-                .residentRegistration(this.empDocument.getResidentRegistration())
-                .bankAccountCopy(this.empDocument.getBankAccountCopy())
-                .identificationCopy(this.empDocument.getIdentificationCopy())
-                .build();
     }
 
 }

@@ -13,10 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/erp/product")
@@ -27,13 +29,8 @@ public class ProductController {
     private final HttpSession session;
     private final Gson gson;
 
-    @GetMapping("/list")
-    public String listPage() {
-        return "erp/product/list";
-    }
-
-    @GetMapping({"/registration", "/registration/{productName}"})
-    public String registerPage(Model model, @PathVariable(name = "productName", required = false) String productName) {
+    @GetMapping({"/list", "/list/{productName}"})
+    public String listPage(Model model, @PathVariable(name = "productName", required = false) String productName) {
         // session 에서 스토어 아이디를 가져온 다음 해당 가게에 등록되어 있는 상품 리스트를 반환
         Integer storeId = (Integer) session.getAttribute("storeId");
         if (storeId == null) {
@@ -53,16 +50,69 @@ public class ProductController {
         model.addAttribute("productList", productService.getProductByStoreId(storeId));
         model.addAttribute("materialDTOList", gson.toJson(materialDTOList));
         model.addAttribute("materialList", gson.toJson(materialList));
+        return "erp/product/list";
+    }
+
+    @GetMapping("/registration")
+    public String registerPage() {
         return "erp/product/register";
     }
 
     @PostMapping("/product")
-    public ResponseEntity<ProductDTO> saveProduct(@ModelAttribute ProductDTO productDTO) {
+    public ResponseEntity<Map<String, Boolean>> saveProduct(@ModelAttribute ProductDTO productDTO, HttpSession session) {
+        boolean isEnter = productService.saveProduct(productDTO, session);
+        if(!isEnter) {
+            return ResponseEntity.ok(Map.of("fail", isEnter));
+        }
+
+        return ResponseEntity.ok(Map.of("success", isEnter));
+    }
+
+    @GetMapping("/correction")
+    public String correctionPage() {
+        return "/erp/product/correction";
+    }
+
+    /**
+     * 특정 상품 코드로 상품 데이터 조회
+     */
+    @GetMapping("/products/{productCode}")
+    @ResponseBody
+    public ResponseEntity<ProductDTO.ProductResponseDTO> getProduct(@PathVariable Long productCode) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        if (storeId == null) {
+            throw new Exception401("관리하고 있는 가게가 없습니다.");
+        }
+
+        ProductDTO.ProductResponseDTO productDTO = productService.getProductResponseDTOByProductCode(productCode, storeId);
+        if (productDTO == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(productDTO);
+    }
+
+    /**
+     * 특정 상품 코드로 상품 데이터 수정
+     */
+    @PutMapping("/products/{productCode}")
+    @ResponseBody
+    public ResponseEntity<String> updateProduct(
+            @PathVariable Long productCode,
+            @ModelAttribute ProductDTO productDTO,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) {
         Integer storeId = (Integer) session.getAttribute("storeId");
         User user = (User) session.getAttribute("userSession");
-        productService.saveProduct(productDTO, storeId, user.getId());
+        if (storeId == null || user == null) {
+            throw new Exception401("권한이 없습니다.");
+        }
 
-        return ResponseEntity.ok().build();
+        boolean isUpdated = productService.updateProductByProductCode(productCode, productDTO, imageFile, storeId, user.getId());
+        if (isUpdated) {
+            return ResponseEntity.ok("Success");
+        } else {
+            return ResponseEntity.status(500).body("Failed to update product.");
+        }
     }
 
     @GetMapping("/ingredient/{productId}")

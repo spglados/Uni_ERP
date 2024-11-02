@@ -1,31 +1,34 @@
 package com.uni.uni_erp.controller.erp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.dto.StoreDTO;
+import com.uni.uni_erp.dto.erp.hr.AttendanceDTO;
+import com.uni.uni_erp.dto.erp.material.MaterialDTO;
+import com.uni.uni_erp.dto.sales.MostProductSaleQuantityDTO;
 import com.uni.uni_erp.repository.user.UserRepository;
+import com.uni.uni_erp.service.SalesService;
+import com.uni.uni_erp.service.invertory.InventoryService;
+import com.uni.uni_erp.service.erp.hr.AttendanceService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/erp")
+@RequiredArgsConstructor
 public class ErpController {
 
     private final UserRepository userRepository;
-
-    public ErpController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final AttendanceService attendanceService;
+    private final InventoryService inventoryService;
+    private final SalesService salesService;
+    private final Gson gson;
 
     /**
      * 메인페이지 요청
@@ -33,40 +36,59 @@ public class ErpController {
      * @return
      */
     @GetMapping("/main")
-    public String mainPage(Model model) {
-        List<Map<String, Object>> test = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", "123");
-        map.put("name", "장건우");
+    public String mainPage(Model model, HttpSession session) {
 
-        Map<String, Object> map2 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        Map<String, Object> map3 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        Map<String, Object> map4 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        Map<String, Object> map5 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        Map<String, Object> map6 = new HashMap<>();
-        map.put("id", "1234");
-        map.put("name", "장건우시발");
-        test.add(map);
-        test.add(map2);
-        test.add(map3);
-        test.add(map4);
-        test.add(map5);
-        test.add(map6);
-        try {
-            model.addAttribute("test", new ObjectMapper().writeValueAsString(test));
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        List<StoreDTO> storeList = (List<StoreDTO>) session.getAttribute("storeList");
+        if(storeList != null) {
+            model.addAttribute("storeList", storeList);
         }
+
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        if (storeId != null) {
+            model.addAttribute("storeId", storeId);
+        }
+        AttendanceDTO.ErpMainDTO attDTO = attendanceService.getAttendanceForMain(storeId);
+        System.out.println("---------------------------------------------------");
+        System.out.println(attDTO);
+        System.out.println("---------------------------------------------------");
+        model.addAttribute("attDTO", attDTO);
+
+        // 오늘 날짜 재고 현황 최신화
+        inventoryService.getMaterialStatus(session);
+
+        // TODO 반드시 알람 단위가 메인 단위와 일치해야 결과가 나옴 !! 공지 필수 !!!
+        // 유통기한 임박 자재
+        List<MaterialDTO.nearingExpirationDateDTO> nearingExpirationDateList = inventoryService.nearingExpirationDate(session);
+        // 재고 부족 알람 리스트
+        List<MaterialDTO.AlarmCycleMaterialDTO> alarmCycleList = inventoryService.alarmCycle(session);
+        model.addAttribute("nearingExpirationDateList", nearingExpirationDateList);
+        model.addAttribute("alarmCycleList", alarmCycleList);
+
+        // 오늘 제품 판매 수량
+        List<MostProductSaleQuantityDTO> saleQuantityList = salesService.getMostSaleQuantity(session);
+        model.addAttribute("saleQuantityList", saleQuantityList);
+
         return "erp/main";
+    }
+
+    /**
+     * 가게선택 페이지
+     *
+     * @return
+     */
+    @GetMapping("/storeChoice")
+    public String storeChoicePage(Model model) {
+
+        return "erp/storeSelect";
+    }
+
+    @PutMapping("/store/{storeId}")
+    public ResponseEntity<?> changeStoreId(@PathVariable(name = "storeId") Integer storeId, HttpSession session, Model model) {
+
+        // 기존 storeId 변경
+        session.setAttribute("storeId", storeId);
+        model.addAttribute("storeId", storeId);
+        return ResponseEntity.ok().build();
     }
 
     // 모든 사용자 데이터를 반환하는 REST 엔드포인트
