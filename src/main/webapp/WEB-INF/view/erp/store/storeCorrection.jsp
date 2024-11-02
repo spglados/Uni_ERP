@@ -27,9 +27,9 @@
         <div class="mb-3 row">
             <label for="is24Hours" class="col-sm-3 col-form-label">24시간 운영 여부</label>
             <div class="col-sm-9">
-                <form:select path="is24Hours" id="is24Hours" class="form-control">
-                    <option value="0">아니요</option>
-                    <option value="1">네</option>
+                <form:select path="is24Hours" id="is24Hours" class="form-control" disabled="true">
+                    <option value="0" <c:if test="${store.is24Hours == 0}">selected</c:if>>아니요</option>
+                    <option value="1" <c:if test="${store.is24Hours == 1}">selected</c:if>>네</option>
                 </form:select>
             </div>
         </div>
@@ -104,7 +104,7 @@
 
     function enableEdit() {
         $("#storeName, #storeAddress").prop("readonly", false);
-        $("#is24Hours").prop("disabled", false);
+        $("#is24Hours").prop("disabled", false); // 24시간 운영 여부 활성화
         $("#editButton").addClass("d-none");
         $("#cancelButton, #submitButton").removeClass("d-none").prop("disabled", false);
     }
