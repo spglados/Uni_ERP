@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.YearMonth;
 import java.util.List;
 
 @NoArgsConstructor
@@ -23,11 +24,8 @@ public class Payroll {
     @JoinColumn(name = "emp_id", nullable = false)
     private Employee employee;
 
-    @Column(name = "period_start", nullable = false)
-    private Timestamp periodStart;
-
-    @Column(name = "period_end", nullable = false)
-    private Timestamp periodEnd;
+    @Column(name = "year_month", nullable = false)
+    private YearMonth yearMonth;
 
     @Column(name = "gross_salary", nullable = false)
     private Integer grossSalary; // 세전 급여

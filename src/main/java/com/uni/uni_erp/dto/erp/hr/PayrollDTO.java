@@ -22,11 +22,18 @@ public class PayrollDTO {
     public static class CalculateResultDTO {
         private Long empNo;
         private String name;
+        private String grossSalary;
         private String workSalary;
         private String overWorkAllowance;
         private String holidayWorkAllowance;
         private String nightWorkAllowance;
         private String weeklyHolidayAllowance;
+        private int totalWorkTime;
+        private String nationalPension;
+        private String healthInsurance;
+        private String employmentInsurance;
+        private String employmentInsuranceEmployer;
+        private String industrialAccidentCompensationInsurance;
     }
 
 }
