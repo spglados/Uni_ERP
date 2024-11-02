@@ -129,4 +129,3 @@ const posNowAmount = ${posNowAmount}; // JSP에서 전달받은 금액
            }
 </script>
 
-<!-- footer.jsp -->

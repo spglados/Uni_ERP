@@ -17,6 +17,7 @@ import com.uni.uni_erp.repository.user.StoreRepository;
 import com.uni.uni_erp.util.ExcelUtil.ExcelUtil;
 import com.uni.uni_erp.util.Str.EnumCommonUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
@@ -123,9 +124,9 @@ public class HrService {
                     .orElseThrow(() -> new RuntimeException("Employee not found"));
             EmpDocument empDocumentEntity = empDocumentRepository.findByEmployeeId(employeeEntity.getId())
                     .orElseThrow(() -> new RuntimeException("Employee not found"));
-
+            String fullEmail = employeeDTO.getEmail() + "@" + employeeDTO.getEmailDomain();
             // 핸드폰 번호, 이메일, 계좌번호 중복 체크
-            if(!duplicateCheck(employeeEntity.getStore().getId(), employeeDTO.getPhone(), employeeDTO.getEmail(), employeeDTO.getAccountNumber(), employeeEntity.getUniqueEmployeeNumber())) {
+            if(!duplicateCheck(employeeEntity.getStore().getId(), employeeDTO.getPhone(), fullEmail, employeeDTO.getAccountNumber(), employeeEntity.getUniqueEmployeeNumber())) {
                 return null;
             }
 
@@ -134,7 +135,6 @@ public class HrService {
             employeeEntity.setBirthday(employeeDTO.getBirthday());
             employeeEntity.setGender(EnumCommonUtil.getEnumFromString(Employee.Gender.class, employeeDTO.getGender()));
             // 이메일 아이디와 도메인을 조합하여 이메일 설정
-            String fullEmail = employeeDTO.getEmail() + "@" + employeeDTO.getEmailDomain();
             employeeEntity.setEmail(fullEmail);
             employeeEntity.setPhone(employeeDTO.getPhone());
             employeeEntity.setAddress(employeeDTO.getAddress());
@@ -167,12 +167,12 @@ public class HrService {
         return employeeRepository.findEmployeesByStoreId(storeId);
     }
 
-    // 직원 상세 정보 조회
-    public EmployeeDTO getEmployeeDetails(Integer employeeId) {
-        return employeeRepository.findEmployeeWithAllDetails(employeeId)
-                .map(this::convertToDTO)
-                .orElseThrow(() -> new Exception404("직원 정보를 찾을 수 없습니다."));
-    }
+//    // 직원 상세 정보 조회
+//    public EmployeeDTO getEmployeeDetails(Integer employeeId) {
+//        return employeeRepository.findEmployeeWithAllDetails(employeeId)
+//                .map(this::convertToDTO)
+//                .orElseThrow(() -> new Exception404("직원 정보를 찾을 수 없습니다."));
+//    }
 
     public List<EmpPositionDTO> getPositionsByStoreId(Integer storeId) {
         List<EmpPosition> positions = empPositionRepository.findByStoreId(storeId);
@@ -213,26 +213,26 @@ public class HrService {
     }
 
     // 중복 이메일 검사
-    public boolean isEmailDuplicated(String email) {
-        return employeeRepository.existsByEmail(email);
+    public boolean isEmailDuplicated(String email, Integer storeId) {
+        return employeeRepository.existsByEmailAndStoreId(email, storeId);
     }
 
     // 중복 전화번호 검사
-    public boolean isPhoneDuplicated(String phone) {
-        return employeeRepository.existsByPhone(phone);
+    public boolean isPhoneDuplicated(String phone, Integer storeId) {
+        return employeeRepository.existsByPhoneAndStoreId(phone, storeId);
     }
 
     // 중복 계좌번호 조회
-    public boolean isAccountNumberDuplicated(String accountNumber) {
-        return employeeRepository.existsByAccountNumber(accountNumber);
+    public boolean isAccountNumberDuplicated(String accountNumber, Integer storeId) {
+        return employeeRepository.existsByAccountNumberAndStoreId(accountNumber, storeId);
     }
 
-    // 모든 직원과 은행 정보 조회
-    public List<EmployeeDTO> getAllEmployeesWithBankAndStore() {
-        return employeeRepository.findAllWithBankAndStore().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
+//    // 모든 직원과 은행 정보 조회
+//    public List<EmployeeDTO> getAllEmployeesWithBankAndStore() {
+//        return employeeRepository.findAllWithBankAndStore().stream()
+//                .map(this::convertToDTO)
+//                .collect(Collectors.toList());
+//    }
 
     // 모든 은행 DTO 조회
     public List<BankDTO> getAllBankDTOs() {
@@ -270,6 +270,7 @@ public class HrService {
                 .gender(employeeDTO.getGender())
                 .email(employeeDTO.getEmail())
                 .phone(employeeDTO.getPhone())
+                .password(employeeDTO.getPassword())
                 .accountNumber(employeeDTO.getAccountNumber())
                 .address(employeeDTO.getAddress())
                 .empPosition(employeeDTO.getEmpPosition() != null ? employeeDTO.getEmpPosition() : null)
@@ -307,29 +308,29 @@ public class HrService {
                 .build();
     }
 
-    private EmployeeDTO convertToDTO(Employee employee) {
-        EmployeeDTO employeeDTO = EmployeeDTO.builder()
-                .uniqueEmployeeNumber(employee.getUniqueEmployeeNumber())
-                .name(employee.getName())
-                .birthday(employee.getBirthday())
-                .gender(employee.getGender())
-                .email(employee.getEmail())
-                .phone(employee.getPhone())
-                .accountNumber(employee.getAccountNumber())
-                .address(employee.getAddress())
-                .empPosition(employee.getEmpPosition())
-                .employmentStatus(employee.getEmploymentStatus())
-                .bankId(employee.getBank() != null ? employee.getBank().getId() : null)
-                .build();
-
-        // EmpDocumentDTO 정보 추가
-        if (employee.getEmpDocument() != null) {
-            EmpDocumentDTO empDocumentDTO = new EmpDocumentDTO(employee.getEmpDocument());
-            employeeDTO.setEmpDocumentDTO(empDocumentDTO); // employeeDTO를 통해 설정
-        }
-
-        return employeeDTO; // employeeDTO 반환
-    }
+//    private EmployeeDTO convertToDTO(Employee employee) {
+//        EmployeeDTO employeeDTO = EmployeeDTO.builder()
+//                .uniqueEmployeeNumber(employee.getUniqueEmployeeNumber())
+//                .name(employee.getName())
+//                .birthday(employee.getBirthday())
+//                .gender(employee.getGender())
+//                .email(employee.getEmail())
+//                .phone(employee.getPhone())
+//                .accountNumber(employee.getAccountNumber())
+//                .address(employee.getAddress())
+//                .empPosition(employee.getEmpPosition())
+//                .employmentStatus(employee.getEmploymentStatus())
+//                .bankId(employee.getBank() != null ? employee.getBank().getId() : null)
+//                .build();
+//
+//        // EmpDocumentDTO 정보 추가
+//        if (employee.getEmpDocument() != null) {
+//            EmpDocumentDTO empDocumentDTO = new EmpDocumentDTO(employee.getEmpDocument());
+//            employeeDTO.setEmpDocumentDTO(empDocumentDTO); // employeeDTO를 통해 설정
+//        }
+//
+//        return employeeDTO; // employeeDTO 반환
+//    }
 
     private boolean duplicateCheck(Integer storeId, String phone, String email, String accountNumber, long empUniqueId) {
         List<Employee> checkData = employeeRepository.findByStoreIdAndPhoneOrEmailOrAccountNumber(storeId, phone, email, accountNumber);

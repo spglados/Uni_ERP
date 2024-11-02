@@ -5,10 +5,12 @@ import com.uni.uni_erp.domain.entity.SalesDetail;
 import com.uni.uni_erp.domain.entity.SalesRefund;
 import com.uni.uni_erp.dto.CostPerEmployeeDTO;
 import com.uni.uni_erp.dto.sales.*;
+import com.uni.uni_erp.exception.errors.Exception401;
 import com.uni.uni_erp.repository.erp.hr.AttendanceRepository;
 import com.uni.uni_erp.repository.sales.SalesDetailRepository;
 import com.uni.uni_erp.repository.sales.SalesRefundRepository;
 import com.uni.uni_erp.repository.sales.SalesRepository;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -402,5 +404,16 @@ public class SalesService {
 
         // 해당 월의 매출 데이터 조회
         return salesRepository.findTotalPriceByDay(currentMonth, currentYear);
+    }
+
+    public List<MostProductSaleQuantityDTO> getMostSaleQuantity(HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
+
+        if(storeId == null) {
+            throw new Exception401("가게 정보가 없거나, 인증이 유효하지 않습니다.");
+        }
+
+        return salesRepository.findMostProductSaleQuantityByStoreId(storeId, LocalDate.now());
+
     }
 }

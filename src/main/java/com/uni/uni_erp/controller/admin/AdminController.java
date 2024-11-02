@@ -1,11 +1,8 @@
 package com.uni.uni_erp.controller.admin;
 
-import com.uni.uni_erp.domain.entity.Contact;
-import com.uni.uni_erp.domain.entity.Notice;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.dto.AdminDTO;
-import com.uni.uni_erp.dto.UserDTO;
+import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.dto.AdminDTO;
 import com.uni.uni_erp.dto.ContactDTO;
 import com.uni.uni_erp.dto.NoticeDTO;
@@ -19,7 +16,6 @@ import com.uni.uni_erp.service.common.NoticeService;
 import com.uni.uni_erp.service.common.ResponseService;
 import com.uni.uni_erp.service.common.SubscribeDurationService;
 import com.uni.uni_erp.service.payment.PaymentService;
-import com.uni.uni_erp.service.product.ProductService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -29,10 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
@@ -288,6 +280,13 @@ public class AdminController {
             e.printStackTrace();
             return "오류";
         }
+    }
+
+    @GetMapping("/refund")
+    public String refund(Model model) {
+        List<Payment> payments = paymentService.findAll();
+        model.addAttribute("payments", payments);
+        return "/admin/refund";
     }
 
 

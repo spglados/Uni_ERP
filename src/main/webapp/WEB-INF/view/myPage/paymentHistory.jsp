@@ -96,6 +96,11 @@
 </c:if>
 
 <script>
+
+const paymentCount = ${paymentCount}; // paymentCount 값
+const storeCount = ${storeCount}; // storeCount 값
+
+
 function selectPayment(paymentId, row) {
     // 선택된 항목 강조
     const rows = document.querySelectorAll('tbody tr');
@@ -112,8 +117,14 @@ function cancelPayment() {
         return;
     }
 
+    if (paymentCount <= storeCount) {
+            alert("먼저 가게를 삭제해 주세요.");
+            return;
+    }
+
     const paymentId = selectedRadio.value;
-    const cancelReason = selectedReason.value;
+    const cancelReasonSelect = selectedRadio.closest('tr').querySelector('select.cancel-reason');
+    const cancelReason = cancelReasonSelect.value;
 
     if (!cancelReason) {
         alert("취소 사유를 선택해 주세요.");
