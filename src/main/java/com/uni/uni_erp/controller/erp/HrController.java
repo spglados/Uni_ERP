@@ -312,15 +312,37 @@ public class HrController {
     @GetMapping("/salaries-calculator")
     public String salaryCalculatorPage(HttpSession session, Model model) {
         Integer storeId = (Integer) session.getAttribute("storeId");
-        List<EmployeeDTO> employees = hrService.getEmployeesByStoreId(storeId);
+        List<EmployeeDTO> employees = payrollService.getEmployeesNoCalculated(storeId);
         model.addAttribute("employees", employees);
         return "/erp/hr/salariesCalculator";
     }
 
+    /**
+     * 급여 계산 요청
+     * @param reqDTO 산출 대상과 수당 및 세금 포함 여부 조회
+     * @return 계산 결과 반환
+     */
     @GetMapping("/salaries-calculator/employee")
     public ResponseEntity<?> salaryCalculate(@ModelAttribute PayrollDTO.CalculateDTO reqDTO) {
         List<PayrollDTO.CalculateResultDTO> resDTO = payrollService.calculateGrossSalary(reqDTO.getEmpNos(), reqDTO);
         return ResponseEntity.status(HttpStatus.OK).body(resDTO);
+    }
+
+    /**
+     * 계산된 급여 저장
+     * @param reqDTO 계산된 급여에서 수당 및 세금 여부 선택 받아서 저장
+     * @return 성공 여부 반환
+     */
+    @PostMapping("/salaries-calculator")
+    public ResponseEntity<?> payrollProc(@RequestBody PayrollDTO.CreateDTO reqDTO) {
+        Map<String, Object> response = new HashMap<>();
+        if (payrollService.create(reqDTO)) {
+            response.put("success", true);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } else {
+            response.put("success", false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @GetMapping("/salaries-history")

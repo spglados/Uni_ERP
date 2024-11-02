@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const calculateBtn = document.getElementById('calculateBtn');
     const confirmBtn = document.getElementById('confirmBtn');
-    const refreshBtn = document.getElementById('refreshBtn');
     const resultsSection = document.getElementById('resultsSection');
     const employeeTabs = document.getElementById('employeeTabs');
     const employeeTabContent = document.getElementById('employeeTabContent');
@@ -10,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const includeSundayWorkCheckbox = document.getElementById('includeSundayWork');
     const includeWeeklyHolidayCheckbox = document.getElementById('includeWeeklyHoliday');
     const selectAllEmployeesCheckbox = document.getElementById('selectAllEmployees');
+    const includeInsuranceCheckbox = document.getElementById('includeInsurance');
 
     // 일요일 수당 표시 제어
     includeHolidayWorkCheckbox.addEventListener('change', () => {
@@ -36,6 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    let data = [];
+
     calculateBtn.addEventListener('click', async () => {
         // 선택된 Employee 번호 수집
         const empNos = Array.from(document.querySelectorAll('input[name="empNos"]:checked'))
@@ -52,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const includeNightWork = document.getElementById('includeNightWork').checked;
         const includeSundayWork = includeSundayWorkCheckbox.checked;
         const includeWeeklyHoliday = includeWeeklyHolidayCheckbox.checked;
+        const includeInsurance = includeInsuranceCheckbox.checked;
 
         // GET 요청 URL 구성
         const params = new URLSearchParams();
@@ -61,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         params.append('includeNightWork', includeNightWork);
         params.append('includeSundayWork', includeSundayWork);
         params.append('includeWeeklyHoliday', includeWeeklyHoliday);
+        params.append('includeInsurance', includeInsurance);
 
         const url = `/erp/hr/salaries-calculator/employee?${params.toString()}`;
 
@@ -77,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(errorText || '서버 오류 발생');
             }
 
-            const data = await response.json();
+            data = await response.json();
             console.log('data', data);
 
             // 데이터가 리스트인지 확인
@@ -92,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 선택되지 않은 직원 숨기기
             document.querySelectorAll('input[name="empNos"]').forEach(cb => {
                 if (!cb.checked) {
-                    cb.closest('.col-md-4').style.display = 'none';
+                    cb.closest('.col-md-3').style.display = 'none';
                 }
             });
 
@@ -124,27 +128,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 tabPane.role = 'tabpanel';
                 tabPane.setAttribute('aria-labelledby', `tab-${result.empNo}`);
 
-                // 급여 정보 테이블 생성
-                const table = document.createElement('table');
-                table.classList.add('table', 'table-bordered', 'mt-3');
+                // 급여 정보 테이블 생성 (수당과 공제금으로 분류)
+                const rowDiv = document.createElement('div');
+                rowDiv.classList.add('row');
 
-                const tbody = document.createElement('tbody');
+                // 수당 테이블
+                const allowancesDiv = document.createElement('div');
+                allowancesDiv.classList.add('col-md-6');
+                const allowancesTable = document.createElement('table');
+                allowancesTable.classList.add('table', 'table-bordered', 'mt-3');
 
-                const fields = [
+                const allowancesTbody = document.createElement('tbody');
+
+                const allowancesFields = [
                     {label: '총 합계 급여', value: result.grossSalary + "원"},
                     {label: '기본 급여', value: result.workSalary + "원"},
+                    {label: '주휴 수당', value: result.weeklyHolidayAllowance + "원"},
                     {label: '초과 근무 수당', value: result.overWorkAllowance + "원"},
                     {label: '휴일 근무 수당', value: result.holidayWorkAllowance + "원"},
                     {label: '야간 근무 수당', value: result.nightWorkAllowance + "원"},
-                    {label: '주휴 수당', value: result.weeklyHolidayAllowance + "원"},
-                    {label: '총 근무 시간', value: result.totalWorkTime + "시간"},
-                    {label: '국민연금 (업주)', value: `${result.nationalPension}원 (${result.nationalPension}원)`},
-                    {label: '건강보험 (업주)', value: `${result.healthInsurance}원 (${result.healthInsurance}원)`},
-                    {label: '고용보험 (업주)', value: `${result.employmentInsurance}원 (${result.employmentInsuranceEmployer}원)`},
-                    {label: '산재보험-업주', value: `${result.industrialAccidentCompensationInsurance}원`}
                 ];
 
-                fields.forEach(field => {
+                allowancesFields.forEach(field => {
                     const row = document.createElement('tr');
 
                     const labelCell = document.createElement('th');
@@ -156,13 +161,55 @@ document.addEventListener('DOMContentLoaded', () => {
                     valueCell.textContent = field.value;
                     row.appendChild(valueCell);
 
-                    tbody.appendChild(row);
+                    allowancesTbody.appendChild(row);
                 });
 
-                table.appendChild(tbody);
-                tabPane.appendChild(table);
+                allowancesTable.appendChild(allowancesTbody);
+                allowancesDiv.appendChild(allowancesTable);
+                rowDiv.appendChild(allowancesDiv);
+
+                // 공제금 테이블
+                const deductionsDiv = document.createElement('div');
+                deductionsDiv.classList.add('col-md-6');
+                const deductionsTable = document.createElement('table');
+                deductionsTable.classList.add('table', 'table-bordered', 'mt-3');
+
+                const deductionsTbody = document.createElement('tbody');
+
+                const deductionsFields = [
+                    {label: '국민연금 (업주)', value: `${result.nationalPension}원 (${result.nationalPension}원)`},
+                    {label: '건강보험 (업주)', value: `${result.healthInsurance}원 (${result.healthInsurance}원)`},
+                    {label: '고용보험 (업주)', value: `${result.employmentInsurance}원 (${result.employmentInsuranceEmployer}원)`},
+                    {label: '산재보험-업주', value: `${result.industrialAccidentCompensationInsurance}원`},
+                    {label: '총 납입 보험료', value: `${result.totalInsurance}원`},
+                    {label: '실 수령액', value: `${result.netSalary}원`}
+                ];
+
+                deductionsFields.forEach(field => {
+                    const row = document.createElement('tr');
+
+                    const labelCell = document.createElement('th');
+                    labelCell.scope = 'row';
+                    labelCell.textContent = field.label;
+                    row.appendChild(labelCell);
+
+                    const valueCell = document.createElement('td');
+                    valueCell.textContent = field.value;
+                    row.appendChild(valueCell);
+
+                    deductionsTbody.appendChild(row);
+                });
+
+                deductionsTable.appendChild(deductionsTbody);
+                deductionsDiv.appendChild(deductionsTable);
+                rowDiv.appendChild(deductionsDiv);
+
+                tabPane.appendChild(rowDiv);
                 employeeTabContent.appendChild(tabPane);
             });
+            if (includeSundayWorkCheckbox) {
+                includeSundayWorkCheckbox.disabled = true;
+            }
 
             // 결과 섹션 표시
             resultsSection.style.display = 'block';
@@ -191,50 +238,43 @@ document.addEventListener('DOMContentLoaded', () => {
         const includeNightWork = document.getElementById('includeNightWork').checked;
         const includeSundayWork = includeSundayWorkCheckbox.checked;
         const includeWeeklyHoliday = includeWeeklyHolidayCheckbox.checked;
+        const includeInsurance = includeInsuranceCheckbox.checked;
 
-        // GET 요청 URL 구성 (저장용)
-        const params = new URLSearchParams();
-        empNos.forEach(empNo => params.append('empNos', empNo));
-        params.append('includeOvertime', includeOvertime);
-        params.append('includeHolidayWork', includeHolidayWork);
-        params.append('includeNightWork', includeNightWork);
-        params.append('includeSundayWork', includeSundayWork);
-        params.append('includeWeeklyHoliday', includeWeeklyHoliday);
+        const payrollData = [];
 
-        const url = `/erp/hr/salaries-calculator/save?${params.toString()}`;
+        // 요청 body 구성
+        const requestBody = {
+            empNos,
+            includeOvertime,
+            includeHolidayWork,
+            includeNightWork,
+            includeSundayWork,
+            includeWeeklyHoliday,
+            includeInsurance,
+            payrollData: data
+        };
 
+        const url = '/erp/hr/salaries-calculator';
+        console.log('requestBody', requestBody);
         try {
             const response = await fetch(url, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify(requestBody) // 요청 body에 JSON 데이터 포함
             });
 
-            if (!response.ok) {
+            if (response.status != 201) {
                 const errorText = await response.text();
                 throw new Error(errorText || '서버 오류 발생');
             }
 
-            const data = await response.json();
+            const responseData = await response.json();
 
-            if (data.success) {
+            if (responseData.success) {
                 alert('급여 데이터가 성공적으로 저장되었습니다.');
-                // 결과 섹션 숨기기 및 버튼 초기화
-                resultsSection.style.display = 'none';
-                confirmBtn.disabled = true;
-                // 체크박스 초기화 및 선택되지 않은 항목 다시 표시
-                document.querySelectorAll('input[name="empNos"]').forEach(cb => {
-                    cb.checked = false;
-                    cb.closest('.col-md-4').style.display = 'block'; // col-md-4
-                });
-                // 수당 포함 옵션 초기화
-                document.getElementById('includeOvertime').checked = true;
-                includeHolidayWorkCheckbox.checked = true;
-                document.getElementById('includeNightWork').checked = true;
-                includeSundayWorkCheckbox.checked = false;
-                includeWeeklyHolidayCheckbox.checked = true;
-                includeSundayWorkContainer.style.display = 'block'; // "휴일 근무 수당 포함"이 체크된 상태이므로 "일요일 수당 포함"을 표시
+                window.location.href = "/erp/hr/salaries-calculator";
             } else {
                 alert('급여 데이터 저장에 실패했습니다.');
             }
@@ -244,25 +284,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    refreshBtn.addEventListener('click', () => {
-        // 폼 초기화
-        document.getElementById('payrollForm').reset();
-
-        // 일요일 수당 옵션 숨기기
-        includeSundayWorkContainer.style.display = 'none';
-        includeSundayWorkCheckbox.checked = false;
-
-        // 직원 선택 섹션 다시 표시
-        document.querySelectorAll('input[name="empNos"]').forEach(cb => {
-            cb.closest('.col-md-4').style.display = 'block'; // col-md-4
-        });
-
-        // 결과 섹션 숨기기 및 버튼 비활성화
-        resultsSection.style.display = 'none';
-        confirmBtn.disabled = true;
-
-        // 탭과 탭 콘텐츠 초기화
-        employeeTabs.innerHTML = '';
-        employeeTabContent.innerHTML = '';
-    });
 });

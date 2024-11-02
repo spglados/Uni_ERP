@@ -1,10 +1,17 @@
 package com.uni.uni_erp.service.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.hr.Attendance;
+import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Holiday;
+import com.uni.uni_erp.domain.entity.erp.hr.Payroll;
 import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
 import com.uni.uni_erp.dto.erp.hr.PayrollDTO;
-import com.uni.uni_erp.repository.erp.hr.*;
+import com.uni.uni_erp.exception.errorsRest.RestException400;
+import com.uni.uni_erp.exception.errorsRest.RestException500;
+import com.uni.uni_erp.repository.erp.hr.AttendanceRepository;
+import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
+import com.uni.uni_erp.repository.erp.hr.HolidayRepository;
+import com.uni.uni_erp.repository.erp.hr.PayrollRepository;
 import com.uni.uni_erp.util.date.NumberFormatter;
 import com.uni.uni_erp.util.define.Define_HR;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +31,12 @@ public class PayrollService {
 
     private final AttendanceRepository attendanceRepository;
     private final PayrollRepository payrollRepository;
-    private final AllowanceRepository allowanceRepository;
     private final EmployeeRepository employeeRepository;
     private final HolidayService holidayService;
     private final HolidayRepository holidayRepository;
 
     public List<EmployeeDTO> getEmployeesNoCalculated(Integer storeId) {
-        return payrollRepository.findEmployeesWithoutPayroll(storeId, YearMonth.now().minusYears(1))
+        return payrollRepository.findEmployeesWithoutPayroll(storeId, YearMonth.now().minusMonths(1))
                 .stream()
                 .map(EmployeeDTO::new)
                 .toList();
@@ -43,74 +51,90 @@ public class PayrollService {
      */
     @Transactional
     public List<PayrollDTO.CalculateResultDTO> calculateGrossSalary(List<Long> employeeNos, PayrollDTO.CalculateDTO options) {
-        YearMonth previousMonth = YearMonth.now().minusMonths(1);
-        LocalDate periodStart = previousMonth.atDay(1);
-        LocalDateTime periodStartTime = LocalDateTime.of(periodStart, LocalTime.of(6, 0));
-        LocalDate periodEnd = previousMonth.atEndOfMonth().plusDays(1);
-        LocalDateTime periodEndTime = LocalDateTime.of(periodEnd, LocalTime.of(5, 59));
-        List<PayrollDTO.CalculateResultDTO> resDTO = new ArrayList<>();
-        for (Long empNo : employeeNos) {
-            // 출근 기록 조회
-            List<Attendance.Status> statuses = new ArrayList<>();
-            statuses.add(Attendance.Status.LATE);
-            statuses.add(Attendance.Status.LEFT_EARLY);
-            statuses.add(Attendance.Status.ATTENDED);
-            statuses.add(Attendance.Status.LATE_AND_LEFT_EARLY);
-            statuses.add(Attendance.Status.UNPLANNED_WORK);
-            List<Attendance> attendances = attendanceRepository.findByEmployeeNoAndDateBetween(empNo, periodStartTime, periodEndTime, statuses);
+        try {
+            YearMonth previousMonth = YearMonth.now().minusMonths(1);
+            LocalDate periodStart = previousMonth.atDay(1);
+            LocalDateTime periodStartTime = LocalDateTime.of(periodStart, LocalTime.of(6, 0));
+            LocalDate periodEnd = previousMonth.atEndOfMonth().plusDays(1);
+            LocalDateTime periodEndTime = LocalDateTime.of(periodEnd, LocalTime.of(5, 59));
+            List<PayrollDTO.CalculateResultDTO> resDTO = new ArrayList<>();
+            for (Long empNo : employeeNos) {
+                // 출근 기록 조회
+                List<Attendance.Status> statuses = new ArrayList<>();
+                statuses.add(Attendance.Status.LATE);
+                statuses.add(Attendance.Status.LEFT_EARLY);
+                statuses.add(Attendance.Status.ATTENDED);
+                statuses.add(Attendance.Status.LATE_AND_LEFT_EARLY);
+                statuses.add(Attendance.Status.UNPLANNED_WORK);
+                List<Attendance> attendances = attendanceRepository.findByEmployeeNoAndDateBetween(empNo, periodStartTime, periodEndTime, statuses);
 
-            // 근무 시간 계산
-            int totalWorkAllowance = 0;
-            int totalWorkTime = 0;
-            for (Attendance attendance : attendances) {
-                if (attendance.getWorkTime() != null) {
-                    totalWorkTime += attendance.getWorkTime();
-                    totalWorkAllowance += attendance.getWorkTime() * (attendance.getWage() / 60);
+                // 근무 시간 계산
+                int totalWorkAllowance = 0;
+                int totalWorkTime = 0;
+                for (Attendance attendance : attendances) {
+                    if (attendance.getWorkTime() != null) {
+                        totalWorkTime += attendance.getWorkTime();
+                        totalWorkAllowance += attendance.getWorkTime() * (attendance.getWage() / 60);
+                    }
                 }
+                // 수당 계산
+                int totalOverWorkAllowance = 0;
+                int totalHolidayWorkAllowance = 0;
+                int totalNightWorkAllowance = 0;
+                int totalWeeklyHolidayAllowance = 0;
+                if (options.isIncludeOvertime()) {
+                    totalOverWorkAllowance = (int) (calculateOvertime(empNo, periodStartTime, periodEndTime, statuses) * 0.5);
+                }
+                if (options.isIncludeHolidayWork()) {
+                    totalHolidayWorkAllowance = (int) (calculateHolidayWork(empNo, periodStartTime, periodEndTime, statuses, options.isIncludeSundayWork()) * 0.5);
+                }
+                if (options.isIncludeNightWork()) {
+                    totalNightWorkAllowance = (int) (calculateNightWork(empNo, periodStartTime, periodEndTime, statuses) * 0.5);
+                }
+                if (options.isIncludeWeeklyHoliday()) {
+                    totalWeeklyHolidayAllowance = calculateWeeklyHolidayAllowance(empNo, periodStartTime, periodEndTime, statuses);
+                }
+                // 세전 급여
+                int grossSalary = totalWorkAllowance + totalOverWorkAllowance + totalHolidayWorkAllowance + totalNightWorkAllowance + totalWeeklyHolidayAllowance;
+                // 세금 계산
+                int nationalPension = 0;
+                int healthInsurance = 0;
+                int employmentInsurance = 0;
+                int employmentInsuranceEmployer = 0;
+                int industrialAccidentCompensationInsurance = 0;
+                int totalInsurance = 0;
+                if (options.isIncludeInsurance()) {
+                    nationalPension = (int) (Math.max(Math.min(grossSalary, Define_HR.NATIONAL_PENSION_MAX), Define_HR.NATIONAL_PENSION_MIN) * Define_HR.NATIONAL_PENSION);
+                    healthInsurance = (int) (Math.max(Math.min(grossSalary, Define_HR.HEALTH_INSURANCE_MAX), Define_HR.HEALTH_INSURANCE_MIN) * Define_HR.HEALTH_INSURANCE);
+                    employmentInsurance = (int) (grossSalary * Define_HR.EMPLOYMENT_INSURANCE);
+                    employmentInsuranceEmployer = (int) (grossSalary * Define_HR.EMPLOYMENT_INSURANCE_EMPLOYER);
+                    industrialAccidentCompensationInsurance = (int) (grossSalary * Define_HR.INDUSTRIAL_ACCIDENT_COMPENSATION_INSURANCE);
+                    totalInsurance = nationalPension + healthInsurance + employmentInsurance;
+                }
+                resDTO.add(PayrollDTO.CalculateResultDTO.builder()
+                        .empNo(empNo)
+                        .name(attendances.get(0).getEmployee().getName())
+                        .grossSalary(NumberFormatter.formatToPrice(grossSalary))
+                        .workSalary(NumberFormatter.formatToPrice(totalWorkAllowance))
+                        .overWorkAllowance(NumberFormatter.formatToPrice(totalOverWorkAllowance))
+                        .holidayWorkAllowance(NumberFormatter.formatToPrice(totalHolidayWorkAllowance))
+                        .nightWorkAllowance(NumberFormatter.formatToPrice(totalNightWorkAllowance))
+                        .weeklyHolidayAllowance(NumberFormatter.formatToPrice(totalWeeklyHolidayAllowance))
+                        .totalWorkTime(totalWorkTime / 60)
+                        .nationalPension(NumberFormatter.formatToPrice(nationalPension))
+                        .healthInsurance(NumberFormatter.formatToPrice(healthInsurance))
+                        .employmentInsurance(NumberFormatter.formatToPrice(employmentInsurance))
+                        .employmentInsuranceEmployer(NumberFormatter.formatToPrice(employmentInsuranceEmployer))
+                        .industrialAccidentCompensationInsurance(NumberFormatter.formatToPrice(industrialAccidentCompensationInsurance))
+                        .totalInsurance(NumberFormatter.formatToPrice(totalInsurance))
+                        .netSalary(NumberFormatter.formatToPrice(grossSalary - totalInsurance))
+                        .build());
             }
-            // 수당 계산
-            int totalOverWorkAllowance = 0;
-            int totalHolidayWorkAllowance = 0;
-            int totalNightWorkAllowance = 0;
-            int totalWeeklyHolidayAllowance = 0;
-            if (options.isIncludeOvertime()) {
-                totalOverWorkAllowance = (int) (calculateOvertime(empNo, periodStartTime, periodEndTime, statuses) * 0.5);
-            }
-            if (options.isIncludeHolidayWork()) {
-                totalHolidayWorkAllowance = (int) (calculateHolidayWork(empNo, periodStartTime, periodEndTime, statuses, options.isIncludeSundayWork()) * 0.5);
-            }
-            if (options.isIncludeNightWork()) {
-                totalNightWorkAllowance = (int) (calculateNightWork(empNo, periodStartTime, periodEndTime, statuses) * 0.5);
-            }
-            if (options.isIncludeWeeklyHoliday()) {
-                totalWeeklyHolidayAllowance = calculateWeeklyHolidayAllowance(empNo, periodStartTime, periodEndTime, statuses);
-            }
-            // 세전 급여
-            int grossSalary = totalWorkAllowance + totalOverWorkAllowance + totalHolidayWorkAllowance + totalNightWorkAllowance + totalWeeklyHolidayAllowance;
-            // 세금 계산
-            int nationalPension = (int) (Math.max(Math.min(grossSalary, Define_HR.NATIONAL_PENSION_MAX), Define_HR.NATIONAL_PENSION_MIN) * Define_HR.NATIONAL_PENSION);
-            int healthInsurance = (int) (Math.max(Math.min(grossSalary, Define_HR.HEALTH_INSURANCE_MAX), Define_HR.HEALTH_INSURANCE_MIN) * Define_HR.HEALTH_INSURANCE);
-            int employmentInsurance = (int) (grossSalary * Define_HR.EMPLOYMENT_INSURANCE);
-            int employmentInsuranceEmployer = (int) (grossSalary * Define_HR.EMPLOYMENT_INSURANCE_EMPLOYER);
-            int industrialAccidentCompensationInsurance = (int) (grossSalary * Define_HR.INDUSTRIAL_ACCIDENT_COMPENSATION_INSURANCE);
-            resDTO.add(PayrollDTO.CalculateResultDTO.builder()
-                    .empNo(empNo)
-                    .name(attendances.get(0).getEmployee().getName())
-                    .grossSalary(NumberFormatter.formatToPrice(grossSalary))
-                    .workSalary(NumberFormatter.formatToPrice(totalWorkAllowance))
-                    .overWorkAllowance(NumberFormatter.formatToPrice(totalOverWorkAllowance))
-                    .holidayWorkAllowance(NumberFormatter.formatToPrice(totalHolidayWorkAllowance))
-                    .nightWorkAllowance(NumberFormatter.formatToPrice(totalNightWorkAllowance))
-                    .weeklyHolidayAllowance(NumberFormatter.formatToPrice(totalWeeklyHolidayAllowance))
-                    .totalWorkTime(totalWorkTime / 60)
-                    .nationalPension(NumberFormatter.formatToPrice(nationalPension))
-                    .healthInsurance(NumberFormatter.formatToPrice(healthInsurance))
-                    .employmentInsurance(NumberFormatter.formatToPrice(employmentInsurance))
-                    .employmentInsuranceEmployer(NumberFormatter.formatToPrice(employmentInsuranceEmployer))
-                    .industrialAccidentCompensationInsurance(NumberFormatter.formatToPrice(industrialAccidentCompensationInsurance))
-                    .build());
+            return resDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RestException500("서버 오류 발생");
         }
-        return resDTO;
     }
 
     /**
@@ -326,6 +350,62 @@ public class PayrollService {
 
         }
         return weeklyHolidayAllowance;
+
     }
 
+    public boolean create(PayrollDTO.CreateDTO reqDTO) {
+        try {
+            List<Long> empNos = reqDTO.getEmpNos();
+            List<PayrollDTO.CalculateResultDTO> payrollData = reqDTO.getPayrollData();
+
+            // empNos 리스트를 Set으로 변환하여 조회 속도 향상
+            Set<Long> empNoSet = new HashSet<>(empNos);
+
+            // payrollData 리스트에서 empNo가 empNoSet에 없는 객체 제거
+            payrollData.removeIf(payroll -> !empNoSet.contains(payroll.getEmpNo()));
+
+            boolean includeOvertime = reqDTO.isIncludeOvertime();
+            boolean includeHolidayWork = reqDTO.isIncludeHolidayWork();
+            boolean includeNightWork = reqDTO.isIncludeNightWork();
+            boolean includeWeeklyHoliday = reqDTO.isIncludeWeeklyHoliday();
+            boolean includeInsurance = reqDTO.isIncludeInsurance();
+
+            for (PayrollDTO.CalculateResultDTO payroll : reqDTO.getPayrollData()) {
+                if (!includeOvertime) {
+                    payroll.setOverWorkAllowance("0");
+                }
+                if (!includeHolidayWork) {
+                    payroll.setHolidayWorkAllowance("0");
+                }
+                if (!includeNightWork) {
+                    payroll.setNightWorkAllowance("0");
+                }
+                if (!includeWeeklyHoliday) {
+                    payroll.setWeeklyHolidayAllowance("0");
+                }
+                if (!includeInsurance) {
+                    payroll.setNationalPension("0");
+                    payroll.setHealthInsurance("0");
+                    payroll.setEmploymentInsurance("0");
+                    payroll.setEmploymentInsuranceEmployer("0");
+                    payroll.setIndustrialAccidentCompensationInsurance("0");
+                    payroll.setTotalInsurance("0");
+                }
+
+            }
+            List<Payroll> payrollList = new ArrayList<>();
+            for (PayrollDTO.CalculateResultDTO payroll : reqDTO.getPayrollData()) {
+                Employee employee = employeeRepository.findByUniqueEmployeeNumber(payroll.getEmpNo()).orElseThrow(() -> new RestException400("직원이 존재하지않습니다."));
+                payrollList.add(payroll.toEntity(employee));
+            }
+            List<Payroll> payrolls = payrollRepository.saveAll(payrollList);
+            if (payrolls.size() != payrollList.size()) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
