@@ -21,6 +21,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HolidayService {
 
+    // TODO @Value("${api.key.data_kkh}")
+    private String serviceKey;
+
     private final HolidayRepository holidayRepository;
 
     /**
@@ -31,7 +34,6 @@ public class HolidayService {
     @Transactional
     public Integer setHolidayByParsing(LocalDate localDate) {
         try {
-            String serviceKey = "";
             RestTemplate restTemplate = new RestTemplate();
             String url = UriComponentsBuilder.fromHttpUrl("https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo")
                     .queryParam("serviceKey", serviceKey)

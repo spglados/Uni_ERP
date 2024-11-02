@@ -42,7 +42,6 @@ public class ErpController {
         if(storeList != null) {
             model.addAttribute("storeList", storeList);
         }
-
         Integer storeId = (Integer) session.getAttribute("storeId");
         if (storeId != null) {
             model.addAttribute("storeId", storeId);

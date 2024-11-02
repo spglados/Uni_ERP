@@ -1,10 +1,10 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
+import com.uni.uni_erp.domain.converter.erp.hr.YearMonthConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
-import java.util.List;
+import java.time.YearMonth;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,22 +23,47 @@ public class Payroll {
     @JoinColumn(name = "emp_id", nullable = false)
     private Employee employee;
 
-    @Column(name = "period_start", nullable = false)
-    private Timestamp periodStart;
-
-    @Column(name = "period_end", nullable = false)
-    private Timestamp periodEnd;
+    @Column(name = "year_month", nullable = false)
+    @Convert(converter = YearMonthConverter.class)
+    private YearMonth yearMonth;
 
     @Column(name = "gross_salary", nullable = false)
     private Integer grossSalary; // 세전 급여
 
-    @Column(name = "tax", nullable = true)
-    private Integer tax; // 세금
+    @Column(name = "work_salary", nullable = false)
+    private Integer workSalary;
+
+    @Column(name = "total_work_time", nullable = false)
+    private Integer totalWorkTime;
+
+    @Column(name = "over_work_allowance", nullable = true)
+    private Integer overWorkAllowance;
+
+    @Column(name = "holiday_work_allowance", nullable = true)
+    private Integer holidayWorkAllowance;
+
+    @Column(name = "night_work_allowance", nullable = true)
+    private Integer nightWorkAllowance;
+
+    @Column(name = "weekly_holiday_allowance", nullable = true)
+    private Integer weeklyHolidayAllowance;
+
+    @Column(name = "national_pension", nullable = true)
+    private Integer nationalPension;
+
+    @Column(name = "health_insurance", nullable = true)
+    private Integer healthInsurance;
+
+    @Column(name = "employment_insuracne", nullable = true)
+    private Integer employmentInsurance;
+
+    @Column(name = "employment_insurance_employer", nullable = true)
+    private Integer employmentInsuranceEmployer;
+
+    @Column(name = "industrial_accident_compensation_insurance", nullable = true)
+    private Integer industrialAccidentCompensationInsurance;
 
     @Column(name = "net_salary", nullable = false)
     private Integer netSalary; // 실수령액
-
-    @OneToMany(mappedBy = "payroll", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Allowance> allowances;
 
 }
