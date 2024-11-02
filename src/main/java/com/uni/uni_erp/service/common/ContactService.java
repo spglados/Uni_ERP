@@ -11,7 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,5 +46,19 @@ public class ContactService {
         Optional<Contact> contact = contactRepository.findById(contactId);
         contact.get().setStatus(Contact.ContactStatus.CLOSED);
         contactRepository.save(contact.get());
+    }
+
+    public List<ContactDTO> findByUserId(Integer userId) {
+        List<Contact> contacts = contactRepository.findByUserId(userId);
+        return contacts.stream()
+                .map(contact -> ContactDTO.builder()
+                        .id(contact.getId())
+                        .userId(contact.getUserId())
+                        .title(contact.getTitle())
+                        .content(contact.getContent())
+                        .status(contact.getStatus())
+                        .status(contact.getStatus())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

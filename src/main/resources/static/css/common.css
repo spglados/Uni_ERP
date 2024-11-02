@@ -1,4 +1,5 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1:wght@400;800&display=swap');
 body {
     width: 100%;
     height: 100%;
@@ -351,6 +352,7 @@ nav{
 }
 
 .explanation-container h2{
+    font-size: 30px;
     text-align: center;
 }
 
@@ -442,86 +444,6 @@ nav{
     margin: 0;
 }
 
-/*!* 헤더 스타일 *!*/
-/*.header {*/
-/*    width: 100%;*/
-/*    margin: 0 auto;*/
-/*    background-color: #ffffff;*/
-/*    color: #d3d3d3;*/
-/*    padding: 1rem 0;*/
-/*    text-align: center;*/
-/*    border-bottom: 1px solid #333;*/
-/*    position: relative;*/
-/*    top: 0;*/
-/*}*/
-
-/*.inner--header {*/
-/*    width: 90%;*/
-/*    margin: 0 auto;*/
-/*    display: flex;*/
-/*    justify-content: space-between;*/
-/*    align-items: center;*/
-/*    height: 140px;*/
-/*}*/
-
-/*.h--logo {*/
-/*    font-size: 1.5rem;*/
-/*    font-weight: bold;*/
-/*    margin: 0;*/
-/*    color: #0284FF;*/
-/*    text-decoration: none;*/
-/*}*/
-
-/*.nav {*/
-/*    list-style: none;*/
-/*    padding: 0;*/
-/*    margin: 0;*/
-/*    display: flex;*/
-/*    height: 100%;*/
-/*    width: 80%;*/
-/*    align-items: center;*/
-/*    justify-content: space-around;*/
-/*}*/
-
-/*.nav-item {*/
-/*    width: 100%;*/
-/*    height: 100%;*/
-/*    display: flex;*/
-/*    position: relative;*/
-/*    overflow: hidden;*/
-/*    transition: transform 0.3s ease, box-shadow 0.3s ease; !* 애니메이션 전환 효과 추가 *!*/
-/*    align-items: center;*/
-/*    justify-content: center;*/
-/*}*/
-
-/*.nav-item:hover {*/
-/*    transform: scale(1.1) rotateY(5deg); !* 약간의 3D 기울기 추가 *!*/
-/*    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); !* 깊이감을 위한 그림자 추가 *!*/
-/*}*/
-
-/*.nav-item a {*/
-/*    display: block;*/
-/*    position: relative;*/
-/*    z-index: 1;*/
-/*    transition: transform 0.3s ease, color 0.3s ease; !* 애니메이션 전환 효과 추가 *!*/
-/*    color: #000;*/
-/*    font-size: 2rem;*/
-/*    text-decoration: none;*/
-/*}*/
-
-/*.nav-item::before {*/
-/*    border-radius: 50%;*/
-/*    transform: translate(-50%, -50%);*/
-/*    transition: width 0.5s ease, height 0.5s ease;*/
-/*    z-index: 0;*/
-/*}*/
-
-
-/*.nav-item:hover a {*/
-/*    transform: scale(1.2) rotateY(-5deg); !* 텍스트의 반대 방향 기울기 *!*/
-/*    color: #0284FF; !* 테마에 맞게 색상 변경 *!*/
-/*}*/
-
 /* 컨테이너 스타일 */
 .main-section-container {
     margin: 50px auto;
@@ -554,7 +476,7 @@ nav{
 }
 
 .section-content-box h3 {
-    font-size: 18px;
+    font-size: 25px;
     margin-bottom: 10px;
     color: #333;
 }
@@ -564,6 +486,11 @@ nav{
     color: #666;
     line-height: 1.5;
     width: 80%;
+}
+
+.section-content-box i{
+    font-size: 50px;
+    margin-bottom: 20px;
 }
 
 /* 반응형 스타일 */
@@ -692,11 +619,26 @@ nav{
     color: #000000;
     font-size: 1.2rem;
     text-decoration: none;
-    margin-left: 30px;
+    margin-left: 50px;
 }
 
 .header-icon:hover{
     color: #3a78d8;
+}
+
+.header-icon i{
+    transition: 0.3s ease; /* 전환 효과 */
+    font-size: 30px;
+}
+
+.header-icon i:hover::before {
+    content: attr(data-text); /* data-text 속성의 값을 표시 */
+    font-size: 18px; /* 텍스트 크기 */
+    color: #333; /* 텍스트 색상 */
+}
+
+.header-icon i:hover {
+    font-size: 0; /* 아이콘 크기 0으로 설정해 아이콘 숨김 */
 }
 
 .main-introduce-container{
@@ -707,4 +649,15 @@ nav{
     justify-content: center;
     align-items: center;
     background-color: #0284FF;
+}
+
+.main-introduce-container p{
+    font-size: 20px;
+    width: 50%;
+}
+.main-introduce-container h1{
+    font-family: "Black Han Sans", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 50px;
 }

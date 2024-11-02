@@ -89,7 +89,7 @@
                                         <c:forEach var="user" items="${userList}">
                                             <tr>
                                                 <td>${user.id}</td>
-                                                <td>${user.name}</td>
+                                                <td><a href="#" onclick="openUserDetails(${user.id})">${user.name}</a></td>
                                                 <td>${user.email}</td>
                                                 <td>${user.membership == 'COMMON' ? '일반회원' : user.membership == 'PREMIUM' ? '프리미엄회원' : '비활성화'}</td>
                                                 <td>${user.address}</td>
@@ -116,6 +116,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
         <script src="/js/sb-admin-2.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            function openUserDetails(userId) {
+                window.open("/admin/user/details/" + userId, '_blank', 'width=800,height=600');
+            }
+        </script>
     </div>
 </body>
 

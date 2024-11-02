@@ -5,19 +5,17 @@ import com.uni.uni_erp.dto.UserDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
-import jakarta.transaction.Transactional;
 import com.uni.uni_erp.util.Str.PasswordUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -112,8 +110,8 @@ public class UserService {
     // 작년 구독자수
     public int getPremiumUserCountForLastYear() {
         LocalDate now = LocalDate.now();
-        LocalDate startDate = now.minusYears(1).withDayOfMonth(1).withMonth(1); // 작년 1월 1일
-        LocalDate endDate = now.minusYears(1).withDayOfMonth(31).withMonth(12); // 작년 12월 31일
+        LocalDate startDate = now.minusYears(1).withMonth(1).withDayOfMonth(1); // 작년 1월 1일
+        LocalDate endDate = now.minusYears(1).withMonth(12).withDayOfMonth(31); // 작년 12월 31일
 
         Timestamp startTimestamp = Timestamp.valueOf(startDate.atStartOfDay());
         Timestamp endTimestamp = Timestamp.valueOf(endDate.plusDays(1).atStartOfDay().minusNanos(1)); // 12월 31일의 마지막 순간
@@ -121,31 +119,6 @@ public class UserService {
         Integer subscriberCount = userRepository.countByMembershipAndCreatedAtBetween(User.Membership.PREMIUM, startTimestamp, endTimestamp);
 
         return subscriberCount;
-    }
-
-
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
-    public void cleanUpUsers() {
-        List<User> users = userRepository.findAll(); // 모든 사용자 조회
-        for (User user : users) {
-            if (user.getPreviousMembership() != null &&
-                    user.getPreviousMembership().equals("COMMON") &&
-                    user.getPremiumToCommonDate() != null &&
-                    user.getPremiumToCommonDate().isBefore(LocalDateTime.now().minusMonths(1))) {
-
-                int paymentCount = paymentRepository.countPaymentsByUserIdAndStatus(user.getId());
-
-                if (paymentCount == 0) {
-                    // 결제 내역이 없으면 스토어와 임플로이를 삭제
-                    // storeService.deleteByUserId(user.getId());
-                    // employeeService.deleteByUserId(user.getId());
-                    System.out.println("스토어와 임플로이가 삭제되었습니다: " + user.getId());
-                } else {
-                    // 결제 내역이 하나라도 있으면 삭제하지 않음
-                    System.out.println("결제 내역이 있어 삭제되지 않았습니다: " + user.getId());
-                }
-            }
-        }
     }
 
     public List<User> findAll() {

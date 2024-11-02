@@ -17,7 +17,6 @@
     <h2>고객지원</h2>
     <p>문의 사항이 있으신가요?</p>
     <p>고객님의 만족을 최우선으로 생각합니다. 궁금한 사항이나 도움이 필요하시면 아래의 연락처로 언제든지 문의해 주세요.</p>
-  </section>
 
     <div class="contact-info">
       <h3>연락처 정보</h3>
@@ -28,9 +27,8 @@
       </ul>
     </div>
 
-  <section>
-    <h3>문의하기</h3>
     <div id="contact-container">
+      <h3>문의하기</h3>
       <div class="form-group">
         <label for="title">제목:</label>
         <input type="text" id="title" name="title" required>

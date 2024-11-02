@@ -97,27 +97,30 @@ public class HrController {
         }
     }
 
-    public ResponseEntity<Map<String, Object>> checkAccountNumber(@RequestParam String accountNumber) {
+    public ResponseEntity<Map<String, Object>> checkAccountNumber(@RequestParam String accountNumber, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
         Map<String, Object> response = new HashMap<>();
-        boolean isDuplicate = hrService.isAccountNumberDuplicated(accountNumber);
+        boolean isDuplicate = hrService.isAccountNumberDuplicated(accountNumber, storeId);
         response.put("isDuplicate", isDuplicate);
         return ResponseEntity.ok(response);
     }
 
     // 중복 이메일 검사
     @GetMapping("/check-email")
-    public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
+    public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
         Map<String, Object> response = new HashMap<>();
-        boolean isDuplicated = hrService.isEmailDuplicated(email);
+        boolean isDuplicated = hrService.isEmailDuplicated(email, storeId);
         response.put("isDuplicated", isDuplicated);
         return ResponseEntity.ok(response);
     }
 
     // 중복 전화번호 검사
     @GetMapping("/check-phone")
-    public ResponseEntity<Map<String, Object>> checkPhone(@RequestParam String phone) {
+    public ResponseEntity<Map<String, Object>> checkPhone(@RequestParam String phone, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
         Map<String, Object> response = new HashMap<>();
-        boolean isDuplicated = hrService.isPhoneDuplicated(phone);
+        boolean isDuplicated = hrService.isPhoneDuplicated(phone, storeId);
         response.put("isDuplicated", isDuplicated);
         return ResponseEntity.ok(response);
     }

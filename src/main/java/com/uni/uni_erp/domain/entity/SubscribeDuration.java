@@ -6,20 +6,20 @@ import lombok.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "store_duration_tb")
+@Table(name = "subscribe_duration_tb")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class StoreDuration {
+public class SubscribeDuration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "store_id", nullable = false)
-    private Integer storeId;
+    @Column(name = "user_id", nullable = false)
+    private Integer userId;
 
     @Column(name = "start_time", nullable = false)
     private Timestamp start;

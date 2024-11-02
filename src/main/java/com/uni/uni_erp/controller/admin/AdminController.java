@@ -1,11 +1,8 @@
 package com.uni.uni_erp.controller.admin;
 
-import com.uni.uni_erp.domain.entity.Contact;
-import com.uni.uni_erp.domain.entity.Notice;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.dto.AdminDTO;
-import com.uni.uni_erp.dto.UserDTO;
+import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.dto.AdminDTO;
 import com.uni.uni_erp.dto.ContactDTO;
 import com.uni.uni_erp.dto.NoticeDTO;
@@ -17,8 +14,8 @@ import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.common.ContactService;
 import com.uni.uni_erp.service.common.NoticeService;
 import com.uni.uni_erp.service.common.ResponseService;
+import com.uni.uni_erp.service.common.SubscribeDurationService;
 import com.uni.uni_erp.service.payment.PaymentService;
-import com.uni.uni_erp.service.product.ProductService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -28,16 +25,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -52,6 +48,7 @@ public class AdminController {
     private final ResponseService responseService;
     private final ContactService contactService;
     private final PaymentService paymentService;
+    private final SubscribeDurationService subscribeDurationService;
 
     @GetMapping("/login")
     public String login() {
@@ -89,6 +86,9 @@ public class AdminController {
         NumberFormat formatter = new DecimalFormat("#,###");
         String netProfitFormatted = formatter.format(totalNetProfit / 10000);
 
+        // 구독 유지기간 평균
+        Double averageSubscribeDuration = subscribeDurationService.findAverageSubscribeDuration();
+
         // 회원수
         Long totalUserCount = userService.countUsers();
         // 구독자 수
@@ -107,6 +107,7 @@ public class AdminController {
         model.addAttribute("totalUserCount", totalUserCount);
         model.addAttribute("subscriptionRateDouble", subscriptionRateDouble);
         model.addAttribute("netProfitFormatted", netProfitFormatted);
+        model.addAttribute("averageSubscribeDuration", averageSubscribeDuration);
         model.addAttribute("subscribeUserCount", subscribeUserCount);
         model.addAttribute("percentOfSubscribeUserCount", percentOfSubscribeUserCount);
         model.addAttribute("percentageOfSubscribeUser", (int) Math.round(percentageOfSubscribeUser));
@@ -183,19 +184,24 @@ public class AdminController {
         return "/admin/storeManagement";
     }
 
+    @ResponseBody
     @GetMapping("/store/details/{id}")
-    public String getStoreDetails(@PathVariable("id") Integer id, Model model) {
+    public ResponseEntity<Map<String, Object>> getStoreDetails(@PathVariable("id") Integer id) {
         // StoreService를 통해 가게 정보를 조회
         Store store = storeService.findById(id);
-
-
         if (store == null) {
             // 가게가 존재하지 않을 경우 404 페이지로 리다이렉트하거나 에러 처리
-            return "error/404"; // 예시: 에러 페이지 경로
+            return ResponseEntity.notFound().build();
         }
 
-        model.addAttribute("store", store);
-        return "/admin/storeDetails"; // 뷰의 이름 (storeDetails.jsp)
+        Map<String, Object> storeMap = new HashMap<>();
+        storeMap.put("id", store.getId());
+        storeMap.put("name", store.getName());
+        storeMap.put("is24Hours", store.getIs24Hours());
+        storeMap.put("isOpen", store.getIsOpen());
+        storeMap.put("createdAt", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(store.getCreatedAt()));
+
+        return ResponseEntity.ok(storeMap);
     }
 
     @GetMapping("/noticeList")
@@ -274,6 +280,13 @@ public class AdminController {
             e.printStackTrace();
             return "오류";
         }
+    }
+
+    @GetMapping("/refund")
+    public String refund(Model model) {
+        List<Payment> payments = paymentService.findAll();
+        model.addAttribute("payments", payments);
+        return "/admin/refund";
     }
 
 
