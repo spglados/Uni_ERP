@@ -11,7 +11,8 @@
 </head>
 <body>
 <div class="header">
-    <img src="/images/logo/logoPos.png" class="animate__animated animate__fadeIn" alt="포스로고" style="height: 100px; width: 125px;">
+    <img src="/images/logo/logoPos.png" class="animate__animated animate__fadeIn" alt="포스로고"
+         style="height: 100px; width: 125px;">
     <a href="#">판매</a>
     <a href="#">출퇴근</a>
     <h1 class="animate__animated animate__fadeIn">UNI-POS SYSTEM ( 가상 )</h1>
@@ -24,7 +25,8 @@
             <!-- Product 리스트를 반복하여 동적으로 버튼 생성 -->
             <c:forEach var="product" items="${productList.content}">
                 <div class="menu-item">
-                    <button class="add-to-order" data-item="${product.name}" data-price="${product.price}" data-code="${product.productCode}">
+                    <button class="add-to-order" data-item="${product.name}" data-price="${product.price}"
+                            data-code="${product.productCode}">
                             ${product.name}<br>
                         <span class="product-price">${product.price}원</span>
                     </button>
@@ -43,63 +45,62 @@
         </div>
     </div>
 
-<div class="order-section">
-    <form id="product-submit">
-        <h3>결제 목록</h3>
-        <button type="button" id="clear-order" class="clear-order-button">전체삭제</button>
-        <button type="button" id="previous-order" class="previous-order-button btn btn-primary" data-bs-toggle="modal" data-bs-target="#previousOrderModal">
+    <div class="order-section">
+        <form id="product-submit">
+            <h3>결제 목록</h3>
+            <button type="button" id="clear-order" class="btn btn-warning">전체삭제</button>
+            <button type="button" id="previous-order" class="previous-order-button btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#previousOrderModal">
                 주문 조회
-        </button>
-        <div class="order-summary" id="orderList">
-            목록에 아무것도 들어있지 않습니다.
-        </div>
-        <div class="payment-method">
-            <label for="payment-type">결제 방법:</label>
-            <select id="payment-type" name="payment-type">
-                <option value="card">카드</option>
-                <option value="cash">현금</option>
-            </select>
-        </div>
-        <button type="submit" class="payment-button">결제 버튼(총 금액: 0원)</button>
-    </form>
-    <!--시재점검-->
-            <button onclick="inspection()">시재점검</button>
-
-            <!--금고관리-->
-            <button onclick="safe()">금고관리</button>
-
-            <!--시재추가-->
-            <button onclick="deposit()">시재 추가</button>
-            <br>
-            <!--오픈하기-->
-            <button id="openButton"
-                        onclick="confirmOpen()"
-                        ${status24 == 1 ? 'disabled' : ''}
-                        <c:choose>
-                            <c:when test="${status == 1}">
-                                disabled
-                            </c:when>
-                        </c:choose>>오픈하기</button>
-
-                <button id="closeButton"
-                        onclick="closeBusiness()"
-                        <c:choose>
-                            <c:when test="${status == 0}">
-                                disabled
-                            </c:when>
-                        </c:choose>>마감하기</button>
-            <div style="color: red;">
-                <c:choose>
-                    <c:when test="${status24 == 1}">
-                        해당 가게는 24시간 영업중이므로 오픈하기 버튼이 비활성화 됩니다.
-                    </c:when>
-                    <c:otherwise>
-                        <!-- 상태가 0일 때 아무것도 표시하지 않음 -->
-                    </c:otherwise>
-                </c:choose>
+            </button>
+            <div class="order-summary" id="orderList">
+                목록에 아무것도 들어있지 않습니다.
             </div>
+            <div class="payment-method mb-3">
+                <label for="payment-type">결제 방법:</label>
+                <select id="payment-type" name="payment-type">
+                    <option value="card">카드</option>
+                    <option value="cash">현금</option>
+                </select>
+            </div>
+            <button type="submit" class="payment-button mb-3" >결제 버튼(총 금액: 0원)</button>
+        </form>
+        <!-- 시재점검 버튼 -->
+        <button class="btn btn-success mb-3" onclick="inspection()">시재점검</button>
+        <!-- 금고관리 버튼 -->
+        <button class="btn btn-success mb-3" onclick="safe()">금고관리</button>
+        <!-- 시재 추가 버튼 -->
+        <button class="btn btn-success mb-3" onclick="deposit()">시재 추가</button>
+        <br>
+
+        <!-- 오픈하기 버튼 -->
+        <button id="openButton" class="btn btn-success mb-3" onclick="confirmOpen()"
+                <c:choose>
+                    <c:when test="${status == 1}">disabled</c:when>
+                </c:choose>>오픈하기
+        </button>
+
+        <!-- 마감하기 버튼 -->
+        <button id="closeButton" class="btn btn-danger mb-3" onclick="closeBusiness()"
+                <c:choose>
+                    <c:when test="${status == 0}">disabled</c:when>
+                </c:choose>>마감하기
+        </button>
+
+        <div style="color: red;">
+            <c:choose>
+                <c:when test="${status24 == 1}">
+                    해당 가게는 24시간 영업중이므로 오픈하기 버튼이 비활성화 됩니다.
+                </c:when>
+                <c:otherwise>
+                    <!-- 상태가 0일 때 아무것도 표시하지 않음 -->
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
 </div>
-<div class="modal fade" id="previousOrderModal" tabindex="-1" aria-labelledby="previousOrderModalLabel" aria-hidden="true">
+<div class="modal fade" id="previousOrderModal" tabindex="-1" aria-labelledby="previousOrderModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -115,7 +116,8 @@
                                 <strong>주문 번호:</strong> ${order.orderNum}<br>
                                 <strong>판매 일자:</strong> ${order.salesDate}<br>
                                 <strong>총 가격:</strong> ${order.totalPrice} 원
-                                <button type="button" class="btn btn-link" onclick="fetchOrderDetails(${order.orderNum})">
+                                <button type="button" class="btn btn-link"
+                                        onclick="fetchOrderDetails(${order.orderNum})">
                                     상세 보기
                                 </button>
                                 <div id="order-detail-${order.orderNum}"></div>
@@ -145,7 +147,7 @@
 
     // add-to-order 버튼 비활성화 함수
     function disableAddToOrderButtons() {
-        addToOrderButtons.forEach(function(button) {
+        addToOrderButtons.forEach(function (button) {
             button.disabled = true;
             button.style.cursor = 'not-allowed';
             button.style.opacity = '0.6';
@@ -154,7 +156,7 @@
 
     // add-to-order 버튼 활성화 함수
     function enableAddToOrderButtons() {
-        addToOrderButtons.forEach(function(button) {
+        addToOrderButtons.forEach(function (button) {
             button.disabled = false;
             button.style.cursor = 'pointer';
             button.style.opacity = '1';
@@ -166,7 +168,7 @@
         orderSummary.innerHTML = '';  // 기존 내용을 지움
 
         // 주문 목록을 화면에 추가
-        orderList.forEach(function(item, index) {
+        orderList.forEach(function (item, index) {
             const orderItem = document.createElement('p');
             orderItem.textContent = item.name + ' - ' + item.price.toLocaleString() + '원 x ' + item.quantity;
 
@@ -185,136 +187,136 @@
     }
 
     // add-to-order 버튼 클릭 이벤트 리스너
-addToOrderButtons.forEach(function(button) {
-    button.addEventListener('click', function() {
-        // clear-order 함수가 실행 중일 때는 작동하지 않도록 방지
-        if (button.disabled) {
-            return;
-        }
+    addToOrderButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            // clear-order 함수가 실행 중일 때는 작동하지 않도록 방지
+            if (button.disabled) {
+                return;
+            }
 
             const itemName = this.getAttribute('data-item');
             const itemCode = this.getAttribute('data-code');
             const itemPrice = parseInt(this.getAttribute('data-price'));
 
-        // 이미 주문 목록에 있는 항목인지 확인
-        const existingItem = orderList.find(function(item) {
-            return item.name === itemName;
-        });
+            // 이미 주문 목록에 있는 항목인지 확인
+            const existingItem = orderList.find(function (item) {
+                return item.name === itemName;
+            });
 
             if (existingItem) {
                 // 이미 있는 항목이면 수량과 총 금액 증가
                 existingItem.quantity += 1;
             } else {
                 // 새로운 항목이면 목록에 추가
-                orderList.push({ name: itemName, price: itemPrice, quantity: 1, productCode: itemCode});
+                orderList.push({name: itemName, price: itemPrice, quantity: 1, productCode: itemCode});
             }
 
-        totalAmount += itemPrice;  // 총 금액 업데이트
-        updateOrderSummary();
+            totalAmount += itemPrice;  // 총 금액 업데이트
+            updateOrderSummary();
+        });
     });
-});
 
 
-let selectedOrderNum;
+    let selectedOrderNum;
 
-function fetchOrderDetails(orderNum) {
-    selectedOrderNum = orderNum; // store the order number in the global variable
-    const orderDetailTable = document.getElementById('order-detail-' + orderNum);
-    if (orderDetailTable && orderDetailTable.innerHTML !== '') {
-        orderDetailTable.innerHTML = '';
-    } else {
-        fetch('/erp/pos/sales-detail?orderNum=' + encodeURIComponent(orderNum))
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('asdf');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const tableHtml = generateTable(data);
-                orderDetailTable.innerHTML = tableHtml;
-            })
-            .catch(error => {
-                console.error('asdf', error);
-            });
+    function fetchOrderDetails(orderNum) {
+        selectedOrderNum = orderNum; // store the order number in the global variable
+        const orderDetailTable = document.getElementById('order-detail-' + orderNum);
+        if (orderDetailTable && orderDetailTable.innerHTML !== '') {
+            orderDetailTable.innerHTML = '';
+        } else {
+            fetch('/erp/pos/sales-detail?orderNum=' + encodeURIComponent(orderNum))
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('asdf');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableHtml = generateTable(data);
+                    orderDetailTable.innerHTML = tableHtml;
+                })
+                .catch(error => {
+                    console.error('asdf', error);
+                });
+        }
     }
-}
 
-let globalData;
-let selectedOption = 'cancel';
+    let globalData;
+    let selectedOption = 'cancel';
 
-function generateTable(data) {
-  globalData = data;
+    function generateTable(data) {
+        globalData = data;
 
-  let tableHtml = '<table style="border-collapse: collapse; width: 100%;">';
-  tableHtml += '<thead>';
-  tableHtml += '<tr>';
-  tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left;">상품명</th>';
-  tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left; width: 20%;">수량</th>';
-  tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left; width: 40%;">단가</th>';
-  tableHtml += '</tr>';
-  tableHtml += '</thead>';
-  tableHtml += '<tbody>';
-  data.forEach((item, index) => {
-    tableHtml += '<tr>';
-    tableHtml += '<td style="border: 1px solid #ddd; padding: 10px; text-align: left;">' + item.itemName + '</td>';
-    tableHtml += '<td><input type="number" value="' + item.quantity + '" min="0" max="' + item.quantity + '" onchange="globalData[' + index + '].quantity = parseInt(this.value);"></td>';
-    tableHtml += '<td style="border: 1px solid #ddd; padding: 10px; text-align: left;">' + item.unitPrice.toLocaleString() + '원</td>';
-    tableHtml += '</tr>';
-  });
-  tableHtml += '</tbody>';
-  tableHtml += '</table>';
-  tableHtml += '<select style="margin-top: 10px;" onchange="updateSelectedOption(this.value)" value="cancel">';
-  tableHtml += '<option value="cancel">취소</option>';
-  tableHtml += '<option value="refund">환불</option>';
-  tableHtml += '</select>';
-  tableHtml += '<button onclick="handleButtonClick()" style="margin-top: 10px;">확정</button>';
+        let tableHtml = '<table style="border-collapse: collapse; width: 100%;">';
+        tableHtml += '<thead>';
+        tableHtml += '<tr>';
+        tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left;">상품명</th>';
+        tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left; width: 20%;">수량</th>';
+        tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left; width: 40%;">단가</th>';
+        tableHtml += '</tr>';
+        tableHtml += '</thead>';
+        tableHtml += '<tbody>';
+        data.forEach((item, index) => {
+            tableHtml += '<tr>';
+            tableHtml += '<td style="border: 1px solid #ddd; padding: 10px; text-align: left;">' + item.itemName + '</td>';
+            tableHtml += '<td><input type="number" value="' + item.quantity + '" min="0" max="' + item.quantity + '" onchange="globalData[' + index + '].quantity = parseInt(this.value);"></td>';
+            tableHtml += '<td style="border: 1px solid #ddd; padding: 10px; text-align: left;">' + item.unitPrice.toLocaleString() + '원</td>';
+            tableHtml += '</tr>';
+        });
+        tableHtml += '</tbody>';
+        tableHtml += '</table>';
+        tableHtml += '<select style="margin-top: 10px;" onchange="updateSelectedOption(this.value)" value="cancel">';
+        tableHtml += '<option value="cancel">취소</option>';
+        tableHtml += '<option value="refund">환불</option>';
+        tableHtml += '</select>';
+        tableHtml += '<button onclick="handleButtonClick()" style="margin-top: 10px;">확정</button>';
 
-  return tableHtml;
-}
+        return tableHtml;
+    }
 
-function updateOrderList() {
-  orderList = globalData.map(function(item) {
-    return {
-      name: item.itemName,
-      price: item.unitPrice,
-      quantity: item.quantity,
-      productCode: item.itemCode
-    };
-  });
-  totalAmount = orderList.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  updateOrderSummary();
-}
+    function updateOrderList() {
+        orderList = globalData.map(function (item) {
+            return {
+                name: item.itemName,
+                price: item.unitPrice,
+                quantity: item.quantity,
+                productCode: item.itemCode
+            };
+        });
+        totalAmount = orderList.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+        updateOrderSummary();
+    }
 
-function updateSelectedOption(value) {
-  selectedOption = value;
-}
+    function updateSelectedOption(value) {
+        selectedOption = value;
+    }
 
-function handleButtonClick() {
-  globalStatus = 2;
-  updateOrderList();
+    function handleButtonClick() {
+        globalStatus = 2;
+        updateOrderList();
 
-  if (globalStatus === 2) {
-    addToOrderButtons.forEach(function(button) {
-      button.disabled = true;
-    });
+        if (globalStatus === 2) {
+            addToOrderButtons.forEach(function (button) {
+                button.disabled = true;
+            });
 
-    const paginationLinks = document.querySelectorAll('.pagination a');
-    paginationLinks.forEach(function(link) {
-      link.classList.add('disabled');
-      link.style.cursor = 'not-allowed';
-      link.style.pointerEvents = 'none';
-    });
+            const paginationLinks = document.querySelectorAll('.pagination a');
+            paginationLinks.forEach(function (link) {
+                link.classList.add('disabled');
+                link.style.cursor = 'not-allowed';
+                link.style.pointerEvents = 'none';
+            });
 
-    const paymentMethodSelect = document.getElementById('payment-type');
-    paymentMethodSelect.disabled = true;
-  }
+            const paymentMethodSelect = document.getElementById('payment-type');
+            paymentMethodSelect.disabled = true;
+        }
 
-  $('#previousOrderModal').modal('hide');
-}
+        $('#previousOrderModal').modal('hide');
+    }
 
     // clear-order 버튼 클릭 이벤트 리스너
-    document.getElementById('clear-order').addEventListener('click', function() {
+    document.getElementById('clear-order').addEventListener('click', function () {
         const orderSummary = document.getElementById('orderList');
 
         // add-to-order 버튼 비활성화
@@ -324,7 +326,7 @@ function handleButtonClick() {
         orderSummary.classList.add('animate__animated', 'animate__zoomOutRight');
 
         // 애니메이션 종료 후 텍스트 삭제 및 버튼 활성화
-        orderSummary.addEventListener('animationend', function() {
+        orderSummary.addEventListener('animationend', function () {
             orderSummary.innerHTML = ''; // 텍스트 삭제
             orderList = [];
             totalAmount = 0;
@@ -335,11 +337,11 @@ function handleButtonClick() {
 
             // add-to-order 버튼 활성화
             enableAddToOrderButtons();
-        }, { once: true }); // 한 번만 실행하도록 설정
+        }, {once: true}); // 한 번만 실행하도록 설정
     });
 
     // product-submit 폼 제출 이벤트 리스너
-    document.getElementById('product-submit').addEventListener('submit', function(event) {
+    document.getElementById('product-submit').addEventListener('submit', function (event) {
         event.preventDefault();
 
         if (orderList.length === 0) {
@@ -390,20 +392,20 @@ function handleButtonClick() {
                     totalAmount = 0;
                     updateOrderSummary();
                     window.location.href = "/erp/pos/main"
-                } else if(response.status === 422) {
+                } else if (response.status === 422) {
                     alert('재고가 부족합니다.');
                 } else {
                     alert('결제에 실패했습니다. 다시 시도해주세요.');
                 }
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 alert('오류가 발생했습니다. 다시 시도해주세요.');
             });
     });
 
     const plusButton = document.createElement('button');
     plusButton.textContent = '+';
-    plusButton.addEventListener('click', function() {
+    plusButton.addEventListener('click', function () {
         if (item.quantity < item.originalQuantity) {
             item.quantity += 1;
             updateQuantityDisplay();
@@ -412,7 +414,7 @@ function handleButtonClick() {
 
     const minusButton = document.createElement('button');
     minusButton.textContent = '-';
-    minusButton.addEventListener('click', function() {
+    minusButton.addEventListener('click', function () {
         if (item.quantity > 0) {
             item.quantity -= 1;
         }
@@ -425,43 +427,45 @@ function handleButtonClick() {
     }
 
     function inspection() {
-            window.open('http://localhost:8080/erp/pos/inspection', '_blank', 'width=800,height=600');
-        }
+        window.open('http://localhost:8080/erp/pos/inspection', '_blank', 'width=800,height=600');
+    }
 
-        function safe() {
-            window.open('http://localhost:8080/erp/pos/safe', '_blank', 'width=800,height=600');
-        }
+    function safe() {
+        window.open('http://localhost:8080/erp/pos/safe', '_blank', 'width=800,height=600');
+    }
 
-        function closeBusiness() {
-            window.open('http://localhost:8080/erp/pos/close', '_blank', 'width=800,height=600');
+    function closeBusiness() {
+        window.open('http://localhost:8080/erp/pos/close', '_blank', 'width=800,height=600');
+    }
+
+    function deposit() {
+        window.open('http://localhost:8080/erp/pos/deposit', '_blank', 'width=800,height=600');
+    }
+
+    function confirmOpen() {
+        if (confirm("오픈하시겠습니까?")) {
+            fetch('/erp/pos/open', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}) // 필요시 추가 데이터 전송
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    alert(data); // 성공 메시지 알림
+                    location.reload(); // 페이지 리로드하여 상태 업데이트
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
         }
-        function deposit() {
-            window.open('http://localhost:8080/erp/pos/deposit', '_blank', 'width=800,height=600');
-        }
-        function confirmOpen() {
-                if (confirm("오픈하시겠습니까?")) {
-                    fetch('/erp/pos/open', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({}) // 필요시 추가 데이터 전송
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        alert(data); // 성공 메시지 알림
-                        location.reload(); // 페이지 리로드하여 상태 업데이트
-                    })
-                    .catch(error => {
-                        console.error('There was a problem with the fetch operation:', error);
-                    });
-                }
-            }
+    }
 </script>
 
 </body>
