@@ -111,7 +111,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="previousOrderModalLabel">주문 조회</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="custom-close-btn" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span> <!-- X 아이콘 추가 -->
                 </button>
             </div>

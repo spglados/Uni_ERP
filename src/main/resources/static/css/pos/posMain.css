@@ -198,3 +198,18 @@ body {
 .pagination a:hover {
     background-color: #f2f2f2;
 }
+
+.custom-close-btn {
+    background-color: transparent; /* 배경 없음 */
+    color: #6c757d; /* 회색 X 아이콘 */
+    border: none; /* 테두리 제거 */
+    font-size: 2.0rem;
+    position: absolute;
+    right: 8px;
+    top: 3px;
+    cursor: pointer;
+}
+
+.custom-close-btn:hover {
+    color: #495057; /* 호버 시 더 어두운 회색 */
+}
