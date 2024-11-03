@@ -32,23 +32,25 @@ public class PaymentController {
     public String paymentPage(HttpSession session, Model model) {
         User principal = (User) session.getAttribute("userSession");
         if (principal == null) {
-            return "/user/login"; // principal이 null일 경우 로그인 페이지로 이동
+            return "/user/login";
         }
 
-        Integer userPk = principal.getId(); // PrincipalDTO에서 사용자 ID를 가져옴
+        Integer userPk = principal.getId(); 
         Integer count = paymentService.getCountOfNotCanceledPayments(userPk);
+        String membership = userService.getUserMembership(userPk);
 
+        model.addAttribute("membership", membership);
         model.addAttribute("count", count);
         return "/payment/payment";
     }
 
-    // 단일,정기 결제 실패
+    // 결제 실패 페이지
     @GetMapping("/fail")
     public String paymentFail() {
         return "payment/fail";
     }
 
-    // 정기 결제 성공
+    // 정기 결제 성공 페이지
     @GetMapping("/success")
     public String success(@RequestParam("authKey") String authKey,
                           @RequestParam("customerKey") String customerKey,
@@ -84,29 +86,6 @@ public class PaymentController {
             return "redirect:/payment/fail";
         }
     }
-
-
-    @GetMapping("/refund")
-    public String refundPage(Model model, @SessionAttribute(value = "userSession") User principal) {
-        int userPk = principal.getId();
-        List<Payment> payments = paymentService.findByUserId(userPk);
-        model.addAttribute("payments", payments); // "payments"라는 키로 List<Payment> 추가
-
-        return "/payment/refund";
-    }
-
-
-    @PostMapping("/refund")
-    public String cancelPayments(@RequestBody List<Map<String, String>> paymentRequests) throws Exception {
-        // 총 환불 금액 계산
-        int totalCancelAmount = paymentService.cancelAndCalculateAmount(paymentRequests);
-
-        System.out.println("TOTAL CANCEL AMOUNT =  " + totalCancelAmount);
-        // 총 환불 금액을 활용한 후속 처리를 할 수 있습니다.
-        return "redirect:/main"; // 필요한 리다이렉션
-    }
-
-
 
 
 }

@@ -3,6 +3,8 @@ package com.uni.uni_erp.domain.entity.erp.hr;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 
@@ -21,10 +23,12 @@ Attendance {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "emp_id", nullable = false)
     private Employee employee;
 

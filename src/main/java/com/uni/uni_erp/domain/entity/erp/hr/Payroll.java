@@ -4,6 +4,7 @@ import com.uni.uni_erp.domain.converter.erp.hr.YearMonthConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 
 @NoArgsConstructor
@@ -34,7 +35,7 @@ public class Payroll {
     private Integer workSalary;
 
     @Column(name = "total_work_time", nullable = false)
-    private Integer totalWorkTime;
+    private Integer totalWorkTime; // 시간
 
     @Column(name = "over_work_allowance", nullable = true)
     private Integer overWorkAllowance;
@@ -63,7 +64,17 @@ public class Payroll {
     @Column(name = "industrial_accident_compensation_insurance", nullable = true)
     private Integer industrialAccidentCompensationInsurance;
 
+    @Column(name = "total_insurance", nullable = true)
+    private Integer totalInsurance;
+
     @Column(name = "net_salary", nullable = false)
     private Integer netSalary; // 실수령액
 
+    @Column(name = "created_at",nullable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

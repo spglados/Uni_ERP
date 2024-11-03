@@ -1,9 +1,10 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
-import com.uni.uni_erp.dto.erp.product.IngredientDTO;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "ingredient_tb")
@@ -29,6 +30,7 @@ public class Ingredient {
     private UnitCategory unit;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "material_id", nullable = false)
     private Material material;
 

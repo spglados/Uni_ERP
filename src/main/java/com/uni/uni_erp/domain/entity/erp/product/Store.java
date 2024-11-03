@@ -1,7 +1,9 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
 import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
+import com.uni.uni_erp.domain.entity.erp.pos.Pos;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -47,6 +49,14 @@ public class Store {
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Material> materials;
+
+    // TODO 오류 발생시 삭제
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<EmpPosition> empPositions;
+
+    // TODO 오류 발생시 삭제
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Pos> poses;
 
     @Column(name = "allow_minutes", nullable = false)
     private Integer allowMinutes = 1;

@@ -22,14 +22,14 @@ public class Pos {
     @Column(nullable = false)
     private Integer posId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
     @Column(nullable = false)
     private Long amount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="pos_history_id")
     private PosHistory posHistory;
 
