@@ -37,7 +37,9 @@ public class PaymentController {
 
         Integer userPk = principal.getId(); // PrincipalDTO에서 사용자 ID를 가져옴
         Integer count = paymentService.getCountOfNotCanceledPayments(userPk);
+        String membership = userService.getUserMembership(userPk);
 
+        model.addAttribute("membership", membership);
         model.addAttribute("count", count);
         return "/payment/payment";
     }

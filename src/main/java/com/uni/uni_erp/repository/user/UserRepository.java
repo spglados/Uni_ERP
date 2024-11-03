@@ -49,4 +49,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("UPDATE User u SET u.paymentDate = :paymentDate WHERE u.id = :userId")
     void updatePaymentDateByUserId(@Param("paymentDate") String paymentDate, @Param("userId") int userId);
 
+    @Query("SELECT u.membership FROM User u WHERE u.id = :userId")
+    String findMembershipByUserId(Integer userId);
 }

@@ -111,7 +111,7 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <div>POS <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/pos/main" target='_blank'>POS 실행</a></li>--%>
+                    <li><a href="/erp/pos/main" target='_blank'>POS 실행</a></li>
                 </ul>
             </li>
         </ul>

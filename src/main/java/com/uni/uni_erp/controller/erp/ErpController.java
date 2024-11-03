@@ -1,10 +1,12 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.google.gson.Gson;
+import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.erp.hr.AttendanceDTO;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.sales.MostProductSaleQuantityDTO;
+import com.uni.uni_erp.dto.sales.SalesInfoDTO;
 import com.uni.uni_erp.repository.user.UserRepository;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.invertory.InventoryService;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -38,8 +42,13 @@ public class ErpController {
     @GetMapping("/main")
     public String mainPage(Model model, HttpSession session) {
 
+        // TODO 엔티티 변경
+        User user = (User) session.getAttribute("userSession");
+        model.addAttribute("username", user.getName());
+
+
         List<StoreDTO> storeList = (List<StoreDTO>) session.getAttribute("storeList");
-        if(storeList != null) {
+        if (storeList != null) {
             model.addAttribute("storeList", storeList);
         }
         Integer storeId = (Integer) session.getAttribute("storeId");
@@ -47,13 +56,17 @@ public class ErpController {
             model.addAttribute("storeId", storeId);
         }
         AttendanceDTO.ErpMainDTO attDTO = attendanceService.getAttendanceForMain(storeId);
-        System.out.println("---------------------------------------------------");
-        System.out.println(attDTO);
-        System.out.println("---------------------------------------------------");
         model.addAttribute("attDTO", attDTO);
+        LocalDate today = LocalDate.now();
+        model.addAttribute("month", today.getMonth().getValue());
+
+        List<SalesInfoDTO> salesInfoList = salesService.getSalesInfo(today, session);
+        if(!salesInfoList.isEmpty()) {
+            model.addAttribute("salesInfoList", salesInfoList);
+        }
 
         // 오늘 날짜 재고 현황 최신화
-        if(inventoryService.checkStockAndProduct(session)) {
+        if (inventoryService.checkStockAndProduct(session)) {
             inventoryService.getMaterialStatus(session);
         }
 

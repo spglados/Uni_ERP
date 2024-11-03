@@ -195,4 +195,8 @@ public class UserService {
         userRepository.save(user);
 
     }
+
+    public String getUserMembership(Integer userId) {
+        return userRepository.findMembershipByUserId(userId);
+    }
 }
