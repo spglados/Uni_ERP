@@ -15,7 +15,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 70%;
+    width: 60%;
     height: 100%;
 }
 
@@ -27,9 +27,10 @@
 
 .introduce-content-text-box{
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 30%;
+    width: 40%;
     height: 100%;
 }
 
@@ -147,4 +148,21 @@ section ul li::before {
         opacity: 1;
         -webkit-transform: translateX(0);
     }
+}
+
+.introduce-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.introduce-text-title{
+    width: 80%;
+    font-size: 30px;
+}
+
+.introduce-text-content{
+    width: 80%;
 }

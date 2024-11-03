@@ -16,7 +16,7 @@
 <body>
 <div class="header">
     <img src="/images/logo/logoPos.png" class="animate__animated animate__fadeIn" alt="포스로고" style="height: 100px; width: 125px;">
-    <a href="#">판매</a>
+    <a href="">출퇴근</a>
     <%@include file="/WEB-INF/view/pos/attendanceModal.jsp" %>
     <h1 class="animate__animated animate__fadeIn">UNI-POS SYSTEM ( 가상 )</h1>
 </div>

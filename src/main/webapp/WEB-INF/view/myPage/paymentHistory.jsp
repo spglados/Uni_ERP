@@ -1,42 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!-- header.jsp  -->
-<%@include file="/WEB-INF/view/layout/header.jsp"%>
-<style>
-    .sidebar {
-        width: 200px;
-        float: left;
-        margin-right: 20px;
-        border-right: 1px solid #ccc;
-        padding: 10px;
-    }
-    .sidebar a {
-        display: block;
-        margin: 10px 0;
-        text-decoration: none;
-        color: #333;
-    }
-    .sidebar a:hover {
-        color: #007bff;
-    }
-    .profile-info {
-        overflow: hidden;
-    }
-    .selected {
-        background-color: #f0f8ff; /* 선택된 항목 강조 */
-    }
-</style>
-</head>
-<div class="sidebar">
-    <h3>내 정보</h3>
-    <a href="/myPage">회원 정보 및 수정</a>
-    <a href="/myPage/storeList">가게 등록</a>
-    <a href="/myPage/paymentHistory">결제 내역</a>
-    <a href="/myPage/refundHistory">환불 내역</a>
-    <a href="/myPage/contact">내 문의 내역</a>
-</div>
+<%@ include file="/WEB-INF/view/layout/myPageHeader.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<main class="main-container">
 <h1>결제 내역</h1>
+    <div class="profile-info">
     <c:if test="${not empty payments}">
     <table>
         <thead>
@@ -49,6 +17,7 @@
                 <th>결제된 날짜</th>
                 <th>결제 수단</th>
                 <th>취소 사유</th>
+                <th>환불 요청</th>
             </tr>
         </thead>
         <tbody>
@@ -94,7 +63,8 @@
 <c:if test="${empty payments}">
     <p>결제된 내역이 없습니다.</p>
 </c:if>
-
+        </div>
+</main>
 <script>
 
 const paymentCount = ${paymentCount}; // paymentCount 값
@@ -158,5 +128,4 @@ function cancelPayment() {
 }
 </script>
 
-<!-- footer.jsp  -->
-<%@include file="/WEB-INF/view/layout/footer.jsp"%>
+<%@ include file="/WEB-INF/view/layout/myPageFooter.jsp" %>

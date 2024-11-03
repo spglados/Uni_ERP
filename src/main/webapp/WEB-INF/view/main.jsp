@@ -24,8 +24,10 @@
         </div>
         <div class="explanation-container-right">
             <div class="explanation-container">
-                <h2>어떤 서비스가 있나요?</h2>
-                <h3>UNI-ERP의 시스템은 소상공인 여러분을 위한 맞춤형 솔루션입니다. 매출 관리부터 상품, 재고, 인사까지 하나의 시스템으로 통합하여 운영을 간소화하고 시간과 비용을 절감할 수 있도록 돕습니다. 사업 운영이 어려우신가요? 간편하게 데이터를 관리하고 분석할 수 있는 ERP 시스템을 통해 비즈니스의 효율성을 높이고 새로운 성장 기회를 발견해 보세요.</h3>
+                <h2 id="explanation1">어떤 서비스가 있나요?</h2>
+                <h3 id="explanation2">UNI-ERP의 시스템은 소상공인 여러분을 위한 맞춤형 솔루션입니다.</h3>
+                <h3 id="explanation3">매출 관리부터 상품, 재고, 인사까지 하나의 시스템으로 통합하여 운영을 간소화하고 시간과 비용을 절감할 수 있도록 돕습니다.</h3>
+                <h3 id="explanation4">사업 운영이 어려우신가요? 간편하게 데이터를 관리하고 분석할 수 있는 ERP 시스템을 통해 비즈니스의 효율성을 높이고 새로운 성장 기회를 발견해 보세요.</h3>
             </div>
         </div>
     </div>
@@ -112,9 +114,18 @@
 </div>
 
 <!-- TypeIt.js 라이브러리 링크 -->
-<script src="https://cdn.jsdelivr.net/npm/typeit@8.0.6/dist/typeit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/typeit@latest/dist/typeit.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+
+        ['#explanation1', '#explanation2', '#explanation3', '#explanation4'].forEach(selector => {
+            new TypeIt(selector, {
+                speed: 40 // 타이핑 속도를 더 빠르게 설정 (25ms로 지정)
+            })
+                .pause(50)
+                .go();
+        });
+
         // 오버레이 애니메이션
         var overlay = document.querySelector('.overlay-content');
         var h1 = overlay.querySelector('h1');
