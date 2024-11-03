@@ -141,27 +141,27 @@
                const fullAddress = newAddress + ' ,' + newDetailAddress;
 
               if (confirm('주소를 변경하시겠습니까?')) {
-                  fetch('/myPage/updateAddress', {
-                      method: 'POST',
-                      headers: {
-                          'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({ address: fullAddress })
-                  })
-                  .then(response => {
-                      if (response.ok) {
-                          document.getElementById('addressDisplay').innerText = fullAddress; // 주소 표시 업데이트
-                          cancelAddressEdit(); // 수정 후에는 취소 버튼으로 돌아갑니다.
-                      } else {
-                          alert('주소 업데이트에 실패했습니다.');
-                      }
-                  })
-                  .catch(error => {
-                      console.error('Error:', error);
-                      alert('서버 오류가 발생했습니다.');
-                  });
+                      fetch('/my-page/address', { // 경로 수정
+                          method: 'PUT', // HTTP 메서드 변경
+                          headers: {
+                              'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify({ address: fullAddress })
+                      })
+                      .then(response => {
+                          if (response.ok) {
+                              document.getElementById('addressDisplay').innerText = fullAddress; // 주소 표시 업데이트
+                              cancelAddressEdit(); // 수정 후에는 취소 버튼으로 돌아갑니다.
+                          } else {
+                              alert('주소 업데이트에 실패했습니다.');
+                          }
+                      })
+                      .catch(error => {
+                          console.error('Error:', error);
+                          alert('서버 오류가 발생했습니다.');
+                      });
+                  }
               }
-          }
 
     function editPhone() {
         document.getElementById('phoneDisplay').classList.add('hidden');
@@ -180,8 +180,8 @@
        }
 
        if (confirm('전화번호를 변경하시겠습니까?')) {
-           fetch('/myPage/updatePhone', {
-               method: 'POST',
+           fetch('/my-page/phone', {
+               method: 'PUT',
                headers: {
                    'Content-Type': 'application/json'
                },
@@ -243,8 +243,8 @@
         const newPaymentDate = document.getElementById('newPaymentDate').value; // 입력값 가져오기
 
         if (confirm('결제일을 변경하시겠습니까?')) {
-            fetch('/myPage/updatePaymentDate', {
-                method: 'POST',
+            fetch('/my-page/payment-date', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },

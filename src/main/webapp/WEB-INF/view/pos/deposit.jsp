@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>POS 현재 금액</h1>
-    <p>현재 금액: ${posNowAmount}</p>
+    <p>포스 현재 금액: ${posNowAmount} 원</p>
 
     <h2>입금할 금액</h2>
     <input type="text" id="amount" placeholder="입금할 금액을 입력하세요" />

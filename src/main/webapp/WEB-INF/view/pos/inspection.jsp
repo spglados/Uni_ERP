@@ -99,6 +99,6 @@
 
     <h2>총합 금액: <span id="totalAmount">0</span> 원</h2>
 
-    <button id="closeButton" disabled onclick="submitInspection()">창 닫기</button>
+    <button id="closeButton" disabled onclick="submitInspection()">시재 점검하기</button>
 </body>
 </html>

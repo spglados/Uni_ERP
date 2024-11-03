@@ -42,7 +42,7 @@
                 </div>
                 <div class="header-icons">
                 <c:if test="${not empty sessionScope.userSession}">
-                    <a href="/myPage" class="header-icon"><i class="fa-solid fa-user-gear icon-hover-text" style="color: #74C0FC;" id="icon1" data-text="마이페이지"></i></a>
+                    <a href="/my-page" class="header-icon"><i class="fa-solid fa-user-gear icon-hover-text" style="color: #74C0FC;" id="icon1" data-text="마이페이지"></i></a>
                     <a href="/user/logout" class="header-icon"><i class="fa-solid fa-right-from-bracket icon-hover-text" style="color: #74C0FC;" id="icon2" data-text="로그아웃"></i></a>
                 </c:if>
                 <c:if test="${empty sessionScope.userSession}">
@@ -57,11 +57,11 @@
 <div class="content-container">
 <div class="sidebar">
     <h3>내 정보</h3>
-    <a href="/myPage">회원 정보 및 수정</a>
-    <a href="/myPage/storeList">가게 등록</a>
-    <a href="/myPage/paymentHistory">결제 내역</a>
-    <a href="/myPage/refundHistory">환불 내역</a>
-    <a href="/myPage/contact">내 문의 내역</a>
+    <a href="/my-page">회원 정보 및 수정</a>
+    <a href="/my-page/store-list">가게 등록</a>
+    <a href="/my-page/payment-history">결제 내역</a>
+    <a href="/my-page/refund-history">환불 내역</a>
+    <a href="/my-page/contact">내 문의 내역</a>
 </div>
 <script>
     // 모든 아이콘 요소를 선택합니다.
