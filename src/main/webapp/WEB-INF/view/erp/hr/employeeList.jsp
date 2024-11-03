@@ -71,13 +71,13 @@
         </c:if>
     </div>
     <div class="right-panel" id="employee-details">
-                <h2 class="mb-0">직원 상세 정보</h2>
-            <div class="card-body">
-                <p>직원 목록을 클릭하여 확인하세요.</p>
-                <!-- 상세 정보가 여기에 추가됩니다 -->
-            </div>
+        <h2 class="mb-0">직원 상세 정보</h2>
+        <div class="card-body">
+            <p>직원 목록을 클릭하여 확인하세요.</p>
+            <!-- 상세 정보가 여기에 추가됩니다 -->
         </div>
     </div>
+</div>
 </div>
 
 <!-- 수정 팝업 모달 -->
@@ -110,8 +110,9 @@
                                max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"/>
                     </div>
                     <div class="mb-3">
-                        <label for="editEmpPassword">비밀번호</label>
-                        <input type="text" id="editEmpPassword" name="password" pattern="^[0-9]+$" title="숫자만 입력하세요"
+                        <label for="editEmpPassword">비밀번호(숫자 4자리)</label>
+                        <input type="password" id="editEmpPassword" name="password" pattern="\d{4}" maxlength="4"
+                               title="숫자 4자리로 입력하세요"
                                required>
                     </div>
                     <div class="mb-3">
@@ -124,7 +125,8 @@
                     <div class="mb-3">
                         <label for="editEmployeeAddress" class="form-label">주소</label>
                         <input type="hidden" id="fullAddress" name="address">
-                        <input type="text" class="form-control" id="editEmployeeAddress" onclick ="execDaumPostcode()" required>
+                        <input type="text" class="form-control" id="editEmployeeAddress" onclick="execDaumPostcode()"
+                               required>
                         <input type="text" class="form-control" id="editEmployeeDetailAddress">
                     </div>
 
@@ -145,6 +147,9 @@
                                 <option value="nate.com">nate.com</option>
                             </select>
                         </div>
+                        <button type="button" class="btn btn-secondary mt-2" onclick="checkEmailDuplicate()">중복 확인</button>
+                        <!-- 여기의 ID를 emailDuplicateMessage로 수정 -->
+                        <div id="duplicateEmailMessage" class="mt-1"></div>
                     </div>
 
                     <div class="mb-3">
@@ -153,6 +158,9 @@
                                oninput="formatPhoneNumber(this)" maxlength="13"
                                placeholder="000-0000-0000"
                                title="유효한 전화번호 형식이 아닙니다."/>
+                        <button type="button" class="btn btn-secondary mt-2" onclick="checkPhoneDuplicate()">중복 확인</button>
+                        <!-- 여기의 ID를 phoneDuplicateMessage로 수정 -->
+                        <div id="duplicatePhoneMessage" class="mt-1"></div>
                     </div>
 
                     <!-- 은행 정보 추가 -->
@@ -172,6 +180,7 @@
                                maxlength="16"
                                pattern="^\d{1,16}$"
                                title="계좌번호를 1자리 이상 16자리 이하의 숫자로 입력하세요"/>
+                        <div id="accountDuplicateMessage" class="mt-1"></div>
                     </div>
 
                     <!-- 직책 정보 추가 -->
@@ -237,17 +246,19 @@
 
 
 <!-- Bootstrap Bundle with Popper.js (jsDelivr) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-pwhx3de1z5koq2k9n7zn8XBc/4eKD48Wn5sbzIS5QJgEN5hYhDDK1e+FvY86G/Zg" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pwhx3de1z5koq2k9n7zn8XBc/4eKD48Wn5sbzIS5QJgEN5hYhDDK1e+FvY86G/Zg"
+        crossorigin="anonymous"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
 <script>
 
     function execDaumPostcode() {
         new daum.Postcode({
-          oncomplete: function(data) {
-            var addr = data.address;
-            document.getElementById("editEmployeeAddress").value = addr;
-          }
+            oncomplete: function (data) {
+                var addr = data.address;
+                document.getElementById("editEmployeeAddress").value = addr;
+            }
         }).open();
     }
 
@@ -379,7 +390,6 @@
                     '<button id="edit-button" data-id="' + uniqueId + '" class="btn btn-primary">수정</button>'; // 수정 버튼
 
 
-
                 // 수정 버튼 클릭 이벤트 리스너
                 document.getElementById('edit-button').addEventListener('click', function () {
                     // 콘솔 로그로 변수 값 확인
@@ -471,7 +481,7 @@
                 if (key === 'address') {
                     const mainAddress = document.getElementById('editEmployeeAddress').value;
                     const detailAddress = document.getElementById('editEmployeeDetailAddress').value;
-                    jsonData[key] = mainAddress +" , "+ detailAddress;
+                    jsonData[key] = mainAddress + " , " + detailAddress;
                 } else {
                     jsonData[key] = value;
                 }
@@ -558,6 +568,46 @@
     }
 
 
+    function checkEmailDuplicate() {
+        const emailId = document.getElementById('editEmployeeEmail').value;
+        const emailDomain = document.getElementById('emailDomain').value;
+        const fullEmail = emailId.toLowerCase() + '@' + emailDomain.toLowerCase();
+
+        fetch('/erp/hr/check-email?email=' + fullEmail)
+            .then(response => response.json())
+            .then(data => {
+                const emailMessageDiv = document.getElementById('duplicateEmailMessage');
+                if (data.isDuplicated) {
+                    emailMessageDiv.textContent = '이메일이 중복되었습니다. 다른 이메일을 입력하세요.';
+                    emailMessageDiv.style.color = 'red';
+                } else {
+                    emailMessageDiv.textContent = '사용 가능한 이메일입니다.';
+                    emailMessageDiv.style.color = 'green';
+                }
+            })
+            .catch(error => console.error('이메일 중복 확인 오류:', error));
+    }
+
+    function checkPhoneDuplicate() {
+        const phone = document.getElementById('editEmployeePhone').value;
+
+        fetch('/erp/hr/check-phone?phone=' + phone)
+            .then(response => response.json())
+            .then(data => {
+                const phoneMessageDiv = document.getElementById('duplicatePhoneMessage');
+                if (data.isDuplicated) {
+                    phoneMessageDiv.textContent = '전화번호가 중복되었습니다. 다른 전화번호를 입력하세요.';
+                    phoneMessageDiv.style.color = 'red';
+                } else {
+                    phoneMessageDiv.textContent = '사용 가능한 전화번호입니다.';
+                    phoneMessageDiv.style.color = 'green';
+                }
+            })
+            .catch(error => console.error('전화번호 중복 확인 오류:', error));
+    }
+
+
+
     // 선택된 도메인이 있으면 도메인 입력란의 값으로 업데이트
     if (selectedDomain) {
         domainInput.value = selectedDomain; // 도메인 선택 시 입력란에 도메인 업데이트
@@ -592,7 +642,6 @@
 
     }
 </script>
-
 
 
 <!-- 모달 배경 -->
