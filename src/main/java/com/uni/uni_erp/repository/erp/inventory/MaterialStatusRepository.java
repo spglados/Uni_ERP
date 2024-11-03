@@ -42,4 +42,5 @@ public interface MaterialStatusRepository extends JpaRepository<MaterialStatus, 
 
     @Query("SELECT ms FROM MaterialStatus ms WHERE ms.material.store.id = :storeId AND ms.statusDate = :now")
     List<MaterialStatus> findAllByStoreIdAndToday(Integer storeId, LocalDate now);
+
 }

@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<html>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <title>Title</title>
     <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/common/myPage.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -53,6 +54,15 @@
         </nav>
     </div>
 </header>
+<div class="content-container">
+<div class="sidebar">
+    <h3>내 정보</h3>
+    <a href="/my-page">회원 정보 및 수정</a>
+    <a href="/my-page/store-list">가게 등록</a>
+    <a href="/my-page/payment-history">결제 내역</a>
+    <a href="/my-page/refund-history">환불 내역</a>
+    <a href="/my-page/contact">내 문의 내역</a>
+</div>
 <script>
     // 모든 아이콘 요소를 선택합니다.
     const icons = document.querySelectorAll('.icon-hover-text');

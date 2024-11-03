@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/myPage")
+@RequestMapping("/my-page")
 @RequiredArgsConstructor
 public class myPageController {
 
@@ -49,7 +49,7 @@ public class myPageController {
         return "/myPage/myPage";
     }
 
-    @GetMapping("/paymentHistory")
+    @GetMapping("/payment-history")
     public String refundPage(Model model, @SessionAttribute(value = "userSession") User principal) {
         int userPk = principal.getId();
         List<Payment> payments = paymentService.findByUserId(userPk);
@@ -61,22 +61,13 @@ public class myPageController {
         return "/myPage/paymentHistory";
     }
 
-    @PostMapping("/deleteStore/{storeId}")
-    public ResponseEntity<?> deleteStore(@PathVariable Integer storeId) {
+    @DeleteMapping("/stores/{storeId}")
+    public ResponseEntity<?> removeStore(@PathVariable Integer storeId) {
         storeService.deleteByStoreId(storeId);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/updateEmail")
-    public ResponseEntity<?> updateEmail(@RequestBody Map<String, String> request,
-                                         @SessionAttribute(value = "userSession") User principal) {
-        String email = request.get("email"); // JSON에서 이메일 추출
-        int userPk = principal.getId();
-        userService.updateUserEmailByUserId(email, userPk); // 이메일 업데이트 서비스 호출
-        return ResponseEntity.ok().build(); // 성공 응답
-    }
-
-    @PostMapping("/updatePhone")
+    @PutMapping("/phone")
     public ResponseEntity<?> updatePhone(@RequestBody Map<String, String> request,
                                          @SessionAttribute(value = "userSession") User principal) {
         String phone = request.get("phone"); // JSON에서 전화번호 추출
@@ -89,7 +80,7 @@ public class myPageController {
         return ResponseEntity.ok().build(); // 성공 응답
     }
 
-    @PostMapping("/updateAddress")
+    @PutMapping("/address")
     public ResponseEntity<?> updateAddress(@RequestBody Map<String, String> request,
                                            @SessionAttribute(value = "userSession") User principal) {
         String address = request.get("address");
@@ -98,7 +89,7 @@ public class myPageController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/updatePaymentDate")
+    @PutMapping("/payment-date")
     public ResponseEntity<?> updatePaymentDate(@RequestBody Map<String, String> request,
                                                @SessionAttribute(value = "userSession") User principal) {
         String newPaymentDate = request.get("paymentDate"); // 요청에서 결제일 가져오기
@@ -110,7 +101,8 @@ public class myPageController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/cancelPayment")
+
+    @PostMapping("/cancel-payment")
     public ResponseEntity<?> cancelPayment(@RequestBody Map<String, String> request) {
         String paymentId = request.get("paymentId");
         int payPk = Integer.valueOf(paymentId);
@@ -119,7 +111,7 @@ public class myPageController {
         return ResponseEntity.ok().body(Map.of("success", true));
     }
 
-    @GetMapping("/refundHistory")
+    @GetMapping("/refund-history")
     public String refundHistoryPage(Model model, @SessionAttribute(value = "userSession") User principal) {
         int userPk = principal.getId();
         List<Refund> refund = refundService.getRefundById(userPk);
@@ -134,7 +126,7 @@ public class myPageController {
         return "/myPage/contact";
     }
 
-    @GetMapping("/contactDetail/{id}")
+    @GetMapping("/contact-detail/{id}")
     public String contactDetailPage(Model model,@PathVariable Integer id) {
         ContactDTO contact = contactService.findById(id);
         model.addAttribute("contact",contact);
@@ -143,7 +135,7 @@ public class myPageController {
         return "/myPage/contactDetail";
     }
 
-    @GetMapping("/storeList")
+    @GetMapping("/store-list")
     public String storeListPage(Model model,@SessionAttribute(value = "userSession") User principal){
         List<Store> store= storeService.findAllById(principal.getId());
 
@@ -156,12 +148,12 @@ public class myPageController {
     }
 
 
-    @GetMapping("/saveStore")
+    @GetMapping("/stores/create")
     public String saveStorePage() {
         return "/myPage/saveStore";
     }
 
-    @PostMapping("/saveStore")
+    @PostMapping("/stores")
     public ResponseEntity<String> registerStore(@RequestBody StoreSaveDTO storeSaveDTO, @SessionAttribute(value = "userSession") User principal, HttpSession session) {
         storeSaveDTO.setUserId(principal.getId());
 

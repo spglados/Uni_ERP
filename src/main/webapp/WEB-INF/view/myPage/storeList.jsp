@@ -1,54 +1,10 @@
-<!DOCTYPE html>
-<html lang="ko">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/WEB-INF/view/layout/header.jsp" %>
+<%@ include file="/WEB-INF/view/layout/myPageHeader.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>가게 리스트</title>
-    <style>
-        .sidebar {
-            height: 500px;
-            width: 200px;
-            float: left;
-            margin-right: 20px;
-            border-right: 1px solid #ccc;
-            padding: 10px;
-        }
-        .sidebar a {
-            display: block;
-            margin: 10px 0;
-            text-decoration: none;
-            color: #333;
-        }
-        .sidebar a:hover {
-            color: #007bff;
-        }
-        .profile-info {
-            overflow: hidden;
-        }
-        .selected {
-            background-color: #f0f8ff; /* 선택된 항목 강조 */
-        }
-        .no-refund {
-            color: red; /* 메시지 색상 */
-        }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <h3>내 정보</h3>
-        <a href="/myPage">회원 정보 및 수정</a>
-        <a href="/myPage/storeList">가게 등록</a>
-        <a href="/myPage/paymentHistory">결제 내역</a>
-        <a href="/myPage/refundHistory">환불 내역</a>
-        <a href="/myPage/contact">내 문의 내역</a>
-    </div>
-
+<main class="main-container">
     <h1>가게 등록</h1>
+    <div class="profile-info">
 
     <c:if test="${empty store and count == 0}">
         <p class="no-refund">보유중인 가게 없습니다.</p>
@@ -96,13 +52,12 @@
     <c:if test="${storeCount < count}">
             <br><button onclick="saveStore()">가게 등록</button>
         </c:if>
+        </div>
+</main>
 
-<%@ include file="/WEB-INF/view/layout/footer.jsp" %>
-</body>
-</html>
 <script>
     function saveStore() {
-        window.open('http://localhost:8080/myPage/saveStore', '_blank', 'width=800,height=600');
+        window.open('http://localhost:8080/my-page/stores/create', '_blank', 'width=800,height=600');
     }
     function payment() {
         window.location.href = '/payment';
@@ -110,12 +65,11 @@
 
    function deleteStore(storeId) {
        if (confirm("정말 이 가게를 삭제하시겠습니까?")) {
-           fetch(`/myPage/deleteStore/${storeId}`, {
-               method: 'POST', // POST 메서드 사용
+           fetch(`/my-page/stores/${storeId}`, { // URL 수정
+               method: 'DELETE', // DELETE 메서드 사용
                headers: {
                    'Content-Type': 'application/json',
                },
-               body: JSON.stringify({ storeId: storeId })
            })
            .then(response => {
                if (response.ok) {
@@ -133,3 +87,4 @@
    }
 </script>
 
+<%@ include file="/WEB-INF/view/layout/myPageFooter.jsp" %>

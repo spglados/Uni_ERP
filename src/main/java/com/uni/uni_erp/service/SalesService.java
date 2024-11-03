@@ -149,7 +149,7 @@ public class SalesService {
 
             // Build the SalesComparisonDTO for this hour
             SalesComparisonDTO comparisonDTO = SalesComparisonDTO.builder()
-                    .hour(hour)
+                    .hour(hour + " ~ " + (hour + 1) + " 시")
                     .lastDayTargetProfit(yesterday.getTargetProfit())
                     .lastDayTotalSales(yesterday.getSales())
                     .lastDaySalesCount(yesterday.getSalesCount())
@@ -416,4 +416,15 @@ public class SalesService {
         return salesRepository.findMostProductSaleQuantityByStoreId(storeId, LocalDate.now());
 
     }
+
+    public List<SalesInfoDTO> getSalesInfo(LocalDate today, HttpSession session) {
+        LocalDateTime todayStart = today.atStartOfDay();
+        LocalDateTime todayEnd = today.plusDays(1).atStartOfDay();
+        Integer storeId = (Integer) session.getAttribute("storeId");
+        if(storeId == null) {
+            throw new Exception401("가게가 없거나, 인증되지 않은 사용자입니다.");
+        }
+        return salesRepository.findTop4MostSalesByToday(todayStart, todayEnd, storeId);
+    }
+
 }

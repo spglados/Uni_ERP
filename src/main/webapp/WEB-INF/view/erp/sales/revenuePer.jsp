@@ -2,7 +2,7 @@
 <%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp"%>
 <link rel="stylesheet" href="/css/sortTable.css">
 
-<div class="content">
+<div class="content container-fluid">
     <div class="table-responsive">
         <table class="table table-bordered">
         <tr>

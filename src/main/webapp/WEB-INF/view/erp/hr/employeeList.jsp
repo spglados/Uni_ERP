@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 <link rel="stylesheet" href="/css/erp/hr/employeeList.css">
-<div class="container">
+<div class="content container-fluid">
     <div class="left-panel">
         <h1 class="mb-4">직원 목록</h1>
         <c:if test="${not empty employees}">
@@ -371,7 +371,7 @@
                     '<p><strong>사원번호:</strong> ' + uniqueId + '</p>' +
                     '<p><strong>생년월일:</strong> ' + birthday + '</p>' +
                     '<p><strong>성별:</strong> ' + (gender === 'F' ? '여자' : '남자') + '</p>' +
-                    '<p><strong>주소:</strong> ' + address + '</p>' +
+                    '<p><strong>주소:</strong> ' + addressParts[0] + ' ' + addressParts[1] + '</p>' +
                     '<p><strong>이메일:</strong> ' + email + '</p>' +
                     '<p><strong>비밀번호:</strong> ' + password + '</p>' +
                     '<p><strong>연락처:</strong> ' + phone + '</p>' +

@@ -37,7 +37,9 @@ public class PaymentController {
 
         Integer userPk = principal.getId(); 
         Integer count = paymentService.getCountOfNotCanceledPayments(userPk);
+        String membership = userService.getUserMembership(userPk);
 
+        model.addAttribute("membership", membership);
         model.addAttribute("count", count);
         return "/payment/payment";
     }
@@ -83,6 +85,13 @@ public class PaymentController {
             e.printStackTrace();
             return "redirect:/payment/fail";
         }
+    }
+
+    @PostMapping("/refund")
+    public String cancelPayments(@RequestBody List<Map<String, String>> paymentRequests,@SessionAttribute(value = "userSession") User principal) throws Exception {
+        // 총 환불 금액 계산
+        int totalCancelAmount = paymentService.cancelAndCalculateAmount(paymentRequests,principal.getId());
+        return "redirect:/main"; // 필요한 리다이렉션
     }
 
 

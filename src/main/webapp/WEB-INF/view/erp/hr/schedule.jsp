@@ -11,7 +11,7 @@
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/css/erp/hr/calendar.css">
 
-<div class="container mt-5 d-flex">
+<div class="content container-fluid">
     <!-- 월간 캘린더, 주간 캘린더의 헤더만 -->
     <div id="calendarEmployeeName" class="d-none"></div>
     <div>

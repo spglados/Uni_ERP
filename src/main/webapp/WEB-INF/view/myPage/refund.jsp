@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!-- header.jsp  -->
-<%@include file="/WEB-INF/view/layout/header.jsp"%>
-</head>
-<body>
+<%@ include file="/WEB-INF/view/layout/myPageHeader.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
+<main class="main-container">
+    <div class="profile-info">
     <table>
         <thead>
             <tr>
@@ -53,7 +52,8 @@
             </c:forEach>
         </tbody>
     </table>
-
+    </div>
+</main>
     <script>
     function cancelPayments(cancelReason) {
         const selectedPayment = document.querySelector('.payment-radio:checked');
@@ -93,6 +93,4 @@
     </script>
 
     <!-- footer.jsp  -->
-    <%@include file="/WEB-INF/view/layout/footer.jsp"%>
-</body>
-</html>
+    <%@ include file="/WEB-INF/view/layout/myPageFooter.jsp" %>

@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -58,7 +59,7 @@ public class Employee {
    private EmpPosition empPosition;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store; // 관리하는 사용자
 
@@ -104,6 +105,14 @@ public class Employee {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank; // 은행 정보를 참조 필드
+
+    // TODO 오류 발생시 삭제 해야함
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Attendance> attendances;
+
+    // TODO 오류 발생시 삭제 해야함
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Schedule> schedules;
 
     @PrePersist
     public void onCreate() {

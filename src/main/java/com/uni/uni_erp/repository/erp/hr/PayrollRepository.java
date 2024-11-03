@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 public interface PayrollRepository extends JpaRepository<Payroll, Integer> {
 
@@ -15,5 +16,5 @@ public interface PayrollRepository extends JpaRepository<Payroll, Integer> {
             "(SELECT p.employee.id FROM Payroll p WHERE p.yearMonth = :yearMonth AND p.employee.store.id = :storeId)")
     List<Employee> findEmployeesWithoutPayroll(@Param("storeId") Integer storeId,
                                                @Param("yearMonth") YearMonth yearMonth);
-
+    Optional<Payroll> findByEmployee_IdAndYearMonth(Integer empId, YearMonth yearMonth);
 }
