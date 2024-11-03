@@ -1,7 +1,7 @@
 /**
  * 일정 추가 모달 오픈 이벤트
  */
-function openEventModal(mode, event) {
+function openEventModal(mode, event, dateStr) {
     setupTimeOptions();
     // 일정 추가 모달일시
     if (mode === 'add') {
@@ -20,7 +20,11 @@ function openEventModal(mode, event) {
         employeeSelect.disabled = false; // 변경 가능
 
         // 시간 설정
-        document.getElementById('eventDate').value = '';
+        if (dateStr) {
+            document.getElementById('eventDate').value = dateStr.toLocaleDateString('en-CA').substring(0, 10); // YYYY-MM-DD;
+        } else {
+            document.getElementById('eventDate').value = '';
+        }
         document.getElementById('eventStartTime').value = '';
         document.getElementById('eventEndTime').value = '';
         document.getElementById('isNextDay').checked = false;
@@ -191,10 +195,10 @@ function updateSchedule(id, start, end, calendar, info) {
         .then(response => {
             if (response.status === 200) {
                 return response.json();
-            } else if (response.status === 400) {
-                throw new Error('잘못된 요청입니다.');
             } else {
-                throw new Error('알 수 없는 오류가 발생했습니다.');
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message);
+                });
             }
         })
         .then(data => {
