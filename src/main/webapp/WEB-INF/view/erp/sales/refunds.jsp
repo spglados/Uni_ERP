@@ -2,7 +2,7 @@
 <%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp"%>
 <link rel="stylesheet" href="/css/sortTable.css">
 
-<div class="content">
+<div class="content container-fluid">
     <h1>환?불</h1>
 
 <canvas id="refund-count-chart" width="800" height="400"></canvas>

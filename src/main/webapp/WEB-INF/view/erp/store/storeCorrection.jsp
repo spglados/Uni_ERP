@@ -5,7 +5,7 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<div class="container mt-5">
+<div class="content container-fluid">
     <h1 class="text-center">가게 수정</h1>
 
     <!-- Store Update Form -->

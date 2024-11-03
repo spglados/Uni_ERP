@@ -168,6 +168,18 @@ nav {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.header-icons a {
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+.header-icons i{
+    font-size: 25px;
+
 }
 
 /* 비디오 배경 섹션 스타일 */
@@ -349,6 +361,7 @@ nav {
     text-align: center;
     font-family: 'Black Han Sans', sans-serif;
     font-size: 2.5rem;
+    font-weight: 100;
     color: #0284FF;
     margin-bottom: 40px;
 }
@@ -378,7 +391,9 @@ nav {
     flex: 1 1 300px;
     max-width: 500px;
 }
-
+.contact-info {
+    text-align: center;
+}
 .contact-info h2 {
     font-size: 1.8rem;
     margin-bottom: 15px;
@@ -389,6 +404,13 @@ nav {
     font-size: 1rem;
     color: #555555;
     line-height: 1.6;
+}
+
+.contact-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .contact-form h2 {
