@@ -81,18 +81,18 @@
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
         <div class="d-flex justify-content-end mb-2">
             <!-- 저장 버튼 추가 -->
-            <button id="saveButton" class="btn btn-secondary ml-2 btn-action" title="저장"><i class="fas fa-save"></i></button>
+            <button id="saveButton" class="btn btn-secondary ml-2 btn-action" title="저장"><i class="fas fa-save"></i>
+            </button>
             <div class="refresh-btn-div">
-                <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()" title="필터 초기화">
+                <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()"
+                        title="필터 초기화">
                     <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
         </div>
         <hr>
         <!-- 자재 목록 그리드 -->
-        <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
-            <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-quartz"></div>
-        </div>
+        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-quartz"></div>
     </div>
 </div>
 
