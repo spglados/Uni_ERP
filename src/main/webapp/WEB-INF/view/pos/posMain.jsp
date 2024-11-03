@@ -4,6 +4,9 @@
     <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+    <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+    <%@ page import="com.uni.uni_erp.util.date.NumberFormatter" %>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="/css/pos/posMain.css">
@@ -108,14 +111,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="previousOrderList">
+                <div id="previousOrderList" style="max-height: 700px; overflow-y: auto;">
                     <!-- Dynamically populate this with previous orders -->
                     <c:if test="${not empty previousOrders}">
                         <c:forEach items="${previousOrders}" var="order">
                             <div>
                                 <strong>주문 번호:</strong> ${order.orderNum}<br>
-                                <strong>판매 일자:</strong> ${order.salesDate}<br>
-                                <strong>총 가격:</strong> ${order.totalPrice} 원
+                                <strong>판매 일자:</strong> ${fn:replace(fn:substring(order.salesDate, 0, 16), 'T', ' ')}<br>
+                                <strong>총 가격:</strong> ${NumberFormatter.formatToPrice(order.totalPrice)} 원
                                 <button type="button" class="btn btn-link"
                                         onclick="fetchOrderDetails(${order.orderNum})">
                                     상세 보기
@@ -248,8 +251,8 @@
     function generateTable(data) {
         globalData = data;
 
-        let tableHtml = '<table style="border-collapse: collapse; width: 100%;">';
-        tableHtml += '<thead>';
+        let tableHtml = '<table class="table" style="border-collapse: collapse; width: 100%;">';
+        tableHtml += '<thead class="thead-light">';
         tableHtml += '<tr>';
         tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left;">상품명</th>';
         tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left; width: 20%;">수량</th>';
@@ -260,17 +263,21 @@
         data.forEach((item, index) => {
             tableHtml += '<tr>';
             tableHtml += '<td style="border: 1px solid #ddd; padding: 10px; text-align: left;">' + item.itemName + '</td>';
-            tableHtml += '<td><input type="number" value="' + item.quantity + '" min="0" max="' + item.quantity + '" onchange="globalData[' + index + '].quantity = parseInt(this.value);"></td>';
+            tableHtml += '<td><input type="number" class="form-control" value="' + item.quantity + '" min="0" max="' + item.quantity + '" onchange="globalData[' + index + '].quantity = parseInt(this.value);"></td>';
             tableHtml += '<td style="border: 1px solid #ddd; padding: 10px; text-align: left;">' + item.unitPrice.toLocaleString() + '원</td>';
             tableHtml += '</tr>';
         });
-        tableHtml += '</tbody>';
+         tableHtml += '</tbody>';
         tableHtml += '</table>';
-        tableHtml += '<select style="margin-top: 10px;" onchange="updateSelectedOption(this.value)" value="cancel">';
+        // 셀렉트 박스와 버튼을 나란히 배치
+        tableHtml += '<div style="display: flex; align-items: center; margin-top: 10px;">';
+        tableHtml += '<select class="form-select" style="margin-right: 10px; width: auto;" onchange="updateSelectedOption(this.value)" value="cancel">'; // Bootstrap 스타일 추가
         tableHtml += '<option value="cancel">취소</option>';
         tableHtml += '<option value="refund">환불</option>';
         tableHtml += '</select>';
-        tableHtml += '<button onclick="handleButtonClick()" style="margin-top: 10px;">확정</button>';
+        // Bootstrap 스타일을 추가한 버튼
+        tableHtml += '<button class="btn btn-primary" onclick="handleButtonClick()" style="margin-left: 10px;">확정</button>';
+        tableHtml += '</div>';
 
         return tableHtml;
     }
