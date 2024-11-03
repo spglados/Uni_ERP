@@ -42,15 +42,34 @@ public class Payment {
 
     @Column(nullable = false)
     private Integer amount;
+
+    @Column(nullable = false)
     private String requestedAt;
+
+    @Column(nullable = false)
     private String approvedAt;
+
+    @Column(nullable = false)
     private String cancel;
+
+    @Column(nullable = false)
     private Integer nowPayAmount;
+
+    @Column(nullable = false)
     private Integer nextPayAmount;
+
+    @Column(nullable = false)
     private String nextPay;
+
+    @Column(nullable = false)
     private String date;
+
+    @Column(nullable = false)
     private Integer status;
+
+    @Column(nullable = false)
     private String method;
+
     private String cancelReason;
 
     @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
