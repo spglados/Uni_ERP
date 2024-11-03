@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/css/erp/product.css">
 
 <!-- 메인 컨텐츠 -->
-<div class="content container-fluid">
+<div class="content">
     <h1>상품 목록</h1>
     <hr>
     <!-- 상품 목록 테이블 -->
@@ -24,7 +24,7 @@
         </div>
         <hr>
         <!-- ag-Grid 컨테이너 -->
-        <div id="myGrid" class="ag-theme-quartz" style="height: 500px; width:100%;"></div> <!-- 표준 테마 사용 -->
+        <div id="myGrid" class="ag-theme-quartz"></div> <!-- 표준 테마 사용 -->
     </div>
 </div>
 

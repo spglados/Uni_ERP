@@ -1,4 +1,10 @@
 /* ERP 시스템에 어울리는 그리드 스타일링 */
+
+#myGrid{
+    width: 100%;
+    height: 100%;
+}
+
 .ag-theme-quartz {
     font-family: 'Noto Sans KR', sans-serif; /* 한글 폰트 적용 */
     color: #333; /* 텍스트 색상 */
