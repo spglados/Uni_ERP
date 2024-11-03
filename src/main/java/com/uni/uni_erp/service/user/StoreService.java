@@ -6,6 +6,7 @@ import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.StoreDTO;
 import com.uni.uni_erp.dto.sales.StoreListDTO;
+import com.uni.uni_erp.dto.store.AdminStoreUpdateDTO;
 import com.uni.uni_erp.dto.store.StorePositionDTO;
 import com.uni.uni_erp.dto.store.StoreSaveDTO;
 import com.uni.uni_erp.dto.store.StoreUpdateDTO;
@@ -151,6 +152,21 @@ public class StoreService {
     }
 
     @Transactional
+    public void updateStoreAdmin(Integer id, AdminStoreUpdateDTO adminStoreUpdateDTO) {
+        // ID로 가게를 조회
+        Store store = storeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다. ID: " + id));
+
+        // 수정할 필드 업데이트
+        store.setName(adminStoreUpdateDTO.getName());
+        store.setIs24Hours(adminStoreUpdateDTO.getIs24Hours());
+        store.setIsOpen(adminStoreUpdateDTO.getIsOpen());
+
+        // 변경된 가게 정보를 저장
+        storeRepository.save(store);
+    }
+
+    @Transactional
     public Store registerStore(StoreSaveDTO storeSaveDTO) {
         User user = userRepository.findById(storeSaveDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -175,5 +191,8 @@ public class StoreService {
         storeRepository.deleteById(storeId);
     }
 
-
+    @Transactional
+    public void delete(Integer storeId) {
+        storeRepository.deleteById(storeId);
+    }
 }

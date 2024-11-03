@@ -2,10 +2,12 @@ package com.uni.uni_erp.service.user;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.UserDTO;
+import com.uni.uni_erp.dto.UserUpdateDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
 import com.uni.uni_erp.util.Str.PasswordUtil;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
@@ -173,5 +175,24 @@ public class UserService {
 
     public Long countUsers() {
         return userRepository.count();
+    }
+
+    public void delete(Integer userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public void updateUser(Integer userId, UserUpdateDTO userUpdateDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다. userId: " + userId));
+
+        user.setName(userUpdateDTO.getName());
+        user.setEmail(userUpdateDTO.getEmail());
+        user.setPhone(userUpdateDTO.getPhone());
+        user.setAddress(userUpdateDTO.getAddress());
+        if (userUpdateDTO.getMembership().equals("COMMON") || userUpdateDTO.getMembership().equals("PREMIUM")) {
+            user.setMembership(userUpdateDTO.getMembership().equals("COMMON") ? User.Membership.COMMON : User.Membership.PREMIUM);
+        }
+        userRepository.save(user);
+
     }
 }
