@@ -58,6 +58,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     Optional<Employee> findByStoreIdAndPhone(Integer storeId, String phone);
 
+    List<Employee> findByStoreIdAndEmpPositionId(Integer storeId, Integer empPositionId);
 }
 
 
