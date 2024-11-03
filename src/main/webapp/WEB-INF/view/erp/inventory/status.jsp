@@ -276,6 +276,21 @@
             const gridDiv = document.querySelector('#myGrid');
             new agGrid.Grid(gridDiv, gridOptions);
 
+            // 상품명이 전달되었을 경우 필터 설정
+            if (window.materialName && window.materialName.trim() !== '') {
+                // 'name' 컬럼에 'contains' 필터 적용
+                gridOptions.api.setFilterModel({
+                    name: {
+                        type: 'contains',
+                        filter: window.materialName
+                    }
+                });
+
+                // 필터 변경 사항 반영
+                gridOptions.api.onFilterChanged();
+
+            }
+
             // 컬럼 사이즈 자동 조정
             gridOptions.api.sizeColumnsToFit();
         });
@@ -375,5 +390,11 @@
             $('#ingredientModal').modal('show');
         }
     </script>
+
+<c:if test="${not empty materialName}">
+    <script>
+        window.materialName = '<c:out value="${materialName}" />';
+    </script>
+</c:if>
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
