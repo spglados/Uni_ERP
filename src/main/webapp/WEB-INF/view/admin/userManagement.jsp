@@ -106,6 +106,64 @@
             </div>
         </div>
         <!-- End of Content Wrapper -->
+        <!-- Modal -->
+        <div class="modal fade" id="userDetailsModal" tabindex="-1" role="dialog" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userDetailsModalLabel">세부 정보</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="userDetailsModalBody">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>필드</th>
+                                    <th>내용</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>ID</th>
+                                    <td id="userId"></td>
+                                </tr>
+                                <tr>
+                                    <th>이름</th>
+                                    <td id="userName"></td>
+                                </tr>
+                                <tr>
+                                    <th>이메일</th>
+                                    <td id="userEmail"></td>
+                                </tr>
+                                <tr>
+                                    <th>연락처</th>
+                                    <td id="userPhone"></td>
+                                </tr>
+                                <tr>
+                                    <th>주소</th>
+                                    <td id="userAddress"></td>
+                                </tr>
+                                <tr>
+                                    <th>멤버십</th>
+                                    <td id="userMembership"></td>
+                                </tr>
+                                <tr>
+                                    <th>생성일</th>
+                                    <td id="userCreatedAt"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" id="editButton">수정</button>
+                        <button type="button" class="btn btn-danger" id="deleteButton">삭제</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Scroll to Top Button -->
         <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
@@ -117,9 +175,106 @@
         <script src="/js/sb-admin-2.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            function openUserDetails(userId) {
-                window.open("/admin/user/details/" + userId, '_blank', 'width=800,height=600');
+        function openUserDetails(userId) {
+            $('#userDetailsModal').modal('show');
+
+            fetch('/admin/user/details/' + userId)
+                .then(response => response.json())
+                .then(data => {
+                    $('#userId').text(data.id);
+                    $('#userName').text(data.name);
+                    $('#userEmail').text(data.email);
+                    $('#userPhone').text(data.phone);
+                    $('#userAddress').text(data.address);
+                    $('#userMembership').text(data.membership);
+                    $('#userCreatedAt').text(data.createdAt);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        const userDetailsModal = document.getElementById('userDetailsModal');
+        const editButton = document.getElementById('editButton');
+        let saveButton = document.getElementById('saveButton');
+
+        editButton.addEventListener('click', () => {
+          const fields = userDetailsModal.querySelectorAll('td');
+          fields.forEach((field, index) => {
+            if (index !== 0 && field.id !== 'userId' && field.id !== 'userCreatedAt') {
+              if (field.id === 'userMembership') {
+                const select = document.createElement('select');
+                select.id = 'userMembership';
+                const options = [
+                  { value: 'COMMON', text: 'COMMON' },
+                  { value: 'PREMIUM', text: 'PREMIUM' },
+                ];
+                options.forEach((option) => {
+                  const optionElement = document.createElement('option');
+                  optionElement.value = option.value;
+                  optionElement.text = option.text;
+                  if (field.textContent === option.value) {
+                    optionElement.selected = true;
+                  }
+                  select.appendChild(optionElement);
+                });
+                field.innerHTML = ''; // Remove the text content of the td element
+                field.appendChild(select); // Append the select element to the td element
+              } else {
+                field.contentEditable = 'true';
+              }
             }
+          });
+
+          saveButton = document.createElement('button');
+          saveButton.textContent = '저장';
+          saveButton.className = 'btn btn-primary';
+          saveButton.id = 'saveButton';
+          editButton.parentNode.replaceChild(saveButton, editButton);
+
+          saveButton.addEventListener('click', () => {
+            const updatedFields = userDetailsModal.querySelectorAll('td');
+            const updatedData = {};
+            updatedFields.forEach((field, index) => {
+              if (index !== 0 && field.id !== 'userId') {
+                if (field.querySelector('select')) {
+                  const selectElement = field.querySelector('select');
+                  const selectedOption = selectElement.querySelector('option:checked');
+                  updatedData[field.id.replace('user', '').toLowerCase()] = selectedOption.value;
+                } else {
+                  updatedData[field.id.replace('user', '').toLowerCase()] = field.textContent;
+                }
+              }
+            });
+
+            alert('정말로 수정하시겠습니까?');
+            const storeCell = document.querySelector('td[id="userId"]');
+            const userId = storeCell.textContent.trim();
+            fetch('/admin/user/update/' + userId, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(updatedData),
+            })
+              .then((response) => response.json())
+              .then((data) => alert(data.message))
+              .catch((error) => console.error(error))
+              .finally(() => {
+                location.reload();
+              });
+          });
+        });
+
+        const deleteButton = document.getElementById('deleteButton');
+            deleteButton.addEventListener('click', function() {
+              const userId = $('#userId').text();
+              fetch('/admin/user/delete/' + userId, {
+                method: 'DELETE'
+              })
+              .then(response => response.text())
+              .then(data => {
+                alert(data);
+                location.reload();
+              })
+              .catch(error => console.error('Error:', error));
+            });
         </script>
     </div>
 </body>
