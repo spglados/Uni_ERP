@@ -147,6 +147,9 @@
                                 <option value="nate.com">nate.com</option>
                             </select>
                         </div>
+                        <button type="button" class="btn btn-secondary mt-2" onclick="checkEmailDuplicate()">중복 확인</button>
+                        <!-- 여기의 ID를 emailDuplicateMessage로 수정 -->
+                        <div id="duplicateEmailMessage" class="mt-1"></div>
                     </div>
 
                     <div class="mb-3">
@@ -155,6 +158,9 @@
                                oninput="formatPhoneNumber(this)" maxlength="13"
                                placeholder="000-0000-0000"
                                title="유효한 전화번호 형식이 아닙니다."/>
+                        <button type="button" class="btn btn-secondary mt-2" onclick="checkPhoneDuplicate()">중복 확인</button>
+                        <!-- 여기의 ID를 phoneDuplicateMessage로 수정 -->
+                        <div id="duplicatePhoneMessage" class="mt-1"></div>
                     </div>
 
                     <!-- 은행 정보 추가 -->
@@ -174,6 +180,7 @@
                                maxlength="16"
                                pattern="^\d{1,16}$"
                                title="계좌번호를 1자리 이상 16자리 이하의 숫자로 입력하세요"/>
+                        <div id="accountDuplicateMessage" class="mt-1"></div>
                     </div>
 
                     <!-- 직책 정보 추가 -->
@@ -559,6 +566,46 @@
             emailIdInput.value = emailId; // 이메일 ID를 그대로 유지
         }
     }
+
+
+    function checkEmailDuplicate() {
+        const emailId = document.getElementById('editEmployeeEmail').value;
+        const emailDomain = document.getElementById('emailDomain').value;
+        const fullEmail = emailId.toLowerCase() + '@' + emailDomain.toLowerCase();
+
+        fetch('/erp/hr/check-email?email=' + fullEmail)
+            .then(response => response.json())
+            .then(data => {
+                const emailMessageDiv = document.getElementById('duplicateEmailMessage');
+                if (data.isDuplicated) {
+                    emailMessageDiv.textContent = '이메일이 중복되었습니다. 다른 이메일을 입력하세요.';
+                    emailMessageDiv.style.color = 'red';
+                } else {
+                    emailMessageDiv.textContent = '사용 가능한 이메일입니다.';
+                    emailMessageDiv.style.color = 'green';
+                }
+            })
+            .catch(error => console.error('이메일 중복 확인 오류:', error));
+    }
+
+    function checkPhoneDuplicate() {
+        const phone = document.getElementById('editEmployeePhone').value;
+
+        fetch('/erp/hr/check-phone?phone=' + phone)
+            .then(response => response.json())
+            .then(data => {
+                const phoneMessageDiv = document.getElementById('duplicatePhoneMessage');
+                if (data.isDuplicated) {
+                    phoneMessageDiv.textContent = '전화번호가 중복되었습니다. 다른 전화번호를 입력하세요.';
+                    phoneMessageDiv.style.color = 'red';
+                } else {
+                    phoneMessageDiv.textContent = '사용 가능한 전화번호입니다.';
+                    phoneMessageDiv.style.color = 'green';
+                }
+            })
+            .catch(error => console.error('전화번호 중복 확인 오류:', error));
+    }
+
 
 
     // 선택된 도메인이 있으면 도메인 입력란의 값으로 업데이트
