@@ -46,7 +46,8 @@
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
-
+<script src="/js/user/sendEmail.js"></script>
+<script src="/js/user/sendSMS.js"></script>
 <script>
     let isEmailValid = false;
     let isPhoneValid = false;
@@ -69,28 +70,18 @@
       console.log("validateName",validateName());
       console.log("validateAddress",validateAddress());
 
-      if (!isPasswordValid || !isEmailValid || !isPhoneValid || validateName() || validateAddress()) {
-          return false; // 모든 유효성 검사를 통과해야 폼 제출
+      if (!isPasswordValid || !isEmailValid || !isPhoneValid || !validateName() || !validateAddress()) {
+                  return false; // 모든 유효성 검사를 통과해야 폼 제출
       }
-
-      var basicAddress = document.getElementById("basicAddress").value;
-      var detailAddress = document.getElementById("detailAddress").value;
-
-      var fullAddress = basicAddress + " , " + detailAddress;
-      document.getElementById("fullAddress").value = fullAddress;
-
       return true;
-  }
+      }
 
 function validateAddress() {
     var basicAddress = document.getElementById("basicAddress").value;
-
-
     if (!basicAddress) {
         alert("기본 주소를 입력해 주세요.");
         return false;
     }
-
     return true;
 }
 
@@ -257,53 +248,64 @@ function validateName() {
   });
 
   $("#checkId").on('click', function() {
-    const email = document.getElementById('email').value;
-    const message = document.getElementById("emailMessage");
-    let emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById("emailMessage");
+      let emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
-    if (!emailRegex.test(email)) {
-      message.textContent = "올바른 이메일 주소가 아닙니다.";
-      message.style.color = "red";
-      return;
-    }
-
-    fetch("http://localhost:8080/user/checkId?email=" + email)
-      .then(response => {
-        if (!response.ok) {
-          return response.json().then(data => {
-            throw new Error(data.message || '알 수 없는 에러가 발생했습니다.');
-          });
-        }
-        return response.json();
-      })
-      .then(data => {
-        message.style.color = "green";
-        message.textContent = (data.message);
-        if (data.message === "이미 사용 중인 이메일입니다.") {
+      if (!emailRegex.test(email)) {
+          message.textContent = "올바른 이메일 주소가 아닙니다.";
           message.style.color = "red";
-          document.getElementById('email').readOnly = false;
-        } else {
-          message.style.color = "green";
-          document.getElementById('email').readOnly = true;
-        }
-      })
-      .catch(error => {
-        message.style.color = "red";
-        message.textContent = (error.message);
-      });
+          return;
+      }
+
+      fetch("http://localhost:8080/user/checkId?email=" + email)
+          .then(response => {
+              if (!response.ok) {
+                  return response.json().then(data => {
+                      throw new Error(data.message || '알 수 없는 에러가 발생했습니다.');
+                  });
+              }
+              return response.json();
+          })
+          .then(data => {
+              message.style.color = "green";
+              message.textContent = (data.message);
+              if (data.message === "이미 사용 중인 이메일입니다.") {
+                  message.style.color = "red";
+                  document.getElementById('email').readOnly = false;
+                  document.getElementById('send--email--verification').disabled = true; // 인증 버튼 비활성화
+              } else {
+                  message.style.color = "green";
+                  document.getElementById('email').readOnly = true;
+                  document.getElementById('send--email--verification').disabled = false; // 인증 버튼 활성화
+              }
+          })
+          .catch(error => {
+              message.style.color = "red";
+              message.textContent = (error.message);
+          });
   });
+
 
   document.getElementById('signupButton').addEventListener('click', function(event) {
     event.preventDefault(); // 기본 폼 제출 방지
 
+
+    if (!isEmailValid) {
+        alert("이메일을 인증해 주세요.");
+        return; // 이메일 인증이 안되었으면 함수 종료
+    }
+    if (!isPhoneValid) {
+        alert("휴대폰 번호를 인증해 주세요.");
+        return; // 휴대폰 인증이 안되었으면 함수 종료
+    }
     const basicAddress = document.getElementById("basicAddress").value;
         const detailAddress = document.getElementById("detailAddress").value;
-        const fullAddress = basicAddress + " " + detailAddress;
-        document.getElementById("fullAddress").value = fullAddress;
+        const fullAddress = basicAddress + " , " + detailAddress;
 
-    //if (validateForm() === false) {
-    //  return; // 유효성 검사 실패 시 종료
-    //}
+    if (validateForm() === false) {
+      return; // 유효성 검사 실패 시 종료
+    }
 
     // 폼 데이터 수집
     const passwordInput = document.getElementById("password");
@@ -344,6 +346,5 @@ function validateName() {
 
 </script>
 
-<script src="/js/user/sendEmail.js"></script>
-<script src="/js/user/sendSMS.js"></script>
+
 <%@ include file="/WEB-INF/view/layout/footer.jsp"%>

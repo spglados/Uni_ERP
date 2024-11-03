@@ -23,9 +23,16 @@ public class Refund {
 
     @Column(nullable = false)
     private String cancelReason;
+
+    @Column(nullable = false)
     private String requestedAt;
+
+    @Column(nullable = false)
     private String approvedAt;
+
+    @Column(nullable = false)
     private String cancelAmount;
+
     private Integer adminId;
 
     @ManyToOne(fetch = FetchType.LAZY)

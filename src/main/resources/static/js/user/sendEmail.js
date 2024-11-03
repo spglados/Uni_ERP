@@ -56,11 +56,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     sendEmailBtn.innerText = "완료";
                     sendEmailBtn.disabled = true; // 버튼 비활성화
                     alert('이메일 인증 성공!');
-                    // TODO 인증 완료시 boolean 변수 처리
                     isEmailChecked = true;
                     isEmailValid =true;
                 } else {
                     statusElement.innerText = "인증 실패. 다시 시도해주세요.";
+                    isEmailValid= false;
                     sendEmailBtn.disabled = false;
                 }
             });
