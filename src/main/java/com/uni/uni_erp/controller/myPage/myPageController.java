@@ -38,6 +38,9 @@ public class myPageController {
 
     @GetMapping("")
     public String myPage(@SessionAttribute(value = "userSession") User principal, Model model) {
+        if (principal == null) {
+            return "/user/login";
+        }
         Integer userPk = principal.getId();
         User user = userService.findById(userPk);
         Integer paymentCount = paymentService.getCountOfPaymentsWithStatusNotZero(userPk);
@@ -52,9 +55,9 @@ public class myPageController {
         List<Payment> payments = paymentService.findByUserId(userPk);
         Integer paymentCount = paymentService.getCountOfPaymentsWithStatusNotZero(userPk);
         Integer storeCount = storeService.getStoreCountByUserId(userPk);
-        model.addAttribute("paymentCount", paymentCount); // "payments"라는 키로 List<Payment> 추가
-        model.addAttribute("storeCount", storeCount); // "payments"라는 키로 List<Payment> 추가
-        model.addAttribute("payments", payments); // "payments"라는 키로 List<Payment> 추가
+        model.addAttribute("paymentCount", paymentCount);
+        model.addAttribute("storeCount", storeCount);
+        model.addAttribute("payments", payments);
         return "/myPage/paymentHistory";
     }
 
