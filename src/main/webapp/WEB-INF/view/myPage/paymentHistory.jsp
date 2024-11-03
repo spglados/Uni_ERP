@@ -102,7 +102,7 @@ function cancelPayment() {
     }
 
     // POST 요청을 위한 fetch
-    fetch('/myPage/cancelPayment', {
+    fetch('/my-page/cancel-payment', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

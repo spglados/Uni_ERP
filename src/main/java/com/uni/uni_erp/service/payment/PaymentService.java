@@ -237,7 +237,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public int cancelAndCalculateAmount(List<Map<String, String>> paymentRequests) throws Exception {
+    public int cancelAndCalculateAmount(List<Map<String, String>> paymentRequests,Integer userPk) throws Exception {
         int totalCancelAmount = 0;
 
         for (Map<String, String> paymentRequest : paymentRequests) {
@@ -264,22 +264,22 @@ public class PaymentService {
                 // 결제 정보 조회
                 Payment payment = paymentRepository.findById(payPkint)
                         .orElseThrow(() -> new RuntimeException("Payment not found with id: " + payPkint));
-                int paymentStatusCount = paymentRepository.countPaymentsByUserIdAndStatus(1); // 예시로 userId 1로 설정
+                int paymentStatusCount = paymentRepository.countPaymentsByUserIdAndStatus(userPk); // 예시로 userId 1로 설정
                 int cancelAmount = 0;
 
-                User user = userRepository.findById(1).orElseThrow(() -> new RuntimeException(""));
+                User user = userRepository.findById(userPk).orElseThrow(() -> new RuntimeException(""));
 
-                List<Payment> 결제내역들 = findByUserId(1);
+                List<Payment> PaymentList = findByUserId(userPk);
 
                 // 상태 및 조건에 따른 환불 금액 계산
-                boolean hasNegativeOne = 결제내역들.stream().anyMatch(payments -> payments.getStatus() == -1); // -1 상태 확인
-                boolean 일이존재할때 = 결제내역들.stream().anyMatch(payments -> payments.getStatus() == 1); // 1 상태 확인
-                long 마이너스일갯수 = 결제내역들.stream().filter(payments -> payments.getStatus() == -1).count(); // -1 상태 개수 확인
+                boolean hasNegativeOne = PaymentList.stream().anyMatch(payments -> payments.getStatus() == -1); // -1 상태 확인
+                boolean oneExistence = PaymentList.stream().anyMatch(payments -> payments.getStatus() == 1); // 1 상태 확인
+                long minusOnecount = PaymentList.stream().filter(payments -> payments.getStatus() == -1).count(); // -1 상태 개수 확인
 
                 if (paymentStatusCount > 1) {
                     if (hasNegativeOne) {
-                        if (일이존재할때) {
-                            if (마이너스일갯수 >= 2) {
+                        if (oneExistence) {
+                            if (minusOnecount >= 2) {
                                 cancelAmount = 0;
                                 paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
                                 payment.setStatus(0);
@@ -333,118 +333,6 @@ public class PaymentService {
 
         return totalCancelAmount; // 총 환불 금액 반환
     }
-
-
-
-
-
-    // 환불
-    //TODO 되살려주기
-    /*@Transactional
-    public String cancelPayment(String paymentKey, String cancelReason, String payPk) throws Exception {
-        int payPkint = Integer.parseInt(payPk);
-
-        String encodedAuthHeader = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
-
-        // 결제 취소 요청
-        HttpRequest cancelRequest = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel"))
-                .header("Authorization", "Basic " + encodedAuthHeader)
-                .header("Content-Type", "application/json")
-                .method("POST", HttpRequest.BodyPublishers.ofString("{\"cancelReason\":\"고객 변심\"}"))
-                .build();
-
-        HttpResponse<String> cancelResponse = HttpClient.newHttpClient().send(cancelRequest,
-                HttpResponse.BodyHandlers.ofString());
-
-        JsonNode cancelJson = null;
-        if ("200".equalsIgnoreCase(String.valueOf(cancelResponse.statusCode()))) {
-            cancelJson = objectMapper.readTree(cancelResponse.body());
-
-            //TODO - 환불 금액 로직 짜야함.
-            // 1. 결제한 날짜가 정기결제일 보다 이전일때만 환불금액이있음. 아니면 없음
-            // 2. (1번조건을 맞춘 상태)  오늘날짜의 달이 결제한 날짜의 달과 같다면 환불금액 있음
-
-            // 유저의 정기결제일 뽑기
-            User user = userRepository.findById(1).orElseThrow(() -> new RuntimeException(""));
-
-            // 체크된 결제내역 뽑기
-            Payment payment = paymentRepository.findById(payPkint)
-                    .orElseThrow(() -> new RuntimeException("Payment not found with id: " + payPkint));
-
-            int paymentStatusCount = paymentRepository.countPaymentsByUserIdAndStatus(1);
-
-            Integer cancelAmount = 0;
-
-            List<Payment> 결제내역들 = findByUserId(1);
-
-            boolean hasNegativeOne = 결제내역들.stream().anyMatch(payments -> payments.getStatus() == -1);
-
-            boolean 일이존재할때 = 결제내역들.stream().anyMatch(payments -> payments.getStatus() == 1);
-
-            long 마이너스일갯수 = 결제내역들.stream().filter(payments -> payments.getStatus() == -1).count();
-
-            //TODO 1. 결제를 한번만 했을때 이번달에 비례한 금액만 있을때 cancelAmount = 0;
-
-
-            // 1보다 크면 3만원 결제
-            if (paymentStatusCount > 1) {
-                if(hasNegativeOne) {
-                    if(일이존재할때){
-                        if(마이너스일갯수 >=2){
-                            cancelAmount = 0;
-                            paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
-                            payment.setStatus(0);
-                        } else {
-                            cancelAmount = 30000;
-                            paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
-                            payment.setStatus(0);
-                        }
-                    } else {
-                        cancelAmount = 0;
-                        paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
-                        payment.setStatus(0);
-                    }
-                } else {
-                    cancelAmount = 30000;
-                    payment.setStatus(0);
-                }
-                // 1이면 5만원 결제
-            } else if (paymentStatusCount == 1) {
-                if(hasNegativeOne) {
-                    cancelAmount = 0;
-                    paymentRepository.updateLatestPaymentStatusToOne(); // 가장 최신 -1인걸 1로 바꾸기
-                    payment.setStatus(0);
-                    user.setMembership(User.Membership.COMMON);
-                } else {
-                    cancelAmount = 50000;
-                    payment.setStatus(0);
-                    user.setMembership(User.Membership.COMMON);
-                }
-            }
-
-            String cancelAmountStr = String.valueOf(cancelAmount);
-            //TODO - 여기까지
-
-
-            // DTO 변환
-            PaymentDTO.RegularPaymentDTO paymentDTO = PaymentDTO.RegularPaymentDTO.builder()
-                    .lastTransactionKey(cancelJson.get("lastTransactionKey").asText())
-                    .paymentKey(paymentKey)
-                    .cancelReason(cancelReason)
-                    .requestedAt(cancelJson.get("requestedAt").asText())
-                    .approvedAt(cancelJson.get("approvedAt").asText())
-                    .cancelAmount(cancelAmountStr)
-                    .build();
-
-            refundRepository.save(paymentDTO.toRefund());
-            paymentRepository.updateCancel(payPkint); // payment_tb에 cancel 유무 업데이트
-
-            return cancelJson.toPrettyString();
-        } else {
-            throw new RuntimeException(cancelResponse.body());
-        }
-    }*/
 
     public Payment findById(Integer id) {
         return paymentRepository.findById(id)

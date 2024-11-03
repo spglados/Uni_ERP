@@ -41,7 +41,7 @@
                 </div>
                 <div class="header-icons">
                 <c:if test="${not empty sessionScope.userSession}">
-                    <a href="/myPage" class="header-icon"><i class="fa-solid fa-user-gear icon-hover-text" style="color: #74C0FC;" id="icon1" data-text="마이페이지"></i></a>
+                    <a href="/my-page" class="header-icon"><i class="fa-solid fa-user-gear icon-hover-text" style="color: #74C0FC;" id="icon1" data-text="마이페이지"></i></a>
                     <a href="/user/logout" class="header-icon"><i class="fa-solid fa-right-from-bracket icon-hover-text" style="color: #74C0FC;" id="icon2" data-text="로그아웃"></i></a>
                 </c:if>
                 <c:if test="${empty sessionScope.userSession}">
