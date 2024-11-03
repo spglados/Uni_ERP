@@ -6,6 +6,8 @@ import com.uni.uni_erp.domain.entity.erp.hr.Holiday;
 import com.uni.uni_erp.domain.entity.erp.hr.Payroll;
 import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
 import com.uni.uni_erp.dto.erp.hr.PayrollDTO;
+import com.uni.uni_erp.dto.erp.hr.SalaryDTO;
+import com.uni.uni_erp.exception.errors.Exception400;
 import com.uni.uni_erp.exception.errorsRest.RestException400;
 import com.uni.uni_erp.exception.errorsRest.RestException500;
 import com.uni.uni_erp.repository.erp.hr.AttendanceRepository;
@@ -35,6 +37,12 @@ public class PayrollService {
     private final HolidayService holidayService;
     private final HolidayRepository holidayRepository;
 
+    /**
+     * 이전 달 급여를 산출 하지 않은 직원 리스트 조회
+     *
+     * @param storeId 식당
+     * @return 직원 정보 반환
+     */
     public List<EmployeeDTO> getEmployeesNoCalculated(Integer storeId) {
         return payrollRepository.findEmployeesWithoutPayroll(storeId, YearMonth.now().minusMonths(1))
                 .stream()
@@ -353,6 +361,7 @@ public class PayrollService {
 
     }
 
+    @Transactional
     public boolean create(PayrollDTO.CreateDTO reqDTO) {
         try {
             List<Long> empNos = reqDTO.getEmpNos();
@@ -406,6 +415,24 @@ public class PayrollService {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    @Transactional
+    public List<SalaryDTO> getPayrollByStoreId(Integer storeId, YearMonth yearMonth) {
+        List<SalaryDTO> salaryDTOList = new ArrayList<>();
+        try {
+            LocalDateTime firstDayOfMonth = yearMonth.atDay(1).atTime(6, 0);
+            LocalDateTime lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
+            List<Employee> employees = employeeRepository.findByStoreId(storeId);
+            for (Employee employee : employees) {
+                Payroll payrollEntity = payrollRepository.findByEmployee_IdAndYearMonth(employee.getId(), yearMonth).orElseThrow(() -> new Exception400("잘못된 요청입니다."));
+                List<Attendance> attendanceList = attendanceRepository.findByEmployeeNoAndDateBetween(employee.getUniqueEmployeeNumber(), firstDayOfMonth, lastDayOfMonth);
+                salaryDTOList.add(new SalaryDTO(payrollEntity, attendanceList));
+            }
+            return salaryDTOList;
+        } catch (Exception e) {
+            return salaryDTOList;
         }
     }
 }
