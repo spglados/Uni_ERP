@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
@@ -61,8 +62,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             "AND a.status IN :statuses")
     List<Attendance> findByEmployeeNoAndDateBetween(
             @Param("empNo") Long empNo,
-            @Param("start") LocalDate start,
-            @Param("end") LocalDate end,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
             @Param("statuses") List<Attendance.Status> statuses);
 
     /**
