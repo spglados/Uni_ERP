@@ -1,5 +1,6 @@
 package com.uni.uni_erp.dto;
 
+import com.uni.uni_erp.domain.entity.Notice;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -25,6 +26,14 @@ public class NoticeDTO {
         LocalDateTime dateTime = createdAt.toLocalDateTime();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return dateTime.format(formatter);
+    }
+
+    public NoticeDTO(Notice notice) {
+        this.id = notice.getId();
+        this.title = notice.getTitle();
+        this.content = notice.getContent();
+        this.createdAt = notice.getCreatedAt();
+        this.views = notice.getViews();
     }
 
 }

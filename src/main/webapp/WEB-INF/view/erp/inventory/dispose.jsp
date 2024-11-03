@@ -23,7 +23,18 @@
         crossorigin="anonymous"></script>
 
 <style>
-    /* /css/erp/material.css 파일에 추가 */
+
+    :root {
+        --main-color: #F8F399;
+        --main-color-dark: #e0d67a;
+        --main-color-light: #fff8e6;
+    }
+
+    .btn-main {
+        background-color: var(--main-color);
+        border-color: var(--main-color);
+        color: #000;
+    }
 
     /* 모달 다이얼로그의 고정 크기 설정 */
     .fixed-size-modal .modal-dialog {
@@ -83,9 +94,9 @@
     <!-- 추가 및 저장 버튼 영역 -->
     <div class="d-flex justify-content-end mb-3">
         <!-- 추가 버튼 -->
-        <button id="addButton" class="btn btn-success align-self-end">추가</button>
+        <button id="addButton" class="btn btn-main align-self-end" title="추가"><i class="fas fa-plus-circle"></i></button>
         <!-- 저장 버튼 -->
-        <button id="saveButton" class="btn btn-primary ml-2 align-self-end">저장</button>
+        <button id="saveButton" class="btn btn-main ml-2 align-self-end" title="저장"><i class="fas fa-save"></i></button>
     </div>
 
     <!-- 폐기 목록 테이블 -->
@@ -176,7 +187,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="confirmAddButton" class="btn btn-primary">추가</button>
+                    <button type="button" id="confirmAddButton" class="btn btn-main">추가</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
                 </div>
             </div>
@@ -284,15 +295,15 @@
                     '<td>' + disposal.code + '</td>' +
                     '<td>' + disposal.name + '</td>' +
                     '<td>' + disposal.category + '</td>' +
-                    '<td>' +
-                    '<input type="number" class="form-control disposal-amount" min="0" required>' +
-                    (disposal.unit ? ' ' + disposal.unit : '') +
+                    '<td style="display: flex;">' +
+                    '<input type="number" class="form-control disposal-amount" style="width: 70%;" min="0" required>' +
+                    (disposal.unit ? ' ' + disposal.unit : '개') +
                     '</td>' +
                     '<td>' +
                     '<input type="date" class="form-control disposal-date" value="' + todayDate + '" required>' +
                     '</td>' +
                     '<td>' +
-                    '<button class="btn btn-danger btn-sm removeDisposalButton">삭제</button>' +
+                    '<button class="btn btn-secondary btn-sm removeDisposalButton">삭제</button>' +
                     '</td>' +
                     '</tr>';
                 disposalList.innerHTML += newRow;

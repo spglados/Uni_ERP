@@ -66,14 +66,14 @@
         </div>
 
         <div class="mb-3">
-            <label for="password" class="form-label">비밀번호:</label>
+            <label for="password" class="form-label">비밀번호(4자리 숫자) </label>
             <input type="password" id="password" name="password" required class="form-control"
-                   minlength="4" maxlength="8" title="4자 이상, 8자 이하로 입력하세요">
+                   minlength="4" maxlength="4" pattern="\d{4}" title="숫자 4자리로 입력하세요">
         </div>
         <div class="mb-3">
-            <label for="confirmPassword" class="form-label">비밀번호 확인:</label>
+            <label for="confirmPassword" class="form-label">비밀번호 확인</label>
             <input type="password" id="confirmPassword" name="confirmPassword" required class="form-control"
-                   oninput="checkPasswordMatch()" title="비밀번호를 확인 입력하세요">
+                   maxlength="4" pattern="\d{4}" oninput="checkPasswordMatch()" title="비밀번호를 다시 입력하세요">
             <small id="passwordCheckResult" class="form-text text-danger"></small>
         </div>
 
@@ -90,7 +90,8 @@
         <div class="mb-3">
             <label for="address" class="form-label">주소:</label>
             <input type="hidden" id="fullAddress" name="address">
-            <input type="text" id="address" required class="form-control" value="${employeeDTO.address}" onclick = "execDaumPostcode()">
+            <input type="text" id="address" required class="form-control" value="${employeeDTO.address}"
+                   onclick="execDaumPostcode()">
             <input type="text" id="detailAddress" required class="form-control" placeholder="상세 주소">
         </div>
         <div class="mb-3">
@@ -186,19 +187,19 @@
 
     function execDaumPostcode() {
         new daum.Postcode({
-          oncomplete: function(data) {
-            var addr = data.address;
-            document.getElementById("address").value = addr;
-          }
+            oncomplete: function (data) {
+                var addr = data.address;
+                document.getElementById("address").value = addr;
+            }
         }).open();
     }
 
     function validateForm() {
-            const address = document.getElementById("address").value;
-            const detailAddress = document.getElementById("detailAddress").value;
-            document.getElementById("fullAddress").value = address + ' , ' + detailAddress;
-            return true;
-        }
+        const address = document.getElementById("address").value;
+        const detailAddress = document.getElementById("detailAddress").value;
+        document.getElementById("fullAddress").value = address + ' , ' + detailAddress;
+        return true;
+    }
 
     function formatPhoneNumber(input) {
         const value = input.value.replace(/\D/g, '');

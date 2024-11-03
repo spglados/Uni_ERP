@@ -1,9 +1,133 @@
 // 재료 보기 모달을 열 때 선택된 상품의 재료 정보를 표시하는 함수
 let ingredients = null;
+function showIngredients(productId, productName) {
+    // TODO: 서버에서 선택된 상품의 재료 데이터를 받아와야 함
+
+    fetch('/erp/product/ingredient/' + productId)
+        .then(response => {
+            if(response.status === 404) {
+                return alert('재료 정보를 조회할 수 없습니다.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            ingredients = data;
+            console.log('data', data);
+            console.log('Ingredients:', ingredients);
+        })
+        .catch(error => {
+            console.log('error', error);
+        });
+
+    const ingredientList = document.getElementById('ingredientList');
+    ingredientList.innerHTML = '';
+    ingredients.forEach(function(ingredient, index) {
+        console.log('ingredient', ingredient)
+        const li = document.createElement('li');
+        li.innerHTML =
+            '<div class="ingredient-item" id="ingredient-' + index + '">' +
+            '<input type="text" class="ingredient-name form-control d-inline-block" value="' + ingredient.name + '" disabled>' +
+            '<input type="number" class="ingredient-amount form-control d-inline-block" value="' + ingredient.amount + '" disabled>' +
+            '<select class="ingredient-unit form-control d-inline-block" disabled>' +
+            '<option value="g" ' + (ingredient.unit.toUpperCase() === 'G' ? 'selected' : '') + '>g</option>' +
+            '<option value="kg" ' + (ingredient.unit.toUpperCase() === 'KG' ? 'selected' : '') + '>kg</option>' +
+            '<option value="ml" ' + (ingredient.unit.toUpperCase() === 'ML' ? 'selected' : '') + '>ml</option>' +
+            '<option value="L" ' + (ingredient.unit.toUpperCase() === 'L' ? 'selected' : '') + '>L</option>' +
+            '<option value="EA" ' + (ingredient.unit.toUpperCase() === 'EA' ? 'selected' : '') + '>EA</option>' +
+            '<option value="box" ' + (ingredient.unit.toUpperCase() === 'BOX' ? 'selected' : '') + '>box</option>' +
+            '</select>' +
+            '<button class="custom-btn edit-btn" onclick="editIngredient(' + index + ')">수정</button>' +
+            '<button class="custom-btn delete-btn" onclick="deleteIngredient(' + index + ')">삭제</button>' +
+            '</div>';
+        ingredientList.appendChild(li);
+    });
+}
+
 let canSubmit = true;  // 요청이 가능한지 여부를 확인하는 플래그
 const submissionTerm = 2000;  // 2초(2000ms) 동안 재요청 차단
 
+
+
+console.log('materialList', materialList);
+console.log('materialDTOList', materialDTOList);
+
+function showIngredients(productId) {
+    document.getElementById('modalProductId').value = productId;
+    fetch('/erp/product/ingredient/' + productId)
+        .then(response => {
+            if(response.status === 404) {
+                return alert('재료 정보를 조회할 수 없습니다.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            ingredients = data;
+            let ingredientList = document.getElementById('ingredientList');
+            ingredientList.innerHTML = '';
+            ingredients.forEach(function(ingredient, index) {
+                let li = document.createElement('li');
+                li.innerHTML =
+                    '<div class="ingredient-item" id="ingredient-' + ingredient.id + '">' +
+                    '<input type="hidden" name="productId" value="'+ productId +'">' +
+                    '<input type="text" class="ingredient-name form-control d-inline-block" value="' + ingredient.name + '" name="name" disabled>' +
+                    '<input type="number" class="ingredient-amount form-control d-inline-block" value="' + ingredient.amount + '" name="amount" disabled>' +
+                    '<select class="ingredient-unit form-control d-inline-block" name="unit" disabled>' +
+                    '<option value="g" ' + (ingredient.unit.toUpperCase() === 'G' ? 'selected' : '') + '>g</option>' +
+                    '<option value="kg" ' + (ingredient.unit.toUpperCase() === 'KG' ? 'selected' : '') + '>kg</option>' +
+                    '<option value="ml" ' + (ingredient.unit.toUpperCase() === 'ML' ? 'selected' : '') + '>ml</option>' +
+                    '<option value="L" ' + (ingredient.unit.toUpperCase() === 'L' ? 'selected' : '') + '>L</option>' +
+                    '<option value="EA" ' + (ingredient.unit.toUpperCase() === 'EA' ? 'selected' : '') + '>EA</option>' +
+                    '<option value="box" ' + (ingredient.unit.toUpperCase() === 'BOX' ? 'selected' : '') + '>box</option>' +
+                    '</select>' +
+                    '<button class="custom-btn edit-btn" onclick="editIngredient(' + ingredient.id + ')">수정</button>' +
+                    '<button class="custom-btn delete-btn" onclick="deleteIngredient(' + ingredient.id + ')">삭제</button>' +
+                    '</div>';
+                ingredientList.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.log('error', error);
+        });
+}
+
 // 재료 보기 모달을 닫는 함수
+function saveIngredientModal() {
+    let unsavedChanges = false;
+    document.querySelectorAll('.ingredient-item').forEach(function(item) {
+        const editButton = item.querySelector('.edit-btn');
+        if(editButton && (editButton.textContent === '저장' || editButton.classList.contains('custom-btn-warning'))) {
+            unsavedChanges = true;
+        }
+    });
+    console.log('unsavedChanges', unsavedChanges);
+    if (unsavedChanges) {
+        const confirmSave = confirm("수정된 정보가 있습니다. 저장하시겠습니까?");
+        if (!confirmSave) {
+            document.querySelectorAll('.ingredient-item input, .ingredient-item select').forEach(function(input) {
+                input.disabled = true;
+            });
+            document.querySelectorAll('.ingredient-item .edit-btn').forEach(function(button) {
+                button.textContent = '수정';
+                button.classList.remove('custom-btn-success');
+                button.classList.add('custom-btn-warning');
+            });
+        }
+    }
+
+    // 재료 목록 초기화
+    document.getElementById('ingredientList').innerHTML = '';
+
+    const modal = document.getElementById('ingredientModal');
+    modal.style.display = 'none';  // 모달을 숨깁니다.
+    modal.classList.remove('show'); // 'show' 클래스를 제거하여 부트스트랩 모달의 활성 상태를 제거합니다.
+
+    //document.body.classList.remove('modal-open');
+    const modalBackdrop = document.querySelector('.modal-backdrop');
+    if (modalBackdrop) {
+        modalBackdrop.parentNode.removeChild(modalBackdrop);
+    }
+}
+
 // 재료를 추가하는 함수
 function addIngredient() {
     const ingredientList = document.getElementById('ingredientList');
@@ -65,8 +189,24 @@ function registerIngredient(index, productId) {
         return;
     }
 
-    if(!checkUnit(name, unit)) {
-        return;
+    const materialName = getUnitByName(name).toLowerCase();
+    const effectivenessUnit = unit.toLowerCase();
+
+    let gram = (materialName === 'kg' && effectivenessUnit === 'g') || (materialName === 'g' && effectivenessUnit === 'kg');
+    let liter = (materialName === 'l' && effectivenessUnit === 'ml') || (materialName === 'ml' && effectivenessUnit === 'l');
+    let boxEa = (materialName === 'box' && effectivenessUnit === 'ea') || (materialName === 'ea' && effectivenessUnit === 'box');
+
+// material과 effectivenessUnit이 동일하거나, 상호 치환 가능한 경우는 계속 진행 (pass)
+    if (!(materialName === effectivenessUnit || gram || liter || boxEa)) {
+        // 치환 불가능한 단위일 때 경고 메시지와 함께 실행을 중단
+        if (materialName === 'kg' || materialName === 'g') {
+            alert(`${name}의 단위는 kg 또는 g만 사용 가능합니다.`);
+        } else if (materialName === 'l' || materialName === 'ml') {
+            alert(`${name}의 단위는 l 또는 ml만 사용 가능합니다.`);
+        } else if (materialName === 'box' || materialName === 'ea') {
+            alert(`${name}의 단위는 box 또는 ea만 사용 가능합니다.`);
+        }
+        return;  // 부정 조건에 해당하면 함수 실행을 중단
     }
 
     if (!name || name.trim() === '') {
@@ -164,11 +304,7 @@ function editIngredient(index) {
         unit: unit,
         productId: index
     };
-
-    if(!checkUnit(name, unit)) {
-        return;
-    }
-
+    console.log('data', data);
     if (editButton.textContent === '수정') {
         inputs.forEach(function(input) { input.disabled = false; });
         editButton.textContent = '저장';
@@ -280,7 +416,7 @@ function showDropdown(index) {
 
 // "추가" 버튼 클릭 시 다른 페이지로 이동하는 함수
 function goToAddMaterialPage() {
-    window.location.href = '/erp/inventory/registration'; // 추가 페이지로 이동
+    window.location.href = '/erp/inventory/status'; // 추가 페이지로 이동
 }
 
 // 이미지 미리보기 기능
@@ -312,14 +448,14 @@ function registerProduct() {
             body: formData
         }).then(response => {
             if (response.ok) {
-                alert("상품이 등록되었습니다! \n\n\t 재료를 등록해야 재고가 관리됩니다 !");
+                alert("상품이 등록되었습니다!");
                 location.reload();
             } else {
                 alert("상품 등록에 실패했습니다.");
             }
         }).catch(error => {
             console.error('Error:', error);
-            alert("상품 등록 중 오류가 발생했습니다." + error);
+            alert("상품 등록 중 오류가 발생했습니다.");
         });
     } else {
         // 유효성 검사가 실패한 경우 경고창을 띄우고, 유효성 검사를 강제로 실행
@@ -341,22 +477,17 @@ document.addEventListener('DOMContentLoaded', function() {
         filterProducts();
     });
 
+    // 검색 버튼 클릭 시 필터링
+    searchButton.addEventListener('click', function() {
+        filterProducts();
+    });
+
     // 엔터 키 입력 시 필터링
     searchInput.addEventListener('keyup', function(event) {
         if (event.key === 'Enter') {
             filterProducts();
         }
     });
-
-    searchInput.addEventListener('input', function() {
-        filterProducts();
-    });
-
-    // 서버에서 보낸 productName이 존재하면 검색창에 삽입하고 검색 수행
-    if (window.productName && window.productName.trim() !== '') {
-        searchInput.value = window.productName;
-        filterProducts();
-    }
 
     // 상품 필터링 함수 (카테고리와 검색어 모두 적용)
     function filterProducts() {
@@ -390,24 +521,4 @@ document.addEventListener('DOMContentLoaded', function() {
 function getUnitByName(materialName) {
     const material = materialDTOList.find(item => item.name === materialName);
     return material ? material.unit : null; // 자재가 존재하면 unit 반환, 없으면 null 반환
-}
-
-function getSubUnitByName(materialName) {
-    const material = materialDTOList.find(item => item.name === materialName);
-    return material ? material.subUnit : null; // 자재가 존재하면 unit 반환, 없으면 null 반환
-}
-
-function checkUnit(name, unit) {
-    const materialName = getUnitByName(name).toLowerCase();
-    const effectivenessUnit = unit.toUpperCase();
-
-    let materialUnit = getUnitByName(name);
-    let materialSubUnit = getSubUnitByName(name);
-
-        if (materialUnit === effectivenessUnit || materialSubUnit === effectivenessUnit) {
-            return true;
-        } else {
-            alert(`${name}의 단위는 [` + materialUnit + '] 또는 [' + materialSubUnit + '] 만 사용 가능합니다.');
-            return false;
-        }
 }

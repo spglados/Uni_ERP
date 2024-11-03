@@ -59,36 +59,36 @@
     <h1 class="mb-4">폐기 내역</h1>
     <hr>
 
-    <!-- 카테고리 필터와 검색창 -->
-    <div class="d-flex justify-content-end mb-3">
-        <!-- 자재 카테고리 선택 필터 -->
-        <div class="form-group mr-3">
-            <select id="historyMaterialCategoryFilter" class="form-control">
-                <option value="전체">자재 카테고리</option>
-                <option value="냉동품">냉동품</option>
-                <option value="냉장품">냉장품</option>
-                <option value="상온품">상온품</option>
-            </select>
-        </div>
-        <!-- 상품 카테고리 선택 필터 -->
-        <div class="form-group mr-3">
-            <select id="historyProductCategoryFilter" class="form-control">
-                <option value="전체">상품 카테고리</option>
-                <option value="메인">메인</option>
-                <option value="사이드">사이드</option>
-                <option value="주류">주류</option>
-                <option value="음료">음료</option>
-            </select>
-        </div>
-        <input id="historySearchInput" placeholder="자재/상품명 검색" class="form-control mr-2" style="width: 200px;">
-    </div>
+<%--    <!-- 카테고리 필터와 검색창 -->--%>
+<%--    <div class="d-flex justify-content-end mb-3">--%>
+<%--        <!-- 자재 카테고리 선택 필터 -->--%>
+<%--        <div class="form-group mr-3">--%>
+<%--            <select id="historyMaterialCategoryFilter" class="form-control">--%>
+<%--                <option value="전체">자재 카테고리</option>--%>
+<%--                <option value="냉동품">냉동품</option>--%>
+<%--                <option value="냉장품">냉장품</option>--%>
+<%--                <option value="상온품">상온품</option>--%>
+<%--            </select>--%>
+<%--        </div>--%>
+<%--        <!-- 상품 카테고리 선택 필터 -->--%>
+<%--        <div class="form-group mr-3">--%>
+<%--            <select id="historyProductCategoryFilter" class="form-control">--%>
+<%--                <option value="전체">상품 카테고리</option>--%>
+<%--                <option value="메인">메인</option>--%>
+<%--                <option value="사이드">사이드</option>--%>
+<%--                <option value="주류">주류</option>--%>
+<%--                <option value="음료">음료</option>--%>
+<%--            </select>--%>
+<%--        </div>--%>
+<%--        <input id="historySearchInput" placeholder="자재/상품명 검색" class="form-control mr-2" style="width: 200px;">--%>
+<%--    </div>--%>
 
-    <hr>
+<%--    <hr>--%>
 
     <!-- 폐기 내역 테이블 -->
     <div class="table-container">
         <table class="table table-bordered table-striped" id="historyDisposalList">
-            <thead class="thead-dark">
+            <thead class="thead-light">
             <tr>
                 <th>유형</th>
                 <th>번호</th>

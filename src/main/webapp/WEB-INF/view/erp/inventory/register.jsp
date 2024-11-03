@@ -41,7 +41,7 @@
 </script>
 
 <!-- 자재 등록 컨텐츠 -->
-<div class="content">
+<div class="content container-fluid">
     <h1>재고 등록</h1>
     <hr>
 

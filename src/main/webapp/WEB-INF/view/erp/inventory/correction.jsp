@@ -51,7 +51,7 @@
 </script>
 
 <!-- 자재 수정 컨텐츠 -->
-<div class="content">
+<div class="content container-fluid">
     <h1>자재 수정</h1>
     <hr>
 
@@ -383,6 +383,12 @@
         var parsed = parseInt(value, 10);
         return isNaN(parsed) ? null : parsed;
     }
+
+    document.getElementById("searchMaterialCode").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            searchMaterial();
+        }
+    });
 
     /**
      * 자재 검색 함수

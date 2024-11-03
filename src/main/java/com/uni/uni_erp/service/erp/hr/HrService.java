@@ -308,30 +308,6 @@ public class HrService {
                 .build();
     }
 
-//    private EmployeeDTO convertToDTO(Employee employee) {
-//        EmployeeDTO employeeDTO = EmployeeDTO.builder()
-//                .uniqueEmployeeNumber(employee.getUniqueEmployeeNumber())
-//                .name(employee.getName())
-//                .birthday(employee.getBirthday())
-//                .gender(employee.getGender())
-//                .email(employee.getEmail())
-//                .phone(employee.getPhone())
-//                .accountNumber(employee.getAccountNumber())
-//                .address(employee.getAddress())
-//                .empPosition(employee.getEmpPosition())
-//                .employmentStatus(employee.getEmploymentStatus())
-//                .bankId(employee.getBank() != null ? employee.getBank().getId() : null)
-//                .build();
-//
-//        // EmpDocumentDTO 정보 추가
-//        if (employee.getEmpDocument() != null) {
-//            EmpDocumentDTO empDocumentDTO = new EmpDocumentDTO(employee.getEmpDocument());
-//            employeeDTO.setEmpDocumentDTO(empDocumentDTO); // employeeDTO를 통해 설정
-//        }
-//
-//        return employeeDTO; // employeeDTO 반환
-//    }
-
     private boolean duplicateCheck(Integer storeId, String phone, String email, String accountNumber, long empUniqueId) {
         List<Employee> checkData = employeeRepository.findByStoreIdAndPhoneOrEmailOrAccountNumber(storeId, phone, email, accountNumber);
 

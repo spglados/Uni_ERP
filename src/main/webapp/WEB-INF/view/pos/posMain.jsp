@@ -4,6 +4,9 @@
     <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+    <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+    <%@ page import="com.uni.uni_erp.util.date.NumberFormatter" %>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="/css/pos/posMain.css">
@@ -15,16 +18,17 @@
 </head>
 <body>
 <div class="header">
-    <img src="/images/logo/logoPos.png" class="animate__animated animate__fadeIn" alt="포스로고" style="height: 100px; width: 125px;">
-    <a href="">출퇴근</a>
-    <%@include file="/WEB-INF/view/pos/attendanceModal.jsp" %>
+    <img src="/images/logo/logoPos.png" class="animate__animated animate__fadeIn" alt="포스로고"
+         style="height: 100px; width: 125px;">
+    <a href="#">판매</a>
+    <a href="#">출퇴근</a>
     <h1 class="animate__animated animate__fadeIn">UNI-POS SYSTEM ( 가상 )</h1>
 </div>
 
 <div class="container">
     <div class="menu-section">
         <h1>주문 목록</h1>
-        <div class="menu-grid">
+       <div class="menu-grid">
             <!-- Product 리스트를 반복하여 동적으로 버튼 생성 -->
             <c:forEach var="product" items="${productList.content}">
                 <div class="menu-item">
@@ -57,43 +61,37 @@
             <div class="order-summary" id="orderList">
                 목록에 아무것도 들어있지 않습니다.
             </div>
-            <div class="payment-method">
+            <div class="payment-method mb-3">
                 <label for="payment-type">결제 방법:</label>
                 <select id="payment-type" name="payment-type">
                     <option value="card">카드</option>
                     <option value="cash">현금</option>
                 </select>
             </div>
-            <button type="submit" class="payment-button">결제 버튼(총 금액: 0원)</button>
+            <button type="submit" class="payment-button mb-3" >결제 버튼(총 금액: 0원)</button>
         </form>
-        <!--시재점검-->
-        <button onclick="inspection()">시재점검</button>
-
-        <!--금고관리-->
-        <button onclick="safe()">금고관리</button>
-
-        <!--시재추가-->
-        <button onclick="deposit()">시재 추가</button>
+        <!-- 시재점검 버튼 -->
+        <button class="btn btn-success mb-3" onclick="inspection()">시재점검</button>
+        <!-- 금고관리 버튼 -->
+        <button class="btn btn-success mb-3" onclick="safe()">금고관리</button>
+        <!-- 시재 추가 버튼 -->
+        <button class="btn btn-success mb-3" onclick="deposit()">시재 추가</button>
         <br>
-        <!--오픈하기-->
-        <button id="openButton"
-                onclick="confirmOpen()"
-        ${status24 == 1 ? 'disabled' : ''}
+
+        <!-- 오픈하기 버튼 -->
+        <button id="openButton" class="btn btn-success mb-3" onclick="confirmOpen()"
                 <c:choose>
-                    <c:when test="${status == 1}">
-                        disabled
-                    </c:when>
+                    <c:when test="${status == 1}">disabled</c:when>
                 </c:choose>>오픈하기
         </button>
 
-        <button id="closeButton"
-                onclick="closeBusiness()"
+        <!-- 마감하기 버튼 -->
+        <button id="closeButton" class="btn btn-danger mb-3" onclick="closeBusiness()"
                 <c:choose>
-                    <c:when test="${status == 0}">
-                        disabled
-                    </c:when>
+                    <c:when test="${status == 0}">disabled</c:when>
                 </c:choose>>마감하기
         </button>
+
         <div style="color: red;">
             <c:choose>
                 <c:when test="${status24 == 1}">
@@ -105,34 +103,36 @@
             </c:choose>
         </div>
     </div>
-    <div class="modal fade" id="previousOrderModal" tabindex="-1" aria-labelledby="previousOrderModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="previousOrderModalLabel">주문 조회</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="previousOrderList">
-                        <!-- Dynamically populate this with previous orders -->
-                        <c:if test="${not empty previousOrders}">
-                            <c:forEach items="${previousOrders}" var="order">
-                                <div>
-                                    <strong>주문 번호:</strong> ${order.orderNum}<br>
-                                    <strong>판매 일자:</strong> ${order.salesDate}<br>
-                                    <strong>총 가격:</strong> ${order.totalPrice} 원
-                                    <button type="button" class="btn btn-link" onclick="fetchOrderDetails(${order.orderNum})">
-                                        상세 보기
-                                    </button>
-                                    <div id="order-detail-${order.orderNum}"></div>
-                                </div>
-                                <hr>
-                            </c:forEach>
-                        </c:if>
-                        <c:if test="${empty previousOrders}">
-                            <p id="noOrdersMessage">이전 주문이 없습니다.</p>
-                        </c:if>
-                    </div>
+</div>
+<div class="modal fade" id="previousOrderModal" tabindex="-1" aria-labelledby="previousOrderModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previousOrderModalLabel">주문 조회</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="previousOrderList" style="max-height: 700px; overflow-y: auto;">
+                    <!-- Dynamically populate this with previous orders -->
+                    <c:if test="${not empty previousOrders}">
+                        <c:forEach items="${previousOrders}" var="order">
+                            <div>
+                                <strong>주문 번호:</strong> ${order.orderNum}<br>
+                                <strong>판매 일자:</strong> ${fn:replace(fn:substring(order.salesDate, 0, 16), 'T', ' ')}<br>
+                                <strong>총 가격:</strong> ${NumberFormatter.formatToPrice(order.totalPrice)} 원
+                                <button type="button" class="btn btn-link"
+                                        onclick="fetchOrderDetails(${order.orderNum})">
+                                    상세 보기
+                                </button>
+                                <div id="order-detail-${order.orderNum}"></div>
+                            </div>
+                            <hr>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${empty previousOrders}">
+                        <p id="noOrdersMessage">이전 주문이 없습니다.</p>
+                    </c:if>
                 </div>
             </div>
         </div>
@@ -249,8 +249,8 @@
     function generateTable(data) {
         globalData = data;
 
-        let tableHtml = '<table style="border-collapse: collapse; width: 100%;">';
-        tableHtml += '<thead>';
+        let tableHtml = '<table class="table" style="border-collapse: collapse; width: 100%;">';
+        tableHtml += '<thead class="thead-light">';
         tableHtml += '<tr>';
         tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left;">상품명</th>';
         tableHtml += '<th style="border: 1px solid #ddd; padding: 10px; text-align: left; width: 20%;">수량</th>';
@@ -261,17 +261,21 @@
         data.forEach((item, index) => {
             tableHtml += '<tr>';
             tableHtml += '<td style="border: 1px solid #ddd; padding: 10px; text-align: left;">' + item.itemName + '</td>';
-            tableHtml += '<td><input type="number" value="' + item.quantity + '" min="0" max="' + item.quantity + '" onchange="globalData[' + index + '].quantity = parseInt(this.value);"></td>';
+            tableHtml += '<td><input type="number" class="form-control" value="' + item.quantity + '" min="0" max="' + item.quantity + '" onchange="globalData[' + index + '].quantity = parseInt(this.value);"></td>';
             tableHtml += '<td style="border: 1px solid #ddd; padding: 10px; text-align: left;">' + item.unitPrice.toLocaleString() + '원</td>';
             tableHtml += '</tr>';
         });
-        tableHtml += '</tbody>';
+         tableHtml += '</tbody>';
         tableHtml += '</table>';
-        tableHtml += '<select style="margin-top: 10px;" onchange="updateSelectedOption(this.value)" value="cancel">';
+        // 셀렉트 박스와 버튼을 나란히 배치
+        tableHtml += '<div style="display: flex; align-items: center; margin-top: 10px;">';
+        tableHtml += '<select class="form-select" style="margin-right: 10px; width: auto;" onchange="updateSelectedOption(this.value)" value="cancel">'; // Bootstrap 스타일 추가
         tableHtml += '<option value="cancel">취소</option>';
         tableHtml += '<option value="refund">환불</option>';
         tableHtml += '</select>';
-        tableHtml += '<button onclick="handleButtonClick()" style="margin-top: 10px;">확정</button>';
+        // Bootstrap 스타일을 추가한 버튼
+        tableHtml += '<button class="btn btn-primary" onclick="handleButtonClick()" style="margin-left: 10px;">확정</button>';
+        tableHtml += '</div>';
 
         return tableHtml;
     }
@@ -293,6 +297,33 @@
         selectedOption = value;
     }
 
+   function handleButtonClick() {
+        console.log('handleButtonClick 함수 호출됨');
+        globalStatus = 2;
+        updateOrderList();
+
+        if (globalStatus === 2) {
+            addToOrderButtons.forEach(function (button) {
+                button.disabled = true;
+                console.log('버튼 비활성화:', button);
+            });
+
+            const paginationLinks = document.querySelectorAll('.pagination a');
+            paginationLinks.forEach(function (link) {
+                link.classList.add('disabled');
+                link.style.cursor = 'not-allowed';
+                link.style.pointerEvents = 'none';
+                console.log('페이지네이션 링크 비활성화:', link);
+            });
+
+            const paymentMethodSelect = document.getElementById('payment-type');
+            paymentMethodSelect.disabled = true;
+            console.log('결제 방법 선택 비활성화:', paymentMethodSelect);
+        }
+
+        $('#previousOrderModal').modal('hide');
+        console.log('previousOrderModal 숨김 처리');
+    }
 
 
     // clear-order 버튼 클릭 이벤트 리스너

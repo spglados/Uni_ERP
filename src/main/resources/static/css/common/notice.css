@@ -128,3 +128,146 @@ table td a:hover {
 /*.pagination a:hover {*/
 /*    background-color: #f2f2f2;*/
 /*}*/
+
+/* 공지사항 상세 페이지 스타일 */
+
+/* 공지사항 상세 섹션 */
+.notice-detail-section {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 800px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.notice-detail-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 헤더 스타일 */
+.notice-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.notice-title {
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 2.5rem;
+    color: #0284FF; /* 프로젝트 메인 색상 */
+    margin-bottom: 10px;
+}
+
+.notice-meta {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 1rem;
+    color: #555555;
+    flex-wrap: wrap;
+}
+
+.notice-meta .notice-category {
+    background-color: #0284FF; /* 프로젝트 메인 색상 */
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.notice-meta .notice-date,
+.notice-meta .notice-views {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* 내용 스타일 */
+.notice-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333333;
+    margin-bottom: 40px;
+    white-space: pre-wrap; /* 줄바꿈 유지 */
+}
+
+/* 액션 버튼 스타일 */
+.notice-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* 버튼 색상 정의 */
+.btn-primary {
+    background-color: #0284FF; /* 프로젝트 메인 색상 */
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* 보조 색상 */
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: #dc3545; /* 삭제 버튼 색상 */
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .notice-detail-section {
+        padding: 20px;
+    }
+
+    .notice-title {
+        font-size: 2rem;
+    }
+
+    .notice-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .notice-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn {
+        justify-content: center;
+        width: 100%;
+    }
+}

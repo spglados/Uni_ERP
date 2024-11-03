@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/css/erp/product.css">
 
 <!-- 메인 컨텐츠 -->
-<div class="content">
+<div class="content container-fluid">
     <h1>상품 목록</h1>
     <hr>
     <!-- 상품 목록 테이블 -->
@@ -309,21 +309,6 @@
                 unsavedChanges = true;
             }
         });
-        console.log('unsavedChanges', unsavedChanges);
-        if (unsavedChanges) {
-            const confirmSave = confirm("수정된 정보가 있습니다. 저장하시겠습니까?");
-            if (!confirmSave) {
-                document.querySelectorAll('.ingredient-item input, .ingredient-item select').forEach(function (input) {
-                    input.disabled = true;
-                });
-                document.querySelectorAll('.ingredient-item .edit-btn').forEach(function (button) {
-                    button.textContent = '수정';
-                    button.classList.remove('btn-success');
-                    button.classList.add('btn-warning');
-                });
-            }
-        }
-
         // 재료 목록 초기화
         document.getElementById('ingredientList').innerHTML = '';
 
@@ -683,7 +668,5 @@
         window.productName = '<c:out value="${productName}" />';
     </script>
 </c:if>
-
-<script src="/js/erp/product/list.js"></script>
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

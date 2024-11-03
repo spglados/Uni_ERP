@@ -18,16 +18,13 @@ function initializeMainCalendar(element, schedules) {
     const calendar = new FullCalendar.Calendar(element, {
         plugins: ['interaction', 'dayGrid', 'timeGrid', 'bootstrap'],
         header: {
-            left: 'prevYear,prev,next,nextYear today addEventButton',
+            left: 'prev next today addEventButton',
             center: 'title',
-            right: 'dayGridMonth,dayGridWeek,timeGridDay'
+            right: 'dayGridMonth,dayGridWeek'
         },
         eventLimit: true,
         timeGridEventMinHeight: 10,
         nextDayThreshold: '06:00:00',
-        buttonText: {
-            day: '일간'
-        },
         slotEventOverlap: false,
         editable: true,
         selectable: true,
@@ -66,17 +63,19 @@ function initializeMainCalendar(element, schedules) {
             },
             prev: {
                 click: () => {
-                    if (calendar.view.type === 'dayGridWeek') {
-                        window.employeeCalendars.forEach(empCal => empCal.prev());
-                    }
+                    // if (calendar.view.type === 'dayGridWeek') {
+                    //     window.employeeCalendars.forEach(empCal => empCal.prev());
+                    // }
+                    window.employeeCalendars.forEach(empCal => empCal.prev());
                     calendar.prev();
                 }
             },
             next: {
                 click: () => {
-                    if (calendar.view.type === 'dayGridWeek') {
-                        window.employeeCalendars.forEach(empCal => empCal.next());
-                    }
+                    // if (calendar.view.type === 'dayGridWeek') {
+                    //     window.employeeCalendars.forEach(empCal => empCal.next());
+                    // }
+                    window.employeeCalendars.forEach(empCal => empCal.next());
                     calendar.next();
                 }
             },
@@ -179,7 +178,7 @@ function initializeMainCalendar(element, schedules) {
     // 더블클릭 처리 함수
     function handleDateDoubleClick(info) {
         console.log('더블클릭:', info.dateStr);
-        calendar.changeView('timeGridDay', info.dateStr);
+        calendar.changeView('dayGridWeek', info.dateStr);
     }
 
     // 전역 객체로 접근할 수 있도록 설정 (필요 시)
@@ -243,10 +242,10 @@ function initializeEmployeeCalendars(container, schedules, employees) {
             selectable: true,
             themeSystem: 'bootstrap',
             dateClick: info => {
-                openEventModal('add', employee.id);
+                openEventModal('add', null, info.dateStr);
             },
             eventClick: info => {
-                openEventModal('edit', info.event, employee.id);
+                openEventModal('edit', info.event);
             },
             eventRender: info => {
                 console.log('el', info.el);
