@@ -71,13 +71,13 @@
         </c:if>
     </div>
     <div class="right-panel" id="employee-details">
-                <h2 class="mb-0">직원 상세 정보</h2>
-            <div class="card-body">
-                <p>직원 목록을 클릭하여 확인하세요.</p>
-                <!-- 상세 정보가 여기에 추가됩니다 -->
-            </div>
+        <h2 class="mb-0">직원 상세 정보</h2>
+        <div class="card-body">
+            <p>직원 목록을 클릭하여 확인하세요.</p>
+            <!-- 상세 정보가 여기에 추가됩니다 -->
         </div>
     </div>
+</div>
 </div>
 
 <!-- 수정 팝업 모달 -->
@@ -110,8 +110,9 @@
                                max="<%= new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()) %>"/>
                     </div>
                     <div class="mb-3">
-                        <label for="editEmpPassword">비밀번호</label>
-                        <input type="text" id="editEmpPassword" name="password" pattern="^[0-9]+$" title="숫자만 입력하세요"
+                        <label for="editEmpPassword">비밀번호(숫자 4자리)</label>
+                        <input type="password" id="editEmpPassword" name="password" pattern="\d{4}" maxlength="4"
+                               title="숫자 4자리로 입력하세요"
                                required>
                     </div>
                     <div class="mb-3">
@@ -124,7 +125,8 @@
                     <div class="mb-3">
                         <label for="editEmployeeAddress" class="form-label">주소</label>
                         <input type="hidden" id="fullAddress" name="address">
-                        <input type="text" class="form-control" id="editEmployeeAddress" onclick ="execDaumPostcode()" required>
+                        <input type="text" class="form-control" id="editEmployeeAddress" onclick="execDaumPostcode()"
+                               required>
                         <input type="text" class="form-control" id="editEmployeeDetailAddress">
                     </div>
 
@@ -237,17 +239,19 @@
 
 
 <!-- Bootstrap Bundle with Popper.js (jsDelivr) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-pwhx3de1z5koq2k9n7zn8XBc/4eKD48Wn5sbzIS5QJgEN5hYhDDK1e+FvY86G/Zg" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pwhx3de1z5koq2k9n7zn8XBc/4eKD48Wn5sbzIS5QJgEN5hYhDDK1e+FvY86G/Zg"
+        crossorigin="anonymous"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
 <script>
 
     function execDaumPostcode() {
         new daum.Postcode({
-          oncomplete: function(data) {
-            var addr = data.address;
-            document.getElementById("editEmployeeAddress").value = addr;
-          }
+            oncomplete: function (data) {
+                var addr = data.address;
+                document.getElementById("editEmployeeAddress").value = addr;
+            }
         }).open();
     }
 
@@ -379,7 +383,6 @@
                     '<button id="edit-button" data-id="' + uniqueId + '" class="btn btn-primary">수정</button>'; // 수정 버튼
 
 
-
                 // 수정 버튼 클릭 이벤트 리스너
                 document.getElementById('edit-button').addEventListener('click', function () {
                     // 콘솔 로그로 변수 값 확인
@@ -471,7 +474,7 @@
                 if (key === 'address') {
                     const mainAddress = document.getElementById('editEmployeeAddress').value;
                     const detailAddress = document.getElementById('editEmployeeDetailAddress').value;
-                    jsonData[key] = mainAddress +" , "+ detailAddress;
+                    jsonData[key] = mainAddress + " , " + detailAddress;
                 } else {
                     jsonData[key] = value;
                 }
@@ -592,7 +595,6 @@
 
     }
 </script>
-
 
 
 <!-- 모달 배경 -->
