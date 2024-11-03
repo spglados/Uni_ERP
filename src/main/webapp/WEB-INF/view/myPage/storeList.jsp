@@ -57,7 +57,7 @@
 
 <script>
     function saveStore() {
-        window.open('http://localhost:8080/myPage/saveStore', '_blank', 'width=800,height=600');
+        window.open('http://localhost:8080/my-page/stores/create', '_blank', 'width=800,height=600');
     }
     function payment() {
         window.location.href = '/payment';
@@ -65,12 +65,11 @@
 
    function deleteStore(storeId) {
        if (confirm("정말 이 가게를 삭제하시겠습니까?")) {
-           fetch(`/myPage/deleteStore/${storeId}`, {
-               method: 'POST', // POST 메서드 사용
+           fetch(`/my-page/stores/${storeId}`, { // URL 수정
+               method: 'DELETE', // DELETE 메서드 사용
                headers: {
                    'Content-Type': 'application/json',
                },
-               body: JSON.stringify({ storeId: storeId })
            })
            .then(response => {
                if (response.ok) {
