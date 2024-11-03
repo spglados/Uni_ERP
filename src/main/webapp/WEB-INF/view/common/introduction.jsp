@@ -17,11 +17,9 @@
         </div>
         <div class="introduce-content-text-box">
             <div class="introduce-text">
-                <h1>빠릅니다.</h1>
-                <p>
-                    내용이 들어갈 자리 최예나 귀엽다<br>
-                    내용이 들어갈 자리 최예나 예쁘다<br>
-                    내용이 들어갈 자리 최예나 멋지다<br>
+                <h1 class="introduce-text-title">정확한 상품, 재고 관리</h1>
+                <p class="introduce-text-content">
+                    실시간 재고 관리를 통해 부족한 상품의 재고를 알려주고 상품의 품절 상황을 줄입니다. 사용자가 원하는 상품을 항상 준비해 둘 수 있습니다.
                 </p>
             </div>
         </div>
@@ -29,17 +27,15 @@
     <section class="introduce-container">
         <div class="introduce-content-text-box">
             <div class="introduce-text">
-                <h1>빠릅니다.</h1>
-                <p>
-                    내용이 들어갈 자리 최예나 귀엽다<br>
-                    내용이 들어갈 자리 최예나 예쁘다<br>
-                    내용이 들어갈 자리 최예나 멋지다<br>
+                <h1 class="introduce-text-title">한눈에 볼수 있는 그래프</h1>
+                <p class="introduce-text-content">
+                    가게별로 년, 월, 일 비교를 통해 매출현황을 파악할 수 있고 상품별 판매 비율 등을 확인할 수 있습니다.
                 </p>
             </div>
         </div>
         <div class="introduce-content-img-box">
             <div class="image-box">
-                <img src="/images/introduce/contract.jpg" alt="소개 이미지" class="hidden fadeInRight">
+                <img src="/images/introduce/graph.jpg" alt="소개 이미지" class="hidden fadeInRight">
             </div>
         </div>
     </section>
@@ -51,11 +47,9 @@
         </div>
         <div class="introduce-content-text-box">
             <div class="introduce-text">
-                <h1>빠릅니다.</h1>
-                <p>
-                    내용이 들어갈 자리 최예나 귀엽다<br>
-                    내용이 들어갈 자리 최예나 예쁘다<br>
-                    내용이 들어갈 자리 최예나 멋지다<br>
+                <h1 class="introduce-text-title">신뢰할 수 있는 서비스</h1>
+                <p class="introduce-text-content">
+                    분석, 결제, 직원관리 등 모든 과정이 체계적으로 관리되어 실수나 누락이 줄어듭니다. 이를 통해 사용자는 안심하고 믿을 수 있는 서비스를 이용할 수 있습니다.
                 </p>
             </div>
         </div>
@@ -63,17 +57,15 @@
     <section class="introduce-container">
         <div class="introduce-content-text-box">
             <div class="introduce-text">
-                <h1>빠릅니다.</h1>
-                <p>
-                    내용이 들어갈 자리 최예나 귀엽다<br>
-                    내용이 들어갈 자리 최예나 예쁘다<br>
-                    내용이 들어갈 자리 최예나 멋지다<br>
+                <h1 class="introduce-text-title">더 빠른 고객 지원</h1>
+                <p class="introduce-text-content">
+                    고객 문의에 사용자의 요청 사항이 모두 기록되어 있어, 문의나 문제 발생 시 더 빠르고 정확하게 도움을 드릴 수 있습니다. 사용자에게 필요한 정보를 신속하게 제공해 드립니다.
                 </p>
             </div>
         </div>
         <div class="introduce-content-img-box">
             <div class="image-box">
-                <img src="/images/introduce/promise.jpg" alt="소개 이미지" class="hidden fadeInRight">
+                <img src="/images/introduce/customer-support.jpg" alt="소개 이미지" class="hidden fadeInRight">
             </div>
         </div>
     </section>

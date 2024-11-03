@@ -1,6 +1,6 @@
 -- 첫 번째 샘플 데이터
 INSERT INTO user_tb (name, email, password, phone, address, membership, created_at)
-VALUES ('김남철', 'asd@asd.com', 'Sr0HBlSV+VQCUdrQeCGuYQ==:FaHwJjbpvYlMCjhA4hkiljzwgrhfwvDinxKYcmfg12/92nmZt/7gwo94YmCjOX3rIpUtoy3aqiDt3GpHBkJh5w==', '010-1234-5678', '서울특별시 강남구 테헤란로 123', 'COMMON', NOW());
+VALUES ('김남철', 'asd@asd.com', 'Sr0HBlSV+VQCUdrQeCGuYQ==:FaHwJjbpvYlMCjhA4hkiljzwgrhfwvDinxKYcmfg12/92nmZt/7gwo94YmCjOX3rIpUtoy3aqiDt3GpHBkJh5w==', '010-1234-5678', '서울특별시 강남구 테헤란로 123', 'PREMIUM', NOW());
 
 -- 두 번째 샘플 데이터
 INSERT INTO user_tb (name, email, password, phone, address, membership, created_at)

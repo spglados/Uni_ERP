@@ -37,7 +37,9 @@ public class PaymentController {
 
         Integer userPk = principal.getId(); 
         Integer count = paymentService.getCountOfNotCanceledPayments(userPk);
+        String membership = userService.getUserMembership(userPk);
 
+        model.addAttribute("membership", membership);
         model.addAttribute("count", count);
         return "/payment/payment";
     }

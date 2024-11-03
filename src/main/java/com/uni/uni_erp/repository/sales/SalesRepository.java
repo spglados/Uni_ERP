@@ -1,10 +1,7 @@
 package com.uni.uni_erp.repository.sales;
 
 import com.uni.uni_erp.domain.entity.Sales;
-import com.uni.uni_erp.dto.sales.MostProductSaleQuantityDTO;
-import com.uni.uni_erp.dto.sales.SalesDTO;
-import com.uni.uni_erp.dto.sales.SalesDataDTO;
-import com.uni.uni_erp.dto.sales.SalesQuantityDTO;
+import com.uni.uni_erp.dto.sales.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -76,6 +73,18 @@ public interface SalesRepository extends JpaRepository<Sales, Integer> {
     @Query("SELECT new com.uni.uni_erp.dto.sales.MostProductSaleQuantityDTO(sd.itemCode, sd.itemName, SUM(sd.quantity)) FROM Sales s JOIN FETCH SalesDetail sd ON s.orderNum = sd.orderNum WHERE s.storeId = :storeId AND FUNCTION('DATE', s.salesDate) = :today GROUP BY sd.itemCode ORDER BY SUM(sd.quantity) DESC limit 5")
     List<MostProductSaleQuantityDTO> findMostProductSaleQuantityByStoreId(Integer storeId, LocalDate today);
 
+    @Query("SELECT new com.uni.uni_erp.dto.sales.SalesInfoDTO(" +
+            "FUNCTION('HOUR', s.salesDate), " +
+            "SUM(s.totalPrice)" +
+            ") " +
+            "FROM Sales s " +
+            "WHERE s.salesDate >= :todayStart AND s.salesDate < :todayEnd " +
+            "AND s.storeId = :storeId " +
+            "GROUP BY FUNCTION('HOUR', s.salesDate) " +
+            "ORDER BY SUM(s.totalPrice) DESC " +
+            "LIMIT 4")
+    List<SalesInfoDTO> findTop4MostSalesByToday(@Param("todayStart") LocalDateTime todayStart,
+                                                @Param("todayEnd") LocalDateTime todayEnd, Integer storeId);
 }
 
 

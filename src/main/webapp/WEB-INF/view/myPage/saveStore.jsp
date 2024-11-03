@@ -1,11 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
+<%@ include file="/WEB-INF/view/layout/myPageHeader.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<main class="main-container">
     <h1>가게 등록</h1>
+    <div class="profile-info">
     <form id="storeForm" onsubmit="registerStore(event)">
         <label for="name">가게 이름:</label>
         <input type="text" id="name" name="name" required /><br>
@@ -29,9 +28,8 @@
 
         <button type="submit">등록</button>
     </form>
-</body>
-</html>
-
+    </div>
+</main>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
@@ -98,3 +96,4 @@ function execDaumPostcode() {
 
 
     </script>
+<%@ include file="/WEB-INF/view/layout/myPageFooter.jsp" %>
