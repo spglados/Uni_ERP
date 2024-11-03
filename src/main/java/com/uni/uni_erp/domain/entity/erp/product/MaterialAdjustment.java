@@ -1,14 +1,11 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
-import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "material_adjustment_tb")
@@ -16,23 +13,36 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class MaterialAdjustment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Double theoreticalAmount;
+    @Column(nullable = false)
+    private Double amount;
 
-    private Double actualAmount;
+    private Double subAmount;
+
+    private Double previousLossAmount;
 
     @Column(nullable = false)
     @CreatedDate
-    private LocalDate statusDate;  // 실자재 상태가 기록된 날짜
-
-    private Double loss;  // 이론 재고와 실제 재고의 차이
+    private LocalDate statusDate;  // 자재 상태가 기록된 날짜
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "material_id", nullable = false)
     private Material material;
+
+    @OneToMany(mappedBy = "adjustment", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    private List<MaterialOrder> orders;
+
+    @PrePersist
+    protected void onCreate() {
+        if(statusDate == null) {
+            statusDate = LocalDate.now();
+        }
+    }
 
 }

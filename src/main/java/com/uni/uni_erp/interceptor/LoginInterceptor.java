@@ -1,8 +1,8 @@
 package com.uni.uni_erp.interceptor;
 
+import com.uni.uni_erp.domain.entity.Admin;
 import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.exception.errors.Exception401;
-import com.uni.uni_erp.exception.errors.Exception404;
+import com.uni.uni_erp.dto.AdminDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +27,24 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        if (request.getRequestURI().startsWith("/admin")) {
+            return adminPreHandle(request, response);
+        }
 
         log.warn("로그인 정보 있음");
         // 로그인 정보가 있으면 요청을 계속 진행
+        return true;
+    }
+
+    public boolean adminPreHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        // 세션에서 로그인 정보를 확인
+        AdminDTO adminSession = (AdminDTO) request.getSession().getAttribute("adminSession");
+
+        if (request.getRequestURI().startsWith("/admin") && adminSession == null) {
+            response.sendRedirect("/admin/login");
+            return false;
+        }
+
         return true;
     }
 }

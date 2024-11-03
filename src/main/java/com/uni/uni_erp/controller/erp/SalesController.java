@@ -1,24 +1,27 @@
 package com.uni.uni_erp.controller.erp;
 
+import com.google.gson.Gson;
 import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.dto.sales.SalesDTO;
-import com.uni.uni_erp.dto.sales.SalesDetailDTO;
+import com.uni.uni_erp.dto.CostPerEmployeeDTO;
+import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
+import com.uni.uni_erp.dto.sales.RevenuePerDTO;
+import com.uni.uni_erp.dto.sales.SalesComparisonDTO;
+import com.uni.uni_erp.dto.sales.SalesTargetDTO;
 import com.uni.uni_erp.service.SalesService;
-import com.uni.uni_erp.service.user.StoreService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.uni.uni_erp.service.erp.hr.HrService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
+import java.time.*;
+import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,73 +29,67 @@ import java.util.stream.Collectors;
 @RequestMapping("/erp/sales")
 public class SalesController {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final SalesService salesService;
-    private final StoreService storeService;
+    private final HrService hrService;
 
     private static final String SUCCESS = "success";
     private static final String ERROR = "error";
 
-    // 1. 판매 등록 페이지
     @GetMapping("/record")
     public String recordPage() {
         return "erp/sales/record";
     }
 
-    @PostMapping("/record/create")
-    public String createRecord(@ModelAttribute SalesDTO salesDTO, RedirectAttributes redirectAttributes) {
-        try {
-//            salesService.save(salesDTO.toSalesEntity());
-            redirectAttributes.addFlashAttribute(SUCCESS, "정상 등록 완료");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(ERROR, "등록 실패");
-            log.error("Error creating sales record", e);
-        }
-        return "redirect:/erp/sales/record";
-    }
-
-    // 2. 조회 + 관리/수정 페이지
     @GetMapping("/history")
     public String salesHistory(Model model, @SessionAttribute("userSession") User user) {
-//        model.addAttribute("salesHistory", salesService.findByUserId(user.getId()));
-
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
+        model.addAttribute("currentYear", currentYear);
+        model.addAttribute("currentMonth", currentMonth);
         return "erp/sales/history";
     }
 
-    @PostMapping("/history/update/{id}")
-    public String updateSalesRecord(@ModelAttribute SalesDTO salesDTO, @PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-        try {
-//            salesDTO.setId(id);
-//            salesService.update(id, salesDTO.toSalesEntity());
-            redirectAttributes.addFlashAttribute(SUCCESS, "판매 기록이 성공적으로 업데이트되었습니다!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(ERROR, "판매 기록 업데이트 실패.");
-        }
-        return "redirect:/erp/sales/history";
-    }
-
-
-    @PostMapping("/history/delete/{id}")
-    public String deleteSalesRecord(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-        try {
-//            salesService.delete(id);
-            redirectAttributes.addFlashAttribute(SUCCESS, "판매 기록이 성공적으로 삭제되었습니다!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(ERROR, "판매 기록 삭제 실패.");
-        }
-        return "redirect:/erp/sales/history";
-    }
-
-    // 3. 차트 분석/통계 페이지
     @GetMapping("/statistics")
-    public String salesStatistics(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userSession");
-        List<Integer> storeIdList = storeService.ownedStores(user.getId());
+    public String salesStatistics() {
 
-        model.addAttribute("storeIdList", storeIdList);
         return "erp/sales/statistics";
+    }
+
+    @GetMapping("/revenue-per-employee")
+    public String revenuePerEmployee(Model model) {
+        LocalDate today = LocalDate.now();
+        YearMonth thisMonth = YearMonth.from(today);
+        Year thisYear = Year.from(today);
+
+
+        List<CostPerEmployeeDTO> costPerEmployeeThisWeek = salesService.calculateEmployeeSales(today.with(DayOfWeek.MONDAY).minusDays(today.getDayOfWeek().getValue() - 1).atStartOfDay(), today.with(DayOfWeek.MONDAY).plusDays(6).atStartOfDay(), 1);
+        for (CostPerEmployeeDTO costPerEmployeeDTO : costPerEmployeeThisWeek) {
+            EmployeeDTO employee = hrService.getEmployeeById(costPerEmployeeDTO.getId());
+            costPerEmployeeDTO.setName(employee.getName());
+        }
+
+        List<CostPerEmployeeDTO> costPerEmployeeThisMonth = salesService.calculateEmployeeSales(thisMonth.atDay(1).atStartOfDay(), thisMonth.atEndOfMonth().atTime(LocalTime.MAX), 1);
+        for (CostPerEmployeeDTO costPerEmployeeDTO : costPerEmployeeThisWeek) {
+            EmployeeDTO employee = hrService.getEmployeeById(costPerEmployeeDTO.getId());
+            costPerEmployeeDTO.setName(employee.getName());
+        }
+
+        List<CostPerEmployeeDTO> costPerEmployeeThisYear = salesService.calculateEmployeeSales(thisYear.atDay(1).atStartOfDay(), thisYear.atDay(thisYear.length()).atTime(LocalTime.MAX), 1);
+        for (CostPerEmployeeDTO costPerEmployeeDTO : costPerEmployeeThisWeek) {
+            EmployeeDTO employee = hrService.getEmployeeById(costPerEmployeeDTO.getId());
+            costPerEmployeeDTO.setName(employee.getName());
+        }
+
+        List<RevenuePerDTO> employeeSalesData = salesService.employeeRevenueSquash(costPerEmployeeThisYear, costPerEmployeeThisMonth, costPerEmployeeThisWeek);
+
+        model.addAttribute("employeeSalesData", employeeSalesData);
+
+        return "erp/sales/revenuePer";
+    }
+
+    @GetMapping("/refunds")
+    public String refunds() {
+        return "erp/sales/refunds";
     }
 
 }

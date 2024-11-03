@@ -6,163 +6,375 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 <link rel="stylesheet" href="/css/erp/material.css">
+<style>
+    .register-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        flex-direction: column; /* 수직 정렬을 위한 flex-direction 추가 */
+    }
 
-<!-- 냉동품 컨텐츠 -->
-<div class="content">
-    <h1>재고 관리</h1>
+
+
+</style>
+
+<!-- JSP에서 unitCategories를 JSON 배열로 변환하여 JavaScript 변수에 저장 -->
+<script type="text/javascript">
+    var unitCategories = [
+        <c:forEach var="unit" items="${unitCategories}" varStatus="status">
+        "${unit}"<c:if test="${!status.last}">, </c:if>
+        </c:forEach>
+    ];
+
+    // 단위와 서브 단위의 관계를 정의하는 매핑 객체 (사용자 제공 매핑)
+    var unitSubUnitMap = {
+        "KG": ["G", "BOX", "EA"],
+        "G": ["BOX", "EA"],
+        "L": ["ML", "BOX", "EA"],
+        "ML": ["BOX", "EA"],
+        "BOX": ["EA", "KG", "G", "L", "ML"],
+        "EA": ["KG", "G", "L", "ML"]
+    };
+</script>
+
+<!-- 자재 등록 컨텐츠 -->
+<div class="content container-fluid">
+    <h1>재고 등록</h1>
     <hr>
-    <!-- 자재 필터 및 등록 버튼 영역 -->
-    <div class="d-flex d-flex-row-reverse" style="flex-direction: row-reverse;">
-        <!-- 등록 버튼 (모달 창을 통해 자재 등록) -->
-        <button class="btn btn-outline-info rounded-pill" data-toggle="modal" data-target="#registerModal"
-                style="margin-right: 20px;">등록
-        </button>
-        <!-- 카테고리 선택 필터 -->
-        <select id="categoryFilter" class="form-control select" style="margin-right: 30px;">
-            <option value="전체">전체</option>
-            <option value="냉동품">냉동품</option>
-            <option value="냉장품">냉장품</option>
-            <option value="상온품">상온품</option>
-        </select>
 
-    </div>
-
-    <!-- 자재 목록 테이블 -->
+    <!-- 자재 등록 폼 -->
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
-        <div class="d-flex justify-content-between">
-            <div>
-                <h2 id="categoryTitle">전체</h2>
-            </div>
-            <div class="d-flex justify-content-between">
-                <input id="searchInput" placeholder="자재명 검색" style="margin-right: 10px">
-                <button id="searchButton">검색</button>
-                <h5>2024-10-13</h5>
-            </div>
-        </div>
-        <hr>
-        <div class="table-container">
-            <!-- 자재 목록 테이블 -->
-            <table class="table table-bordered table-striped" id="materialList">
-                <thead class="thead-dark">
-                <tr>
-                    <th>자재 번호</th>
-                    <th>자재명</th>
-                    <th>분류</th>
-                    <th>단위</th>
-                    <th>마지막 입고 날짜</th>
-                    <th>임박 유통기한</th>
-                    <th>입고 주기</th>
-                    <th>알림 주기</th>
-                    <th>사용 상품</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach var="material" items="${materialList}">
+        <form id="materialForm" action="/erp/inventory/registration" method="post">
+            <table class="register-container">
+                <thead class="blue">
                     <tr>
-                        <td>${material.materialCode}</td>
-                        <td>${material.name}</td>
-                        <td>${material.category}</td>
-                        <td>${material.formatToPrice()}원</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>
-                            <button class="btn btn-sm btn-info" data-toggle="modal" id="modal-btn-${material.id}"
-                                    data-target="#ingredientModal" onclick="showIngredients(${material.id})">재료 보기
-                            </button>
-                        </td>
+                        <td>재고 등록</td>
                     </tr>
-                </c:forEach>
-                </tbody>
+                </thead>
+                <!-- 기본 정보 섹션 -->
+                <tr>
+                    <td>
+                        <label for="name">이름 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="category">카테고리 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <select class="form-control" id="category" name="category" required>
+                            <option value="">선택하세요</option>
+                            <option value="냉동품">냉동품</option>
+                            <option value="냉장품">냉장품</option>
+                            <option value="상온품">상온품</option>
+                        </select>
+                    </td>
+                    <td>
+                        <label for="unit">단위 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <select class="form-control" id="unit" name="unit" required>
+                            <option value="">선택하세요</option>
+                            <!-- 옵션은 JavaScript로 동적으로 추가 -->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="subAmount">서브 수량</label>
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" class="form-control" id="subAmount" name="subAmount" disabled>
+                    </td>
+                    <td>
+                        <label for="subUnit">서브 단위 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <select class="form-control" id="subUnit" name="subUnit" required>
+                            <option value="">선택하세요</option>
+                            <!-- 옵션은 JavaScript로 동적으로 추가 -->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="alarmCycle">알람 주기</label>
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" class="form-control" id="alarmCycle" name="alarmCycle">
+                    </td>
+                    <td>
+                        <label for="alarmUnit">알람 단위 <span class="text-danger">*</span></label>
+                    </td>
+                    <td>
+                        <select class="form-control" id="alarmUnit" name="alarmUnit" required>
+                            <option value="">선택하세요</option>
+                            <!-- 옵션은 JavaScript로 동적으로 추가 -->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="text-align: center;">
+                        <button type="submit" class="btn btn-primary">등록</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">초기화</button>
+                    </td>
+                </tr>
             </table>
-        </div>
+        </form>
     </div>
 
-    <!-- 자재 등록 모달 -->
-    <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="registerModalLabel">자재 등록</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- 자재 등록 폼 -->
-                    <form id="registerForm" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label for="materialName">자재명</label>
-                            <input type="text" class="form-control" id="materialName" name="name" required value="고추장찌개">
-                        </div>
-                        <div class="form-group">
-                            <label for="category">카테고리</label>
-                            <select class="form-control" id="category" name="category">
-                                <option>냉동품</option>
-                                <option>냉장품</option>
-                                <option>상온품</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="price">가격</label>
-                            <input type="number" class="form-control" id="price" name="price" required value="8900">
-                        </div>
 
-                        <!-- 이미지 업로드 -->
-                        <div class="form-group">
-                            <label for="image">자재 이미지</label>
-                            <input type="file" class="form-control" id="image" accept="image/*"
-                                   onchange="previewImage(event)">
-                        </div>
+    <!-- JavaScript 코드 추가 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const unitSelect = document.getElementById('unit');
+            const subAmountInput = document.getElementById('subAmount');
+            const subUnitSelect = document.getElementById('subUnit');
+            const alarmUnitSelect = document.getElementById('alarmUnit');
+            const materialForm = document.getElementById('materialForm');
 
-                        <!-- 이미지 미리보기 -->
-                        <div class="form-group">
-                            <label>미리보기</label>
-                            <img id="imagePreview" style="max-width: 100%; height: auto;"/>
-                        </div>
+            /**
+             * <select> 요소에 옵션을 동적으로 추가하는 함수
+             * @param {HTMLElement} selectElement - 옵션을 추가할 <select> 요소
+             * @param {Array} options - 추가할 옵션 값들의 배열
+             * @param {boolean} excludeSelectedUnit - 선택된 단위를 제외할지 여부
+             * @param {string} selectedUnit - 선택된 단위
+             */
+            function populateSelectOptions(selectElement, options, excludeSelectedUnit = false, selectedUnit = '') {
+                // 기존 옵션 제거 (첫 번째 '선택하세요' 옵션만 남김)
+                const firstOption = selectElement.querySelector('option[value=""]');
+                selectElement.innerHTML = '';
+                if (firstOption) {
+                    selectElement.appendChild(firstOption);
+                }
 
-                        <!-- 추가 정보 (예: 설명, 재고, 유통기한 등) -->
-                        <div class="form-group">
-                            <label for="description">자재 설명</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                    <button type="button" class="btn btn-primary" onclick="registermaterial()">저장</button>
-                </div>
-            </div>
-        </div>
-    </div>
+                options.forEach(function (optionValue) {
+                    if (excludeSelectedUnit && optionValue.toUpperCase() === selectedUnit.toUpperCase()) {
+                        return; // 선택된 단위는 제외
+                    }
+                    const option = document.createElement('option');
+                    option.value = optionValue.toUpperCase();
+                    option.text = optionValue.toUpperCase();
+                    selectElement.appendChild(option);
+                });
+            }
 
-    <!-- 재료 보기 모달 -->
-    <div class="modal fade" id="ingredientModal" tabindex="-1" role="dialog" aria-labelledby="ingredientModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ingredientModalLabel">재료 목록</h5>
-                    <button type="button" class="close" onclick="saveIngredientModal()" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- 재료 목록이 표시될 영역 -->
-                    <ul id="ingredientList"></ul>
-                </div>
-                <div class="modal-footer">
-                    <input type="hidden" id="modalmaterialId">
-                    <button type="button" class="custom-btn" onclick="addIngredient()">추가</button>
-                    <button type="button" class="btn btn-secondary close-btn" onclick="saveIngredientModal()">저장
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+            /**
+             * 알람 단위 옵션을 필터링하여 선택된 단위와 서브 단위만 추가하는 함수
+             * @param {string} selectedUnit - 선택된 단위
+             * @param {string} selectedSubUnit - 선택된 서브 단위
+             */
+            function filterAlarmUnitOptions(selectedUnit, selectedSubUnit) {
+                // 기존 알람 단위 옵션 제거
+                alarmUnitSelect.innerHTML = '<option value="">선택하세요</option>';
 
-<%@include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
+                // 선택된 단위와 서브 단위만 알람 단위로 추가
+                var optionsToAdd = [];
+                if (selectedUnit) {
+                    optionsToAdd.push(selectedUnit);
+                }
+                if (selectedSubUnit && selectedSubUnit !== selectedUnit) {
+                    optionsToAdd.push(selectedSubUnit);
+                }
+
+                // 중복 제거
+                var uniqueOptions = [];
+                for (var i = 0; i < optionsToAdd.length; i++) {
+                    if (uniqueOptions.indexOf(optionsToAdd[i]) === -1) {
+                        uniqueOptions.push(optionsToAdd[i]);
+                    }
+                }
+
+                // 알람 단위 옵션에 추가
+                populateSelectOptions(alarmUnitSelect, uniqueOptions, false, '');
+            }
+
+            /**
+             * 클라이언트 측 유효성 검사 함수
+             * @returns {boolean} - 유효성 검사 통과 여부
+             */
+            function validateForm() {
+                var isValid = true;
+                var errorMessage = '';
+
+                // 필수 입력값 확인
+                var requiredFields = [
+                    {id: 'name', label: '이름'},
+                    {id: 'category', label: '카테고리'},
+                    {id: 'unit', label: '단위'},
+                    {id: 'subUnit', label: '서브 단위'},
+                    {id: 'alarmUnit', label: '알람 단위'}
+                ];
+
+                requiredFields.forEach(function (field) {
+                    var element = document.getElementById(field.id);
+                    if (!element.value.trim()) {
+                        isValid = false;
+                        errorMessage += field.label + '을(를) 입력해주세요.\n';
+                    }
+                });
+
+                // 서브 수량이 활성화된 경우 유효성 검사
+                if (!subAmountInput.disabled) {
+                    var subAmount = parseFloat(subAmountInput.value);
+                    if (isNaN(subAmount) || subAmount <= 0) {
+                        isValid = false;
+                        errorMessage += '서브 수량은 0보다 큰 숫자여야 합니다.\n';
+                    }
+                }
+
+                // 알람 주기 유효성 검사 (필요 시)
+                var alarmCycle = document.getElementById('alarmCycle');
+                if (alarmCycle.value) {
+                    var alarmCycleValue = parseFloat(alarmCycle.value);
+                    if (isNaN(alarmCycleValue) || alarmCycleValue <= 0) {
+                        isValid = false;
+                        errorMessage += '알람 주기는 0보다 큰 숫자여야 합니다.\n';
+                    }
+                }
+
+                // 단위와 서브 단위의 유효성 검사
+                var unit = document.getElementById('unit').value.toUpperCase();
+                var subUnit = document.getElementById('subUnit').value.toUpperCase();
+                if (unit && subUnit) {
+                    var allowedSubUnits = unitSubUnitMap[unit] || [];
+                    if (allowedSubUnits.indexOf(subUnit) === -1) {
+                        isValid = false;
+                        errorMessage += '단위와 서브 단위의 조합이 유효하지 않습니다.\n';
+                    }
+                }
+
+                if (!isValid) {
+                    alert(errorMessage);
+                }
+
+                return isValid;
+            }
+
+            /**
+             * 폼 초기화 함수
+             */
+            function clearForm() {
+                materialForm.reset();
+                // 서브 수량 비활성화 및 초기화
+                subAmountInput.disabled = true;
+                subAmountInput.value = '';
+                // 서브 단위 및 알람 단위 옵션 초기화
+                populateSelectOptions(subUnitSelect, unitCategories);
+                populateSelectOptions(alarmUnitSelect, unitCategories);
+            }
+
+            /**
+             * 자재 등록 함수
+             * @param {Event} event - 폼 제출 이벤트
+             */
+            function saveMaterial(event) {
+                event.preventDefault(); // 기본 폼 제출 방지
+
+                if (!validateForm()) {
+                    return; // 유효성 검사 실패 시 전송 중단
+                }
+
+                var formData = new FormData(materialForm);
+
+                // FormData를 JSON 객체로 변환
+                var data = {};
+                formData.forEach(function (value, key) {
+                    if (key === 'subAmount' || key === 'alarmCycle') {
+                        data[key] = value ? parseFloat(value) : null;
+                    } else {
+                        data[key] = value.trim();
+                    }
+                });
+
+                // 서버로 데이터 전송
+                fetch(materialForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json' // JSON 형식
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(function (response) {
+                        if (response.ok) {
+                            return response.json(); // 서버가 JSON 응답을 반환한다고 가정
+                        } else {
+                            return response.json().then(function (errorData) {
+                                throw new Error(errorData.error || '등록 실패!');
+                            });
+                        }
+                    })
+                    .then(function (data) {
+                        // 성공 처리
+                        console.log('성공:', data);
+                        alert('등록 성공!');
+                        clearForm();
+                        window.location.href = '/erp/inventory/status';
+                    })
+                    .catch(function (error) {
+                        // 오류 처리
+                        console.error('오류:', error);
+                        alert('등록 실패: ' + error.message);
+                    });
+            }
+
+            /**
+             * 초기 페이지 로드 시 단위, 서브 단위, 알람 단위 옵션 설정
+             */
+            function initializeForm() {
+                // 단위 옵션 설정
+                populateSelectOptions(unitSelect, unitCategories);
+                // 서브 단위 옵션 설정 (기본적으로 모든 옵션)
+                populateSelectOptions(subUnitSelect, unitCategories);
+                // 알람 단위 옵션 설정 (기본적으로 모든 옵션)
+                populateSelectOptions(alarmUnitSelect, unitCategories);
+            }
+
+            // 폼의 submit 이벤트에 saveMaterial 함수 연결
+            materialForm.addEventListener('submit', saveMaterial);
+
+            // 초기화 함수 호출
+            initializeForm();
+
+            /**
+             * 단위 변경 시 서브 단위 옵션 업데이트 및 서브 수량 활성화/비활성화
+             */
+            unitSelect.addEventListener('change', function () {
+                var selectedUnit = this.value.toUpperCase();
+
+                // 서브 수량 활성화/비활성화
+                if (selectedUnit === 'BOX' || selectedUnit === 'EA') {
+                    subAmountInput.disabled = false;
+                } else {
+                    subAmountInput.disabled = true;
+                    subAmountInput.value = ''; // 값 초기화
+                }
+
+                // 서브 단위 옵션 필터링 (선택된 단위를 제외)
+                populateSelectOptions(subUnitSelect, unitCategories, true, selectedUnit);
+
+                // 알람 단위 옵션 업데이트
+                var selectedSubUnit = subUnitSelect.value.toUpperCase();
+                filterAlarmUnitOptions(selectedUnit, selectedSubUnit);
+            });
+
+            /**
+             * 서브 단위 선택 시 알람 단위 옵션 업데이트
+             */
+            subUnitSelect.addEventListener('change', function () {
+                var selectedSubUnit = this.value.toUpperCase();
+                var selectedUnit = unitSelect.value.toUpperCase();
+
+                // 알람 단위 옵션 업데이트
+                filterAlarmUnitOptions(selectedUnit, selectedSubUnit);
+            });
+        });
+    </script>
+
+    <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

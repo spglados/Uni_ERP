@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "sales_detail_tb")
+@Table(name = "sales_detail_tb",
+        indexes = {
+                @Index(name = "idx_order_num", columnList = "order_num")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,7 +21,7 @@ public class SalesDetail {
     private Integer id;
 
     @Column(name = "item_code", nullable = false)
-    private String itemCode;
+    private Long itemCode;
 
     @Column(name = "item_name", nullable = false)
     private String itemName;
@@ -25,15 +29,8 @@ public class SalesDetail {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "specs")
-    private String specs;
-
     @Column(name = "unit_price", nullable = false)
     private Integer unitPrice;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private SaleStatus status;
 
     @Column(name = "order_num", insertable = false, updatable = false)
     private Integer orderNum;
@@ -42,16 +39,4 @@ public class SalesDetail {
     @JoinColumn(name = "order_num", referencedColumnName = "order_num", nullable = false)
     private Sales sales;
 
-    @PrePersist
-    protected void onPrePersist() {
-        if (this.status == null) {
-            this.status = SaleStatus.결제;
-        }
-    }
-
-    public enum SaleStatus {
-        결제,
-        환불,
-        취소
-    }
 }

@@ -1,9 +1,42 @@
-section {
+.main-container{
     background-color: #f9f9f9;
-    padding: 60px 20px;
-    margin: 40px 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.introduce-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 600px;
+    /*border-radius: 10px;*/
+    /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
+}
+
+.introduce-content-img-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+    height: 100%;
+}
+
+.introduce-content-img-box img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.introduce-content-text-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40%;
+    height: 100%;
+}
+
+.image-box{
+    width: 60%;
+    height: 100%;
 }
 
 section h2 {
@@ -45,16 +78,91 @@ section ul li::before {
     left: 0;
 }
 
-@media (min-width: 768px) {
-    section {
-        padding: 80px 40px;
-    }
+/* 초기 상태 클래스 */
+.hidden {
+    opacity: 0;
+    transform: translateX(0);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
 
-    section h2 {
-        font-size: 2.5rem;
-    }
+/* show 클래스가 추가되면 애니메이션을 실행 */
+.fadeInLeft.show {
+    animation: fadeInLeft 1s forwards;
+}
 
-    section p, section ul li {
-        font-size: 1.2rem;
+.fadeInRight.show {
+    animation: fadeInRight 1s forwards;
+}
+
+/* fadeInLeft 애니메이션 클래스 */
+.fadeInLeft {
+    /* 초기 상태는 .hidden 클래스로 설정됨 */
+}
+
+/* fadeInRight 애니메이션 클래스 */
+.fadeInRight {
+    /* 초기 상태는 .hidden 클래스로 설정됨 */
+}
+
+/* 키프레임 정의 */
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
     }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* (선택사항) 벤더 프리픽스 추가 */
+@-webkit-keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        -webkit-transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+    }
+}
+
+@-webkit-keyframes fadeInRight {
+    from {
+        opacity: 0;
+        -webkit-transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateX(0);
+    }
+}
+
+.introduce-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.introduce-text-title{
+    width: 80%;
+    font-size: 30px;
+}
+
+.introduce-text-content{
+    width: 80%;
 }

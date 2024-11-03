@@ -1,22 +1,26 @@
 package com.uni.uni_erp.service.erp.hr;
 
+import com.uni.uni_erp.domain.entity.erp.hr.Attendance;
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
-import com.uni.uni_erp.exception.errors.Exception400;
-import com.uni.uni_erp.exception.errors.Exception500;
+import com.uni.uni_erp.exception.errorsRest.RestException400;
+import com.uni.uni_erp.exception.errorsRest.RestException500;
+import com.uni.uni_erp.repository.erp.hr.AttendanceRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.erp.hr.ScheduleRepository;
-import com.uni.uni_erp.repository.store.StoreRepository;
+import com.uni.uni_erp.repository.user.StoreRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,26 +29,31 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final StoreRepository storeRepository;
     private final EmployeeRepository employeeRepository;
+    private final AttendanceRepository attendanceRepository;
 
     /**
      * 일정 조회
+     *
      * @param storeId 세션에 담긴 상점 id
-     * @param type 계획, 완료, null (전부 조회)
+     * @param type    계획, 완료, null (전부 조회)
+     *                전부 조회시 시간 비교 로직추가
      * @return DTO 형태로 List 반환
      */
-    public List<ScheduleDTO.ResponseDTO> findByStoreIdAndType(Integer storeId, Schedule.ScheduleType type) {
+    public List<ScheduleDTO.ResponseDTO> findByStoreIdAndType(Integer storeId, Schedule.Status type) {
+        // TODO TYPE에 따라 로직 변경 필요
         List<Schedule> scheduleEntities = scheduleRepository.findByStoreIdAndType(storeId, type);
         if (scheduleEntities == null || scheduleEntities.isEmpty()) {
             return new ArrayList<>();
         }
         return scheduleEntities.stream()
-                .map(Schedule::toResponseDTO)
+                .map(ScheduleDTO.ResponseDTO::new)
                 .toList();
     }
 
     /**
-     * 일정 등록
-     * @param reqDTO 받아온 일정 데이터
+     * 근무 일정 등록
+     * + 근태 관리와 연동
+     * @param reqDTO  받아온 일정 데이터
      * @param storeId 세션에 담긴 상점 id
      * @return 생성한 일정을 DTO 형태로 반환
      */
@@ -52,17 +61,48 @@ public class ScheduleService {
     public ScheduleDTO.ResponseDTO create(ScheduleDTO.CreateDTO reqDTO, Integer storeId) {
         Schedule scheduleEntity = null;
         try {
-            Store storeEntity = storeRepository.findById(storeId).orElseThrow(() -> new Exception400("식당 정보가 없습니다."));
-            Employee employeeEntity = employeeRepository.findById(reqDTO.getEmpId()).orElseThrow(() -> new Exception400("해당 직원이 없습니다."));
+            Store storeEntity = storeRepository.findById(storeId).orElseThrow(() -> new RestException400("식당 정보가 없습니다."));
+            Employee employeeEntity = employeeRepository.findById(reqDTO.getEmpId()).orElseThrow(() -> new RestException400("해당 직원이 없습니다."));
+            Optional<Schedule> overlappedSchedule = scheduleRepository.findOverlappingSchedules(reqDTO.getEmpId(), Timestamp.valueOf(reqDTO.getStartTime().replace("T", " ")), Timestamp.valueOf(reqDTO.getEndTime().replace("T", " ")));
+            if (overlappedSchedule.isPresent()) {
+                throw new RestException400("동일한 시간대에 예정된 일정이 있습니다.");
+            }
             scheduleEntity = scheduleRepository.save(reqDTO.toEntity(storeEntity, employeeEntity));
+            Attendance attendanceEntity = Attendance.builder()
+                    .schedule(scheduleEntity)
+                    .store(storeEntity)
+                    .employee(employeeEntity)
+                    .build();
+            attendanceRepository.save(attendanceEntity);
         } catch (DataIntegrityViolationException e) {
-            throw new Exception400("데이터 무결성 위반으로 스케줄 생성에 실패했습니다.");
+            throw new RestException400("데이터 무결성 위반으로 스케줄 생성에 실패했습니다.");
         } catch (JpaSystemException e) {
-            throw new Exception500("데이터베이스 시스템 오류가 발생했습니다.");
+            throw new RestException500("데이터베이스 시스템 오류가 발생했습니다.");
+        } catch (RestException400 e) {
+            throw e;
         } catch (Exception e) {
-            throw new Exception500("스케줄 생성 중 알 수 없는 오류가 발생했습니다.");
+            e.printStackTrace();
+            throw new RestException500("스케줄 생성 중 알 수 없는 오류가 발생했습니다.");
         }
-        return scheduleEntity.toResponseDTO();
+        return new ScheduleDTO.ResponseDTO(scheduleEntity);
+    }
+
+    /**
+     * 일정 수정
+     * @param reqDTO 받아온 일정 데이터
+     * @param storeId 세션에 담긴 상점 id
+     * @return 수정한 일정을 DTO 형태로 반환
+     */
+    @Transactional
+    public ScheduleDTO.ResponseDTO update(ScheduleDTO.UpdateDTO reqDTO, Integer storeId) {
+        Schedule scheduleEntity = scheduleRepository.findById(reqDTO.getId()).orElseThrow(() -> new RestException400("일정 정보가 없습니다."));
+        Optional<Schedule> overlappedSchedule = scheduleRepository.findOverlappingSchedules(scheduleEntity.getEmployee().getId(), Timestamp.valueOf(reqDTO.getStartTime().replace("T", " ")), Timestamp.valueOf(reqDTO.getEndTime().replace("T", " ")));
+        if (overlappedSchedule.isPresent()) {
+            throw new RestException400("동일한 시간대에 예정된 일정이 있습니다.");
+        }
+        scheduleEntity.setStartTime(Timestamp.valueOf(reqDTO.getStartTime().replace("T", " ")));
+        scheduleEntity.setEndTime(Timestamp.valueOf(reqDTO.getEndTime().replace("T", " ")));
+        return new ScheduleDTO.ResponseDTO(scheduleEntity);
     }
 
 }

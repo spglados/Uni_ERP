@@ -37,24 +37,29 @@ public class Employee {
         F // 여자
     }
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String phone;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String address;
 
-    @Column(unique = true, name = "account_number", nullable = false)
+    @Column(name = "account_number", nullable = false)
     private String accountNumber;
     // 사용자 정의 직책
 
-    @Column(nullable = true)
-    private String position;
+   // @Column(nullable = true)
+    //private String position;
     // 외래 키 설정: Employee는 하나의 Store에 속함
+   // 사용자 정의 직책 (EmpPosition 추가)
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "emp_position_id") // EmpPosition의 ID를 참조
+   private EmpPosition empPosition;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store; // 관리하는 사용자
 
@@ -62,16 +67,18 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmploymentStatus employmentStatus;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // EmpDocument와의 관계
-    private List<EmpDocument> empDocuments; // 리스트로 수정
-
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // EmpDocument와의 관계
+    private EmpDocument empDocument;
 
     @Column(nullable = false)  // Not Null 설정
     private Integer storeEmployeeNumber;  // 각 가게별로 증가하는 직원 번호
 
     @Column(unique = true, nullable = false)  // 고유한 사원번호, Not Null, 유니크 설정
-    private String uniqueEmployeeNumber;
+    private Long uniqueEmployeeNumber;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private String password = "0000";
 
     public enum EmploymentStatus {
         ACTIVE, // 재직중
@@ -91,9 +98,21 @@ public class Employee {
     @Column(name = "hired_at", nullable = true)
     private Timestamp hiredAt;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer wage = 9860;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank; // 은행 정보를 참조 필드
+
+    // TODO 오류 발생시 삭제 해야함
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Attendance> attendances;
+
+    // TODO 오류 발생시 삭제 해야함
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Schedule> schedules;
 
     @PrePersist
     public void onCreate() {
@@ -107,4 +126,5 @@ public class Employee {
     public void onUpdate() {
         this.updatedAt = Timestamp.from(Instant.now());
     }
+
 }

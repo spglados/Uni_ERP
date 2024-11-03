@@ -13,8 +13,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 20MB
-      max-request-size: 20MB
+      max-file-size: 100MB
+      max-request-size: 100MB
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:uni_ERP;MODE=MySQL
@@ -32,11 +32,38 @@ spring:
         format_sql: true
         default_batch_fetch_size: 10 # 한 번에 들고오는 개수 설정
     defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
 
   output:
     ansi:
       enabled: always
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: dev1email1smtp@gmail.com
+    password: durn wzqw ghqg zetk
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 logging:
   level:
     '[com.uni.uni_erp]': DEBUG
+
+coolsms:
+  api:
+    key: "NCS9GARPFNB2EJXK"
+    secret: "DBM9X06ZF3VXI8AHHPDWQOGVYQPOBZE9"
+    number: "010-6439-5737"
+
+payment:
+  clientKey: test_ck_E92LAa5PVbPWkE0RkGbW87YmpXyJ
+  secretKey: test_sk_Gv6LjeKD8aYzbQYeg2yk8wYxAdXy

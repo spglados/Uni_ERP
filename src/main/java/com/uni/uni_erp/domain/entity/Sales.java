@@ -2,19 +2,26 @@ package com.uni.uni_erp.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "sales_tb")
+@Table(name = "sales_tb", indexes = {
+        @Index(name = "idx_sales_date_store_id", columnList = "sales_date, store_id")
+})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Sales {
+
+    @Transient
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +31,8 @@ public class Sales {
     private Integer storeId;
 
     @Column(name = "order_num", nullable = false, unique = true)
-    private Integer orderNum; // Unique identifier for the order, will be set using the sequence
+    private Integer orderNum;
+
 
     @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
@@ -33,14 +41,10 @@ public class Sales {
     private LocalDateTime salesDate;
 
     @PrePersist
-    protected void onPrePersist() {
-        if (this.salesDate == null) {
-            this.salesDate = LocalDateTime.from(Instant.now());
+    protected void generateOrderNum() {
+        if (orderNum == null) {
+            orderNum = (Integer) entityManager.createNativeQuery("SELECT NEXT VALUE FOR order_num_seq").getSingleResult();
         }
     }
 
-    public void generateOrderNum(EntityManager entityManager) {
-        Integer sequenceValue = (Integer) entityManager.createNativeQuery("SELECT NEXT VALUE FOR order_num_seq").getSingleResult();
-        this.orderNum = Integer.parseInt(String.format("%d%07d", storeId, sequenceValue));
-    }
 }

@@ -1,46 +1,83 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
+import com.uni.uni_erp.domain.entity.erp.product.Store;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.sql.Timestamp;
 
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 @Entity
-@Table(name = "attendance_tb")
-public class Attendance {
+@Table(name = "hr_attendance_tb")
+public class
+Attendance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "attendance_id")
-    private Long id;
+    private Integer id;
 
-    // 외래 키 설정: Employee와 다대일 관계 (하나의 직원은 여러 출석 기록을 가질 수 있음)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "emp_id", nullable = false)
     private Employee employee;
 
-    @Column(nullable = false)
-    private LocalDate date; // 날짜 (연월일)
+    @Column(name = "start_time", nullable = true)
+    private Timestamp startTime;
 
-    @Column(nullable = true)
-    private LocalTime checkIn; // 출근 시간
+    @Column(name = "end_time", nullable = true)
+    private Timestamp endTime;
 
-    @Column(nullable = true)
-    private LocalTime checkOut; // 퇴근 시간
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id", nullable = true)
+    private Schedule schedule;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status; // 출석 상태
+    @Builder.Default
+    private Status status = Status.NOT_EXECUTED;
+
+    @Column(name = "work_time", nullable = true)
+    private Integer workTime; // 정산용 근무 시간을 분단위로 저장
+
+    @Column(name = "break_time", nullable = true)
+    private Integer breakTime; // 휴식 시간
+
+    @Column(nullable = true)
+    private Integer wage; // 시급
+
+    @Column(name = "missed_time", nullable = true)
+    private Integer missedTime; // 지각 조퇴 등으로 지켜지지 못한 시간
+
+    @Column(name = "overed_time", nullable = true)
+    private Integer overedTime; // 기존 일정과 비교하여 초과된 시간
 
     // 출석 상태를 관리하는 enum
+    @RequiredArgsConstructor
+    @Getter
     public enum Status {
-        PRESENT,    // 출석
-        ABSENT,     // 결근
-        LATE,       // 지각
-        ON_LEAVE    // 휴가
+        NOT_EXECUTED("출근전"),
+        WORKING("근무중"),
+        ATTENDED("정상"),
+        LATE("지각"),
+        LEFT_EARLY("조퇴"),
+        LATE_AND_LEFT_EARLY("지각&조퇴"),
+        SICK_ABSENT("병가"),
+        UNAUTHORIZED_ABSENT("무단결근"),
+        PERSONAL_ABSENT("개인사정"),
+        UNPLANNED_WORK("계획 외");
+
+        private final String description;
     }
+
 }

@@ -1,7 +1,9 @@
 package com.uni.uni_erp.controller.common;
 
 import com.uni.uni_erp.domain.entity.Notice;
+import com.uni.uni_erp.dto.NoticeDTO;
 import com.uni.uni_erp.service.common.NoticeService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,18 +13,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.annotation.RequestScope;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/notice")
 public class NoticeController {
 
     private final NoticeService noticeService;
 
-    @GetMapping("/notice")
+    @GetMapping("")
     public String noticePage(@RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "10") int size,
                              Model model) {
-        Page<Notice> notices = noticeService.getNotices(page, size);
+        Page<NoticeDTO> notices = noticeService.getNotices(page, size);
 
         model.addAttribute("notices", notices);
         model.addAttribute("currentPage", page + 1);
@@ -31,4 +35,16 @@ public class NoticeController {
 
         return "/common/notice";
     }
+
+    @GetMapping("/detail")
+    public String noticeDetailPage(@RequestParam("id") Integer id, Model model) {
+        NoticeDTO dto = noticeService.findOne(id);
+        if(dto == null) {
+            return "/common/notice";
+        } else {
+            model.addAttribute("notice", dto);
+        }
+        return "/common/noticeDetail";
+    }
+
 }

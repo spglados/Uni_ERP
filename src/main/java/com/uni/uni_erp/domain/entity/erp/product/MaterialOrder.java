@@ -2,15 +2,10 @@ package com.uni.uni_erp.domain.entity.erp.product;
 
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "material_order_tb")
@@ -18,6 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class MaterialOrder {
 
     @Id
@@ -36,10 +32,15 @@ public class MaterialOrder {
     private String supplier;
 
     @CreatedDate
-    private LocalDateTime receiptDate;
+    @Column(nullable = false)
+    private LocalDate receiptDate;
 
     @Column(nullable = false)
     private LocalDate expirationDate;
+
+    private LocalDate enterDate;
+
+    private Double useAmount;
 
     private Boolean isUse;
 
@@ -48,18 +49,24 @@ public class MaterialOrder {
     private Material material;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id", nullable = false)
-    private MaterialStatus status;
+    @JoinColumn(name = "adjustment_id", nullable = false)
+    private MaterialAdjustment adjustment;
 
     @PrePersist
     protected void onCreate() {
-        if (receiptDate == null) {
-            receiptDate = LocalDateTime.now();
+
+        if(enterDate == null) {
+            enterDate = LocalDate.now();
         }
 
         if(isUse == null) {
             isUse = Boolean.TRUE;
         }
 
+        if(useAmount == null) {
+            useAmount = amount;
+        }
+
     }
+
 }

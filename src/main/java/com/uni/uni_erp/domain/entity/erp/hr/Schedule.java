@@ -1,9 +1,6 @@
 package com.uni.uni_erp.domain.entity.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.dto.erp.hr.ScheduleDTO;
-import com.uni.uni_erp.util.Str.EnumCommonUtil;
-import com.uni.uni_erp.util.date.DateFormatter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +19,7 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
@@ -38,27 +35,19 @@ public class Schedule {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ScheduleType scheduleType;
+    @Builder.Default
+    private Status status = Status.NOT_EXECUTED;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id", nullable = true)
-    private Schedule planSchedule;
+    @OneToOne(mappedBy = "schedule", fetch = FetchType.LAZY)
+    private Attendance attendance;
 
-    public enum ScheduleType {
-        PLAN, // 계획
-        EXECUTE // 실행
+    @RequiredArgsConstructor
+    @Getter
+    public enum Status {
+        NOT_EXECUTED("이행되지 않음"),
+        COMPLETED("완료");
+
+        private final String description;
     }
 
-    public ScheduleDTO.ResponseDTO toResponseDTO() {
-        return ScheduleDTO.ResponseDTO.builder()
-                .id(String.valueOf(id))
-                .title(employee.getName())
-                .start(DateFormatter.toIsoFormat(startTime))
-                .end(DateFormatter.toIsoFormat(endTime))
-                .extendedProps(ScheduleDTO.CustomProperty.builder()
-                        .empId(employee.getId())
-                        .type(EnumCommonUtil.getStringFromEnum(scheduleType))
-                        .build())
-                .build();
-    }
 }

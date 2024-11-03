@@ -38,24 +38,11 @@ public class Product {
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ingredient> ingredients = new ArrayList<>();
-
-    public ProductDTO toProductDTO() {
-        return ProductDTO.builder()
-                .id(this.id)
-                .productCode(this.productCode)
-                .name(this.name)
-                .category(this.category)
-                .price(this.price)
-                .storeId(this.store.getId())
-                .image(null)
-                .description(this.description)
-                .build();
-    }
 
 }

@@ -10,7 +10,7 @@ import lombok.*;
 public class SalesDetailDTO {
 
     private Integer id;
-    private String itemCode;
+    private Long itemCode;
     private String itemName;
     private Integer quantity;
     private Integer unitPrice;
