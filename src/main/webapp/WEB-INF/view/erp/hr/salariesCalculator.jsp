@@ -44,7 +44,7 @@
         cursor: not-allowed;
     }
 </style>
-<div class="container mt-5">
+<div class="content container-fluid">
 <h1 class="mb-4">급여 계산 페이지</h1>
 <c:choose>
     <c:when test="${employees.size() == 0}">

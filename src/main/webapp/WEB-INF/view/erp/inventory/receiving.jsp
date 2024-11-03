@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/css/erp/material.css">
 
 <!-- Main Content -->
-<div class="content">
+<div class="content container-fluid">
     <h1>입고 관리</h1>
     <hr>
 

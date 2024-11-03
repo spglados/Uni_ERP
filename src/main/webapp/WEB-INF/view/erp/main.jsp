@@ -97,7 +97,7 @@
 </style>
 
 <!-- 메인 컨텐츠 -->
-<div class="content container-fluid mt-4">
+<div class="content container-fluid">
     <div class="erp-main-header">
         <!-- 사용자 환영 메시지 -->
         <div class="name-welcome">

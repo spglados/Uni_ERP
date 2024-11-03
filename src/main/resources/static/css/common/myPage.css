@@ -84,6 +84,10 @@ table td a:hover {
 
 /*common.css 와 다른점만 넣음*/
 .main-container{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
     justify-content: flex-start;
     align-items: center;
 }
