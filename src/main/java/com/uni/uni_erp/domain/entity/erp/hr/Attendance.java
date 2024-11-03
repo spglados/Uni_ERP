@@ -55,7 +55,7 @@ Attendance {
     @Column(name = "missed_time", nullable = true)
     private Integer missedTime; // 지각 조퇴 등으로 지켜지지 못한 시간
 
-    @Column(name = "over_time", nullable = true)
+    @Column(name = "overed_time", nullable = true)
     private Integer overedTime; // 기존 일정과 비교하여 초과된 시간
 
     // 출석 상태를 관리하는 enum

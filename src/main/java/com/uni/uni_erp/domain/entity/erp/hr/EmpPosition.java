@@ -18,7 +18,8 @@ public class EmpPosition {
     private Integer id;
 
     @Column(nullable = false)
-    private String name;
+    @Builder.Default
+    private String name = "미정";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
@@ -27,13 +28,7 @@ public class EmpPosition {
     private String scheduleColor;
 
     @Column(name = "min_required_num",nullable = false)
+    @Builder.Default
     private Integer minRequiredNum = 0;
-
-    @PrePersist
-    public void setDefaultValues() {
-        if (this.name == null || this.name.isEmpty()) {
-            this.name = "미정"; // 기본 값 설정
-        }
-    }
 
 }

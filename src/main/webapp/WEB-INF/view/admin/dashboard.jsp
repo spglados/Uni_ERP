@@ -142,11 +142,11 @@
                                     <tr>
                                     </tr>
                                         <td>가게별 평균 유지기간</td>
-                                        <td>${Placeholder}개월</td>
+                                        <td>${averageSubscribeDuration}개월</td>
                                         <td>
                                             <c:choose>
-                                                <c:when test="${percentageOfSubscribeUser >= 100}"><span class="status-icon icon-sunny">☀️</span></c:when>
-                                                <c:when test="${percentageOfSubscribeUser >= 75}"><span class="status-icon icon-cloud">☁️</span></c:when>
+                                                <c:when test="${averageSubscribeDuration >= 20}"><span class="status-icon icon-sunny">☀️</span></c:when>
+                                                <c:when test="${averageSubscribeDuration >= 16}"><span class="status-icon icon-cloud">☁️</span></c:when>
                                                 <c:otherwise><span class="status-icon icon-thunder">⛈️</span></c:otherwise>
                                             </c:choose>
                                         </td>

@@ -2,10 +2,12 @@ package com.uni.uni_erp.service.user;
 
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.dto.UserDTO;
+import com.uni.uni_erp.dto.UserUpdateDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
 import com.uni.uni_erp.util.Str.PasswordUtil;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
@@ -110,8 +112,8 @@ public class UserService {
     // 작년 구독자수
     public int getPremiumUserCountForLastYear() {
         LocalDate now = LocalDate.now();
-        LocalDate startDate = now.minusYears(1).withDayOfMonth(1).withMonth(1); // 작년 1월 1일
-        LocalDate endDate = now.minusYears(1).withDayOfMonth(31).withMonth(12); // 작년 12월 31일
+        LocalDate startDate = now.minusYears(1).withMonth(1).withDayOfMonth(1); // 작년 1월 1일
+        LocalDate endDate = now.minusYears(1).withMonth(12).withDayOfMonth(31); // 작년 12월 31일
 
         Timestamp startTimestamp = Timestamp.valueOf(startDate.atStartOfDay());
         Timestamp endTimestamp = Timestamp.valueOf(endDate.plusDays(1).atStartOfDay().minusNanos(1)); // 12월 31일의 마지막 순간
@@ -173,5 +175,24 @@ public class UserService {
 
     public Long countUsers() {
         return userRepository.count();
+    }
+
+    public void delete(Integer userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public void updateUser(Integer userId, UserUpdateDTO userUpdateDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다. userId: " + userId));
+
+        user.setName(userUpdateDTO.getName());
+        user.setEmail(userUpdateDTO.getEmail());
+        user.setPhone(userUpdateDTO.getPhone());
+        user.setAddress(userUpdateDTO.getAddress());
+        if (userUpdateDTO.getMembership().equals("COMMON") || userUpdateDTO.getMembership().equals("PREMIUM")) {
+            user.setMembership(userUpdateDTO.getMembership().equals("COMMON") ? User.Membership.COMMON : User.Membership.PREMIUM);
+        }
+        userRepository.save(user);
+
     }
 }

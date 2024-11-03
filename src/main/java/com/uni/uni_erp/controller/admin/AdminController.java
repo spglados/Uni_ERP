@@ -3,17 +3,17 @@ package com.uni.uni_erp.controller.admin;
 import com.uni.uni_erp.domain.entity.User;
 import com.uni.uni_erp.domain.entity.erp.product.Store;
 import com.uni.uni_erp.domain.entity.payment.Payment;
-import com.uni.uni_erp.dto.AdminDTO;
-import com.uni.uni_erp.dto.ContactDTO;
-import com.uni.uni_erp.dto.NoticeDTO;
-import com.uni.uni_erp.dto.ResponseDTO;
+import com.uni.uni_erp.dto.*;
 import com.uni.uni_erp.dto.sales.SalesDataDTO;
 import com.uni.uni_erp.dto.sales.StoreListDTO;
+import com.uni.uni_erp.dto.store.AdminStoreUpdateDTO;
+import com.uni.uni_erp.dto.store.StoreUpdateDTO;
 import com.uni.uni_erp.service.AdminService;
 import com.uni.uni_erp.service.SalesService;
 import com.uni.uni_erp.service.common.ContactService;
 import com.uni.uni_erp.service.common.NoticeService;
 import com.uni.uni_erp.service.common.ResponseService;
+import com.uni.uni_erp.service.common.SubscribeDurationService;
 import com.uni.uni_erp.service.payment.PaymentService;
 import com.uni.uni_erp.service.user.StoreService;
 import com.uni.uni_erp.service.user.UserService;
@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,8 +29,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -44,6 +48,7 @@ public class AdminController {
     private final ResponseService responseService;
     private final ContactService contactService;
     private final PaymentService paymentService;
+    private final SubscribeDurationService subscribeDurationService;
 
     @GetMapping("/login")
     public String login() {
@@ -81,6 +86,9 @@ public class AdminController {
         NumberFormat formatter = new DecimalFormat("#,###");
         String netProfitFormatted = formatter.format(totalNetProfit / 10000);
 
+        // 구독 유지기간 평균
+        Double averageSubscribeDuration = subscribeDurationService.findAverageSubscribeDuration();
+
         // 회원수
         Long totalUserCount = userService.countUsers();
         // 구독자 수
@@ -99,6 +107,7 @@ public class AdminController {
         model.addAttribute("totalUserCount", totalUserCount);
         model.addAttribute("subscriptionRateDouble", subscriptionRateDouble);
         model.addAttribute("netProfitFormatted", netProfitFormatted);
+        model.addAttribute("averageSubscribeDuration", averageSubscribeDuration);
         model.addAttribute("subscribeUserCount", subscribeUserCount);
         model.addAttribute("percentOfSubscribeUserCount", percentOfSubscribeUserCount);
         model.addAttribute("percentageOfSubscribeUser", (int) Math.round(percentageOfSubscribeUser));
@@ -175,19 +184,46 @@ public class AdminController {
         return "/admin/storeManagement";
     }
 
+    @ResponseBody
     @GetMapping("/store/details/{id}")
-    public String getStoreDetails(@PathVariable("id") Integer id, Model model) {
+    public ResponseEntity<Map<String, Object>> getStoreDetails(@PathVariable("id") Integer id) {
         // StoreService를 통해 가게 정보를 조회
         Store store = storeService.findById(id);
-
-
         if (store == null) {
             // 가게가 존재하지 않을 경우 404 페이지로 리다이렉트하거나 에러 처리
-            return "error/404"; // 예시: 에러 페이지 경로
+            return ResponseEntity.notFound().build();
         }
 
-        model.addAttribute("store", store);
-        return "/admin/storeDetails"; // 뷰의 이름 (storeDetails.jsp)
+        Map<String, Object> storeMap = new HashMap<>();
+        storeMap.put("id", store.getId());
+        storeMap.put("name", store.getName());
+        storeMap.put("is24Hours", store.getIs24Hours());
+        storeMap.put("isOpen", store.getIsOpen());
+        storeMap.put("createdAt", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(store.getCreatedAt()));
+
+        return ResponseEntity.ok(storeMap);
+    }
+
+    @ResponseBody
+    @GetMapping("/user/details/{id}")
+    public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable("id") Integer id) {
+        // StoreService를 통해 가게 정보를 조회
+        User user = userService.findById(id);
+        if (user == null) {
+            // 가게가 존재하지 않을 경우 404 페이지로 리다이렉트하거나 에러 처리
+            return ResponseEntity.notFound().build();
+        }
+
+        Map<String, Object> storeMap = new HashMap<>();
+        storeMap.put("id", user.getId());
+        storeMap.put("name", user.getName());
+        storeMap.put("email", user.getEmail());
+        storeMap.put("phone", user.getPhone());
+        storeMap.put("address", user.getAddress());
+        storeMap.put("membership", user.getMembership());
+        storeMap.put("createdAt", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(user.getCreatedAt()));
+
+        return ResponseEntity.ok(storeMap);
     }
 
     @GetMapping("/noticeList")
@@ -273,6 +309,51 @@ public class AdminController {
         List<Payment> payments = paymentService.findAll();
         model.addAttribute("payments", payments);
         return "/admin/refund";
+    }
+
+    @PutMapping("/store/update/{id}")
+    public ResponseEntity<String> updateStore(@PathVariable("id") Integer storeId, @RequestBody AdminStoreUpdateDTO adminStoreUpdateDTO) {
+        try {
+            storeService.updateStoreAdmin(storeId, adminStoreUpdateDTO);
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"수정을 완료했습니다\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body("{\"error\":\"오류\"}");
+        }
+    }
+
+    // FIXME : 삭제 요청하니까 Ingredient, material 엔티티 관련 오류 나오는데 제가 해결할수 있는게 아닌듯합미다
+    @DeleteMapping("/store/delete/{id}")
+    public ResponseEntity<?> deleteStore(@PathVariable("id") Integer storeId) {
+        try {
+            storeService.delete(storeId);
+            return ResponseEntity.ok("삭제를 완료했습니다");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류");
+        }
+    }
+
+    @DeleteMapping("/user/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Integer userId) {
+        try {
+            userService.delete(userId);
+            return ResponseEntity.ok("삭제를 완료했습니다");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류");
+        }
+    }
+
+    @PutMapping("/user/update/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable("id") Integer userId, @RequestBody UserUpdateDTO userUpdateDTO) {
+        try {
+            userService.updateUser(userId, userUpdateDTO);
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("{\"message\":\"수정을 완료했습니다\"}");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body("{\"error\":\"오류\"}");
+        }
     }
 
 
