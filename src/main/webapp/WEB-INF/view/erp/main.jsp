@@ -75,29 +75,10 @@
         }
     }
 
-    /* 반응형 디자인을 위한 추가 스타일 */
-    @media (max-width: 767px) {
-        .sales-item {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .sales-icon {
-            margin-bottom: 10px;
-        }
-    }
-
-    @media (min-width: 768px) {
-        .sales-item {
-            flex-direction: row;
-            align-items: center;
-        }
-    }
-
 </style>
 
 <!-- 메인 컨텐츠 -->
-<div class="content container-fluid">
+<div class="content">
     <div class="erp-main-header">
         <!-- 사용자 환영 메시지 -->
         <div class="name-welcome">

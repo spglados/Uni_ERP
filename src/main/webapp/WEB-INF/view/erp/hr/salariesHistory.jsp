@@ -2,8 +2,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 
-<!-- Main Content -->
-<div class="content container-fluid">
+<div class="content">
 <h1 class="mt-4 mb-4">급여 관리</h1>
 <hr>
 <c:choose>

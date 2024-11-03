@@ -28,12 +28,11 @@
 <div class="container">
     <div class="menu-section">
         <h1>주문 목록</h1>
-        <div class="menu-grid">
+       <div class="menu-grid">
             <!-- Product 리스트를 반복하여 동적으로 버튼 생성 -->
             <c:forEach var="product" items="${productList.content}">
                 <div class="menu-item">
-                    <button class="add-to-order" data-item="${product.name}" data-price="${product.price}"
-                            data-code="${product.productCode}">
+                    <button class="add-to-order" data-item="${product.name}" data-price="${product.price}" data-code="${product.productCode}">
                             ${product.name}<br>
                         <span class="product-price">${product.price}원</span>
                     </button>
@@ -55,9 +54,8 @@
     <div class="order-section">
         <form id="product-submit">
             <h3>결제 목록</h3>
-            <button type="button" id="clear-order" class="btn btn-warning">전체삭제</button>
-            <button type="button" id="previous-order" class="previous-order-button btn btn-primary"
-                    data-bs-toggle="modal" data-bs-target="#previousOrderModal">
+            <button type="button" id="clear-order" class="clear-order-button">전체삭제</button>
+            <button type="button" id="previous-order" class="previous-order-button btn btn-primary" data-toggle="modal" data-target="#previousOrderModal">
                 주문 조회
             </button>
             <div class="order-summary" id="orderList">
@@ -299,13 +297,15 @@
         selectedOption = value;
     }
 
-    function handleButtonClick() {
+   function handleButtonClick() {
+        console.log('handleButtonClick 함수 호출됨');
         globalStatus = 2;
         updateOrderList();
 
         if (globalStatus === 2) {
             addToOrderButtons.forEach(function (button) {
                 button.disabled = true;
+                console.log('버튼 비활성화:', button);
             });
 
             const paginationLinks = document.querySelectorAll('.pagination a');
@@ -313,14 +313,18 @@
                 link.classList.add('disabled');
                 link.style.cursor = 'not-allowed';
                 link.style.pointerEvents = 'none';
+                console.log('페이지네이션 링크 비활성화:', link);
             });
 
             const paymentMethodSelect = document.getElementById('payment-type');
             paymentMethodSelect.disabled = true;
+            console.log('결제 방법 선택 비활성화:', paymentMethodSelect);
         }
 
         $('#previousOrderModal').modal('hide');
+        console.log('previousOrderModal 숨김 처리');
     }
+
 
     // clear-order 버튼 클릭 이벤트 리스너
     document.getElementById('clear-order').addEventListener('click', function () {
