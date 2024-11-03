@@ -123,18 +123,18 @@
         </div>
     </div>
     <!-- 알림 Toast 추가 -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="welcomeToast" class="toast align-items-center text-bg-primary" role="alert"
-             aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    [${username}]님, 환영합니다.
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
+<%--    <div class="toast-container position-fixed bottom-0 end-0 p-3">--%>
+<%--        <div id="welcomeToast" class="toast align-items-center text-bg-primary" role="alert"--%>
+<%--             aria-live="assertive" aria-atomic="true">--%>
+<%--            <div class="d-flex">--%>
+<%--                <div class="toast-body">--%>
+<%--                    [${username}]님, 환영합니다.--%>
+<%--                </div>--%>
+<%--                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"--%>
+<%--                        aria-label="Close"><i class="fas fa-window-close"></i></button>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
 
     <!-- 4개의 섹션을 위한 그리드 -->
     <div class="row">
