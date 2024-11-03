@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 <link rel="stylesheet" href="/css/erp/hr/employeeList.css">
-<div class="container">
+<div class="content container-fluid">
     <div class="left-panel">
         <h1 class="mb-4">직원 목록</h1>
         <c:if test="${not empty employees}">

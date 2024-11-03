@@ -35,7 +35,7 @@
 <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
 
 <!-- 재고 관리 콘텐츠 -->
-<div class="content">
+<div class="content container-fluid">
     <h1>월 재고 현황</h1>
     <hr>
     <!-- Material List Grid -->

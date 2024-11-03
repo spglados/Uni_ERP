@@ -10,7 +10,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <link rel="stylesheet" href="/css/sortTable.css">
 
-<div class="content">
+<div class="content container-fluid">
     <div class="d-flex flex-column mb-3 align-items-start">
         <label>기준일 선택</label>
         <div class="d-flex">

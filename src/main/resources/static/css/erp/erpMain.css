@@ -13,7 +13,7 @@ html, body{
 /* 사이드바 스타일 */
 .sidebar {
     width: 250px;
-    height: 100vh; /* 뷰포트 높이에 맞춤 */
+    height: 100%;
     background-color: #F5F5DC;
     padding: 20px;
     color: #fff;
@@ -109,8 +109,13 @@ html, body{
 
 /* 메인 컨텐츠 스타일 */
 .content {
+    width: 80%; /* 사이드바의 20%에 맞춰 조정 */
+    height: 100%;
     flex: 1;
     padding: 30px;
+    box-sizing: border-box;
+    overflow-y: auto; /* 세로 스크롤 추가 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
 }
 
 .content header {
@@ -128,17 +133,21 @@ html, body{
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .module-card {
     background-color: #fff;
-    width: 30%;
+    width: 30%; /* % 단위로 변경 */
+    max-width: 300px; /* 최대 너비 설정 */
     margin: 10px;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
     transition: box-shadow 0.3s ease;
+    box-sizing: border-box;
 }
 
 .module-card:hover {
@@ -173,23 +182,26 @@ html, body{
     transform: translateY(-3px);
 }
 
+/* Ag-Grid 테마 */
 .ag-theme-alpine {
-    height: 600px;
+    height: 600px; /* 고정 높이를 % 단위로 변경 */
     width: 100%;
 }
+
 /* 메뉴 컨테이너 스타일 */
 .menu {
     display: block;
     overflow: hidden;
-    width: 200px;
+    width: 100%; /* 전체 너비 사용 */
     background-color: #000;
     color: #fff;
     transition: all 0.5s ease;
     border-radius: 20px;
     padding: 10px;
     box-sizing: border-box;
-    position: relative; /* 절대 위치 요소를 위한 상대 위치 설정 */
+    position: relative;
 }
+
 
 .menu ul {
     list-style: none;
