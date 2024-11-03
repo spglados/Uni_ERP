@@ -2,7 +2,7 @@
 <%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp"%>
 <link rel="stylesheet" href="/css/sortTable.css">
 
-<div class="content container-fluid">
+<div class="content">
     <h1 id="currentDate"> </h1>
 
     <div class="table-responsive">

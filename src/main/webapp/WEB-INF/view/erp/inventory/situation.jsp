@@ -33,7 +33,7 @@
 </style>
 
 <!-- 재고 관리 콘텐츠 -->
-<div class="content container-fluid">
+<div class="content">
     <h1>현황 관리</h1>
     <hr>
 

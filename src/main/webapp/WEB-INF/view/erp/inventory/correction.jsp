@@ -51,7 +51,7 @@
 </script>
 
 <!-- 자재 수정 컨텐츠 -->
-<div class="content container-fluid">
+<div class="content">
     <h1>자재 수정</h1>
     <hr>
 

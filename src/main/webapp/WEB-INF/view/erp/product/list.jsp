@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/css/erp/product.css">
 
 <!-- 메인 컨텐츠 -->
-<div class="content container-fluid">
+<div class="content">
     <h1>상품 목록</h1>
     <hr>
     <!-- 상품 목록 테이블 -->

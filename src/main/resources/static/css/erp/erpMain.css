@@ -112,10 +112,10 @@ html, body{
     width: 80%; /* 사이드바의 20%에 맞춰 조정 */
     height: 100%;
     flex: 1;
-    padding: 30px;
     box-sizing: border-box;
     overflow-y: auto; /* 세로 스크롤 추가 */
     overflow-x: hidden; /* 가로 스크롤 숨김 */
+    padding: 100px;
 }
 
 .content header {

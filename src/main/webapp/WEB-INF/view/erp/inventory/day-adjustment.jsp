@@ -74,7 +74,7 @@
 <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
 
 <!-- 재고 관리 콘텐츠 -->
-<div class="content container-fluid">
+<div class="content">
     <h1>일 재고 관리</h1>
     <hr>
     <!-- 저장 버튼 영역 -->

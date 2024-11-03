@@ -55,7 +55,7 @@
 </div>
 
 <!-- 폐기 내역 콘텐츠 -->
-<div class="content container-fluid">
+<div class="content">
     <h1 class="mb-4">폐기 내역</h1>
     <hr>
 

@@ -51,7 +51,7 @@
         <form id="product-submit">
             <h3>결제 목록</h3>
             <button type="button" id="clear-order" class="clear-order-button">전체삭제</button>
-            <button type="button" id="previous-order" class="previous-order-button btn btn-primary" data-bs-toggle="modal" data-bs-target="#previousOrderModal">
+            <button type="button" id="previous-order" class="previous-order-button btn btn-primary" data-toggle="modal" data-target="#previousOrderModal">
                 주문 조회
             </button>
             <div class="order-summary" id="orderList">
@@ -293,28 +293,7 @@
         selectedOption = value;
     }
 
-    function handleButtonClick() {
-        globalStatus = 2;
-        updateOrderList();
 
-        if (globalStatus === 2) {
-            addToOrderButtons.forEach(function (button) {
-                button.disabled = true;
-            });
-
-            const paginationLinks = document.querySelectorAll('.pagination a');
-            paginationLinks.forEach(function (link) {
-                link.classList.add('disabled');
-                link.style.cursor = 'not-allowed';
-                link.style.pointerEvents = 'none';
-            });
-
-            const paymentMethodSelect = document.getElementById('payment-type');
-            paymentMethodSelect.disabled = true;
-        }
-
-        $('#previousOrderModal').modal('hide');
-    }
 
     // clear-order 버튼 클릭 이벤트 리스너
     document.getElementById('clear-order').addEventListener('click', function () {
