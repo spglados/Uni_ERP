@@ -31,7 +31,7 @@
  <div id="withdrawSection" style="display:none; margin-top: 20px;">
         <h2>중도 출금</h2>
         <label for="withdrawInput">출금할 금액:</label>
-        <input id="withdrawInput" type="number" min="0">
+        <input id="withdrawInput" type="number" min="0" value ="0">
         <button onclick="withdrawAmount()">출금하기</button>
     </div>
 

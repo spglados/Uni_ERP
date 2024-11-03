@@ -34,13 +34,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set default value to current year-month
     const currentDate = new Date();
     yearSelect.value = currentDate.getFullYear();
-    monthSelect.value = currentDate.getMonth() + 1;
+    monthSelect.value = currentDate.getMonth();
+    if (monthSelect.value == 0) {
+        yearSelect.value -= 1;
+        monthSelect.value = 12;
+    }
     dateSpan.textContent = yearSelect.value + '년 ' + monthSelect.value + '월';
 
     const fetchSalesData = () => {
         const year = yearSelect.value;
         const month = monthSelect.value;
-
+        document.getElementById("loading-spinner").style.display = "block";
         fetch('/erp/sales/details?year=' + year + '&month=' + month)
             .then(response => {
                 if (!response.ok) {
@@ -49,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
+                document.getElementById("loading-spinner").style.display = "none";
                 // Clear the table body
                 tbody.innerHTML = '';
 

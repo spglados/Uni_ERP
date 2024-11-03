@@ -23,7 +23,7 @@
     <br>
     <div id="countdown">5초 후에 가게 등록 페이지로 이동합니다...</div>
     <br>
-    <a href="/myPage/storeList">가게 등록 페이지으로 이동</a>
+    <a href="/my-page/store-list">가게 등록 페이지으로 이동</a>
 </div>
         <script>
             let countdown = 5;
@@ -35,7 +35,7 @@
 
                         if (countdown <= 0) {
                             clearInterval(timer);
-                            window.location.href = "/myPage/storeList";
+                            window.location.href = "/my-page/store-list";
                         }
                     }, 1000); // 1초마다 실행
         </script>
