@@ -10,7 +10,7 @@ import lombok.*;
 public class SalesComparisonDTO {
 
     // Time-related field (could be the hour, for example)
-    private Integer hour;
+    private String hour;
 
     // Last day data
     private Integer lastDayTargetProfit;
