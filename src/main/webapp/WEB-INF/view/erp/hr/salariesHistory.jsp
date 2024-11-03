@@ -4,80 +4,90 @@
 
 <!-- Main Content -->
 <div class="content container-fluid">
-    <h1 class="mt-4 mb-4">급여 관리</h1>
-    <hr>
+<h1 class="mt-4 mb-4">급여 관리</h1>
+<hr>
+<c:choose>
+    <c:when test="${employeeList.isEmpty()}">
+        <p>산출된 급여 내역이 없습니다.</p>
+    </c:when>
+    <c:otherwise>
 
-    <div class="row" style="height: 600px;">
-        <!-- 직원 목록 -->
-        <div class="col-md-4 mb-4 d-flex">
-            <div class="card shadow-sm flex-fill d-flex flex-column">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>직원 목록</span>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="resetEmployeeFilters()" title="필터 초기화">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
-                <div class="card-body p-0 flex-grow-1" style="overflow: hidden;">
-                    <div id="employeeGrid" class="ag-theme-quartz" style="height: 100%; width: 100%;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 급여 명세서 -->
-        <div class="col-md-8 d-flex">
-            <div class="card shadow-sm flex-fill d-flex flex-column">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">급여 명세서</h5>
-                    <form method="get" action="/erp/hr/salaries" class="form-inline mb-0">
-                        <input type="hidden" name="employeeId" value="${selectedEmployee.id}"/>
-                        <div class="form-group">
-                            <label for="yearMonth" class="mr-2">조회 월:</label>
-                            <input type="month" id="yearMonth" name="yearMonth" value="${currentYearMonth}" class="form-control" onchange="this.form.submit()">
-                        </div>
-                    </form>
-                </div>
-                <div class="card-body flex-grow-1 d-flex flex-column">
-                    <!-- 급여 정보 카드 -->
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>년도/월:</strong> ${selectedEmployee.salaryDetails.year}년 ${selectedEmployee.salaryDetails.month}월</p>
-                                    <p><strong>지급일자:</strong> ${selectedEmployee.salaryDetails.payDate}</p>
-                                    <p><strong>직원명:</strong> ${selectedEmployee.name}</p>
-                                    <p><strong>연락처:</strong> ${selectedEmployee.contact}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>급여계좌:</strong> ${selectedEmployee.salaryAccount}</p>
-                                    <p><strong>시급단가:</strong> <fmt:formatNumber value="${selectedEmployee.hourlyRate}" type="currency" currencySymbol="" groupingUsed="true"/>원</p>
-                                    <p><strong>총 근무시간:</strong> ${selectedEmployee.salaryDetails.totalWorkHours}시간</p>
-                                    <p><strong>총 근무일 수:</strong> ${selectedEmployee.salaryDetails.totalWorkDays}일</p>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>총 급여액:</strong> <span class="text-success"><fmt:formatNumber value="${selectedEmployee.salaryDetails.totalSalary}" type="currency" currencySymbol="" groupingUsed="true"/>원</span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>공제액:</strong> <span class="text-danger"><fmt:formatNumber value="${selectedEmployee.salaryDetails.deductions}" type="currency" currencySymbol="" groupingUsed="true"/>원</span></p>
-                                </div>
-                                <div class="col-md-12">
-                                    <p><strong>실지급액:</strong> <span class="text-primary h4"><fmt:formatNumber value="${selectedEmployee.salaryDetails.netPay}" type="currency" currencySymbol="" groupingUsed="true"/>원</span></p>
-                                </div>
-                            </div>
-                        </div>
+        <div class="row" style="height: 600px;">
+            <!-- 직원 목록 -->
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card shadow-sm flex-fill d-flex flex-column">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>직원 목록</span>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="resetEmployeeFilters()" title="필터 초기화">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                     </div>
+                    <div class="card-body p-0 flex-grow-1" style="overflow: hidden;">
+                        <div id="employeeGrid" class="ag-theme-quartz" style="height: 100%; width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
 
-                    <!-- 근무 상세 그리드 -->
-                    <h5 class="mb-3">근무 상세</h5>
-                    <div id="salaryDetailGrid" class="ag-theme-quartz" style="height: 300px; width: 100%;"></div>
+            <!-- 급여 명세서 -->
+            <div class="col-md-8 d-flex">
+                <div class="card shadow-sm flex-fill d-flex flex-column">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">급여 명세서</h5>
+                        <form method="get" action="/erp/hr/salaries" class="form-inline mb-0">
+                            <input type="hidden" name="employeeId" value="${selectedEmployee.empNo}"/>
+                            <div class="form-group">
+                                <label for="yearMonth" class="mr-2">조회 월:</label>
+                                <input type="month" id="yearMonth" name="yearMonth" value="${currentYearMonth}" class="form-control" onchange="this.form.submit()">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-body flex-grow-1 d-flex flex-column">
+                        <!-- 급여 정보 카드 -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>년도/월:</strong> ${selectedEmployee.salaryDetails.year}년 ${selectedEmployee.salaryDetails.month}월</p>
+                                        <p><strong>지급일자:</strong> ${selectedEmployee.salaryDetails.payDate}</p>
+                                        <p><strong>직원명:</strong> ${selectedEmployee.name}</p>
+                                        <p><strong>연락처:</strong> ${selectedEmployee.phone}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>급여계좌:</strong> ${selectedEmployee.accountNumber}</p>
+                                        <p><strong>시급단가:</strong> <fmt:formatNumber value="${selectedEmployee.wage}" type="currency" currencySymbol="" groupingUsed="true"/>원</p>
+                                        <p><strong>총 근무시간:</strong> ${selectedEmployee.salaryDetails.totalWorkHours}시간</p>
+                                        <p><strong>총 근무일 수:</strong> ${selectedEmployee.salaryDetails.totalWorkDays}일</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>총 급여액:</strong> <span class="text-success"><fmt:formatNumber value="${selectedEmployee.salaryDetails.totalSalary}"
+                                                                                                                type="currency"
+                                                                                                                currencySymbol="" groupingUsed="true"/>원</span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>공제액:</strong> <span class="text-danger"><fmt:formatNumber value="${selectedEmployee.salaryDetails.deductions}" type="currency"
+                                                                                                             currencySymbol="" groupingUsed="true"/>원</span></p>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <p><strong>실지급액:</strong> <span class="text-primary h4"><fmt:formatNumber value="${selectedEmployee.salaryDetails.netPay}" type="currency"
+                                                                                                                  currencySymbol="" groupingUsed="true"/>원</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 근무 상세 그리드 -->
+                        <h5 class="mb-3">근무 상세</h5>
+                        <div id="salaryDetailGrid" class="ag-theme-quartz" style="height: 300px; width: 100%;"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
+        </div>
+    </c:otherwise>
+</c:choose>
 <script>
     // 직원 목록 ag-Grid 설정
     const employeeColumnDefs = [
@@ -85,17 +95,17 @@
         {headerName: "이름", field: "name", sortable: true, filter: true, width: 150},
         {headerName: "연락처", field: "contact", sortable: true, filter: true, width: 150},
         {headerName: "급여 계좌", field: "salaryAccount", sortable: true, filter: true, width: 200},
-        {headerName: "시급단가", field: "hourlyRate", sortable: true, filter: 'agNumberColumnFilter', width: 120}
+        {headerName: "현시급단가", field: "hourlyRate", sortable: true, filter: 'agNumberColumnFilter', width: 120}
     ];
 
     const employeeRowData = [
         <c:forEach var="employee" items="${employeeList}" varStatus="status">
         {
-            id: ${employee.id},
+            id: ${employee.empNo},
             name: "${employee.name}",
-            contact: "${employee.contact}",
-            salaryAccount: "${employee.salaryAccount}",
-            hourlyRate: ${employee.hourlyRate}
+            contact: "${employee.phone}",
+            salaryAccount: "${employee.accountNumber}",
+            hourlyRate: ${employee.wage}
         }<c:if test="${!status.last}">, </c:if>
         </c:forEach>
     ];
@@ -105,7 +115,7 @@
         rowData: employeeRowData,
         rowSelection: 'single',
         onRowClicked: function (event) {
-            window.location.href = "/erp/hr/salaries?employeeId=" + event.data.id + "&yearMonth=" + "${currentYearMonth}";
+            window.location.href = "/erp/hr/salaries-history?empNo=" + event.data.id + "&yearMonth=" + "${currentYearMonth}";
         },
         defaultColDef: {
             sortable: true,
@@ -133,34 +143,24 @@
             width: 100
         },
         {
-            headerName: "금액",
-            field: "dailyAmount",
-            sortable: true,
-            filter: 'agNumberColumnFilter',
-            valueFormatter: function (params) {
-                return params.value.toLocaleString() + '원';
-            },
-            width: 120
-        },
-        {
             headerName: "출근 상태",
             field: "attendanceStatus",
             sortable: true,
             filter: true,
             cellRenderer: function (params) {
-                var status = params.value;
-                var badgeClass = 'badge-info';
-                var statusText = '';
+                const status = params.value;
+                let badgeClass = 'badge-info';
+                let statusText = '';
 
-                if (status === '정상 출근') {
+                if (status === '정상') {
                     badgeClass = 'badge-success';
                     statusText = '정상 출근';
-                } else if (status === '지각') {
+                } else if (status === '지각' || status === '조퇴' || status === '지각&조퇴') {
                     badgeClass = 'badge-warning';
-                    statusText = '지각';
-                } else if (status === '조퇴') {
+                    statusText = status;
+                } else if (status === '무단결근') {
                     badgeClass = 'badge-danger';
-                    statusText = '조퇴';
+                    statusText = '무단결근';
                 } else {
                     statusText = status; // 기타 상태는 그대로 표시
                 }
@@ -178,7 +178,6 @@
             clockIn: "${attendance.clockIn}",
             clockOut: "${attendance.clockOut}",
             hasBreak: ${attendance.hasBreak},
-            dailyAmount: ${attendance.dailyAmount},
             attendanceStatus: "${attendance.attendanceStatus}"
         }<c:if test="${!status.last}">, </c:if>
         </c:forEach>

@@ -27,9 +27,16 @@ public class PaymentHistory {
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment; // 결제 정보를 연결
 
+    @Column(nullable = false)
     private Integer amount; // 결제 금액
+
+    @Column(nullable = false)
     private String status; // 결제 상태 (예: 성공, 실패)
+
+    @Column(nullable = false)
     private String transactionId; // 거래 ID
+
+    @Column(nullable = false)
     private String paymentMethod; // 결제 방법
 
     @CreationTimestamp

@@ -17,6 +17,7 @@ import com.uni.uni_erp.util.date.NumberFormatter;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.FastArrayList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1106,5 +1107,18 @@ public class InventoryService {
         }
     }
 
+    public boolean checkStockAndProduct(HttpSession session) {
+
+        Integer storeId = getStoreId(session);
+
+        List<Material> checkStockList = materialRepository.findAllByStoreId(storeId);
+        List<Product> checkProductList = productRepository.findProductByStoreId(storeId);
+
+        if(checkStockList == null || checkProductList == null || checkStockList.isEmpty() || checkProductList.isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
 
 }
