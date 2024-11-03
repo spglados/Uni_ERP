@@ -44,7 +44,4 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
 
     void deleteByUserId(Integer userId);
 
-
-    void deleteById(Integer storeId);
-
 }

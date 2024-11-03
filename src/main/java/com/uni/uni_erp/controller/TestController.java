@@ -1,7 +1,6 @@
 package com.uni.uni_erp.controller;
 
 import com.uni.uni_erp.dto.erp.product.IngredientDTO;
-import com.uni.uni_erp.service.erp.hr.HolidayService;
 import com.uni.uni_erp.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -28,11 +25,6 @@ public class TestController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(dto);
-    }
-
-    @GetMapping("/modal-test")
-    public String testModal() {
-        return "/pos/modalTest";
     }
 
 }

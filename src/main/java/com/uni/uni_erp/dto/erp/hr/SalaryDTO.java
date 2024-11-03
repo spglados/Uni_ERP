@@ -1,5 +1,7 @@
 package com.uni.uni_erp.dto.erp.hr;
 
+import com.uni.uni_erp.domain.entity.erp.hr.Attendance;
+import com.uni.uni_erp.domain.entity.erp.hr.Payroll;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -12,12 +14,21 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class SalaryDTO {
-    private Integer id;
+    private Long empNo;
     private String name;
-    private String contact;
-    private String salaryAccount;
-    private Double hourlyRate;
+    private String phone;
+    private String accountNumber;
+    private Integer wage;
     private SalaryDetail salaryDetails;
+
+    public SalaryDTO(Payroll payroll, List<Attendance> attendances) {
+        this.empNo = payroll.getEmployee().getUniqueEmployeeNumber();
+        this.name = payroll.getEmployee().getName();
+        this.phone = payroll.getEmployee().getPhone();
+        this.accountNumber = payroll.getEmployee().getAccountNumber();
+        this.wage = payroll.getEmployee().getWage();
+        this.salaryDetails = new SalaryDetail(payroll, attendances);
+    }
 
     @Getter
     @Setter
@@ -28,12 +39,24 @@ public class SalaryDTO {
         private int year;
         private int month;
         private LocalDate payDate;
-        private Double totalWorkHours;
+        private Integer totalWorkHours;
         private Integer totalWorkDays;
-        private Double totalSalary;
-        private Double deductions;
-        private Double netPay;
+        private Integer totalSalary;
+        private Integer deductions;
+        private Integer netPay;
         private List<DailyAttendance> dailyAttendances;
+
+        public SalaryDetail(Payroll payroll, List<Attendance> attendances) {
+            this.year = payroll.getYearMonth().getYear();
+            this.month = payroll.getYearMonth().getMonthValue();
+            this.payDate = payroll.getCreatedAt().toLocalDate();
+            this.totalWorkHours = payroll.getTotalWorkTime();
+            this.totalWorkDays = attendances.size();
+            this.totalSalary = payroll.getGrossSalary();
+            this.deductions = payroll.getTotalInsurance();
+            this.netPay = payroll.getNetSalary();
+            this.dailyAttendances = attendances.stream().map(DailyAttendance::new).toList();
+        }
 
         @Getter
         @Setter
@@ -45,8 +68,15 @@ public class SalaryDTO {
             private LocalTime clockIn;
             private LocalTime clockOut;
             private Boolean hasBreak;
-            private Double dailyAmount;
             private String attendanceStatus; // NORMAL, EARLY_LEAVE, LATE
+
+            public DailyAttendance(Attendance attendance) {
+                this.date = attendance.getStartTime().toLocalDateTime().toLocalDate();
+                this.clockIn = attendance.getStartTime().toLocalDateTime().toLocalTime();
+                this.clockOut = attendance.getEndTime().toLocalDateTime().toLocalTime();
+                this.hasBreak = attendance.getBreakTime() != null && attendance.getBreakTime() != 0;
+                this.attendanceStatus = attendance.getStatus().getDescription();
+            }
         }
     }
 }

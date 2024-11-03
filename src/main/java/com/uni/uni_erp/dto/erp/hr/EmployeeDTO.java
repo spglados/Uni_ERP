@@ -52,6 +52,8 @@ public class EmployeeDTO {
     private boolean identificationCopy;
     private boolean bankAccountCopy;
     private boolean residentRegistration;
+    private Integer wage;
+
 
     // Employee 엔티티를 DTO로 변환하는 생성자
     public EmployeeDTO(Employee employee) {
@@ -77,6 +79,7 @@ public class EmployeeDTO {
         this.hiredAt = employee.getHiredAt();
         this.updatedAt = employee.getUpdatedAt();
         this.quitAt = employee.getQuitAt();
+        this.wage = employee.getWage();
 
         // EmpDocumentDTO 설정
         if (employee.getEmpDocument() != null) {

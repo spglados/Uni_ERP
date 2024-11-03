@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
@@ -54,6 +53,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
      * 급여 계산용 근무 내역 조회
      *
      * @param empNo 직원 필터
+     * @param statuses 상태 필터
      */
     @Query("SELECT a FROM Attendance a " +
             "JOIN FETCH a.employee e " +
@@ -65,6 +65,20 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("statuses") List<Attendance.Status> statuses);
+
+    /**
+     * 급여 계산용 근무 내역 조회
+     *
+     * @param empNo 직원 필터
+     */
+    @Query("SELECT a FROM Attendance a " +
+            "JOIN FETCH a.employee e " +
+            "WHERE e.uniqueEmployeeNumber = :empNo " +
+            "AND a.startTime BETWEEN :start AND :end ")
+    List<Attendance> findByEmployeeNoAndDateBetween(
+            @Param("empNo") Long empNo,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
 
     /**
      * 시간 기반 출근 테이블 조회

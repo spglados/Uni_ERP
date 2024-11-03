@@ -1,61 +1,10 @@
-<!DOCTYPE html>
-<html lang="ko">
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@include file="/WEB-INF/view/layout/header.jsp"%>
+<%@ include file="/WEB-INF/view/layout/myPageHeader.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
-    <style>
-        .sidebar {
-            width: 200px;
-            float: left;
-            margin-right: 20px;
-            border-right: 1px solid #ccc;
-            padding: 10px;
-        }
-        .sidebar a {
-            display: block;
-            margin: 10px 0;
-            text-decoration: none;
-            color: #333;
-        }
-        .sidebar a:hover {
-            color: #007bff;
-        }
-        .profile-info {
-            overflow: hidden;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <h3>내 정보</h3>
-        <a href="/myPage">회원 정보 및 수정</a>
-        <a href="/myPage/storeList">가게 등록</a>
-        <a href="/myPage/paymentHistory">결제 내역</a>
-        <a href="/myPage/refundHistory">환불 내역</a>
-        <a href="/myPage/contact">내 문의 내역</a>
-    </div>
 
+<main class="main-container">
     <h1>마이페이지</h1>
     <div class="profile-info">
         <table>
@@ -139,8 +88,7 @@
             </tr>
         </table>
     </div>
-</body>
-<%@include file="/WEB-INF/view/layout/footer.jsp"%>
+</main>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
@@ -320,3 +268,4 @@
 
 
 </script>
+<%@ include file="/WEB-INF/view/layout/myPageFooter.jsp" %>
