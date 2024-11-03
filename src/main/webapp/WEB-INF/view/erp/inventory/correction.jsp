@@ -384,6 +384,12 @@
         return isNaN(parsed) ? null : parsed;
     }
 
+    document.getElementById("searchMaterialCode").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            searchMaterial();
+        }
+    });
+
     /**
      * 자재 검색 함수
      */

@@ -59,4 +59,12 @@ public class NoticeService {
     public void delete(Integer noticeId) {
         noticeRepository.deleteById(noticeId);
     }
+
+    public NoticeDTO findOne(Integer noticeId) {
+        Notice notice = noticeRepository.findById(noticeId).orElse(null);
+        if(notice == null) {
+            return null;
+        }
+        return convertToDTO(notice);
+    }
 }

@@ -29,11 +29,11 @@
             </div>
             <div class="form-group">
                 <label for="productName">상품명</label>
-                <input type="text" class="form-control" id="productName" name="name" required />
+                <input type="text" class="form-control" id="productName" name="name" required readonly/>
             </div>
             <div class="form-group">
                 <label for="category">카테고리</label>
-                <select class="form-control" id="category" name="category" required>
+                <select class="form-control" id="category" name="category" required disabled>
                     <option value="메인">메인</option>
                     <option value="사이드">사이드</option>
                     <option value="음료">음료</option>
@@ -42,13 +42,13 @@
             </div>
             <div class="form-group">
                 <label for="price">가격</label>
-                <input type="number" class="form-control" id="price" name="price" required />
+                <input type="number" class="form-control" id="price" name="price" required readonly/>
             </div>
 
             <!-- 이미지 업로드 -->
             <div class="form-group">
                 <label for="image">상품 이미지</label>
-                <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event)" />
+                <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event)" disabled/>
             </div>
 
             <!-- 이미지 미리보기 -->
@@ -60,10 +60,10 @@
             <!-- 추가 정보 (예: 설명) -->
             <div class="form-group">
                 <label for="description">상품 설명</label>
-                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                <textarea class="form-control" id="description" name="description" rows="3" readonly></textarea>
             </div>
 
-            <button type="button" class="btn btn-primary" onclick="updateProduct()">수정</button>
+            <button type="button" id="update-btn" class="btn btn-primary" onclick="updateProduct()" disabled>수정</button>
             <a href="/erp/product/list" class="btn btn-secondary">취소</a>
         </form>
     </div>
@@ -79,6 +79,12 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     }
+
+    document.getElementById("searchProductCode").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            searchProduct();
+        }
+    });
 
     // 상품 검색 함수
     function searchProduct() {
@@ -97,6 +103,7 @@
                 return response.json();
             })
             .then(data => {
+                editable();
                 populateForm(data);
             })
             .catch(error => {
@@ -154,6 +161,19 @@
                 console.error('Error:', error);
                 alert('오류가 발생했습니다: ' + error.message); // 문자열 결합 사용
             });
+    }
+
+    function editable() {
+
+        // 위의 필드들에 readonly 속성 추가
+        document.getElementById("productName").readOnly = false;
+        document.getElementById("price").readOnly = false;
+        document.getElementById("description").readOnly = false;
+
+        // 아래 필드들에 disabled 속성 해제
+        document.getElementById("category").disabled = false;
+        document.getElementById("image").disabled = false;
+        document.getElementById("update-btn").disabled = false;
     }
 </script>
 

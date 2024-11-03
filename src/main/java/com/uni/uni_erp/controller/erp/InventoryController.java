@@ -56,15 +56,19 @@ public class InventoryController {
 
     @GetMapping("/status")
     public String statusPage(Model model, HttpSession session) {
-        List<MaterialDTO.MaterialManagementDTO> materialManagementDTOList = inventoryService.getMaterialManagementList(session);
-        model.addAttribute("materialManagementList", materialManagementDTOList);
+        if(inventoryService.checkStockAndProduct(session)) {
+            List<MaterialDTO.MaterialManagementDTO> materialManagementDTOList = inventoryService.getMaterialManagementList(session);
+            model.addAttribute("materialManagementList", materialManagementDTOList);
+        }
         return "/erp/inventory/status";
     }
 
     @GetMapping("/situation")
     public String situationPage(Model model, HttpSession session) {
+        if(inventoryService.checkStockAndProduct(session)) {
         List<MaterialDTO.MaterialStatusDTO> materialStatusDTOList = inventoryService.getMaterialStatus(session);
         model.addAttribute("materialStatusList", materialStatusDTOList);
+        }
         return "/erp/inventory/situation";
     }
 
@@ -109,8 +113,10 @@ public class InventoryController {
 
     @GetMapping("/day-adjustment")
     public String dayAdjustmentPage(Model model, HttpSession session) {
-        List<MaterialDTO.MaterialStatusDTO> materialStatusDTOList = inventoryService.getMaterialStatus(session);
-        model.addAttribute("materialStatusList", materialStatusDTOList);
+        if(inventoryService.checkStockAndProduct(session)) {
+            List<MaterialDTO.MaterialStatusDTO> materialStatusDTOList = inventoryService.getMaterialStatus(session);
+            model.addAttribute("materialStatusList", materialStatusDTOList);
+        }
         return "/erp/inventory/day-adjustment";
     }
 
@@ -130,9 +136,11 @@ public class InventoryController {
 
     @GetMapping("/month-adjustment")
     public String monthAdjustmentPage(Model model, HttpSession session) {
-        List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentList =
-                inventoryService.getMonthAdjustment(session);
-        model.addAttribute("monthAdjustmentList", monthAdjustmentList);
+        if(inventoryService.checkStockAndProduct(session)) {
+            List<MaterialDTO.MaterialMonthAdjustmentDTO> monthAdjustmentList =
+                    inventoryService.getMonthAdjustment(session);
+            model.addAttribute("monthAdjustmentList", monthAdjustmentList);
+        }
         return "/erp/inventory/month-adjustment";
     }
 
@@ -144,10 +152,12 @@ public class InventoryController {
 
     @GetMapping("/disposal")
     public String disposePage(Model model, HttpSession session) {
-        List<MaterialDTO.MaterialDisposalListDTO> materialDisposalListDTO = inventoryService.getMaterialDisposalList(session);
-        List<MaterialDTO.ProductDisposalListDTO> productDisposalListDTO = inventoryService.getProductDisposalList(session);
-        model.addAttribute("materialDisposalList", materialDisposalListDTO);
-        model.addAttribute("productDisposalList", productDisposalListDTO);
+        if(inventoryService.checkStockAndProduct(session)) {
+            List<MaterialDTO.MaterialDisposalListDTO> materialDisposalListDTO = inventoryService.getMaterialDisposalList(session);
+            List<MaterialDTO.ProductDisposalListDTO> productDisposalListDTO = inventoryService.getProductDisposalList(session);
+            model.addAttribute("materialDisposalList", materialDisposalListDTO);
+            model.addAttribute("productDisposalList", productDisposalListDTO);
+        }
         return "/erp/inventory/dispose";
     }
 
