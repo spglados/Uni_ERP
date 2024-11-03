@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +63,10 @@ public class ScheduleService {
         try {
             Store storeEntity = storeRepository.findById(storeId).orElseThrow(() -> new RestException400("식당 정보가 없습니다."));
             Employee employeeEntity = employeeRepository.findById(reqDTO.getEmpId()).orElseThrow(() -> new RestException400("해당 직원이 없습니다."));
+            Optional<Schedule> overlappedSchedule = scheduleRepository.findOverlappingSchedules(reqDTO.getEmpId(), Timestamp.valueOf(reqDTO.getStartTime().replace("T", " ")), Timestamp.valueOf(reqDTO.getEndTime().replace("T", " ")));
+            if (overlappedSchedule.isPresent()) {
+                throw new RestException400("동일한 시간대에 예정된 일정이 있습니다.");
+            }
             scheduleEntity = scheduleRepository.save(reqDTO.toEntity(storeEntity, employeeEntity));
             Attendance attendanceEntity = Attendance.builder()
                     .schedule(scheduleEntity)
@@ -76,6 +81,7 @@ public class ScheduleService {
         } catch (RestException400 e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RestException500("스케줄 생성 중 알 수 없는 오류가 발생했습니다.");
         }
         return new ScheduleDTO.ResponseDTO(scheduleEntity);
@@ -90,6 +96,10 @@ public class ScheduleService {
     @Transactional
     public ScheduleDTO.ResponseDTO update(ScheduleDTO.UpdateDTO reqDTO, Integer storeId) {
         Schedule scheduleEntity = scheduleRepository.findById(reqDTO.getId()).orElseThrow(() -> new RestException400("일정 정보가 없습니다."));
+        Optional<Schedule> overlappedSchedule = scheduleRepository.findOverlappingSchedules(scheduleEntity.getEmployee().getId(), Timestamp.valueOf(reqDTO.getStartTime().replace("T", " ")), Timestamp.valueOf(reqDTO.getEndTime().replace("T", " ")));
+        if (overlappedSchedule.isPresent()) {
+            throw new RestException400("동일한 시간대에 예정된 일정이 있습니다.");
+        }
         scheduleEntity.setStartTime(Timestamp.valueOf(reqDTO.getStartTime().replace("T", " ")));
         scheduleEntity.setEndTime(Timestamp.valueOf(reqDTO.getEndTime().replace("T", " ")));
         return new ScheduleDTO.ResponseDTO(scheduleEntity);
