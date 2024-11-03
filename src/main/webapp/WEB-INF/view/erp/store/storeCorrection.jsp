@@ -176,9 +176,12 @@
                         </div>
                     </div>
                     <div class="button-group">
-                        <button type="button" id="editButton" onclick="enableEdit()" class="btn btn-main btn-main-size">수정</button>
+                        <button type="button" id="editButton" onclick="enableEdit()" class="btn btn-main btn-main-size">
+                            수정
+                        </button>
                         <input type="submit" id="submitButton" value="수정 완료" class="btn btn-main btn-main-size d-none"/>
-                        <button type="button" id="cancelButton" style="width: 100%" onclick="cancelEdit()" class="btn btn-secondary d-none">
+                        <button type="button" id="cancelButton" style="width: 100%" onclick="cancelEdit()"
+                                class="btn btn-secondary d-none">
                             취소
                         </button>
                     </div>
@@ -198,7 +201,8 @@
                                    style="margin: 10px" required>
                             <input type="number" id="minRequire" name="minRequiredNum" class="form-control"
                                    placeholder="최소 요구 인원 수" style="margin: 10px" required>
-                            <button type="button" onclick="createPosition()" class="btn btn-main btn-main-size">등록</button>
+                            <button type="button" onclick="createPosition()" class="btn btn-main btn-main-size">등록
+                            </button>
                         </div>
                     </div>
                     <div class="invalid-feedback">
@@ -252,170 +256,118 @@
                     </tbody>
                 </table>
             </div>
-            <div class="text-center">
-                <button type="button" id="editButton" onclick="enableEdit()" class="btn btn-primary">수정</button>
-                <input type="submit" id="submitButton" value="수정 완료" class="btn btn-success d-none"/>
-                <button type="button" id="cancelButton" onclick="cancelEdit()" class="btn btn-secondary d-none">취소
-                </button>
-            </div>
-        </form:form>
-
-        <!-- Position List -->
-        <h2 class="mt-5">포지션 목록</h2>
-        <table class="table table-hover table-bordered">
-            <thead class="table-light">
-            <tr>
-                <th>포지션 이름</th>
-                <th>최소 요구 인원 수</th>
-                <th>작업</th>
-            </tr>
-            </thead>
-            <tbody>
-            <c:forEach var="position" items="${positions}">
-                <c:if test="${position.name != '미정'}">
-                    <tr>
-                        <td>${position.name}</td>
-                        <td>${position.minRequiredNum}</td>
-                        <td>
-                            <form:form method="post"
-                                       action="${pageContext.request.contextPath}/erp/store/position/update"
-                                       modelAttribute="storePositionDTO" class="d-inline">
-                                <form:hidden path="id" value="${position.id}"/>
-                                <form:input path="name" value="${position.name}" class="form-control"/>
-                                <form:input path="minRequiredNum" value="${position.minRequiredNum}"
-                                            class="form-control"/>
-                                <input type="submit" value="수정" class="btn btn-warning btn-sm"/>
-                            </form:form>
-                            <button onclick="deletePosition(${position.id})" class="btn btn-danger btn-sm">삭제</button>
-                        </td>
-                    </tr>
-                </c:if>
-            </c:forEach>
-            </tbody>
-        </table>
-
-        <!-- Position Registration -->
-        <h2 class="mt-5">포지션 등록</h2>
-        <div class="input-group mb-3">
-            <input type="text" id="newPosition" class="form-control" placeholder="직책 이름" required>
-            <input type="number" id="minRequire" class="form-control" placeholder="최소 요구 인원 수" required>
-            <button onclick="createPosition()" class="btn btn-success">등록</button>
         </div>
+        <!-- Flexbox 컨테이너 끝 -->
     </div>
-    <!-- Flexbox 컨테이너 끝 -->
-</div>
 
-<!-- jQuery and Bootstrap JS -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Custom JS -->
-<script>
-    $(document).ready(function () {
-        // Form validation
-        (function () {
-            'use strict'
-            var forms = document.querySelectorAll('.needs-validation')
-            Array.prototype.slice.call(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-        })()
+    <!-- Custom JS -->
+    <script>
+        $(document).ready(function () {
+            // Form validation
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
 
-        $("#editButton").on("click", function () {
-            if (confirm("가게 정보를 수정하시겠습니까?")) {
-                enableEdit();
-            }
-        });
-
-        $("#cancelButton").on("click", function () {
-            cancelEdit();
-        });
-
-        $("#submitButton").on("click", function (e) {
-            if (!confirm("수정된 내용을 저장하시겠습니까?")) {
-                e.preventDefault();
-            }
-        });
-    });
-
-    function enableEdit() {
-        $("#storeName, #storeAddress").prop("readonly", false);
-        $("#is24Hours").prop("disabled", false); // 24시간 운영 여부 활성화
-        $("#editButton").addClass("d-none");
-        $("#cancelButton, #submitButton").removeClass("d-none").prop("disabled", false);
-    }
-
-    function cancelEdit() {
-        $("#storeName, #storeAddress").prop("readonly", true);
-        $("#is24Hours").prop("disabled", true);
-        $("#editButton").removeClass("d-none");
-        $("#cancelButton, #submitButton").addClass("d-none").prop("disabled", true);
-    }
-
-    function deletePosition(positionId) {
-        if (!confirm('정말 삭제하시겠습니까?')) return;
-        fetch('${pageContext.request.contextPath}/erp/store/position/' + positionId, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': "${_csrf.token}"
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('삭제되었습니다.');
-                    window.location.reload();
-                } else {
-                    alert('삭제 중 오류가 발생했습니다.');
+            $("#editButton").on("click", function () {
+                if (confirm("가게 정보를 수정하시겠습니까?")) {
+                    enableEdit();
                 }
-            })
-            .catch(error => console.log('error', error));
-    }
+            });
 
-    function createPosition() {
-        let newPosition = document.getElementById('newPosition').value.trim();
-        let minRequire = document.getElementById('minRequire').value.trim();
+            $("#cancelButton").on("click", function () {
+                cancelEdit();
+            });
 
-        if (newPosition === '' || minRequire === '') {
-            alert('값이 비어있습니다.');
-            return;
+            $("#submitButton").on("click", function (e) {
+                if (!confirm("수정된 내용을 저장하시겠습니까?")) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        function enableEdit() {
+            $("#storeName, #storeAddress").prop("readonly", false);
+            $("#is24Hours").prop("disabled", false); // 24시간 운영 여부 활성화
+            $("#editButton").addClass("d-none");
+            $("#cancelButton, #submitButton").removeClass("d-none").prop("disabled", false);
         }
 
-        const requestBody = JSON.stringify({
-            name: newPosition,
-            minRequiredNum: parseInt(minRequire),
-            storeId: "${store.id}"
-        });
+        function cancelEdit() {
+            $("#storeName, #storeAddress").prop("readonly", true);
+            $("#is24Hours").prop("disabled", true);
+            $("#editButton").removeClass("d-none");
+            $("#cancelButton, #submitButton").addClass("d-none").prop("disabled", true);
+        }
 
-        fetch('${pageContext.request.contextPath}/erp/store/position/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': "${_csrf.token}"
-            },
-            body: requestBody
-        })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
+        function deletePosition(positionId) {
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+            fetch('/erp/store/position/' + positionId, {
+                method: 'DELETE'
             })
-            .then(data => {
-                console.log('data', data);
-                alert('등록 성공');
-                window.location.reload();
-            })
-            .catch(error => {
-                console.log('error', error);
-                alert('등록 실패: ' + error.message);
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('삭제되었습니다.');
+                        window.location.reload();
+                    } else {
+                        alert('삭제 중 오류가 발생했습니다.');
+                    }
+                })
+                .catch(error => console.log('error', error));
+        }
+
+        function createPosition() {
+            let newPosition = document.getElementById('newPosition').value.trim();
+            let minRequire = document.getElementById('minRequire').value.trim();
+
+            if (newPosition === '' || minRequire === '') {
+                alert('값이 비어있습니다.');
+                return;
+            }
+
+            const requestBody = JSON.stringify({
+                name: newPosition,
+                minRequiredNum: parseInt(minRequire),
+                storeId: "${store.id}"
             });
-    }
-</script>
 
-<%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
+            fetch('${pageContext.request.contextPath}/erp/store/position/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "${_csrf.token}"
+                },
+                body: requestBody
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('data', data);
+                    alert('등록 성공');
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    alert('등록 실패: ' + error.message);
+                });
+        }
+    </script>
+
+    <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

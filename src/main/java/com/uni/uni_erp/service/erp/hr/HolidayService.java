@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HolidayService {
 
-    // @Value("${api.key.data_kkh}")
+     @Value("${api.key.data_kkh}")
     private String serviceKey;
 
     private final HolidayRepository holidayRepository;
