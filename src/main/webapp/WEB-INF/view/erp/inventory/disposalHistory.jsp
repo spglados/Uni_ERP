@@ -7,24 +7,9 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-
-<!-- 부트스트랩 CSS 및 Font Awesome 포함 -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/erp/material.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-      crossorigin="anonymous" referrerpolicy="no-referrer"/>
-
-<!-- 부트스트랩 JS 및 jQuery 포함 (모달 및 탭 기능을 위해 필요) -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdJZilnjrKKtaAElcqSZ1twcLbU5lXrK4lUGnGk0R1nGic4s1jGKf1BvCDjH8D"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-LtrjvnR4/J58gJSAJH05CdFKzFJDxYgC5r6dY6rXkz9O12FV1DlWQKIcXh8H7N9K"
-        crossorigin="anonymous"></script>
 
 <style>
-    /* /css/erp/material.css 파일에 추가 */
-
     /* 로딩 스피너 스타일 */
     .spinner-overlay {
         position: fixed;
@@ -55,47 +40,20 @@
 </div>
 
 <!-- 폐기 내역 콘텐츠 -->
-<div class="content container-fluid">
+<div class="content">
     <h1 class="mb-4">폐기 내역</h1>
     <hr>
-
-<%--    <!-- 카테고리 필터와 검색창 -->--%>
-<%--    <div class="d-flex justify-content-end mb-3">--%>
-<%--        <!-- 자재 카테고리 선택 필터 -->--%>
-<%--        <div class="form-group mr-3">--%>
-<%--            <select id="historyMaterialCategoryFilter" class="form-control">--%>
-<%--                <option value="전체">자재 카테고리</option>--%>
-<%--                <option value="냉동품">냉동품</option>--%>
-<%--                <option value="냉장품">냉장품</option>--%>
-<%--                <option value="상온품">상온품</option>--%>
-<%--            </select>--%>
-<%--        </div>--%>
-<%--        <!-- 상품 카테고리 선택 필터 -->--%>
-<%--        <div class="form-group mr-3">--%>
-<%--            <select id="historyProductCategoryFilter" class="form-control">--%>
-<%--                <option value="전체">상품 카테고리</option>--%>
-<%--                <option value="메인">메인</option>--%>
-<%--                <option value="사이드">사이드</option>--%>
-<%--                <option value="주류">주류</option>--%>
-<%--                <option value="음료">음료</option>--%>
-<%--            </select>--%>
-<%--        </div>--%>
-<%--        <input id="historySearchInput" placeholder="자재/상품명 검색" class="form-control mr-2" style="width: 200px;">--%>
-<%--    </div>--%>
-
-<%--    <hr>--%>
-
     <!-- 폐기 내역 테이블 -->
     <div class="table-container">
         <table class="table table-bordered table-striped" id="historyDisposalList">
             <thead class="thead-light">
             <tr>
-                <th>유형</th>
-                <th>번호</th>
-                <th>이름</th>
-                <th>분류</th>
-                <th>폐기 양</th>
-                <th>폐기 날짜</th>
+                <th style="background-color: #F8F399; color: black;">유형</th>
+                <th style="background-color: #F8F399; color: black;">번호</th>
+                <th style="background-color: #F8F399; color: black;">이름</th>
+                <th style="background-color: #F8F399; color: black;">분류</th>
+                <th style="background-color: #F8F399; color: black;">폐기 양</th>
+                <th style="background-color: #F8F399; color: black;">폐기 날짜</th>
             </tr>
             </thead>
             <tbody>
@@ -148,34 +106,6 @@
                 historyDisposalList.innerHTML += row;
             });
         }
-
-        // 필터링 함수
-        function filterHistoryDisposals() {
-            const materialCategory = historyMaterialCategoryFilter.value;
-            const productCategory = historyProductCategoryFilter.value;
-            const searchKeyword = historySearchInput.value.toLowerCase();
-
-            // 필터링된 데이터를 저장할 배열
-            let filteredData = disposalHistoryList.filter(function (history) {
-                let categoryMatch = false;
-                if (history.type === '자재') {
-                    categoryMatch = (materialCategory === '전체') || (history.category === materialCategory);
-                } else if (history.type === '상품') {
-                    categoryMatch = (productCategory === '전체') || (history.category === productCategory);
-                }
-
-                const searchMatch = history.name.toLowerCase().includes(searchKeyword);
-
-                return categoryMatch && searchMatch;
-            });
-
-            populateHistoryDisposalTables(filteredData);
-        }
-
-        // 필터링 이벤트 리스너
-        historyMaterialCategoryFilter.addEventListener('change', filterHistoryDisposals);
-        historyProductCategoryFilter.addEventListener('change', filterHistoryDisposals);
-        historySearchInput.addEventListener('input', filterHistoryDisposals);
 
         // 초기 데이터 로딩 함수 (서버로부터 데이터 fetch)
         function loadDisposalHistory() {

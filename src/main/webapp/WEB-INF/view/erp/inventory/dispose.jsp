@@ -8,22 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 
-<!-- 부트스트랩 CSS 및 Font Awesome 포함 -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="/css/erp/material.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-      crossorigin="anonymous" referrerpolicy="no-referrer"/>
-
-<!-- 부트스트랩 JS 및 jQuery 포함 (모달 및 탭 기능을 위해 필요) -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdJZilnjrKKtaAElcqSZ1twcLbU5lXrK4lUGnGk0R1nGic4s1jGKf1BvCDjH8D"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-LtrjvnR4/J58gJSAJH05CdFKzFJDxYgC5r6dY6rXkz9O12FV1DlWQKIcXh8H7N9K"
-        crossorigin="anonymous"></script>
-
 <style>
-
     :root {
         --main-color: #F8F399;
         --main-color-dark: #e0d67a;
@@ -77,6 +62,10 @@
         z-index: 1050; /* 부트스트랩 모달보다 높게 설정 */
         display: none; /* 초기에는 숨김 */
     }
+    th {
+        background-color: #F8F399;
+        color: black;
+    }
 </style>
 
 <!-- 로딩 스피너 -->
@@ -87,7 +76,7 @@
 </div>
 
 <!-- 폐기 등록 콘텐츠 -->
-<div class="content container-fluid">
+<div class="content">
     <h1 class="mb-4">폐기 등록</h1>
     <hr>
 
@@ -103,7 +92,7 @@
     <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
         <div class="table-container">
             <table class="table table-bordered table-striped" id="disposalList">
-                <thead class="thead-light">
+                <thead>
                 <tr>
                     <th>유형</th>
                     <th>번호</th>
@@ -133,8 +122,6 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- 검색 필드 -->
-                    <input type="text" id="modalSearchInput" class="form-control mb-3" placeholder="검색어 입력">
                     <!-- 탭 메뉴 -->
                     <ul class="nav nav-tabs" id="disposalTab" role="tablist">
                         <li class="nav-item">
@@ -226,7 +213,6 @@
             const addButton = document.getElementById('addButton');
             const saveButton = document.getElementById('saveButton');
             const disposalModal = $('#disposalModal');
-            const modalSearchInput = document.getElementById('modalSearchInput');
             const materialsTableBody = document.getElementById('materialsTableBody');
             const productsTableBody = document.getElementById('productsTableBody');
             const confirmAddButton = document.getElementById('confirmAddButton');
@@ -317,7 +303,6 @@
                     checkbox.checked = false;
                 });
                 // 모달 검색 필드 초기화
-                modalSearchInput.value = '';
                 // 모든 행 보이기
                 const materialRows = materialsTableBody.getElementsByTagName('tr');
                 Array.from(materialRows).forEach(function (row) {

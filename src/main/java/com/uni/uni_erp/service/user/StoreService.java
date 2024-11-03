@@ -91,17 +91,14 @@ public class StoreService {
         EmpPosition defaultPosition = storePositionRepository.findByName("미정", storeId)
                 .orElseThrow(() -> new EntityNotFoundException("기존 포지션 수정 중 오류 발생"));
 
-        List<Employee> employeeList = employeeRepository.findByStoreId(storeId);
+        List<Employee> employeeList = employeeRepository.findByStoreIdAndEmpPositionId(storeId, id);
 
         if (!employeeList.isEmpty()) {
             for (Employee employee : employeeList) {
-                if(employee.getEmpPosition().equals(positionToDelete)) {
-                    employee.setEmpPosition(defaultPosition);
-                }
+                employee.setEmpPosition(defaultPosition);
             }
         }
-
-        storePositionRepository.delete(positionToDelete);
+        storePositionRepository.deleteById(id);
         return true;
     }
 
