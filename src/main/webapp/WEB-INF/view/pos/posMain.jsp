@@ -20,8 +20,7 @@
 <div class="header">
     <img src="/images/logo/logoPos.png" class="animate__animated animate__fadeIn" alt="포스로고"
          style="height: 100px; width: 125px;">
-    <a href="#">판매</a>
-    <a href="#">출퇴근</a>
+    <%@include file="/WEB-INF/view/pos/attendanceModal.jsp" %>
     <h1 class="animate__animated animate__fadeIn">UNI-POS SYSTEM ( 가상 )</h1>
 </div>
 
@@ -54,7 +53,9 @@
     <div class="order-section">
         <form id="product-submit">
             <h3>결제 목록</h3>
-            <button type="button" id="clear-order" class="clear-order-button">전체삭제</button>
+            <button type="button" id="clear-order" class="btn clear-order-button" style="background-color: #ffc107; color: #212529; border-color: #ffc107;">
+                전체삭제
+            </button>
             <button type="button" id="previous-order" class="previous-order-button btn btn-primary" data-toggle="modal" data-target="#previousOrderModal">
                 주문 조회
             </button>
@@ -110,7 +111,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="previousOrderModalLabel">주문 조회</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span> <!-- X 아이콘 추가 -->
+                </button>
             </div>
             <div class="modal-body">
                 <div id="previousOrderList" style="max-height: 700px; overflow-y: auto;">
