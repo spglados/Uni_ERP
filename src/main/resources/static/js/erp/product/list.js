@@ -4,43 +4,6 @@ let canSubmit = true;  // 요청이 가능한지 여부를 확인하는 플래�
 const submissionTerm = 2000;  // 2초(2000ms) 동안 재요청 차단
 
 // 재료 보기 모달을 닫는 함수
-function saveIngredientModal() {
-    let unsavedChanges = false;
-    document.querySelectorAll('.ingredient-item').forEach(function(item) {
-        const editButton = item.querySelector('.edit-btn');
-        if(editButton && (editButton.textContent === '저장' || editButton.classList.contains('custom-btn-warning'))) {
-            unsavedChanges = true;
-        }
-    });
-    console.log('unsavedChanges', unsavedChanges);
-    if (unsavedChanges) {
-        const confirmSave = confirm("수정된 정보가 있습니다. 저장하시겠습니까?");
-        if (!confirmSave) {
-            document.querySelectorAll('.ingredient-item input, .ingredient-item select').forEach(function(input) {
-                input.disabled = true;
-            });
-            document.querySelectorAll('.ingredient-item .edit-btn').forEach(function(button) {
-                button.textContent = '수정';
-                button.classList.remove('custom-btn-success');
-                button.classList.add('custom-btn-warning');
-            });
-        }
-    }
-
-    // 재료 목록 초기화
-    document.getElementById('ingredientList').innerHTML = '';
-
-    const modal = document.getElementById('ingredientModal');
-    modal.style.display = 'none';  // 모달을 숨깁니다.
-    modal.classList.remove('show'); // 'show' 클래스를 제거하여 부트스트랩 모달의 활성 상태를 제거합니다.
-
-    //document.body.classList.remove('modal-open');
-    const modalBackdrop = document.querySelector('.modal-backdrop');
-    if (modalBackdrop) {
-        modalBackdrop.parentNode.removeChild(modalBackdrop);
-    }
-}
-
 // 재료를 추가하는 함수
 function addIngredient() {
     const ingredientList = document.getElementById('ingredientList');
