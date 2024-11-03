@@ -1,0 +1,425 @@
+@charset "UTF-8";
+
+/* 기본 스타일 리셋 및 폰트 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f0f8ff; /* 진한 하늘색 배경 */
+    color: #333;
+    line-height: 1.6;
+}
+
+/* 컨테이너 설정 */
+.container-fluid {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 랜덤 이미지 스타일 */
+.random-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 탭 메뉴 스타일링 */
+.tabMenu {
+    border-top: 2px solid #1E90FF; /* 진한 하늘색 */
+    border-bottom: 2px solid #1E90FF;
+    margin: 40px 0;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    list-style: none;
+}
+
+.tabs li {
+    flex: 1;
+    text-align: center;
+}
+
+.tabBtn {
+    display: block;
+    padding: 15px 0;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #1E90FF; /* 진한 하늘색 */
+    transition: color 0.3s ease, background-color 0.3s ease;
+    font-weight: 500;
+}
+
+.tabBtn:hover {
+    color: #104E8B; /* 더 진한 하늘색 */
+    background-color: #e6f2ff;
+}
+
+.active {
+    color: #104E8B; /* 더욱 진한 하늘색 */
+    font-weight: 700;
+    position: relative;
+}
+
+.active::after {
+    content: "";
+    display: block;
+    width: 50px;
+    height: 3px;
+    background-color: #104E8B;
+    margin: 10px auto 0;
+    border-radius: 2px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        width: 0;
+    }
+    to {
+        width: 50px;
+    }
+}
+
+/* 프리미엄 서비스 소개 섹션 스타일링 */
+.intro-section {
+    background: linear-gradient(135deg, #1E90FF, #87CEFA);
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    color: #fff;
+    position: relative;
+    animation: fadeIn 1s ease-out;
+    margin-bottom: 40px;
+}
+
+.intro-section::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    z-index: -1;
+}
+
+.intro-icon {
+    font-size: 2rem;
+    color: #FFD700; /* 금색 아이콘 */
+    margin-bottom: 15px;
+    animation: bounce 2s infinite;
+}
+
+/* 타이틀 스타일링 */
+.title--heading {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+/* 설명 문구 스타일링 */
+.premium-section p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #f0f8ff;
+}
+
+/* 구독 옵션 랩핑 */
+.item--wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px 0;
+}
+
+/* 구독 플랜 카드 스타일링 */
+.plan {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    max-width: 33%; /* 고정 너비로 설정 */
+    width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plan:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+}
+
+.plan strong {
+    font-weight: 600;
+    color: #1E90FF; /* 진한 하늘색 */
+}
+
+.plan .inner {
+    padding: 30px 20px;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    position: relative;
+}
+
+/* 가격 표시 스타일 */
+.plan .pricing {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    background-color: #1E90FF; /* 진한 하늘색 */
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.plan .pricing small {
+    color: #f0f8ff;
+    font-size: 0.75rem;
+    margin-left: 0.25em;
+}
+
+.plan .title {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    color: #333;
+    text-align: center;
+    font-weight: 600;
+}
+
+.plan .info {
+    font-size: 1rem;
+    text-align: center;
+    margin: 15px 0;
+    color: #555;
+}
+
+.plan .features {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.plan .features li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 1rem;
+}
+
+.plan .features .icon {
+    background-color: #1E90FF; /* 진한 하늘색 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.plan .features .icon i {
+    font-size: 14px;
+}
+
+.plan .button {
+    background-color: #1E90FF; /* 진한 하늘색 */
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    padding: 12px 0;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.plan .button:hover {
+    background-color: #104E8B; /* 더 진한 하늘색 */
+    transform: scale(1.05);
+}
+
+.plan .button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.5);
+}
+
+/* 결제일 설정 폼 그룹 스타일링 */
+.form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e6f2ff; /* 연한 하늘색 배경 */
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* 결제일 레이블 스타일링 */
+.payment-date-label {
+    flex: 1;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.payment-date-label i {
+    margin-right: 10px;
+    color: #1E90FF; /* 메인 컬러인 진한 하늘색 */
+    font-size: 1.2rem;
+}
+
+/* 결제일 셀렉트 박스 스타일링 */
+.payment-date-select {
+    flex: 1;
+    margin-left: 20px;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 1px solid #1E90FF; /* 진한 하늘색 테두리 */
+    border-radius: 6px;
+    height: 40px;
+    background-color: #fff;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #333;
+    line-height: 40px;
+    font-size: 1rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 38px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #333 transparent transparent transparent;
+}
+
+/* 애니메이션 추가 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+/* 알림 메시지 스타일링 */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.alert i {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+/* 로딩 스피너 스타일링 */
+#button-spinner {
+    font-size: 1rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .tabs li {
+        width: 50%;
+    }
+
+    .plan {
+        max-width: 90%;
+    }
+
+    .tabMenu {
+        margin: 20px 0;
+    }
+
+    .title--heading {
+        font-size: 1.75rem;
+    }
+
+    .plan .title {
+        font-size: 1.25rem;
+    }
+
+    .plan .pricing {
+        font-size: 0.875rem;
+        padding: 8px 12px;
+    }
+
+    .plan .button {
+        font-size: 0.95rem;
+        padding: 10px 0;
+    }
+
+    .intro-section {
+        padding: 30px 20px;
+    }
+
+    .title--heading {
+        font-size: 2rem;
+    }
+
+    .premium-section p {
+        font-size: 1rem;
+    }
+
+    .payment-date-label {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .payment-date-select {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}
