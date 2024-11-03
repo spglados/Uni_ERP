@@ -4,6 +4,8 @@ import com.uni.uni_erp.domain.entity.erp.product.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -18,22 +20,20 @@ public class EmpPosition {
     private Integer id;
 
     @Column(nullable = false)
-    private String name;
+    @Builder.Default
+    private String name = "미정";
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
     private String scheduleColor;
 
     @Column(name = "min_required_num",nullable = false)
+    @Builder.Default
     private Integer minRequiredNum = 0;
 
-    @PrePersist
-    public void setDefaultValues() {
-        if (this.name == null || this.name.isEmpty()) {
-            this.name = "미정"; // 기본 값 설정
-        }
-    }
-
+    // TODO 오류 발생 시 삭제해야함
+    @OneToMany(mappedBy = "empPosition", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Employee> employees;
 }

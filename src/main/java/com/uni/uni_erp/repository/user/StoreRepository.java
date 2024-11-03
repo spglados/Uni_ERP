@@ -34,8 +34,8 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
 
     // 가게 수정
     @Modifying
-    @Query("UPDATE Store s SET s.name = :name, s.storeAddress = :storeAddress WHERE s.id = :id AND s.user.id = :userId")
-    void updateStore(@Param("id") Integer id, @Param("name") String name, @Param("storeAddress") String storeAddress, @Param("userId") Integer userId);
+    @Query("UPDATE Store s SET s.name = :name, s.storeAddress = :storeAddress, s.is24Hours = :is24Hours WHERE s.id = :id AND s.user.id = :userId")
+    void updateStore(Integer id, String name, String storeAddress, Integer userId, Integer is24Hours);
 
     List<Store> findByUserId(Integer userId);
 
@@ -43,8 +43,5 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
     Integer countByUserId(@Param("userId") Integer userId);
 
     void deleteByUserId(Integer userId);
-
-
-    void deleteById(Integer storeId);
 
 }

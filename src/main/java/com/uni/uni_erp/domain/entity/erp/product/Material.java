@@ -3,6 +3,8 @@ package com.uni.uni_erp.domain.entity.erp.product;
 import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,6 +45,7 @@ public class Material {
     private UnitCategory alarmUnit;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
@@ -51,6 +54,18 @@ public class Material {
 
     @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MaterialAdjustment> adjustmentHistory;
+
+    // TODO 오류 발생시 이부분 삭제 해야됨
+    @OneToMany(mappedBy = "material", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Ingredient> ingredients;
+
+    // TODO 오류 발생시 이부분 삭제 해야됨
+    @OneToMany(mappedBy = "material", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<MaterialStatus> materialStatuses;
+
+    // TODO 오류 발생시 이부분 삭제 해야됨
+    @OneToMany(mappedBy = "material", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<MaterialDisposal> materialDisposals;
 
     @PrePersist
     protected void prePersist() {

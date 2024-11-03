@@ -10,6 +10,7 @@ import com.uni.uni_erp.dto.store.AdminStoreUpdateDTO;
 import com.uni.uni_erp.dto.store.StorePositionDTO;
 import com.uni.uni_erp.dto.store.StoreSaveDTO;
 import com.uni.uni_erp.dto.store.StoreUpdateDTO;
+import com.uni.uni_erp.repository.erp.hr.EmpPositionRepository;
 import com.uni.uni_erp.repository.erp.hr.EmployeeRepository;
 import com.uni.uni_erp.repository.user.StorePositionRepository;
 import com.uni.uni_erp.repository.user.StoreRepository;
@@ -33,6 +34,7 @@ public class StoreService {
     private final StorePositionRepository storePositionRepository;
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
+    private final EmpPositionRepository empPositionRepository;
 
 
     // 특정 사용자가 소유한 스토어 목록 조회
@@ -133,7 +135,7 @@ public class StoreService {
     public StoreUpdateDTO getStoreById(Integer id) {
         Store store = storeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("가게를 찾을 수 없습니다. ID: " + id));
-        return new StoreUpdateDTO(store.getId(), store.getName(), store.getStoreAddress()); // StoreUpdateDTO로 변환하여 반환
+        return new StoreUpdateDTO(store.getId(), store.getName(), store.getStoreAddress(), store.getIs24Hours()); // StoreUpdateDTO로 변환하여 반환
     }
 
     // 가게 정보 수정
@@ -146,6 +148,7 @@ public class StoreService {
         // 수정할 필드 업데이트
         store.setName(storeUpdateDTO.getName());
         store.setStoreAddress(storeUpdateDTO.getStoreAddress());
+        store.setIs24Hours(storeUpdateDTO.getIs24Hours());
 
         // 변경된 가게 정보를 저장
         storeRepository.save(store);
@@ -172,8 +175,11 @@ public class StoreService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Store store = storeSaveDTO.toStore(user);
-
-        return storeRepository.save(store);
+        store = storeRepository.save(store);
+        empPositionRepository.save(EmpPosition.builder()
+                .store(store)
+                .build());
+        return store;
     }
 
     public List<Store> findAllById(Integer userid){

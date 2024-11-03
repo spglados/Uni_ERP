@@ -25,9 +25,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.YearMonth;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -309,6 +311,7 @@ public class HrController {
 
     /**
      * 급여 산출 페이지
+     *
      * @param model 직원 정보 저장
      * @return 급여 산출 페이지
      */
@@ -322,6 +325,7 @@ public class HrController {
 
     /**
      * 급여 계산 요청
+     *
      * @param reqDTO 산출 대상과 수당 및 세금 포함 여부 조회
      * @return 계산 결과 반환
      */
@@ -333,6 +337,7 @@ public class HrController {
 
     /**
      * 계산된 급여 저장
+     *
      * @param reqDTO 계산된 급여에서 수당 및 세금 여부 선택 받아서 저장
      * @return 성공 여부 반환
      */
@@ -349,24 +354,27 @@ public class HrController {
     }
 
     @GetMapping("/salaries-history")
-    public String empSalaryPage(Integer employeeId, String yearMonth, Model model) {
-        List<SalaryDTO> employeeList = getSampleEmployees();
-        model.addAttribute("employeeList", employeeList);
-
+    public String empSalaryPage(Long empNo, String yearMonth, Model model, HttpSession session) {
+        Integer storeId = (Integer) session.getAttribute("storeId");
         // 기본값 설정 (현재 월)
-        YearMonth currentYearMonth = (yearMonth != null && !yearMonth.isEmpty()) ? YearMonth.parse(yearMonth) : YearMonth.now();
+        YearMonth currentYearMonth = (yearMonth != null && !yearMonth.isEmpty()) ? YearMonth.parse(yearMonth) : YearMonth.now().minusMonths(1);
         model.addAttribute("currentYearMonth", currentYearMonth.toString());
+        List<SalaryDTO> employeeList = payrollService.getPayrollByStoreId(storeId, currentYearMonth);
+        model.addAttribute("employeeList", employeeList);
+        if (employeeList.isEmpty()) {
+            return "/erp/hr/salariesHistory";
+        }
 
         // 선택된 직원 ID가 없으면 첫 번째 직원 선택
-        if (employeeId == null && !employeeList.isEmpty()) {
-            employeeId = employeeList.get(0).getId();
+        if (empNo == null && !employeeList.isEmpty()) {
+            empNo = employeeList.get(0).getEmpNo();
         }
 
         // 선택된 직원 찾기
         // 람다 사용하려면 간접적 파이널 혹은 파이널 변수 써야됨.
-        Integer finalEmployeeId = employeeId;
+        Long finalEmployeeId = empNo;
         Optional<SalaryDTO> selectedEmployeeOpt = employeeList.stream()
-                .filter(emp -> emp.getId().equals(finalEmployeeId))
+                .filter(emp -> emp.getEmpNo() == finalEmployeeId)
                 .findFirst();
 
         if (selectedEmployeeOpt.isPresent()) {
@@ -387,194 +395,6 @@ public class HrController {
         }
 
         return "/erp/hr/salariesHistory";
-    }
-
-
-
-    public static List<SalaryDTO> getSampleEmployees() {
-        return Arrays.asList(
-                new SalaryDTO(
-                        1,
-                        "홍길동",
-                        "010-1234-5678",
-                        "123-456-7890",
-                        10000.0,
-                        new SalaryDTO.SalaryDetail(
-                                2024,
-                                4,
-                                LocalDate.of(2024, 5, 25),
-                                160.0,
-                                20,
-                                1600000.0,
-                                200000.0,
-                                1400000.0,
-                                Arrays.asList(
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 1), LocalTime.of(9, 0), LocalTime.of(18, 0), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 2), LocalTime.of(9, 15), LocalTime.of(18, 0), false, 175000.0, "지각"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 3), LocalTime.of(9, 0), LocalTime.of(17, 30), true, 170000.0, "조퇴")
-                                )
-                        )
-                ),
-                new SalaryDTO(
-                        2,
-                        "김영희",
-                        "010-2345-6789",
-                        "234-567-8901",
-                        12000.0,
-                        new SalaryDTO.SalaryDetail(
-                                2024,
-                                4,
-                                LocalDate.of(2024, 5, 25),
-                                160.0,
-                                20,
-                                1920000.0,
-                                240000.0,
-                                1680000.0,
-                                Arrays.asList(
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 1), LocalTime.of(8, 45), LocalTime.of(17, 45), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 2), LocalTime.of(9, 0), LocalTime.of(18, 0), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 3), LocalTime.of(9, 30), LocalTime.of(18, 0), false, 175000.0, "지각")
-                                )
-                        )
-                ),
-                new SalaryDTO(
-                        3,
-                        "이철수",
-                        "010-3456-7890",
-                        "345-678-9012",
-                        11000.0,
-                        new SalaryDTO.SalaryDetail(
-                                2024,
-                                4,
-                                LocalDate.of(2024, 5, 25),
-                                160.0,
-                                20,
-                                1760000.0,
-                                220000.0,
-                                1540000.0,
-                                Arrays.asList(
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 1), LocalTime.of(9, 0), LocalTime.of(18, 0), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 2), LocalTime.of(8, 50), LocalTime.of(17, 50), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 3), LocalTime.of(9, 0), LocalTime.of(17, 30), true, 170000.0, "조퇴")
-                                )
-                        )
-                ),
-                // 추가 데이터 1
-                new SalaryDTO(
-                        4,
-                        "박지수",
-                        "010-4567-8901",
-                        "456-789-0123",
-                        10500.0,
-                        new SalaryDTO.SalaryDetail(
-                                2024,
-                                4,
-                                LocalDate.of(2024, 5, 25),
-                                160.0,
-                                20,
-                                1680000.0,
-                                210000.0,
-                                1470000.0,
-                                Arrays.asList(
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 1), LocalTime.of(9, 0), LocalTime.of(18, 0), false, 170000.0, "지각"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 2), LocalTime.of(9, 0), LocalTime.of(18, 0), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 3), LocalTime.of(9, 0), LocalTime.of(17, 0), true, 170000.0, "조퇴")
-                                )
-                        )
-                ),
-                // 추가 데이터 2
-                new SalaryDTO(
-                        5,
-                        "최민호",
-                        "010-5678-9012",
-                        "567-890-1234",
-                        11500.0,
-                        new SalaryDTO.SalaryDetail(
-                                2024,
-                                4,
-                                LocalDate.of(2024, 5, 25),
-                                160.0,
-                                20,
-                                1840000.0,
-                                230000.0,
-                                1610000.0,
-                                Arrays.asList(
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 1), LocalTime.of(9, 0), LocalTime.of(18, 0), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 2), LocalTime.of(9, 5), LocalTime.of(18, 0), false, 175000.0, "지각"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 3), LocalTime.of(9, 0), LocalTime.of(17, 30), true, 170000.0, "조퇴")
-                                )
-                        )
-                ),
-                // 추가 데이터 3
-                new SalaryDTO(
-                        6,
-                        "장서연",
-                        "010-6789-0123",
-                        "678-901-2345",
-                        13000.0,
-                        new SalaryDTO.SalaryDetail(
-                                2024,
-                                4,
-                                LocalDate.of(2024, 5, 25),
-                                160.0,
-                                20,
-                                2080000.0,
-                                260000.0,
-                                1820000.0,
-                                Arrays.asList(
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 1), LocalTime.of(9, 0), LocalTime.of(18, 0), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 2), LocalTime.of(9, 20), LocalTime.of(18, 0), false, 175000.0, "지각"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 3), LocalTime.of(9, 0), LocalTime.of(17, 0), true, 170000.0, "조퇴")
-                                )
-                        )
-                ),
-                // 추가 데이터 4
-                new SalaryDTO(
-                        7,
-                        "김수빈",
-                        "010-7890-1234",
-                        "789-012-3456",
-                        9500.0,
-                        new SalaryDTO.SalaryDetail(
-                                2024,
-                                4,
-                                LocalDate.of(2024, 5, 25),
-                                160.0,
-                                20,
-                                1520000.0,
-                                190000.0,
-                                1330000.0,
-                                Arrays.asList(
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 1), LocalTime.of(9, 0), LocalTime.of(18, 0), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 2), LocalTime.of(9, 10), LocalTime.of(18, 0), false, 175000.0, "지각"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 3), LocalTime.of(9, 0), LocalTime.of(17, 30), true, 170000.0, "조퇴")
-                                )
-                        )
-                ),
-                // 추가 데이터 5
-                new SalaryDTO(
-                        8,
-                        "오지호",
-                        "010-8901-2345",
-                        "890-123-4567",
-                        12500.0,
-                        new SalaryDTO.SalaryDetail(
-                                2024,
-                                4,
-                                LocalDate.of(2024, 5, 25),
-                                160.0,
-                                20,
-                                2000000.0,
-                                250000.0,
-                                1750000.0,
-                                Arrays.asList(
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 1), LocalTime.of(9, 0), LocalTime.of(18, 0), true, 180000.0, "정상 출근"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 2), LocalTime.of(9, 25), LocalTime.of(18, 0), false, 175000.0, "지각"),
-                                        new SalaryDTO.SalaryDetail.DailyAttendance(LocalDate.of(2024, 4, 3), LocalTime.of(9, 0), LocalTime.of(17, 0), true, 170000.0, "조퇴")
-                                )
-                        )
-                )
-        );
     }
 
 }

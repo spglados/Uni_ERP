@@ -59,7 +59,7 @@ public class PayrollDTO {
                     .healthInsurance(NumberFormatter.parseToPrice(healthInsurance))
                     .employmentInsurance(NumberFormatter.parseToPrice(employmentInsurance))
                     .industrialAccidentCompensationInsurance(NumberFormatter.parseToPrice(industrialAccidentCompensationInsurance))
-                    .employmentInsurance(NumberFormatter.parseToPrice(employmentInsurance))
+                    .totalInsurance(NumberFormatter.parseToPrice(totalInsurance))
                     .build();
         }
     }

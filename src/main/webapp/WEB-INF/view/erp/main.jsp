@@ -162,7 +162,7 @@
 
 <!-- 선택 사항: AJAX 요청을 위한 Axios 포함 (이미 헤더에 포함되어 있다면 생략 가능) -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // JSON 데이터를 Java 변수로 변환
     $(document).ready(function () {
@@ -198,25 +198,25 @@
                 });
         });
 
-        // 차트 초기화 (예시)
-        var ctx = document.getElementById('salesChart').getContext('2d');
-        var salesChart = new Chart(ctx, {
-            type: 'bar', // 차트 유형 (bar, line, pie 등)
-            data: {
-                labels: [], // 날짜 또는 카테고리
-                datasets: [{
-                    label: '매출액',
-                    data: [], // 매출 데이터
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
+        // // 차트 초기화 (예시)
+        // var ctx = document.getElementById('salesChart').getContext('2d');
+        // var salesChart = new Chart(ctx, {
+        //     type: 'bar', // 차트 유형 (bar, line, pie 등)
+        //     data: {
+        //         labels: [], // 날짜 또는 카테고리
+        //         datasets: [{
+        //             label: '매출액',
+        //             data: [], // 매출 데이터
+        //             backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        //             borderColor: 'rgba(54, 162, 235, 1)',
+        //             borderWidth: 1
+        //         }]
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         maintainAspectRatio: false
+        //     }
+        // });
 
         // 데이터 삽입 로직 (statistics.js 또는 별도 스크립트 파일에서 처리)
         // 예시:
