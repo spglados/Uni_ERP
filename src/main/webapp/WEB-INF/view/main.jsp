@@ -30,10 +30,10 @@
         </div>
     </div>
     <div class="main-introduce-container">
-        <h1>소상공인 대상 ERP 시스템</h1>
-        <p>UNI-ERP는 기업의 효율적 운영과 성장을 지원하는 ERP(Enterprise Resource Planning) 시스템을 제공합니다.
-            저희의 ERP 솔루션은 모든 비즈니스 프로세스를 통합하여 재무, 생산, 재고, 인사 등 다양한 업무를 하나의 시스템에서 관리할 수 있도록 도와줍니다.
-            이를 통해 실시간으로 데이터를 공유하고, 빠르고 정확한 의사결정을 내릴 수 있는 환경을 제공합니다.
+        <h1>소상공인&nbsp;대상&nbsp;ERP&nbsp;시스템</h1>
+        <p>UNI-ERP는&nbsp;기업의&nbsp;효율적&nbsp;운영과&nbsp;성장을&nbsp;지원하는&nbsp;ERP(Enterprise&nbsp;Resource&nbsp;Planning)&nbsp;시스템을&nbsp;제공합니다.</p>
+        <p>저희의&nbsp;ERP&nbsp;솔루션은&nbsp;모든&nbsp;비즈니스&nbsp;프로세스를&nbsp;통합하여&nbsp;매출,&nbsp;상품,&nbsp;재고,&nbsp;인사&nbsp;등&nbsp;다양한&nbsp;업무를&nbsp;하나의&nbsp;시스템에서&nbsp;관리할&nbsp;수&nbsp;있도록&nbsp;도와줍니다.</p>
+        <p>이를&nbsp;통해&nbsp;실시간으로&nbsp;데이터를&nbsp;공유하고,&nbsp;빠르고&nbsp;정확한&nbsp;의사결정을&nbsp;내릴&nbsp;수&nbsp;있는&nbsp;환경을&nbsp;제공합니다.</p>
         </p>
     </div>
     <div class="main-section-container">
@@ -111,9 +111,11 @@
     </div>
 </div>
 
-
+<!-- TypeIt.js 라이브러리 링크 -->
+<script src="https://cdn.jsdelivr.net/npm/typeit@8.0.6/dist/typeit.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // 오버레이 애니메이션
         var overlay = document.querySelector('.overlay-content');
         var h1 = overlay.querySelector('h1');
         var animatedText = document.getElementById('animated-text');
@@ -130,17 +132,53 @@
             }
         });
 
-        // 애니메이션이 끝난 후 클래스 제거를 원하지 않으면 아래 코드를 제거하거나 주석 처리
-        /*
-        h1.addEventListener('animationend', function () {
-            h1.classList.remove('animate-slideIn');
+        // 메인 소개 컨테이너의 텍스트 애니메이션
+        var introduceContainer = document.querySelector('.main-introduce-container');
+        var textElements = introduceContainer.querySelectorAll('h1, p');
+
+        textElements.forEach(function(element) {
+            var text = element.textContent;
+            element.innerHTML = ''; // 기존 텍스트 제거
+
+            // 각 글자를 span으로 감싸기
+            for (var i = 0; i < text.length; i++) {
+                var span = document.createElement('span');
+                span.textContent = text[i];
+                // 랜덤한 애니메이션 지연 시간 (0~0.5초)
+                var randomDelay = Math.random() * 0.7; // 0부터 0.5초 사이의 랜덤 지연
+                span.style.animationDelay = randomDelay.toFixed(2) + 's';
+                element.appendChild(span);
+            }
+
+            console.log('Wrapped letters in span for:', element);
         });
 
-        animatedText.addEventListener('animationend', function () {
-            animatedText.classList.remove('animate-fadeIn');
-        });
-        */
+        // IntersectionObserver를 사용하여 스크롤 시 애니메이션 트리거
+        var observerOptions = {
+            root: null, // viewport
+            rootMargin: '0px',
+            threshold: 0.4 // 40%가 보이면 콜백 실행
+        };
+
+        var observer = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    var target = entry.target;
+                    var textElements = target.querySelectorAll('h1, p');
+
+                    textElements.forEach(function(element) {
+                        element.classList.add('animate-text');
+                    });
+
+                    // 애니메이션이 트리거된 후 관찰 중지
+                    observer.unobserve(target);
+                }
+            });
+        }, observerOptions);
+
+        observer.observe(introduceContainer);
     });
+
 </script>
 
 <!-- footer.jsp -->
