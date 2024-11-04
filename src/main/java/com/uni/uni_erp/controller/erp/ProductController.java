@@ -135,9 +135,6 @@ public class ProductController {
 
     @PutMapping("/ingredient")
     public ResponseEntity<IngredientDTO> updateIngredient(@RequestBody IngredientDTO dto) {
-        System.out.println("=============================");
-        System.out.println(dto.toString());
-        System.out.println("=============================");
         if (dto == null) {
             return ResponseEntity.notFound().build();
         }
