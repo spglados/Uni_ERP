@@ -2,8 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 <div class="content">
-    <div class="content-box">
-    <div id="myGrid" style="width: 100%" class="ag-theme-quartz"></div>
+    <div class="content-box" style="height: 100%;">
+    <div id="myGrid" style="width: 100%; height: 100%;" class="ag-theme-quartz"></div>
 
     <script type="application/javascript">
         const attendanceList = JSON.parse('${dataList}');
