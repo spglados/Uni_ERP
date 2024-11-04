@@ -44,7 +44,7 @@ function formatMinutes(minutes) {
 }
 
 // Sample column and row data
-const columnDefs = [
+let columnDefs = [
     {field: "empNo", headerName: "사번", editable: false},
     {field: "name", headerName: "이름", editable: false},
     {field: "date", headerName: "날짜", editable: true, cellEditorPopup: true},

@@ -50,15 +50,25 @@ public class InventoryController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<MaterialDTO.MaterialSaveDTO> registerPage(@RequestBody MaterialDTO.MaterialSaveDTO materialSaveDTO, HttpSession session) {
-        return ResponseEntity.ok(inventoryService.saveMaterial(materialSaveDTO, session));
+    public ResponseEntity<Map<String, Boolean>> registerPage(@RequestBody MaterialDTO.MaterialSaveDTO materialSaveDTO, HttpSession session) {
+
+        boolean isSave = inventoryService.saveMaterial(materialSaveDTO, session);
+
+        if(isSave == false) {
+            ResponseEntity.ok(Map.of("fail", isSave));
+        }
+
+        return ResponseEntity.ok(Map.of("success", isSave));
     }
 
-    @GetMapping("/status")
-    public String statusPage(Model model, HttpSession session) {
+    @GetMapping({"/status", "/status/{materialName}"})
+    public String statusPage(Model model, HttpSession session, @PathVariable(name = "materialName", required = false) String materialName) {
         if(inventoryService.checkStockAndProduct(session)) {
             List<MaterialDTO.MaterialManagementDTO> materialManagementDTOList = inventoryService.getMaterialManagementList(session);
             model.addAttribute("materialManagementList", materialManagementDTOList);
+        }
+        if(materialName != null) {
+            model.addAttribute("materialName", materialName);
         }
         return "/erp/inventory/status";
     }

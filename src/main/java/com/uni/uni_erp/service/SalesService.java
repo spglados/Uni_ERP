@@ -149,7 +149,7 @@ public class SalesService {
 
             // Build the SalesComparisonDTO for this hour
             SalesComparisonDTO comparisonDTO = SalesComparisonDTO.builder()
-                    .hour(hour + " ~ " + (hour + 1) + " 시")
+                    .hour(hour < 10 ? "0" + hour + " : 00" : hour + " : 00")
                     .lastDayTargetProfit(yesterday.getTargetProfit())
                     .lastDayTotalSales(yesterday.getSales())
                     .lastDaySalesCount(yesterday.getSalesCount())

@@ -432,11 +432,17 @@ public class InventoryService {
      * @return 저장된 MaterialSaveDTO
      */
     @Transactional
-    public MaterialDTO.MaterialSaveDTO saveMaterial(MaterialDTO.MaterialSaveDTO materialSaveDTO, HttpSession session) {
+    public boolean saveMaterial(MaterialDTO.MaterialSaveDTO materialSaveDTO, HttpSession session) {
         // 세션에서 storeId 추출
         Integer storeId = getStoreId(session);
 
         checkStock(materialSaveDTO.getSubAmount(), "세부 단위 양을 0이하로 정할 수 없습니다.");
+
+        Material material = materialRepository.findByName(materialSaveDTO.getName());
+
+        if(material != null) {
+            return false;
+        }
 
         // 세션에서 사용자 정보 추출
         User user = (User) session.getAttribute("userSession");
@@ -466,7 +472,7 @@ public class InventoryService {
         materialAdjustmentRepository.save(materialSaveDTO.toAdjustment(resMaterial));
 
         log.debug("Material saved with code: " + materialCode);
-        return new MaterialDTO.MaterialSaveDTO(resMaterial);
+        return true;
     }
 
     /**
