@@ -36,6 +36,12 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+    .btn-main {
+        background-color: #F8F399;
+        border-color: #F8F399;
+        color: #000;
+    }
 </style>
 <%-- 로딩 스피너 --%>
 <div id="loading-spinner" style="display: none;">
@@ -59,7 +65,7 @@
                     <option value="${month}">${month}</option>
                 </c:forEach>
             </select>
-            <button id="submit-btn" type="submit" class="btn btn-primary" style="margin-left: 10px;">확인</button>
+            <button id="submit-btn" type="submit" class="btn btn-main" style="margin-left: 10px;">확인</button>
         </div>
     </div>
     <div class="d-flex justify-content-between mb-4" style="width: 100%; font-size: 18px;">

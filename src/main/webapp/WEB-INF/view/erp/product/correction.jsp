@@ -212,12 +212,6 @@
         }
     }
 
-    // 폼 초기화
-    function clearForm() {
-        document.getElementById('editForm').reset();
-        document.getElementById('imagePreview').src = '';
-    }
-
     // 상품 수정 함수
     function updateProduct() {
         const form = document.getElementById('editForm');
@@ -259,6 +253,7 @@
         document.getElementById("image").disabled = false;
         document.getElementById("update-btn").disabled = false;
     }
+
 </script>
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
