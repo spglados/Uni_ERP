@@ -3,6 +3,13 @@
 
 <!-- CSS Links -->
 <link rel="stylesheet" href="/css/erp/product.css">
+<style>
+    .btn-main {
+        background-color: #F8F399;
+        border-color: #F8F399;
+        color: #000;
+    }
+</style>
 
 <!-- 메인 컨텐츠 -->
 <div class="content container-fluid">
@@ -45,7 +52,7 @@
             </div>
             <div class="modal-footer">
                 <input type="hidden" id="modalProductId">
-                <button type="button" class="btn btn-success" onclick="addIngredient()">추가</button>
+                <button type="button" class="btn btn-main" onclick="addIngredient()">추가</button>
             </div>
         </div>
 </div>
@@ -287,8 +294,8 @@
                         '<option value="EA" ' + (ingredient.unit.toUpperCase() === 'EA' ? 'selected' : '') + '>EA</option>' +
                         '<option value="box" ' + (ingredient.unit.toUpperCase() === 'BOX' ? 'selected' : '') + '>box</option>' +
                         '</select>' +
-                        '<button class="btn btn-warning btn-sm edit-btn" onclick="editIngredient(' + ingredient.id + ')">수정</button>' +
-                        '<button class="btn btn-danger btn-sm delete-btn" onclick="deleteIngredient(' + ingredient.id + ')">삭제</button>' +
+                        '<button class="btn btn-main btn-sm edit-btn" onclick="editIngredient(' + ingredient.id + ')">수정</button>' +
+                        '<button class="btn btn-secondary btn-sm delete-btn" onclick="deleteIngredient(' + ingredient.id + ')">삭제</button>' +
                         '</div>';
                     ingredientList.appendChild(li);
                 });
@@ -305,7 +312,7 @@
         let unsavedChanges = false;
         document.querySelectorAll('.ingredient-item').forEach(function (item) {
             const editButton = item.querySelector('.edit-btn');
-            if (editButton && (editButton.textContent === '저장' || editButton.classList.contains('btn-warning'))) {
+            if (editButton && (editButton.textContent === '저장' || editButton.classList.contains('btn-success'))) {
                 unsavedChanges = true;
             }
         });
@@ -478,8 +485,8 @@
                 input.disabled = false;
             });
             editButton.textContent = '저장';
-            editButton.classList.remove('btn-warning');
-            editButton.classList.add('btn-success');
+            editButton.classList.remove('btn-success');
+            editButton.classList.add('btn-main');
         } else {
             // 저장하는 fetch
             const data = {
@@ -530,12 +537,7 @@
                 .then(response => {
                     if (response.status === 200) {
                         alert('삭제되었습니다.');
-                        const ingredientItem = document.getElementById('ingredient-' + ingredientId);
-                        if (ingredientItem && ingredientItem.parentNode && ingredientItem.parentNode.tagName === 'DIV') {
-                            ingredientItem.parentNode.removeChild(ingredientItem);
-                        } else {
-                            console.error("재료 항목을 찾을 수 없거나 이미 삭제되었습니다.");
-                        }
+                        window.location.reload();
                     } else {
                         throw new Error('삭제 실패');
                     }
@@ -650,7 +652,7 @@
         if (materialUnit && (materialUnit.toUpperCase() === unit.toUpperCase() || (materialSubUnit && materialSubUnit.toUpperCase() === unit.toUpperCase()))) {
             return true;
         } else {
-            alert(`${name}의 단위는 [${materialUnit}] 또는 [${materialSubUnit}] 만 사용 가능합니다.`);
+            alert(name + '의 단위는 [' + materialUnit + '] 또는 [' + materialSubUnit + '] 만 사용 가능합니다.');
             return false;
         }
     }

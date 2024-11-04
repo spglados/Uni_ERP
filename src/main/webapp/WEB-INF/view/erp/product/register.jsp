@@ -31,6 +31,7 @@
     .form-section {
         display: flex;
         flex-wrap: wrap;
+        flex-direction: column;
         gap: 20px;
     }
     .form-group {

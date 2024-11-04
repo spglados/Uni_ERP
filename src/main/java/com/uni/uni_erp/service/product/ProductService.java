@@ -173,6 +173,7 @@ public class ProductService {
         ingredient.setName(dto.getName());
         ingredient.setAmount(dto.getAmount());
         ingredient.setUnit(UnitCategory.valueOf(dto.getUnit().toUpperCase()));
+        ingredientsRepository.save(ingredient);
         return new IngredientDTO(ingredient);
     }
 

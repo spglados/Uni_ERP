@@ -35,6 +35,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 20px;
+        flex-direction: column;
     }
     .form-group {
         flex: 1 1 45%;
