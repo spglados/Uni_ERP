@@ -59,7 +59,7 @@ public class Employee {
    private EmpPosition empPosition;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store; // 관리하는 사용자
 

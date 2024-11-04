@@ -95,7 +95,9 @@ public class StoreService {
 
         if (!employeeList.isEmpty()) {
             for (Employee employee : employeeList) {
-                employee.setEmpPosition(defaultPosition);
+                if(employee.getEmpPosition().equals(positionToDelete)) {
+                    employee.setEmpPosition(defaultPosition);
+                }
             }
         }
         storePositionRepository.deleteById(id);

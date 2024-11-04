@@ -9,7 +9,7 @@
     <h1>상품 목록</h1>
     <hr>
     <!-- 상품 목록 테이블 -->
-    <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
+    <div class="shadow p-3 mb-5 bg-white rounded" style="height: 105%; margin-top: 26px;">
         <div class="d-flex d-flex-row-reverse" style="flex-direction: row-reverse;">
             <!-- 새로운 등록 버튼 (별도의 페이지로 이동) -->
             <div class="refresh-btn-div">

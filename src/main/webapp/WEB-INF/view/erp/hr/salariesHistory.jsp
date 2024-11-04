@@ -79,7 +79,7 @@
 
                         <!-- 근무 상세 그리드 -->
                         <h5 class="mb-3">근무 상세</h5>
-                        <div id="salaryDetailGrid" class="ag-theme-quartz" style="height: 300px; width: 100%;"></div>
+                        <div id="salaryDetailGrid" class="ag-theme-quartz" style="width: 100%;"></div>
                     </div>
                 </div>
             </div>
