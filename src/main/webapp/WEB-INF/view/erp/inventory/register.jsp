@@ -10,15 +10,49 @@
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 <link rel="stylesheet" href="/css/erp/material.css">
 <style>
+    .btn-main {
+        background-color: #F8F399;
+        border-color: #F8F399;
+        color: #000;
+    }
     .register-container {
         display: flex;
-        width: 100%;
-        height: 100%;
-        flex-direction: column; /* 수직 정렬을 위한 flex-direction 추가 */
+        flex-direction: column;
+        padding: 20px;
+        position: relative;
     }
-
-
-
+    .form-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    .form-group {
+        flex: 1 1 45%;
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+    }
+    .full-width {
+        flex: 1 1 100%;
+    }
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    @media (max-width: 768px) {
+        .form-section {
+            flex-direction: column;
+        }
+    }
+    /* 추가적인 스타일링 */
+    label {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input, select, textarea {
+        max-width: 100%;
+    }
 </style>
 
 <!-- JSP에서 unitCategories를 JSON 배열로 변환하여 JavaScript 변수에 저장 -->
@@ -46,89 +80,72 @@
     <hr>
 
     <!-- 자재 등록 폼 -->
-    <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
-        <form id="materialForm" action="/erp/inventory/registration" method="post">
-            <table class="register-container">
-                <thead class="blue">
-                    <tr>
-                        <td>재고 등록</td>
-                    </tr>
-                </thead>
-                <!-- 기본 정보 섹션 -->
-                <tr>
-                    <td>
-                        <label for="name">이름 <span class="text-danger">*</span></label>
-                    </td>
-                    <td>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="category">카테고리 <span class="text-danger">*</span></label>
-                    </td>
-                    <td>
-                        <select class="form-control" id="category" name="category" required>
-                            <option value="">선택하세요</option>
-                            <option value="냉동품">냉동품</option>
-                            <option value="냉장품">냉장품</option>
-                            <option value="상온품">상온품</option>
-                        </select>
-                    </td>
-                    <td>
-                        <label for="unit">단위 <span class="text-danger">*</span></label>
-                    </td>
-                    <td>
-                        <select class="form-control" id="unit" name="unit" required>
-                            <option value="">선택하세요</option>
-                            <!-- 옵션은 JavaScript로 동적으로 추가 -->
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="subAmount">서브 수량</label>
-                    </td>
-                    <td>
-                        <input type="number" step="0.01" class="form-control" id="subAmount" name="subAmount" disabled>
-                    </td>
-                    <td>
-                        <label for="subUnit">서브 단위 <span class="text-danger">*</span></label>
-                    </td>
-                    <td>
-                        <select class="form-control" id="subUnit" name="subUnit" required>
-                            <option value="">선택하세요</option>
-                            <!-- 옵션은 JavaScript로 동적으로 추가 -->
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="alarmCycle">알람 주기</label>
-                    </td>
-                    <td>
-                        <input type="number" step="0.01" class="form-control" id="alarmCycle" name="alarmCycle">
-                    </td>
-                    <td>
-                        <label for="alarmUnit">알람 단위 <span class="text-danger">*</span></label>
-                    </td>
-                    <td>
-                        <select class="form-control" id="alarmUnit" name="alarmUnit" required>
-                            <option value="">선택하세요</option>
-                            <!-- 옵션은 JavaScript로 동적으로 추가 -->
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="4" style="text-align: center;">
-                        <button type="submit" class="btn btn-primary">등록</button>
-                        <button type="button" class="btn btn-secondary" onclick="clearForm()">초기화</button>
-                    </td>
-                </tr>
-            </table>
+    <div class="shadow p-4 mb-5 bg-white rounded register-container">
+        <form id="materialForm">
+            <div class="form-section">
+                <!-- 이름 -->
+                <div class="form-group">
+                    <label for="name">이름 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="name" name="name" required placeholder="자재 이름을 입력하세요">
+                </div>
+
+                <!-- 카테고리 -->
+                <div class="form-group">
+                    <label for="category">카테고리 <span class="text-danger">*</span></label>
+                    <select class="form-control" id="category" name="category" required>
+                        <option value="">선택하세요</option>
+                        <option value="냉동품">냉동품</option>
+                        <option value="냉장품">냉장품</option>
+                        <option value="상온품">상온품</option>
+                    </select>
+                </div>
+
+                <!-- 단위 -->
+                <div class="form-group">
+                    <label for="unit">단위 <span class="text-danger">*</span></label>
+                    <select class="form-control" id="unit" name="unit" required>
+                        <option value="">선택하세요</option>
+                        <!-- 옵션은 JavaScript로 동적으로 추가 -->
+                    </select>
+                </div>
+
+                <!-- 서브 수량 -->
+                <div class="form-group">
+                    <label for="subAmount">서브 수량</label>
+                    <input type="number" step="0.01" class="form-control" id="subAmount" name="subAmount" disabled placeholder="서브 수량을 입력하세요">
+                </div>
+
+                <!-- 서브 단위 -->
+                <div class="form-group">
+                    <label for="subUnit">서브 단위 <span class="text-danger">*</span></label>
+                    <select class="form-control" id="subUnit" name="subUnit" required>
+                        <option value="">선택하세요</option>
+                        <!-- 옵션은 JavaScript로 동적으로 추가 -->
+                    </select>
+                </div>
+
+                <!-- 알람 주기 -->
+                <div class="form-group">
+                    <label for="alarmCycle">알람 주기</label>
+                    <input type="number" step="0.01" class="form-control" id="alarmCycle" name="alarmCycle" placeholder="알람 주기를 입력하세요">
+                </div>
+
+                <!-- 알람 단위 -->
+                <div class="form-group">
+                    <label for="alarmUnit">알람 단위 <span class="text-danger">*</span></label>
+                    <select class="form-control" id="alarmUnit" name="alarmUnit" style="max-width: 55%;" required>
+                        <option value="">선택하세요</option>
+                        <!-- 옵션은 JavaScript로 동적으로 추가 -->
+                    </select>
+                </div>
+                <!-- 버튼 그룹 -->
+                <div class="button-group">
+                    <button type="submit" class="btn btn-main">등록</button>
+                </div>
+            </div>
+
         </form>
     </div>
-
 
     <!-- JavaScript 코드 추가 -->
     <script>
@@ -293,29 +310,25 @@
                     }
                 });
 
+                let materialName = document.getElementById('name').value;
+
                 // 서버로 데이터 전송
-                fetch(materialForm.action, {
+                fetch('/erp/inventory/registration', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json' // JSON 형식
                     },
                     body: JSON.stringify(data)
                 })
-                    .then(function (response) {
-                        if (response.ok) {
-                            return response.json(); // 서버가 JSON 응답을 반환한다고 가정
-                        } else {
-                            return response.json().then(function (errorData) {
-                                throw new Error(errorData.error || '등록 실패!');
-                            });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('등록 성공!');
+                            clearForm();
+                            window.location.href = '/erp/inventory/status/' + materialName;
+                        } else if(!data.fail) {
+                            alert('중복된 이름의 자재가 존재합니다.');
                         }
-                    })
-                    .then(function (data) {
-                        // 성공 처리
-                        console.log('성공:', data);
-                        alert('등록 성공!');
-                        clearForm();
-                        window.location.href = '/erp/inventory/status';
                     })
                     .catch(function (error) {
                         // 오류 처리
@@ -376,5 +389,6 @@
             });
         });
     </script>
+</div>
 
-    <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>
+<%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

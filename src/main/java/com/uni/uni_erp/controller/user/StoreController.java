@@ -1,5 +1,6 @@
 package com.uni.uni_erp.controller.user;
 
+import com.uni.uni_erp.domain.entity.erp.hr.EmpPosition;
 import com.uni.uni_erp.dto.store.StorePositionDTO;
 import com.uni.uni_erp.dto.store.StoreUpdateDTO;
 import com.uni.uni_erp.service.user.StoreService;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/erp/store")
@@ -83,7 +86,6 @@ public class StoreController {
     @Transactional
     @DeleteMapping("/position/{positionId}")
     public ResponseEntity<Map<String, Boolean>> deletePosition(@PathVariable("positionId") Integer positionId, HttpSession session) {
-
         boolean deletePosition = storeService.deletePosition(positionId, session);
 
         if (!deletePosition) {

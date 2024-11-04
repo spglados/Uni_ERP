@@ -22,7 +22,7 @@ public class Pos {
     @Column(nullable = false)
     private Integer posId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
