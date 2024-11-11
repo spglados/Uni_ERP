@@ -111,6 +111,7 @@
 <br><br>
 #### 8. 직원 목록 엑셀 출력
 ![image](https://github.com/user-attachments/assets/00449b62-c0bd-410f-aa39-709b462cde64)
+![image (1)](https://github.com/user-attachments/assets/4b053704-0577-4c55-abce-60de47f3ca33)
 <br><br>
 #### 9. 근무일정표
 ![image](https://github.com/user-attachments/assets/524a9bb1-71ec-4aa7-8e0d-f3c1cb1505af)
