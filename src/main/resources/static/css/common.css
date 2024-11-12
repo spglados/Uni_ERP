@@ -588,3 +588,236 @@ nav {
         transform: translateY(0);
     }
 }
+
+/* 푸터 링크 섹션 스타일 */
+.f--links {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.f--links li a {
+    color: #cccccc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 1rem;
+}
+
+.f--links li a:hover {
+    color: #f0a500;
+}
+
+/* 소셜 미디어 아이콘 스타일 */
+.f--social {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.f--social a {
+    color: #cccccc;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.f--social a:hover {
+    color: #f0a500;
+}
+
+/* 뉴스레터 구독 섹션 스타일 */
+.f--newsletter {
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.f--newsletter h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #f0a500;
+}
+
+.f--newsletter form {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.f--newsletter input[type="email"] {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    width: 250px;
+    max-width: 100%;
+    font-size: 1rem;
+}
+
+.f--newsletter button {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0a500;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-size: 1rem;
+}
+
+.f--newsletter button:hover {
+    background-color: #d18e00;
+    transform: translateY(-2px);
+}
+
+/* 개발자 정보 스타일 */
+.footer__bottom {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer__bottom .developer a {
+    color: #f0a500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer__bottom .developer a:hover {
+    color: #d18e00;
+}
+
+/* 반응형 스타일 추가 */
+@media (max-width: 768px) {
+    .f--info {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .f--links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .f--newsletter form {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .f--newsletter input[type="email"] {
+        width: 80%;
+    }
+
+    .f--social {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .f--logo {
+        font-size: 1.2rem;
+    }
+
+    .f--info, .f--links, .f--social, .f--newsletter {
+        gap: 0.5rem;
+    }
+
+    .f--newsletter input[type="email"] {
+        width: 100%;
+    }
+}
+
+/* 개발자 섹션 스타일 */
+.footer__bottom .developer {
+    font-size: 1rem;
+    color: #777777;
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.footer__bottom .developer .dev-name {
+    position: relative;
+    color: #f0a500;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.footer__bottom .developer .dev-name::after {
+    content: '';
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    display: block;
+    background: linear-gradient(45deg, #f0a500, #f9d423);
+    transition: width 0.3s ease;
+    left: 0;
+    bottom: -3px;
+}
+
+.footer__bottom .developer .dev-name:hover {
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.footer__bottom .developer .dev-name:hover::after {
+    width: 100%;
+}
+
+/* 화려한 배경 효과 */
+.footer__bottom {
+    position: relative;
+    overflow: hidden;
+}
+
+.footer__bottom::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(240, 164, 0, 0.3), rgba(249, 212, 35, 0.3));
+    animation: rotateBackground 10s linear infinite;
+    z-index: -1;
+}
+
+/* 배경 애니메이션 */
+@keyframes rotateBackground {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    .footer__bottom .developer {
+        font-size: 0.9rem;
+    }
+
+    .footer__bottom .developer .dev-name {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer__bottom .developer {
+        font-size: 0.8rem;
+    }
+
+    .footer__bottom .developer .dev-name {
+        font-size: 0.85rem;
+    }
+}

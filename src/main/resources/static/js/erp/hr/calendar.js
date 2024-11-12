@@ -213,7 +213,7 @@ function initializeEmployeeCalendars(container, schedules, employees) {
         employeeName.classList.add('employee-name');
         employeeName.textContent = `${employee.empName}`;
         employeeName.style.minWidth = empNameSpace;
-        employeeName.style.minHeight = empHeight + "px";
+        employeeName.style.minHeight = empHeight + 3 + "px";
         employeeName.style.overflowY = 'hidden';
         const employeeNameContainer = document.getElementById('calendarEmployeeName');
         employeeNameContainer.appendChild(employeeName);

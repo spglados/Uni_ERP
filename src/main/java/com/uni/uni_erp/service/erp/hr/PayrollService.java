@@ -22,10 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -426,7 +423,11 @@ public class PayrollService {
             LocalDateTime lastDayOfMonth = firstDayOfMonth.plusMonths(1).minusDays(1);
             List<Employee> employees = employeeRepository.findByStoreId(storeId);
             for (Employee employee : employees) {
-                Payroll payrollEntity = payrollRepository.findByEmployee_IdAndYearMonth(employee.getId(), yearMonth).orElseThrow(() -> new Exception400("잘못된 요청입니다."));
+                Optional<Payroll> payrollEntityOptional = payrollRepository.findByEmployee_IdAndYearMonth(employee.getId(), yearMonth);
+                if (payrollEntityOptional.isEmpty()) {
+                    continue;
+                }
+                Payroll payrollEntity = payrollEntityOptional.get();
                 List<Attendance> attendanceList = attendanceRepository.findByEmployeeNoAndDateBetween(employee.getUniqueEmployeeNumber(), firstDayOfMonth, lastDayOfMonth);
                 salaryDTOList.add(new SalaryDTO(payrollEntity, attendanceList));
             }

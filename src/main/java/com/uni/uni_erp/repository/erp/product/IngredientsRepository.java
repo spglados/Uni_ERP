@@ -9,6 +9,6 @@ import java.util.List;
 public interface IngredientsRepository extends JpaRepository<Ingredient, Integer> {
 
     @Query("SELECT i FROM Ingredient i JOIN FETCH i.product WHERE i.product.id = :productId")
-    public List<Ingredient> findByProductId(int productId);
+    List<Ingredient> findByProductId(int productId);
 
 }

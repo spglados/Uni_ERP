@@ -1,6 +1,6 @@
 package com.uni.uni_erp.domain.entity.erp.pos;
 
-import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.domain.entity.store.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

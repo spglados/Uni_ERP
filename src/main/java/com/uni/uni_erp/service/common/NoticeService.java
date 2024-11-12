@@ -1,11 +1,10 @@
 package com.uni.uni_erp.service.common;
 
-import com.uni.uni_erp.domain.entity.Notice;
-import com.uni.uni_erp.dto.NoticeDTO;
+import com.uni.uni_erp.domain.entity.common.Notice;
+import com.uni.uni_erp.dto.common.NoticeDTO;
 import com.uni.uni_erp.repository.common.NoticeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.jasper.tagplugins.jstl.core.If;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

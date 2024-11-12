@@ -12,17 +12,20 @@
 <link rel="stylesheet" href="/css/erp/hr/calendar.css">
 
 <div class="content">
-    <!-- 월간 캘린더, 주간 캘린더의 헤더만 -->
-    <div id="calendarEmployeeName" class="d-none"></div>
-    <div>
-        <div id="calendar"></div>
-        <!-- 직원별 캘린더를 담을 컨테이너 -->
-        <div id="calendarsContainer" class="d-none"></div>
+    <div class="d-flex">
+        <!-- 월간 캘린더, 주간 캘린더의 헤더만 -->
+        <div id="calendarEmployeeName" class="d-none"></div>
+        <div>
+            <div id="calendar"></div>
+            <!-- 직원별 캘린더를 담을 컨테이너 -->
+            <div id="calendarsContainer" class="d-none"></div>
+        </div>
     </div>
 </div>
 
 <!-- 일정 추가 모달 -->
-<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">

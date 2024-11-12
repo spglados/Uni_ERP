@@ -1,7 +1,7 @@
 package com.uni.uni_erp.repository.common;
 
 
-import com.uni.uni_erp.domain.entity.Notice;
+import com.uni.uni_erp.domain.entity.common.Notice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

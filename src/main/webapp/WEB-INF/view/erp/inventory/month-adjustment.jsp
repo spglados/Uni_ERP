@@ -39,7 +39,7 @@
     <h1>월 재고 현황</h1>
     <hr>
     <!-- Material List Grid -->
-    <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
+    <div class="shadow p-3 mb-5 bg-white rounded" style="height: 110%; margin-top: 26px;">
         <div class="refresh-btn-div">
             <button type="button" class="btn btn-secondary ml-2 btn-action " onclick="resetFilters()">
                 <i class="fas fa-sync-alt"></i>

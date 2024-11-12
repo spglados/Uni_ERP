@@ -78,7 +78,7 @@
     <h1>일 재고 관리</h1>
     <hr>
     <!-- 저장 버튼 영역 -->
-    <div class="shadow p-3 mb-5 bg-white rounded" style="height: 83%; margin-top: 26px;">
+    <div class="shadow p-3 mb-5 bg-white rounded" style="height: 110%; margin-top: 26px;">
         <div class="d-flex justify-content-end mb-2">
             <!-- 저장 버튼 추가 -->
             <button id="saveButton" class="btn btn-secondary ml-2 btn-action" title="저장"><i class="fas fa-save"></i>

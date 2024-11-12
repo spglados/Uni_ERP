@@ -2,7 +2,7 @@ package com.uni.uni_erp.dto.erp.product;
 
 import com.uni.uni_erp.domain.entity.erp.product.Ingredient;
 import com.uni.uni_erp.domain.entity.erp.product.Product;
-import com.uni.uni_erp.util.Str.UnitCategory;
+import com.uni.uni_erp.util.str.UnitCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

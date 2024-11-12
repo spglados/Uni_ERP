@@ -1,8 +1,7 @@
 package com.uni.uni_erp.util.unit;
 
 import com.uni.uni_erp.domain.entity.erp.product.Material;
-import com.uni.uni_erp.exception.errors.Exception400;
-import com.uni.uni_erp.util.Str.UnitCategory;
+import com.uni.uni_erp.util.str.UnitCategory;
 import org.springframework.stereotype.Component;
 
 import static com.uni.uni_erp.util.unit.UnitCommonValidation.validateSubAmount;

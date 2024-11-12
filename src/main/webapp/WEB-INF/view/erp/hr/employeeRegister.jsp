@@ -4,6 +4,14 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<style>
+    .btn-main {
+        background-color: #F8F399;
+        border-color: #F8F399;
+        color: #000;
+    }
+</style>
+
 <!-- 메인 컨텐츠 -->
 <div class="content">
     <h1 class="text-center mb-4">직원 등록</h1>
@@ -60,7 +68,7 @@
                         nate.com
                     </option>
                 </select>
-                <button type="button" onclick="checkEmail()" class="btn btn-outline-secondary">중복 확인</button>
+                <button type="button" onclick="checkEmail()" class="btn btn-main">중복 확인</button>
             </div>
             <small id="emailCheckResult" class="form-text text-danger"></small>
         </div>
@@ -83,7 +91,7 @@
                 <input type="text" id="phone" name="phone" required class="form-control"
                        oninput="formatPhoneNumber(this)" maxlength="13"
                        title="전화번호를 000-0000-0000 형식으로 입력하세요" placeholder="000-0000-0000" value="${employeeDTO.phone}">
-                <button type="button" onclick="checkPhone()" class="btn btn-outline-secondary">중복 확인</button>
+                <button type="button" onclick="checkPhone()" class="btn btn-main">중복 확인</button>
             </div>
             <small id="phoneCheckResult" class="form-text text-danger"></small>
         </div>
@@ -151,7 +159,7 @@
 
         <input type="hidden" name="storeId" value="${storeId}">
         <div class="text-center mt-4">
-            <button type="submit" id="submitButton" class="btn btn-primary" disabled>직원 등록</button>
+            <button type="submit" id="submitButton" class="btn btn-main" disabled>직원 등록</button>
         </div>
     </form>
 </div>

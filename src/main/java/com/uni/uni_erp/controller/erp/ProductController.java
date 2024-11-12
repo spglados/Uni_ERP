@@ -1,12 +1,12 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.google.gson.Gson;
-import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.user.User;
 import com.uni.uni_erp.dto.erp.product.IngredientDTO;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
 import com.uni.uni_erp.dto.erp.product.ProductDTO;
 import com.uni.uni_erp.exception.errors.Exception401;
-import com.uni.uni_erp.service.product.ProductService;
+import com.uni.uni_erp.service.erp.product.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

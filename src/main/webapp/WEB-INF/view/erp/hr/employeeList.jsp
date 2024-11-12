@@ -2,13 +2,20 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 <link rel="stylesheet" href="/css/erp/hr/employeeList.css">
+<style>
+    .btn-main {
+        background-color: #F8F399;
+        border-color: #F8F399;
+        color: #000;
+    }
+</style>
 <div class="content" style="display: flex; justify-content: center; align-content: center; ">
     <div class="left-panel">
         <h1 class="mb-4">직원 목록</h1>
         <c:if test="${not empty employees}">
-            <div class="mb-3">
-                <label for="employmentStatusFilter" class="form-label">상태</label>
-                <select id="employmentStatusFilter" class="form-select" onchange="filterEmployees()">
+            <div class="d-flex mb-3">
+                <label for="employmentStatusFilter" class="form-label" style="font-size: 16px; margin-right: 10px; margin-top: 8px;"><b>재직 현황</b></label>
+                <select id="employmentStatusFilter" class="form-control w-25" onchange="filterEmployees()">
                     <option value="" <c:if test="${empty param.status}">selected</c:if>>전체</option>
                     <option value="ACTIVE" <c:if test="${param.status == 'ACTIVE'}">selected</c:if>>재직</option>
                     <option value="INACTIVE" <c:if test="${param.status == 'INACTIVE'}">selected</c:if>>퇴사</option>
@@ -63,7 +70,7 @@
             </table>
             <form id="excelDownloadForm" action="/erp/hr/download/excel" method="get" class="mt-3">
                 <input type="hidden" name="employeeStatus" id="employeeStatus" value="${param.status}"/>
-                <button type="submit" class="btn btn-primary">엑셀 다운로드</button>
+                <button type="submit" class="btn btn-main">엑셀 다운로드</button>
             </form>
         </c:if>
         <c:if test="${empty employees}">
@@ -265,6 +272,9 @@
     function filterEmployees() {
         // 선택된 필터 값 가져오기
         const selectedStatus = document.getElementById("employmentStatusFilter").value;
+
+        // employeeStatus의 hidden input에 선택된 값 업데이트
+        document.getElementById("employeeStatus").value = selectedStatus;
 
         // 모든 직원 행 가져오기
         const employeeRows = document.querySelectorAll(".employee-row");

@@ -1,0 +1,18 @@
+package com.uni.uni_erp.dto.erp.sales;
+
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@AllArgsConstructor
+@Builder
+@Getter
+@Setter
+@ToString
+public class SalesDTO {
+    private Integer id;
+    private Integer orderNum;
+    private Integer totalPrice;
+    private LocalDateTime salesDate;
+
+}

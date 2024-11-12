@@ -1,7 +1,7 @@
 package com.uni.uni_erp.util.unit;
 
 import com.uni.uni_erp.exception.errors.Exception400;
-import com.uni.uni_erp.util.Str.UnitCategory;
+import com.uni.uni_erp.util.str.UnitCategory;
 import org.springframework.stereotype.Component;
 
 @Component

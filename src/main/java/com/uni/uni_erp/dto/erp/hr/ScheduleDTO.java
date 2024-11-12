@@ -2,8 +2,8 @@ package com.uni.uni_erp.dto.erp.hr;
 
 import com.uni.uni_erp.domain.entity.erp.hr.Employee;
 import com.uni.uni_erp.domain.entity.erp.hr.Schedule;
-import com.uni.uni_erp.domain.entity.erp.product.Store;
-import com.uni.uni_erp.util.Str.EnumCommonUtil;
+import com.uni.uni_erp.domain.entity.store.Store;
+import com.uni.uni_erp.util.str.EnumCommonUtil;
 import com.uni.uni_erp.util.date.DateFormatter;
 import lombok.*;
 

@@ -1,7 +1,6 @@
 package com.uni.uni_erp.controller.payment;
 
-import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.domain.entity.payment.Payment;
+import com.uni.uni_erp.domain.entity.user.User;
 import com.uni.uni_erp.service.payment.PaymentService;
 import com.uni.uni_erp.service.user.UserService;
 import jakarta.servlet.http.HttpSession;

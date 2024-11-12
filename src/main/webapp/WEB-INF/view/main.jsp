@@ -93,7 +93,7 @@
                 </div>
                 <div class="contact-form" data-aos="fade-left" data-aos-delay="600">
                     <h2>상담문의 하기</h2>
-                    <a href="/support" class="btn btn-secondary">!클릭!</a>
+                    <a href="/support" class="btn btn-secondary">클릭&nbsp;<i class="fas fa-hand-point-up"></i></a>
                 </div>
             </div>
         </div>

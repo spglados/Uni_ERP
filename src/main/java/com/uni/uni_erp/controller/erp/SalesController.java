@@ -1,18 +1,13 @@
 package com.uni.uni_erp.controller.erp;
 
-import com.google.gson.Gson;
-import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.dto.CostPerEmployeeDTO;
+import com.uni.uni_erp.domain.entity.user.User;
+import com.uni.uni_erp.dto.erp.sales.CostPerEmployeeDTO;
 import com.uni.uni_erp.dto.erp.hr.EmployeeDTO;
-import com.uni.uni_erp.dto.sales.RevenuePerDTO;
-import com.uni.uni_erp.dto.sales.SalesComparisonDTO;
-import com.uni.uni_erp.dto.sales.SalesTargetDTO;
-import com.uni.uni_erp.service.SalesService;
+import com.uni.uni_erp.dto.erp.sales.RevenuePerDTO;
+import com.uni.uni_erp.service.erp.sales.SalesService;
 import com.uni.uni_erp.service.erp.hr.HrService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

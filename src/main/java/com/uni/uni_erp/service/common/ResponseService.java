@@ -1,7 +1,7 @@
 package com.uni.uni_erp.service.common;
 
-import com.uni.uni_erp.domain.entity.Response;
-import com.uni.uni_erp.dto.ResponseDTO;
+import com.uni.uni_erp.domain.entity.common.Response;
+import com.uni.uni_erp.dto.common.ResponseDTO;
 import com.uni.uni_erp.repository.common.ResponseRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

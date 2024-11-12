@@ -1,6 +1,5 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
-import com.uni.uni_erp.util.Str.UnitCategory;
 import jakarta.persistence.*;
 import lombok.*;
 

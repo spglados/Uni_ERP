@@ -1,18 +1,18 @@
 package com.uni.uni_erp.controller.myPage;
 
-import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.domain.entity.user.User;
+import com.uni.uni_erp.domain.entity.store.Store;
 import com.uni.uni_erp.domain.entity.payment.Payment;
 import com.uni.uni_erp.domain.entity.payment.Refund;
-import com.uni.uni_erp.dto.ContactDTO;
-import com.uni.uni_erp.dto.ResponseDTO;
-import com.uni.uni_erp.dto.StoreDTO;
+import com.uni.uni_erp.dto.common.ContactDTO;
+import com.uni.uni_erp.dto.common.ResponseDTO;
+import com.uni.uni_erp.dto.store.StoreDTO;
 import com.uni.uni_erp.dto.store.StoreSaveDTO;
 import com.uni.uni_erp.service.common.ContactService;
 import com.uni.uni_erp.service.common.ResponseService;
 import com.uni.uni_erp.service.payment.PaymentService;
-import com.uni.uni_erp.service.refund.RefundService;
-import com.uni.uni_erp.service.user.StoreService;
+import com.uni.uni_erp.service.payment.refund.RefundService;
+import com.uni.uni_erp.service.store.StoreService;
 import com.uni.uni_erp.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

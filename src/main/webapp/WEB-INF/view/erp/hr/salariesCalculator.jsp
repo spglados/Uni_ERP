@@ -2,6 +2,13 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 <style>
+
+    .btn-main {
+        background-color: #F8F399;
+        border-color: #F8F399;
+        color: #000;
+    }
+
     .results-section {
         display: none;
         margin-top: 20px;
@@ -133,10 +140,10 @@
             <!-- Buttons -->
             <div class="d-flex justify-content-between mb-4">
                 <div>
-                    <button type="button" class="btn btn-primary mr-2" id="calculateBtn">계산</button>
-                    <button type="button" class="btn btn-secondary" id="refreshBtn" onclick="location.reload();">새로 고침</button>
+                    <button type="button" class="btn btn-main mr-2" id="calculateBtn">계산</button>
+                    <button type="button" class="btn btn-secondary" id="refreshBtn" onclick="location.reload();"><i class="fas fa-sync-alt"></i></button>
                 </div>
-                <button type="button" class="btn btn-success" id="confirmBtn" disabled>확정</button>
+                <button type="button" class="btn btn-warning" id="confirmBtn" disabled>확정</button>
             </div>
         </form>
 

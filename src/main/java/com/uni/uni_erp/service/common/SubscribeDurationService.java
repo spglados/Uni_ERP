@@ -1,6 +1,6 @@
 package com.uni.uni_erp.service.common;
 
-import com.uni.uni_erp.domain.entity.SubscribeDuration;
+import com.uni.uni_erp.domain.entity.payment.SubscribeDuration;
 import com.uni.uni_erp.repository.common.SubscribeDurationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

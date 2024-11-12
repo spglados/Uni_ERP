@@ -61,7 +61,9 @@
 <script>
     // 서버에서 전달된 materialList와 materialDTOList를 JavaScript 변수로 정의
     const materialList = ${materialList != null ? materialList : '[]'};
+    console.log('materialList', materialList);
     const materialDTOList = ${materialDTOList != null ? materialDTOList : '[]'};
+    console.log('materialDTOList', materialDTOList);
 
     // Define materialsData before gridOptions
     const materialsData = [
@@ -279,7 +281,7 @@
                 const ingredients = data;
                 let ingredientList = document.getElementById('ingredientList');
                 ingredientList.innerHTML = '';
-                ingredients.forEach(function (ingredient, index) {
+                ingredients.forEach(function (ingredient) {
                     let li = document.createElement('li');
                     li.innerHTML =
                         '<div class="ingredient-item" id="ingredient-' + ingredient.id + '">' +
@@ -327,15 +329,15 @@
     function addIngredient() {
         const ingredientList = document.getElementById('ingredientList');
         const productId = document.getElementById('modalProductId').value;
-        const index = Date.now(); // 고유한 index 값 (타임스탬프 사용)
+        const index = 999999;
         const li = document.createElement('li');
 
         li.innerHTML =
             '<div class="ingredient-item" id="ingredient-' + index + '">' +
-            '<input type="text" id="ingredientInput-' + index + '" class="ingredient-name form-control d-inline-block" name="name" required oninput="filterMaterials(this, ' + index + ')" onclick="showDropdown(' + index + ')" autocomplete="off" style="width: 150px; display: inline-block; margin-right: 5px;">' +
+            '<input type="text" id="ingredientInput-' + index + '" class="ingredient-name form-control d-inline-block" name="name" required oninput="filterMaterials(this, ' + index + ')" onclick="showDropdown(' + index + ')" autocomplete="off">' +
             '<ul id="dropdown-' + index + '" class="dropdown-menu"></ul>' +
-            '<input type="number" class="ingredient-amount form-control d-inline-block" name="amount" required style="width: 80px; display: inline-block; margin-right: 5px;">' +
-            '<select class="ingredient-unit form-control d-inline-block" name="unit" style="width: 80px; display: inline-block; margin-right: 5px;">' +
+            '<input type="number" class="ingredient-amount form-control d-inline-block" name="amount" required>' +
+            '<select class="ingredient-unit form-control d-inline-block" name="unit">' +
             '<option value="G">g</option>' +
             '<option value="KG">kg</option>' +
             '<option value="ML">ml</option>' +
@@ -343,16 +345,24 @@
             '<option value="EA">EA</option>' +
             '<option value="BOX">box</option>' +
             '</select>' +
-            '<button class="btn btn-success btn-sm" style="margin-right: 10px;" name="add-btn" onclick="registerIngredient(' + index + ', ' + productId + ')">등록</button>' +
-            '<button class="btn btn-danger btn-sm" style="margin-right: 10px;" name="delete-btn" onclick="cancelIngredient(' + index + ')">취소</button>' +
+            '<button class="btn btn-main btn-sm" style="margin-right: 10px;" name="add-btn" onclick="registerIngredient(' + index + ', ' + productId + ')">등록</button>' +
+            '<button class="btn btn-secondary btn-sm" style="margin-right: 10px;" name="delete-btn" onclick="cancelIngredient(' + index + ')">취소</button>' +
             '<button class="btn btn-secondary btn-sm" id="add-new-material-btn-' + index + '" style="display:none;" onclick="goToAddMaterialPage()">추가</button>' +
             '</div>';
 
         ingredientList.appendChild(li);
     }
 
+    function filterMaterials(input, index) {
+        updateDropdown(input, index);
+    }
+
+    let canSubmit = true;
+
     // 추가 재료 등록
     function registerIngredient(index, productId) {
+        console.log('index', index);
+        console.log('productId', productId);
         const ingredientItem = document.getElementById('ingredient-' + index);
         const name = ingredientItem.querySelector('input[name="name"]').value.trim();
         const amount = ingredientItem.querySelector('input[name="amount"]').value.trim();
@@ -362,9 +372,8 @@
         let isDuplicate = false;
         $('#ingredientList .ingredient-item').each(function () {
             const existingName = $(this).find('input[name="name"]').val().trim();
-            // 현재 등록 중인 자재를 제외하고 중복을 검사
             if (existingName === name && $(this).attr('id') !== 'ingredient-' + index) {
-                isDuplicate = true;  // 중복된 자재가 발견되면 플래그 설정
+                isDuplicate = true;
             }
         });
         if (isDuplicate) {
@@ -374,10 +383,9 @@
 
         // materialList에 있는지 확인하는 로직
         if (!materialList.includes(name)) {
-            alert('해당 자재는 목록에 없습니다.\n\t 자재를 먼저 등록해주세요 !');
+            alert('해당 자재는 목록에 없습니다.\n\t 자재를 먼저 등록해주세요!');
             return;
         }
-
         if (!checkUnit(name, unit)) {
             return;
         }
@@ -406,12 +414,12 @@
         };
 
         if (!canSubmit) {
-            alert('잠시 후 다시 시도해 주세요.');  // 일정 시간 내 중복 요청 방지
+            alert('잠시 후 다시 시도해 주세요.');
             return;
         }
 
         if (confirm("등록하시겠습니까?")) {
-            canSubmit = false;  // 요청이 시작되면 플래그를 false로 설정
+            canSubmit = false;
             fetch('/erp/product/ingredient/' + productId, {
                 method: 'POST',
                 headers: {
@@ -423,20 +431,10 @@
                     console.log('response.status', response.status);
                     if (response.status === 200) {
                         alert('등록되었습니다.');
-
-                        // 모달 닫기
-                        $('#ingredientModal').modal('hide');
-
-                        // 모달이 완전히 닫혔을 때 실행
-                        $('#ingredientModal').on('hidden.bs.modal', function () {
-                            // modal-backdrop 요소 제거
-                            $('.modal-backdrop').remove();
-
-                            // 약간의 지연을 두고 재료 정보를 다시 불러오기
-                            setTimeout(function () {
-                                showIngredients(productId);
-                            }, 100);  // 100ms 지연 후 재료 보기
-                        });
+                        // 모달을 닫지 않고 재료 목록을 업데이트
+                        showIngredients(productId);
+                    } else {
+                        throw new Error('등록 실패');
                     }
                     return response.text();
                 })
@@ -444,13 +442,13 @@
                     console.log('error', error);
                 })
                 .finally(() => {
-                    // 일정 시간(2초)이 지나면 다시 요청할 수 있도록 설정
                     setTimeout(() => {
-                        canSubmit = true;  // 지정된 시간 이후에 다시 요청 가능
+                        canSubmit = true;
                     }, submissionTerm);
                 });
         }
     }
+
 
     // 재료 등록을 취소하는 함수 (추가한 재료를 삭제)
     function cancelIngredient(index) {
@@ -476,11 +474,8 @@
         const unit = ingredientItem.querySelector('select[name="unit"]').value;
         const productId = document.getElementById('modalProductId').value;
 
-        if (!checkUnit(name, unit)) {
-            return;
-        }
-
         if (editButton.textContent === '수정') {
+            // "수정" 상태에서 입력 필드 활성화
             inputs.forEach(function (input) {
                 input.disabled = false;
             });
@@ -488,7 +483,12 @@
             editButton.classList.remove('btn-success');
             editButton.classList.add('btn-main');
         } else {
-            // 저장하는 fetch
+            // "저장" 상태에서 단위 유효성 검사 수행
+            if (!checkUnit(name, unit)) {
+                return; // 유효하지 않은 단위일 경우 함수 종료
+            }
+
+            // 유효성 검사를 통과한 경우 저장 작업 실행
             const data = {
                 id: ingredientId,
                 name: name,
@@ -518,14 +518,17 @@
                     alert('수정 중에 오류가 발생했습니다.');
                     console.error('Error:', error);
                 });
+
+            // 입력 필드를 다시 비활성화하고 버튼 텍스트를 "수정"으로 변경
             inputs.forEach(function (input) {
                 input.disabled = true;
             });
             editButton.textContent = '수정';
-            editButton.classList.remove('btn-success');
+            editButton.classList.remove('btn-main');
             editButton.classList.add('btn-warning');
         }
     }
+
 
     // 재료를 삭제하는 함수
     function deleteIngredient(ingredientId) {
@@ -537,7 +540,10 @@
                 .then(response => {
                     if (response.status === 200) {
                         alert('삭제되었습니다.');
-                        window.location.reload();
+
+                        // 현재 모달에 있는 productId를 가져와서 재료 목록을 새로고침
+                        const productId = document.getElementById('modalProductId').value;
+                        showIngredients(productId); // 삭제 후 재료 목록 업데이트
                     } else {
                         throw new Error('삭제 실패');
                     }
@@ -554,6 +560,10 @@
         const dropdown = document.getElementById('dropdown-' + index);
         const addNewMaterialBtn = document.getElementById('add-new-material-btn-' + index);  // "추가" 버튼
         const query = input.value.toLowerCase();
+
+        // input의 현재 너비 가져와 드롭다운에 설정
+        const inputRect = input.getBoundingClientRect();
+        dropdown.style.width = inputRect.width + 'px';
 
         // 필터링된 결과가 없을 경우 드롭다운 숨김
         if (!query) {
@@ -600,6 +610,9 @@
         window.location.href = '/erp/inventory/registration'; // 추가 페이지로 이동
     }
 
+    // 중복 등록 방지를 위한 시간 설정 (예: 2초)
+    const submissionTerm = 2000; // 2000ms = 2초
+
     // 상품 등록 함수
     function registerProduct() {
         const form = $('#registerForm')[0];
@@ -620,19 +633,26 @@
             }).then(response => {
                 if (response.ok) {
                     alert("상품이 등록되었습니다! \n\n\t 재료를 등록해야 재고가 관리됩니다 !");
+                    // 페이지 새로고침 대신 다른 동작 수행을 원할 경우 여기를 수정하세요.
                     location.reload();
                 } else {
                     alert("상품 등록에 실패했습니다.");
                 }
             }).catch(error => {
                 console.error('Error:', error);
-                alert("상품 등록 중 오류가 발생했습니다." + error);
+                alert("상품 등록 중 오류가 발생했습니다: " + error);
+            }).finally(() => {
+                // 일정 시간(2초)이 지나면 다시 요청할 수 있도록 설정
+                setTimeout(() => {
+                    canSubmit = true;  // 지정된 시간 이후에 다시 요청 가능
+                }, submissionTerm);
             });
         } else {
             // 유효성 검사가 실패한 경우 경고창을 띄우고, 유효성 검사를 강제로 실행
             form.reportValidity();
         }
     }
+
 
     // 특정 자재의 unit을 찾는 함수
     function getUnitByName(materialName) {
@@ -670,5 +690,4 @@
         window.productName = '<c:out value="${productName}" />';
     </script>
 </c:if>
-
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

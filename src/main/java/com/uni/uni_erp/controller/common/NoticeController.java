@@ -1,19 +1,14 @@
 package com.uni.uni_erp.controller.common;
 
-import com.uni.uni_erp.domain.entity.Notice;
-import com.uni.uni_erp.dto.NoticeDTO;
+import com.uni.uni_erp.dto.common.NoticeDTO;
 import com.uni.uni_erp.service.common.NoticeService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.annotation.RequestScope;
 
 @Controller
 @RequiredArgsConstructor

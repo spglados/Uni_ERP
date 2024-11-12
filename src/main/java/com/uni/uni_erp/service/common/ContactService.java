@@ -1,7 +1,7 @@
 package com.uni.uni_erp.service.common;
 
-import com.uni.uni_erp.domain.entity.Contact;
-import com.uni.uni_erp.dto.ContactDTO;
+import com.uni.uni_erp.domain.entity.common.Contact;
+import com.uni.uni_erp.dto.common.ContactDTO;
 import com.uni.uni_erp.repository.common.ContactRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

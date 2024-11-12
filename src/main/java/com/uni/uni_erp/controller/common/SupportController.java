@@ -1,8 +1,7 @@
 package com.uni.uni_erp.controller.common;
 
-import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.dto.ContactDTO;
-import com.uni.uni_erp.dto.UserDTO;
+import com.uni.uni_erp.domain.entity.user.User;
+import com.uni.uni_erp.dto.common.ContactDTO;
 import com.uni.uni_erp.service.common.SupportService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

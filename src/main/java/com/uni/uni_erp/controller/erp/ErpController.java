@@ -1,26 +1,24 @@
 package com.uni.uni_erp.controller.erp;
 
 import com.google.gson.Gson;
-import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.dto.StoreDTO;
+import com.uni.uni_erp.domain.entity.user.User;
+import com.uni.uni_erp.dto.store.StoreDTO;
 import com.uni.uni_erp.dto.erp.hr.AttendanceDTO;
 import com.uni.uni_erp.dto.erp.material.MaterialDTO;
-import com.uni.uni_erp.dto.sales.MostProductSaleQuantityDTO;
-import com.uni.uni_erp.dto.sales.SalesInfoDTO;
+import com.uni.uni_erp.dto.erp.sales.MostProductSaleQuantityDTO;
+import com.uni.uni_erp.dto.erp.sales.SalesInfoDTO;
 import com.uni.uni_erp.repository.user.UserRepository;
-import com.uni.uni_erp.service.SalesService;
-import com.uni.uni_erp.service.invertory.InventoryService;
+import com.uni.uni_erp.service.erp.sales.SalesService;
+import com.uni.uni_erp.service.erp.invertory.InventoryService;
 import com.uni.uni_erp.service.erp.hr.AttendanceService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller

@@ -36,10 +36,10 @@
           <h3>연락처 정보</h3>
           <ul>
             <li><i class="fas fa-phone-alt"></i> <strong>전화 </strong></li>
-            <li>010-1111-1111</li>
+            <li>+82 051-123-4567</li>
             <br>
             <li><i class="fas fa-envelope"></i> <strong>이메일</strong></li>
-            <li>yena@abc.com</li>
+            <li>unierp@gmail.com</li>
             <br>
             <li><i class="fas fa-clock"></i> <strong>운영 시간 </strong></li>
             <li>월~금, 오전 9시 ~ 오후 6시</li>
@@ -49,7 +49,7 @@
         <!-- 문의하기 폼 -->
         <div class="contact-form">
           <h3>문의하기</h3>
-          <form id="support-form" action="/submitSupport" method="post">
+          <form id="support-form" action="/submitSupport" method="post" style="width: 100%;">
             <div class="form-group">
               <label for="title"><i class="fas fa-heading"></i> 제목</label>
               <input type="text" id="title" name="title" required placeholder="문의 제목을 입력하세요">

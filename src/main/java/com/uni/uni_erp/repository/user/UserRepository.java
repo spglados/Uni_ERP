@@ -1,7 +1,6 @@
 package com.uni.uni_erp.repository.user;
 
-import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.dto.UserUpdateDTO;
+import com.uni.uni_erp.domain.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

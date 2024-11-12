@@ -1,6 +1,7 @@
 package com.uni.uni_erp.domain.entity.erp.product;
 
-import com.uni.uni_erp.util.Str.UnitCategory;
+import com.uni.uni_erp.domain.entity.store.Store;
+import com.uni.uni_erp.util.str.UnitCategory;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;

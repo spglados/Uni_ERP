@@ -1,12 +1,12 @@
 package com.uni.uni_erp.service.user;
 
-import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.dto.UserDTO;
-import com.uni.uni_erp.dto.UserUpdateDTO;
+import com.uni.uni_erp.domain.entity.user.User;
+import com.uni.uni_erp.dto.user.UserDTO;
+import com.uni.uni_erp.dto.user.UserUpdateDTO;
 import com.uni.uni_erp.exception.errors.Exception404;
 import com.uni.uni_erp.repository.payment.PaymentRepository;
 import com.uni.uni_erp.repository.user.UserRepository;
-import com.uni.uni_erp.util.Str.PasswordUtil;
+import com.uni.uni_erp.util.str.PasswordUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

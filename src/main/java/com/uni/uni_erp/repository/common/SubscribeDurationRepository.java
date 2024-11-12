@@ -1,6 +1,6 @@
 package com.uni.uni_erp.repository.common;
 
-import com.uni.uni_erp.domain.entity.SubscribeDuration;
+import com.uni.uni_erp.domain.entity.payment.SubscribeDuration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

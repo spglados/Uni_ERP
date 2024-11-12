@@ -1,7 +1,7 @@
 package com.uni.uni_erp.dto.store;
 
-import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.domain.entity.erp.product.Store;
+import com.uni.uni_erp.domain.entity.user.User;
+import com.uni.uni_erp.domain.entity.store.Store;
 import lombok.*;
 
 @AllArgsConstructor

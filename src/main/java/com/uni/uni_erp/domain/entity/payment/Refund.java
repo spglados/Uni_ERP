@@ -1,6 +1,6 @@
 package com.uni.uni_erp.domain.entity.payment;
 
-import com.uni.uni_erp.domain.entity.User;
+import com.uni.uni_erp.domain.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,8 +1,7 @@
 package com.uni.uni_erp.interceptor;
 
-import com.uni.uni_erp.domain.entity.Admin;
-import com.uni.uni_erp.domain.entity.User;
-import com.uni.uni_erp.dto.AdminDTO;
+import com.uni.uni_erp.domain.entity.user.User;
+import com.uni.uni_erp.dto.admin.AdminDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

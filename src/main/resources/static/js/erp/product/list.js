@@ -8,13 +8,13 @@ const submissionTerm = 2000;  // 2초(2000ms) 동안 재요청 차단
 function addIngredient() {
     const ingredientList = document.getElementById('ingredientList');
     const productId = document.getElementById('modalProductId').value;
-    const index = 999_999_999; // 임시 index 값
+    const indexId = 9999; // 임시 index 값
     const li = document.createElement('li');
 
     li.innerHTML =
-        '<div class="ingredient-item" id="ingredient-' + index + '">' +
-        '<input type="text" id="ingredientInput-' + index + '" class="ingredient-name form-control d-inline-block" name="name" required oninput="filterMaterials(this, ' + index + ')" onclick="showDropdown(' + index + ')">' +
-        '<ul id="dropdown-' + index + '" class="dropdown-menu"></ul>' +
+        '<div class="ingredient-item" id="ingredient-' + indexId + '">' +
+        '<input type="text" id="ingredientInput-' + indexId + '" class="ingredient-name form-control d-inline-block" name="name" required oninput="filterMaterials(this, ' + indexId + ')" onclick="showDropdown(' + indexId + ')">' +
+        '<ul id="dropdown-' + indexId + '" class="dropdown-menu"></ul>' +
         '<input type="number" class="ingredient-amount form-control d-inline-block" name="amount" required>' +
         '<select class="ingredient-unit form-control d-inline-block" name="unit">' +
         '<option value="G">g</option>' +
@@ -24,9 +24,9 @@ function addIngredient() {
         '<option value="EA">EA</option>' +
         '<option value="BOX">box</option>' +
         '</select>' +
-        '<button class="custom-btn register-btn" style="margin-right: 10px;" name="add-btn" onclick="registerIngredient(' + index + ', ' + productId + ')">등록</button>' +
-        '<button class="custom-btn cancel-btn" style="margin-right: 10px;" name="delete-btn" onclick="cancelIngredient(' + index + ')">취소</button>' +
-        '<button class="custom-btn" id="add-new-material-btn-' + index + '" style="display:none;" onclick="goToAddMaterialPage()">추가</button>' +
+        '<button class="custom-btn register-btn" style="margin-right: 10px;" name="add-btn" onclick="registerIngredient(' + indexId + ', ' + productId + ')">등록</button>' +
+        '<button class="custom-btn cancel-btn" style="margin-right: 10px;" name="delete-btn" onclick="cancelIngredient(' + indexId + ')">취소</button>' +
+        '<button class="custom-btn" id="add-new-material-btn-' + indexId + '" style="display:none;" onclick="goToAddMaterialPage()">추가</button>' +
         '</div>';
 
     ingredientList.appendChild(li);
@@ -92,10 +92,10 @@ function registerIngredient(index, productId) {
         productId: productId
     };
 
-    if (!canSubmit) {
-        alert('잠시 후 다시 시도해 주세요.');  // 일정 시간 내 중복 요청 방지
-        return;
-    }
+    // if (!canSubmit) {
+    //     alert('잠시 후 다시 시도해 주세요.');  // 일정 시간 내 중복 요청 방지
+    //     return;
+    // }
 
     if(confirm("등록하시겠습니까?")) {
         canSubmit = false;  // 요청이 시작되면 플래그를 false로 설정
