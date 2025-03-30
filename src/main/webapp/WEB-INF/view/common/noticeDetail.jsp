@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/view/layout/header.jsp" %>
-<link rel="stylesheet" href="/css/common/notice.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/notice.css">
 <!-- Font Awesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <!-- AOS CSS -->
@@ -29,7 +29,7 @@
                 <p>${notice.content}</p>
             </div>
             <div class="notice-actions">
-                <a href="/notice" class="btn btn-secondary" aria-label="목록으로 돌아가기"><i class="fas fa-arrow-left"></i> 목록으로 돌아가기</a>
+                <a href="${pageContext.request.contextPath}/notice" class="btn btn-secondary" aria-label="목록으로 돌아가기"><i class="fas fa-arrow-left"></i> 목록으로 돌아가기</a>
             </div>
         </div>
     </section>

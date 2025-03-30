@@ -7,8 +7,8 @@
 <!-- Select2 CSS 추가 -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 
-<link rel="stylesheet" href="/css/common/support.css">
-<link rel="stylesheet" href="/css/payment/subscribe.css"> <!-- 이미 고급스러운 스타일을 포함 -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/support.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payment/subscribe.css"> <!-- 이미 고급스러운 스타일을 포함 -->
 
 <main class="main-container">
 
@@ -24,7 +24,7 @@
       </div>
 
       <div class="support-img-box">
-        <img src="/images/support/support.jpg" alt="고객 지원 이미지">
+        <img src="${pageContext.request.contextPath}/images/support/support.jpg" alt="고객 지원 이미지">
       </div>
     </div>
 
@@ -67,5 +67,5 @@
 
 </main>
 
-<script src="/js/common/support.js"></script>
+<script src="${pageContext.request.contextPath}/js/common/support.js"></script>
 <%@ include file="/WEB-INF/view/layout/footer.jsp"%>

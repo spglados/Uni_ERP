@@ -3,7 +3,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
-<link rel="stylesheet" href="/css/signUp.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/signUp.css">
 
 <main class="main-container">
 	<div class="signup-container">
@@ -38,16 +38,16 @@
 
 		<div class="login-link">
 			<p>
-				이미 계정이 있으신가요? <a href="/user/login">로그인하기</a>
+				이미 계정이 있으신가요? <a href="${pageContext.request.contextPath}/user/login">로그인하기</a>
 			</p>
 		</div>
 	</div>
 </main>
 
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
-<script src="/js/user/sendEmail.js"></script>
-<script src="/js/user/sendSMS.js"></script>
+<script src="${pageContext.request.contextPath}//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="${pageContext.request.contextPath}//dapi.kakao.com/v2/maps/sdk.js?appkey=3aea5e049cf7a27eae091e77ca0e1429&libraries=services"></script>
+<script src="${pageContext.request.contextPath}/js/user/sendEmail.js"></script>
+<script src="${pageContext.request.contextPath}/js/user/sendSMS.js"></script>
 <script>
     let isEmailValid = false;
     let isPhoneValid = false;

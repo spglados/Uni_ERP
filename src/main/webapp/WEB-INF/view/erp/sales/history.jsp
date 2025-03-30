@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<link rel="stylesheet" href="/css/sortTable.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/sortTable.css">
 
 
 <style>
@@ -137,6 +137,6 @@
     </div>
 </div>
 
-<script src="/js/erp/sales/detail.js"></script>
-<script src="/js/erp/sales/sortTable.js"></script>
+<script src="${pageContext.request.contextPath}/js/erp/sales/detail.js"></script>
+<script src="${pageContext.request.contextPath}/js/erp/sales/sortTable.js"></script>
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

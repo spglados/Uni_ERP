@@ -7,12 +7,12 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/WEB-INF/view/layout/header.jsp"%>
-<link rel="stylesheet" href="/css/common/introduction.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/introduction.css">
 <main class="main-container">
     <section class="introduce-container">
         <div class="introduce-content-img-box">
             <div class="image-box">
-               <img src="/images/introduce/pos.jpg" alt="소개 이미지" class="hidden fadeInLeft">
+               <img src="${pageContext.request.contextPath}/images/introduce/pos.jpg" alt="소개 이미지" class="hidden fadeInLeft">
             </div>
         </div>
         <div class="introduce-content-text-box">
@@ -35,14 +35,14 @@
         </div>
         <div class="introduce-content-img-box">
             <div class="image-box">
-                <img src="/images/introduce/graph.jpg" alt="소개 이미지" class="hidden fadeInRight">
+                <img src="${pageContext.request.contextPath}/images/introduce/graph.jpg" alt="소개 이미지" class="hidden fadeInRight">
             </div>
         </div>
     </section>
     <section class="introduce-container">
         <div class="introduce-content-img-box">
             <div class="image-box">
-                <img src="/images/introduce/promise.jpg" alt="소개 이미지" class="hidden fadeInLeft">
+                <img src="${pageContext.request.contextPath}/images/introduce/promise.jpg" alt="소개 이미지" class="hidden fadeInLeft">
             </div>
         </div>
         <div class="introduce-content-text-box">
@@ -65,7 +65,7 @@
         </div>
         <div class="introduce-content-img-box">
             <div class="image-box">
-                <img src="/images/introduce/customer-support.jpg" alt="소개 이미지" class="hidden fadeInRight">
+                <img src="${pageContext.request.contextPath}/images/introduce/customer-support.jpg" alt="소개 이미지" class="hidden fadeInRight">
             </div>
         </div>
     </section>

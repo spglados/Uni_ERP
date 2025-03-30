@@ -3,8 +3,8 @@
 <!-- Select2 CSS 추가 -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 
-<link rel="stylesheet" href="/css/payment/payment.css">
-<link rel="stylesheet" href="/css/payment/subscribe.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payment/payment.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/payment/subscribe.css">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Select2 JS 추가 -->

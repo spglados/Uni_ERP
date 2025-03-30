@@ -7,7 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-<link rel="stylesheet" href="/css/erp/storeChoice.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/storeChoice.css">
 
 <!-- POS 가게 선택 섹션 -->
 <main class="main-container">

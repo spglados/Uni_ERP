@@ -20,16 +20,17 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
           href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <!-- ag-Grid CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-grid.css">
-    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-theme-quartz.css">
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community@28.2.1/styles/ag-grid.css" />
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community@28.2.1/styles/ag-theme-alpine.css" />
 
-    <!-- ag-Grid JavaScript -->
-    <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
+    <!-- ag-Grid JS (v28에서 전역 agGrid.Grid 지원) -->
+    <script src="https://unpkg.com/ag-grid-community@28.2.1/dist/ag-grid-community.min.noStyle.js"></script>
+
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:100,300,400,500,700,900&display=swap"
           rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/css/erp/erpMain.css">
-    <link rel="stylesheet" href="/css/common/agGrid.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/erpMain.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/agGrid.css">
 
 
 </head>
@@ -38,8 +39,8 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
     <!-- 사이드바 메뉴 -->
     <nav class="sidebar">
         <!-- 로고 이미지 -->
-        <a href="/erp/main">
-            <img src="/images/logo/logo_clear.png" class="animate__animated animate__fadeIn" alt="메인로고" style="height: 100px; width: 125px;">
+        <a href="${pageContext.request.contextPath}/erp/main">
+            <img src="${pageContext.request.contextPath}/images/logo/logo_clear.png" class="animate__animated animate__fadeIn" alt="메인로고" style="height: 100px; width: 125px;">
         </a>
 
         <!-- 메뉴 리스트 -->
@@ -50,7 +51,7 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <div>가게 관리<span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/store/correction">가게 정보 수정</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/store/correction">가게 정보 수정</a></li>
                 </ul>
             </li>
             <li>
@@ -59,12 +60,12 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <div>인사 관리 <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/hr/employee-register">직원 등록</a></li>
-                    <li><a href="/erp/hr/employee-list">직원 목록</a></li>
-                    <li><a href="/erp/hr/schedule">근무 일정</a></li>
-                    <li><a href="/erp/hr/attendance-list">근태 관리</a></li>
-                    <li><a href="/erp/hr/salaries-calculator">급여 산출</a></li>
-                    <li><a href="/erp/hr/salaries-history">급여 내역</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/hr/employee-register">직원 등록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/hr/employee-list">직원 목록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/hr/schedule">근무 일정</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/hr/attendance-list">근태 관리</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/hr/salaries-calculator">급여 산출</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/hr/salaries-history">급여 내역</a></li>
                 </ul>
             </li>
             <li>
@@ -73,9 +74,9 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <div>상품 관리 <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/product/list">상품 목록</a></li>
-                    <li><a href="/erp/product/registration">상품 등록</a></li>
-                    <li><a href="/erp/product/correction">상품 수정</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/product/list">상품 목록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/product/registration">상품 등록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/product/correction">상품 수정</a></li>
                 </ul>
             </li>
             <li>
@@ -84,15 +85,15 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <div>재고 관리 <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/inventory/receiving">입고 관리</a></li>
-                    <li><a href="/erp/inventory/registration">재고 등록</a></li>
-                    <li><a href="/erp/inventory/situation">재고 현황</a></li>
-                    <li><a href="/erp/inventory/status">재고 관리</a></li>
-                    <li><a href="/erp/inventory/correction">재고 수정</a></li>
-                    <li><a href="/erp/inventory/day-adjustment">일 재고 현황</a></li>
-                    <li><a href="/erp/inventory/month-adjustment">월 재고 현황</a></li>
-                    <li><a href="/erp/inventory/disposal">폐기 등록</a></li>
-                    <li><a href="/erp/inventory/disposal-history">폐기 내역</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/inventory/receiving">입고 관리</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/inventory/registration">재고 등록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/inventory/situation">재고 현황</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/inventory/status">재고 관리</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/inventory/correction">재고 수정</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/inventory/day-adjustment">일 재고 현황</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/inventory/month-adjustment">월 재고 현황</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/inventory/disposal">폐기 등록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/inventory/disposal-history">폐기 내역</a></li>
                 </ul>
             </li>
             <li>
@@ -101,8 +102,8 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <div>매출 관리 <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/sales/history">매출 기록</a></li>
-                    <li><a href="/erp/sales/statistics">금일 매출 통계</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/sales/history">매출 기록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/sales/statistics">금일 매출 통계</a></li>
                 </ul>
             </li>
             <li>
@@ -111,7 +112,7 @@ Description: ERP 대시보드 페이지 (사이드바 메뉴 및 하위 메뉴 �
                     <div>POS <span class="arrow">▼</span></div>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/erp/pos/main" target='_blank'>POS 실행</a></li>
+                    <li><a href="${pageContext.request.contextPath}/erp/pos/main" target='_blank'>POS 실행</a></li>
                 </ul>
             </li>
         </ul>

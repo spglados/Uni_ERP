@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-<link rel="stylesheet" href="/css/erp/product.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/product.css">
 <style>
     .inner-search {
         margin-right: 10px;
@@ -134,7 +134,7 @@
             <!-- 버튼 그룹 -->
             <div class="button-group">
                 <button type="button" id="update-btn" class="btn btn-main" onclick="updateProduct()" disabled>수정</button>
-                <a href="/erp/product/list" class="btn btn-secondary">취소</a>
+                <a href="${pageContext.request.contextPath}/erp/product/list" class="btn btn-secondary">취소</a>
             </div>
         </form>
     </div>

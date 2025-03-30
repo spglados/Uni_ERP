@@ -75,10 +75,10 @@
 </head>
 <body>
 <div class="container">
-  <img src="/images/404.jpg" alt="404 이미지">
+  <img src="${pageContext.request.contextPath}/images/404.jpg" alt="404 이미지">
   <h2><b>페이지를 찾을 수 없습니다.</b></h2>
   <p><br><br>요청하신 페이지가 삭제되었거나, <br><br>주소가 잘못 입력되었을 수 있습니다.</p>
-  <a href="/main" class="home-link">홈으로 돌아가기</a>
+  <a href="${pageContext.request.contextPath}/main" class="home-link">홈으로 돌아가기</a>
 </div>
 </body>
 </html>

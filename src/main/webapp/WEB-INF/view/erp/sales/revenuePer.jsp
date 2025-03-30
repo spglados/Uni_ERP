@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/WEB-INF/view/erp/layout/erpHeader.jsp"%>
-<link rel="stylesheet" href="/css/sortTable.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/sortTable.css">
 
 <div class="content container-fluid">
     <div class="table-responsive">
@@ -30,6 +30,6 @@
         </table>
     </div>
 </div>
-<script src="/js/erp/sales/sortTable.js"></script>
+<script src="${pageContext.request.contextPath}/js/erp/sales/sortTable.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <%@include file="/WEB-INF/view/erp/layout/erpFooter.jsp"%>

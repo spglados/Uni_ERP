@@ -9,7 +9,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link rel="stylesheet" href="/css/pos/posMain.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pos/posMain.css">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -18,7 +18,7 @@
 </head>
 <body>
 <div class="header">
-    <img src="/images/logo/logoPos.png" class="animate__animated animate__fadeIn" alt="포스로고"
+    <img src="${pageContext.request.contextPath}/images/logo/logoPos.png" class="animate__animated animate__fadeIn" alt="포스로고"
          style="height: 100px; width: 125px;">
     <%@include file="/WEB-INF/view/pos/attendanceModal.jsp" %>
     <h1 class="animate__animated animate__fadeIn">UNI-POS SYSTEM ( 가상 )</h1>
@@ -42,10 +42,10 @@
 
         <div class="pagination">
             <c:if test="${productList.hasPrevious()}">
-                <a href="/erp/pos/main?category=${category}&page=${currentPage - 1}&size=${pageSize}">&laquo;</a>
+                <a href="${pageContext.request.contextPath}/erp/pos/main?category=${category}&page=${currentPage - 1}&size=${pageSize}">&laquo;</a>
             </c:if>
             <c:if test="${productList.hasNext()}">
-                <a href="/erp/pos/main?category=${category}&page=${currentPage + 1}&size=${pageSize}">&raquo;</a>
+                <a href="${pageContext.request.contextPath}/erp/pos/main?category=${category}&page=${currentPage + 1}&size=${pageSize}">&raquo;</a>
             </c:if>
         </div>
     </div>
@@ -827,6 +827,6 @@
     }
 </script>
 <!-- Toast 및 로딩 스피너를 위한 JavaScript 추가 -->
-<script src="/js/toastHelper.js"></script>
+<script src="${pageContext.request.contextPath}/js/toastHelper.js"></script>
 </body>
 </html>

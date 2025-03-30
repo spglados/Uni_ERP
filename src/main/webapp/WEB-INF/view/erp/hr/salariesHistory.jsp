@@ -22,7 +22,7 @@
                         </button>
                     </div>
                     <div class="card-body p-0 flex-grow-1" style="overflow: hidden;">
-                        <div id="employeeGrid" class="ag-theme-quartz" style="height: 100%; width: 100%;"></div>
+                        <div id="employeeGrid" class="ag-theme-alpine" style="height: 100%; width: 100%;"></div>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@
 
                         <!-- 근무 상세 그리드 -->
                         <h5 class="mb-3">근무 상세</h5>
-                        <div id="salaryDetailGrid" class="ag-theme-quartz" style="width: 100%;"></div>
+                        <div id="salaryDetailGrid" class="ag-theme-alpine" style="width: 100%;"></div>
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-<link rel="stylesheet" href="/css/erp/material.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/material.css">
 <style>
     .btn-main {
         background-color: #F8F399;

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>토스페이먼츠 샘플 프로젝트</title>
-    <link rel="stylesheet" href="/css/payment/success.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/payment/success.css">
 </head>
 
 <body>
@@ -23,7 +23,7 @@
     <br>
     <div id="countdown">5초 후에 가게 등록 페이지로 이동합니다...</div>
     <br>
-    <a href="/my-page/store-list">가게 등록 페이지으로 이동</a>
+    <a href="${pageContext.request.contextPath}/my-page/store-list">가게 등록 페이지으로 이동</a>
 </div>
         <script>
             let countdown = 5;

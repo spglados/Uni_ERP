@@ -12,14 +12,14 @@
     <!-- 비디오 배경 섹션 -->
     <section class="video-section">
         <video autoplay loop muted playsinline class="background-video" preload="auto">
-            <source src="/videos/main.mp4" type="video/mp4">
+            <source src="${pageContext.request.contextPath}/videos/main.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
         <div class="video-overlay">
             <div class="overlay-content" data-aos="fade-up">
                 <h1>당신의 가게를 관리합니다</h1>
                 <p id="animated-text">똑똑하게 가게를 관리해보세요!</p>
-                <a href="/payment" class="btn btn-primary">UNI-ERP 서비스 시작하기</a>
+                <a href="${pageContext.request.contextPath}/payment" class="btn btn-primary">UNI-ERP 서비스 시작하기</a>
             </div>
             <div class="explanation-container" data-aos="fade-right" data-aos-delay="300">
                 <div class="explanation-content">
@@ -80,7 +80,9 @@
     <section class="contact-section" data-aos="fade-up">
         <h1>상담문의</h1>
         <div class="contact-container">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3261.8798645106212!2d129.0576023117345!3d35.15961675833722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3568ebf31af65223%3A0xb3969a3821eb778e!2z67KU7Zal67mM65Sp!5e0!3m2!1sko!2skr!4v1730087022414!5m2!1sko!2skr" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="google-map" data-aos="zoom-in" data-aos-delay="200"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3261.8798645106212!2d129.0576023117345!3d35.15961675833722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3568ebf31af65223%3A0xb3969a3821eb778e!2z67KU7Zal67mM65Sp!5e0!3m2!1sko!2skr!4v1730087022414!5m2!1sko!2skr"
+                    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="google-map"
+                    data-aos="zoom-in" data-aos-delay="200"></iframe>
             <div class="contact-details">
                 <div class="contact-info" data-aos="fade-right" data-aos-delay="400">
                     <h2>오시는 길</h2>
@@ -93,7 +95,7 @@
                 </div>
                 <div class="contact-form" data-aos="fade-left" data-aos-delay="600">
                     <h2>상담문의 하기</h2>
-                    <a href="/support" class="btn btn-secondary">클릭&nbsp;<i class="fas fa-hand-point-up"></i></a>
+                    <a href="${pageContext.request.contextPath}/support" class="btn btn-secondary">클릭&nbsp;<i class="fas fa-hand-point-up"></i></a>
                 </div>
             </div>
         </div>

@@ -18,9 +18,9 @@
 
     <!-- Custom styles for this template -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="/css/admin-page.css" rel="stylesheet">
-    <link href="/img/favicon.ico" rel="icon">
+    <link href="${pageContext.request.contextPath}/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/admin-page.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/img/favicon.ico" rel="icon">
 </head>
 
 <body id="page-top">
@@ -29,7 +29,7 @@
         <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/admin/main">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="${pageContext.request.contextPath}/admin/main">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
@@ -38,20 +38,20 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Items -->
-            <li class="nav-item active"><a class="nav-link" href="/admin/main"><i class="fas fa-fw fa-tachometer-alt"></i> <span>대시보드</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/admin/userManagement"><i class="fas fa-fw fa-table"></i> <span>유저 관리</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="/admin/storeManagement"><i class="fas fa-fw fa-table"></i> <span>가게 관리</span></a></li>
+            <li class="nav-item active"><a class="nav-link" href="${pageContext.request.contextPath}/admin/main"><i class="fas fa-fw fa-tachometer-alt"></i> <span>대시보드</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/userManagement"><i class="fas fa-fw fa-table"></i> <span>유저 관리</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/storeManagement"><i class="fas fa-fw fa-table"></i> <span>가게 관리</span></a></li>
             <li class="nav-item"><a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"><i class="fas fa-fw fa-cog"></i> <span>고객 지원</span></a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="/admin/noticeList">공지사항</a>
-                        <a class="collapse-item" href="/admin/contactList">1:1 문의 관리</a>
-                        <a class="collapse-item" href="/admin/refund">환불요청 처리</a>
+                        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/noticeList">공지사항</a>
+                        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/contactList">1:1 문의 관리</a>
+                        <a class="collapse-item" href="${pageContext.request.contextPath}/admin/refund">환불요청 처리</a>
                     </div>
                 </div>
             </li>
             <hr class="sidebar-divider my-0">
-            <li class="nav-item"><a class="nav-link" href="/admin/logout"><i class="fas fa-fw fa-table"></i> <span>로그아웃</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/admin/logout"><i class="fas fa-fw fa-table"></i> <span>로그아웃</span></a></li>
             <hr class="sidebar-divider">
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -114,13 +114,13 @@
                                         <!-- Pagination -->
                                         <div class="pagination mb-3">
                                             <c:if test="${contacts.hasPrevious()}">
-                                                <a href="/admin/contactList?page=${currentPage - 2}&size=${pageSize}" class="btn btn-primary">&laquo; 이전</a>
+                                                <a href="${pageContext.request.contextPath}/admin/contactList?page=${currentPage - 2}&size=${pageSize}" class="btn btn-primary">&laquo; 이전</a>
                                             </c:if>
                                             <c:forEach begin="1" end="${contacts.totalPages}" var="i">
-                                                <a href="/admin/contactList?page=${i - 1}&size=${pageSize}" class="btn ${i == currentPage ? 'btn-secondary active' : 'btn-light'}">${i}</a>
+                                                <a href="${pageContext.request.contextPath}/admin/contactList?page=${i - 1}&size=${pageSize}" class="btn ${i == currentPage ? 'btn-secondary active' : 'btn-light'}">${i}</a>
                                             </c:forEach>
                                             <c:if test="${contacts.hasNext()}">
-                                                <a href="/admin/contactList?page=${currentPage}&size=${pageSize}" class="btn btn-primary">다음 &raquo;</a>
+                                                <a href="${pageContext.request.contextPath}/admin/contactList?page=${currentPage}&size=${pageSize}" class="btn btn-primary">다음 &raquo;</a>
                                             </c:if>
                                         </div>
                                     </div>
@@ -141,7 +141,7 @@
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-        <script src="/js/sb-admin-2.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/sb-admin-2.min.js"></script>
         <script>
             function navigateToAnswer(contactId) {
                 window.location.href = "/admin/contact/" + contactId;

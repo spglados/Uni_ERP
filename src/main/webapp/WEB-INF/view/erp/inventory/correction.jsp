@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-<link rel="stylesheet" href="/css/erp/material.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/material.css">
 <style>
     .inner-search {
         margin-right: 10px;
@@ -152,7 +152,7 @@
             <div class="button-group">
                 <!-- 제출 버튼 추가 -->
                 <button type="button" class="btn btn-main" onclick="updateMaterial()">수정</button>
-                <a href="/erp/inventory/status" class="btn btn-secondary">취소</a>
+                <a href="${pageContext.request.contextPath}/erp/inventory/status" class="btn btn-secondary">취소</a>
             </div>
         </form>
     </div>

@@ -18,7 +18,7 @@
         다시 결제 시도 해주세요
     </h1>
     <br>
-    <a href="/payment">다시 시도하기</a>
+    <a href="${pageContext.request.contextPath}/payment">다시 시도하기</a>
 </div>
 
 </body>

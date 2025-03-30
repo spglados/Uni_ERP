@@ -25,6 +25,10 @@ repositories {
 }
 
 dependencies {
+
+    implementation 'org.slf4j:slf4j-simple:2.0.16'
+    implementation 'org.yaml:snakeyaml:2.2'
+
     // 엑셀 라이브러리
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'

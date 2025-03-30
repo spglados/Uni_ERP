@@ -7,8 +7,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-<link rel="stylesheet" href="/css/erp/material.css">
-<link rel="stylesheet" href="/css/common/agGrid.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/material.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/agGrid.css">
 <style>
     .modal-dialog {
         max-width: 20%;
@@ -56,7 +56,7 @@
     }
 
     /* Editable cell styling */
-    .ag-theme-quartz .editable-cell {
+    .ag-theme-alpine .editable-cell {
         background-color: #FFF3DA; /* 연한 파란색 배경 */
         cursor: pointer; /* 커서를 포인터로 변경 */
         border-radius: 5px;
@@ -65,13 +65,10 @@
         border-top: 1px solid #FF2800; /* 위쪽 테두리로 강조 */
     }
 
-    .ag-theme-quartz .editable-cell:hover {
+    .ag-theme-alpine .editable-cell:hover {
         background-color: #bae7ff; /* 호버 시 배경색 변경 */
     }
 </style>
-
-<!-- ag-Grid JavaScript -->
-<script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
 
 <!-- 재고 관리 콘텐츠 -->
 <div class="content container-fluid">
@@ -92,7 +89,7 @@
         </div>
         <hr>
         <!-- 자재 목록 그리드 -->
-        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-quartz"></div>
+        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
     </div>
 </div>
 

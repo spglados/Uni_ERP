@@ -1,11 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<link rel="stylesheet" href="/css/signIn.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/signIn.css">
 
 <main class="main-container">
 
 <div class="login-container" id="login-container">
-    <img src="/images/logo/logo_clear.png" alt="로고">
+    <img src="${pageContext.request.contextPath}/images/logo/logo_clear.png" alt="로고">
     <h2>관리자 로그인</h2>
   <form id="login-form">
     <input type="text" name="username" placeholder="Username" value="testAdminName1" required maxlength="15" pattern="[a-zA-Z0-9]+">

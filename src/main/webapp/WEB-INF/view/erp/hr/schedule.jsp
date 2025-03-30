@@ -9,7 +9,7 @@
 <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap@4.4.2/main.min.css' rel='stylesheet'/>
 <link href='https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.1/css/all.css' rel='stylesheet'>
 <!-- Custom CSS -->
-<link rel="stylesheet" href="/css/erp/hr/calendar.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/hr/calendar.css">
 
 <div class="content">
     <div class="d-flex">
@@ -82,10 +82,10 @@
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@4.4.2/main.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap@4.4.2/main.min.js'></script>
 <%-- scheduleModal.js 포함 --%>
-<script src="/js/erp/hr/scheduleModal.js"></script>
+<script src="${pageContext.request.contextPath}/js/erp/hr/scheduleModal.js"></script>
 
 <%-- calendar.js 포함 --%>
-<script src="/js/erp/hr/calendar.js"></script>
+<script src="${pageContext.request.contextPath}/js/erp/hr/calendar.js"></script>
 
 <%-- 일정 데이터 초기화 --%>
 <script type="application/javascript">
@@ -103,6 +103,6 @@
     });
 </script>
 <!-- Toast 및 로딩 스피너를 위한 JavaScript 추가 -->
-<script src="/js/toastHelper.js"></script>
+<script src="${pageContext.request.contextPath}/js/toastHelper.js"></script>
 
 <%@include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

@@ -167,7 +167,7 @@
         </div>
     </c:otherwise>
 </c:choose>
-<script src="/js/erp/hr/scheduleCalculator.js"></script>
+<script src="${pageContext.request.contextPath}/js/erp/hr/scheduleCalculator.js"></script>
 
 
 <%@ include file="/WEB-INF/view/erp/layout/erpFooter.jsp" %>

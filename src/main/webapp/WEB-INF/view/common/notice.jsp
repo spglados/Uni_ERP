@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@include file="/WEB-INF/view/layout/header.jsp"%>
-<link rel="stylesheet" href="/css/common/notice.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/notice.css">
 <main class="main-container">
 
     <section>
@@ -26,7 +26,7 @@
                 <c:forEach var="notice" items="${notices.content}" varStatus="status">
                     <tr>
                         <td>${status.index + 1 + (currentPage - 1) * pageSize}</td>
-                        <td><a href="/notice/detail?id=${notice.id}">${notice.title}</a></td>
+                        <td><a href="${pageContext.request.contextPath}/notice/detail?id=${notice.id}">${notice.title}</a></td>
                         <td>${notice.dateFormatter()}</td>
                         <td>${notice.views}</td>
                     </tr>
@@ -36,13 +36,13 @@
 
         <div class="pagination">
             <c:if test="${notices.hasPrevious()}">
-                <a href="/notice?page=${currentPage - 1}&size=${pageSize}" class="btnPush">&laquo; 이전</a>
+                <a href="${pageContext.request.contextPath}/notice?page=${currentPage - 1}&size=${pageSize}" class="btnPush">&laquo; 이전</a>
             </c:if>
             <c:forEach begin="1" end="${notices.totalPages}" var="i">
-                <a href="/notice?page=${i - 1}&size=${pageSize}" class="${i == currentPage ? 'active btnPush' : 'btnPush'}">${i}</a>
+                <a href="${pageContext.request.contextPath}/notice?page=${i - 1}&size=${pageSize}" class="${i == currentPage ? 'active btnPush' : 'btnPush'}">${i}</a>
             </c:forEach>
             <c:if test="${notices.hasNext()}">
-                <a href="/notice?page=${currentPage}&size=${pageSize}" class="btnPush">다음 &raquo;</a>
+                <a href="${pageContext.request.contextPath}/notice?page=${currentPage}&size=${pageSize}" class="btnPush">다음 &raquo;</a>
             </c:if>
         </div>
     </section>

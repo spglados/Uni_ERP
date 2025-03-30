@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<link rel="stylesheet" href="/css/erp/material.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/material.css">
 
 <!-- Main Content -->
 <div class="content container-fluid">
@@ -21,7 +21,7 @@
             </button>
         </div>
         <hr>
-        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-quartz"></div>
+        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
     </div>
 </div>
 

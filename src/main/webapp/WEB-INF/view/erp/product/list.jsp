@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
 
 <!-- CSS Links -->
-<link rel="stylesheet" href="/css/erp/product.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/product.css">
 <style>
     .btn-main {
         background-color: #F8F399;
@@ -24,14 +24,14 @@
                     <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
-            <a href="/erp/product/registration" class="btn btn-secondary ml-2 btn-action" style="margin-right: 5px;"
+            <a href="${pageContext.request.contextPath}/erp/product/registration" class="btn btn-secondary ml-2 btn-action" style="margin-right: 5px;"
                title="등록하러 가기">
                 <i class="fas fa-plus-circle"></i> <!-- 등록 아이콘 -->
             </a>
         </div>
         <hr>
         <!-- ag-Grid 컨테이너 -->
-        <div id="myGrid" class="ag-theme-quartz" style="height: 500px; width:100%;"></div> <!-- 표준 테마 사용 -->
+        <div id="myGrid" class="ag-theme-alpine" style="height: 500px; width:100%;"></div> <!-- 표준 테마 사용 -->
     </div>
 </div>
 

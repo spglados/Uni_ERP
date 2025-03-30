@@ -7,7 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-<link rel="stylesheet" href="/css/erp/material.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/material.css">
 
 <style>
     .modal-dialog {
@@ -68,7 +68,7 @@
             </button>
         </div>
         <hr>
-        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-quartz"></div>
+        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
     </div>
 </div>
 

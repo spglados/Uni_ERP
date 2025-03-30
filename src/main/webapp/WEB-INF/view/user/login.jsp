@@ -9,12 +9,12 @@
 
 <!-- header.jsp  -->
 <%@ include file="/WEB-INF/view/layout/header.jsp"%>
-<link rel="stylesheet" href="/css/signIn.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/signIn.css">
 
 <main class="main-container">
 
 <div class="login-container" id="login-container">
-    <img src="/images/logo/logo_clear.png" alt="로고">
+    <img src="${pageContext.request.contextPath}/images/logo/logo_clear.png" alt="로고">
        <h6>로그인 후 이용 해 주세요</h6>
     <h2>로그인</h2>
   <form action="/user/login" method="post">
@@ -23,7 +23,7 @@
     <button type="submit">로그인</button>
   </form>
   <div class="signup-link">
-    <p><a href="/user/join">회원가입</a></p>
+    <p><a href="${pageContext.request.contextPath}/user/join">회원가입</a></p>
   </div>
 </div>
 

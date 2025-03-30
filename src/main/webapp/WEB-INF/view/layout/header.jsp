@@ -18,7 +18,7 @@
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <title>Title</title>
-    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -26,27 +26,27 @@
 <header class="header">
     <div class="site__header">
         <nav>
-            <a href="/main" class="none-a">
-                <img src="/images/logo/logo_clear.png" class="animate__animated animate__fadeIn" alt="포스로고"
+            <a href="${pageContext.request.contextPath}/main" class="none-a">
+                <img src="${pageContext.request.contextPath}/images/logo/logo_clear.png" class="animate__animated animate__fadeIn" alt="포스로고"
                      style="height: 100px; width: 125px;">
             </a>
             <ul class="menu">
-                <li><a href="/introduction">소개</a></li>
-                <li><a href="/notice">공지사항</a></li>
-                <li><a href="/erp/main" target="_blank">ERP</a></li>
-                <li><a href="/payment">결제</a></li>
-                <li><a href="/support">고객지원</a></li>
+                <li><a href="${pageContext.request.contextPath}/introduction">소개</a></li>
+                <li><a href="${pageContext.request.contextPath}/notice">공지사항</a></li>
+                <li><a href="${pageContext.request.contextPath}/erp/main" target="_blank">ERP</a></li>
+                <li><a href="${pageContext.request.contextPath}/payment">결제</a></li>
+                <li><a href="${pageContext.request.contextPath}/support">고객지원</a></li>
                 <div class="toggle">
                     <span class="toggle--switch"></span>
                 </div>
                 <div class="header-icons">
                 <c:if test="${not empty sessionScope.userSession}">
-                    <a href="/my-page" class="header-icon"><i class="fa-solid fa-user-gear icon-hover-text" style="color: #74C0FC;" id="icon1" data-text="마이페이지"></i></a>
-                    <a href="/user/logout" class="header-icon"><i class="fa-solid fa-right-from-bracket icon-hover-text" style="color: #74C0FC;" id="icon2" data-text="로그아웃"></i></a>
+                    <a href="${pageContext.request.contextPath}/my-page" class="header-icon"><i class="fa-solid fa-user-gear icon-hover-text" style="color: #74C0FC;" id="icon1" data-text="마이페이지"></i></a>
+                    <a href="${pageContext.request.contextPath}/user/logout" class="header-icon"><i class="fa-solid fa-right-from-bracket icon-hover-text" style="color: #74C0FC;" id="icon2" data-text="로그아웃"></i></a>
                 </c:if>
                 <c:if test="${empty sessionScope.userSession}">
-                    <a href="/user/login" class="header-icon"><i class="fa-solid fa-right-to-bracket icon-hover-text" style="color: #74C0FC;" id="icon3" data-text="로그인"></i></a>
-                   <a href="/user/join" class="header-icon"><i class="fas fa-user-plus icon-hover-text" style="color: #74C0FC;" id="icon4" data-text="회원가입"></i></a>
+                    <a href="${pageContext.request.contextPath}/user/login" class="header-icon"><i class="fa-solid fa-right-to-bracket icon-hover-text" style="color: #74C0FC;" id="icon3" data-text="로그인"></i></a>
+                   <a href="${pageContext.request.contextPath}/user/join" class="header-icon"><i class="fas fa-user-plus icon-hover-text" style="color: #74C0FC;" id="icon4" data-text="회원가입"></i></a>
                 </c:if>
                 </div>
             </ul>

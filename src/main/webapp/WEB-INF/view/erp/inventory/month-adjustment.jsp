@@ -7,15 +7,10 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-<link rel="stylesheet" href="/css/erp/material.css">
-<link rel="stylesheet" href="/css/common/agGrid.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/material.css">
 <!-- Font Awesome (필요 시 추가) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
       crossorigin="anonymous" referrerpolicy="no-referrer"/>
-<!-- ag-Grid CSS -->
-<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-grid.css">
-<link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-theme-quartz.css">
-<link rel="stylesheet" href="/css/common/agGrid.css">
 
 <style>
     /* 아이템 텍스트 스타일 */
@@ -31,9 +26,6 @@
 
 </style>
 
-<!-- ag-Grid JavaScript -->
-<script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
-
 <!-- 재고 관리 콘텐츠 -->
 <div class="content container-fluid">
     <h1>월 재고 현황</h1>
@@ -46,7 +38,7 @@
             </button>
         </div>
         <hr>
-        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-quartz"></div>
+        <div id="myGrid" style="height: 500px; width:100%;" class="ag-theme-alpine"></div>
     </div>
 </div>
 

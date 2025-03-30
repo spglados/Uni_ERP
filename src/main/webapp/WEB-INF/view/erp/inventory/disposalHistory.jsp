@@ -7,7 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/view/erp/layout/erpHeader.jsp" %>
-<link rel="stylesheet" href="/css/erp/material.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/erp/material.css">
 
 <style>
     /* 로딩 스피너 스타일 */
